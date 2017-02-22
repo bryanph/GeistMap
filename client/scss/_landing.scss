@@ -61,6 +61,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .featureRow-text {
     flex: 0 0 50%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 .featureRow-header {
     font-size: 1.7rem;
@@ -76,7 +80,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .featureRow-image {
     flex: 0 0 50%;
+
+    img {
+        width: 90%;
+    }
 }
+
 
 .mainSection {
     width: 100%;

@@ -5,7 +5,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import "../scss/landing.scss"
 
-const title = "Brayn"
+const title = "Geist"
 
 const mainSection = {
     header: "Get organized",
@@ -14,15 +14,30 @@ const mainSection = {
 }
 const rows = {
     connections: {
-        header: "More powerful than hierarchies",
-        content: "Are you tired of hierarchies? So am I. Hierarchies are for dictators.",
-        imageSrc: "some image",
+        header: "Relations first",
+        content: "Instead of trying to organize all your thoughts and notes in folders, organize your notes by defining relations between them",
+        imageSrc: "/static/img/graph1.png",
     },
     explore: {
             header: "Explore your thoughts",
-            content: "Instead of just spending your time organizing your thoughts and information, explore and gogogo!",
-            imageSrc: "some image",
+            content: "Easily and quickly explore your thoughts and notes by traversing between them and their collections",
+            imageSrc: "/static/img/graph3.png",
     },
+    collections: {
+            header: "Organize with collections",
+            content: "Besides relations, notes can be added to one or more collections to quickly navigate between groups of notes",
+            imageSrc: "/static/img/graph2.png",
+    },
+    // connections: {
+    //     header: "More powerful than hierarchies",
+    //     content: "Are you tired of hierarchies? So am I. Hierarchies are for dictators.",
+    //     imageSrc: "some image",
+    // },
+    // explore: {
+    //         header: "Explore your thoughts",
+    //         content: "Instead of just spending your time organizing your thoughts and information, explore and gogogo!",
+    //         imageSrc: "some image",
+    // },
 }
 const endSection = {
     header: "Give it a try!"
@@ -57,6 +72,11 @@ const App = (props) => (
                     header={rows.explore.header}
                     content={rows.explore.content}
                     imageSrc={rows.explore.imageSrc}
+                />
+                <FeatureRow 
+                    header={rows.collections.header}
+                    content={rows.collections.content}
+                    imageSrc={rows.collections.imageSrc}
                 />
                 <EndSection {...initialState} header={endSection.header} />
                 <Footer />
