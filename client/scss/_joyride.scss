@@ -1,0 +1,31 @@
+$joyride-tooltip-border-radius: 2px;
+$joyride-tooltip-font-size:1rem;
+$joyride-header-font-size:1.2rem;
+$joyride-skip-button-color:$primary-color;
+$joyride-button-border-radius: 2px;
+$joyride-hole-border-radius: 2px;
+$joyride-button-bg-color:$primary-color;
+$joyride-back-button-color:$primary-color;
+$joyride-skip-button-color:$primary-color;
+$joyride-header-border-color:$primary-color;
+$joyride-header-border-width:0;
+
+.joyride {
+	.joyride-tooltip__header {
+		font-weight: 700;
+	}
+	.joyride-tooltip__main {
+		padding:.2rem 0 1rem 0;
+		border-bottom:2px solid $primary-color;
+		margin-bottom:1rem;
+	}
+	.joyride-tooltip__button--primary {
+		border-radius:2px;
+		&:hover {
+			background: darken($primary-color, 10%);
+		}
+		&:active {
+			background: darken($primary-color, 15%);
+		}
+	}
+}

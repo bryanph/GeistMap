@@ -1,0 +1,23 @@
+.topbar {
+    /* background-color: #e9ebee; */
+    background-color: #FF5722;
+}
+
+.topbar-menu {
+    display: flex;
+    align-items: center;
+}
+
+.topbar-logo {
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+.topbar-create {
+    display: flex;
+    align-items: center;
+
+}
+.topbar-create > div:not(:last-child){
+    margin-right: 0.5rem;
+}

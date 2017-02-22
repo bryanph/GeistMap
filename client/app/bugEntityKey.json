@@ -1,0 +1,839 @@
+{
+    "blocks": [
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 0,
+                    "length": 32,
+                    "offset": 28
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "2nd30",
+            "text": "PCA is an algorithm for the dimensionality reduction problem\u200b.",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "7v7ck",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "fee88",
+            "text": "Problem formulation",
+            "type": "header-three"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "2quag",
+            "text": "Find a lower-dimensional surface on which to project the data s.t. the sum of all projections of all training examples are minimized.",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "c37iq",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "b4ar0",
+            "text": "For example, to reduce from 2D to 1D: ",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 1,
+                    "length": 1,
+                    "offset": 27
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "7fuge",
+            "text": "Find a direction (a vector \u200b) onto which to project the data so as to minimize the projection error",
+            "type": "unordered-list-item"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "4u6pq",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 3,
+                    "length": 1,
+                    "offset": 40
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "9cfj1",
+            "text": "More generally, reducing from \u200b-dim to \u200b-dim:",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 4,
+                    "length": 1,
+                    "offset": 5
+                },
+                {
+                    "key": 5,
+                    "length": 1,
+                    "offset": 16
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "d8pbc",
+            "text": "Find \u200b vectors \u200b onto which to project the data as to minimize the projection error.",
+            "type": "unordered-list-item"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 6,
+                    "length": 1,
+                    "offset": 34
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "bicme",
+            "text": "So for 3D -> 2D, find two vectors \u200b that minimize the projection error",
+            "type": "unordered-list-item"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "38m3j",
+            "text": "PCA is not linear regression",
+            "type": "header-four"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 7,
+                    "length": 1,
+                    "offset": 261
+                },
+                {
+                    "key": 8,
+                    "length": 1,
+                    "offset": 273
+                }
+            ],
+            "inlineStyleRanges": [
+                {
+                    "length": 9,
+                    "offset": 107,
+                    "style": "BOLD"
+                },
+                {
+                    "length": 2,
+                    "offset": 191,
+                    "style": "BOLD"
+                }
+            ],
+            "key": "479jh",
+            "text": "2D to 1D PCA looks like linear regression on first sight, but in linear regression you try to minimize the vertical distance between the predicted line and the points and in PCA the distance to the line. Also, in linear regression you try to predict a variable \u200b from all \u200b's, while in PCA no one variable is special.",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "eucin",
+            "text": "PCA Algorithm",
+            "type": "header-three"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 9,
+                    "length": 38,
+                    "offset": 11
+                },
+                {
+                    "key": 10,
+                    "length": 1,
+                    "offset": 117
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "5cj33",
+            "text": "Important: Feature scaling and mean normalization should be performed first to make sure the different features have \u200b mean and are on the same scale.",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "bej3h",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 11,
+                    "length": 1,
+                    "offset": 12
+                },
+                {
+                    "key": 12,
+                    "length": 1,
+                    "offset": 22
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "4a6ri",
+            "text": "Goal: given \u200b, where \u200b",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "botrh",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "bfrrl",
+            "text": "Mathematical derivation is quite involved.",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "7ri1s",
+            "text": "Steps",
+            "type": "header-four"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "2ru5o",
+            "text": "1. Compute \"Covariance matrix\":",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 13,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "8bj9m",
+            "text": " ",
+            "type": "atomic"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 14,
+                    "length": 1,
+                    "offset": 36
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "85v9d",
+            "text": "2. Compute \"eigenvectors\" of matrix \u200b:",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 15,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "d4ss1",
+            "text": " ",
+            "type": "atomic"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 16,
+                    "length": 1,
+                    "offset": 63
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "8tmu0",
+            "text": "Where svd is the \"Singular value decomposition\" of Sigma. Here \u200b",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 17,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "onc1",
+            "text": " ",
+            "type": "atomic"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 18,
+                    "length": 1,
+                    "offset": 18
+                },
+                {
+                    "key": 19,
+                    "length": 1,
+                    "offset": 32
+                },
+                {
+                    "key": 20,
+                    "length": 1,
+                    "offset": 42
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "4c7d3",
+            "text": "3. Pick the first \u200b vectors of \u200b to get \u200b, resulting in:",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "bd6br",
+            "text": "",
+            "type": "atomic"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "avc4m",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 21,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "fdadf",
+            "text": " ",
+            "type": "atomic"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "3cn0a",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 22,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "875n4",
+            "text": " ",
+            "type": "atomic"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "fu5tm",
+            "text": "dasdsadasdsdasddasdadsdasdsa",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 23,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "ct6lt",
+            "text": " ",
+            "type": "atomic"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "er63n",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 24,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "fvir",
+            "text": " ",
+            "type": "atomic"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "70eri",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 25,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "8e9pf",
+            "text": " ",
+            "type": "atomic"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "18apd",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {
+                "type": "latex"
+            },
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 26,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "7fq5",
+            "text": " ",
+            "type": "atomic"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [
+                {
+                    "key": 27,
+                    "length": 1,
+                    "offset": 0
+                }
+            ],
+            "inlineStyleRanges": [],
+            "key": "2cq2n",
+            "text": " \u200b",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "2cmdv",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "11jat",
+            "text": "",
+            "type": "unstyled"
+        },
+        {
+            "data": {},
+            "depth": 0,
+            "entityRanges": [],
+            "inlineStyleRanges": [],
+            "key": "6mdsn",
+            "text": "",
+            "type": "unstyled"
+        }
+    ],
+    "entityMap": {
+        "0": {
+            "data": {
+                "edgeId": "482",
+                "node": {
+                    "_id": "245",
+                    "_index": "nodes",
+                    "_score": 0.04906592,
+                    "_source": {
+                        "content": "Motivation\nex: data compression\n\nTwo features \u200b measuring some length in inches and cm respectively. Compression can be done by reducing this 2D data to 1D data by using only one of the two metrics or taking some kind of average.\n\nHence, when the data is highly correlated for multiple dimension, you can often reduce it to one dimension.\n\nAnother example might be for reducing 3D to 2D data if there is a high correlation in one of the dimensions\n\n\n\n\n\nEx: Data visualization\nGiven a dataset \u200b where \u200b.\nIn order to visualize it we want to reduce the dimension \u200b to \u200b and get \u200b where \u200b\n\nFor example, when collecting a lot of country-indicators, group data regarding per-capita GDP together and data regarding overall economic size together and plot the two together.\n\n\n\n\n\n\n",
+                        "title": "Dimensionality Reduction",
+                        "user": "57b32e5cd17033956dd69c79"
+                    },
+                    "_type": "node"
+                },
+                "nodeId": "245",
+                "text": "PCA is an algorithm for the dimensionality reduction problem"
+            },
+            "mutability": "IMMUTABLE",
+            "type": "CONTENT_LINK"
+        },
+        "1": {
+            "data": {
+                "content": "u^{(1)} \\in \\mathbb{R}^n",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "10": {
+            "data": {
+                "content": "0",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "11": {
+            "data": {
+                "content": "x^{(i)} \\in \\mathbb{R}^{n} -> z^{(i)} \\in \\mathbb{R}^{k}",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "12": {
+            "data": {
+                "content": "k < n",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "13": {
+            "data": {
+                "content": "\\Sigma = \\dfrac 1 m \\sum_{i=1}^n(x^{(i)})(x^{(i)})^T",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "14": {
+            "data": {
+                "content": "\\Sigma",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "15": {
+            "data": {
+                "content": "[U,S,V] = \\text{svd}(\\text{Sigma})",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "16": {
+            "data": {
+                "content": "U \\in \\mathbb{R}^{nxn}",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "17": {
+            "data": {
+                "content": "U = \\begin{bmatrix}\n| & | & | & | & |\\\\ \nu^{(1)} & u^{(2)} & u^{(3)} & \\ldots & u^{(m)} \\\\\n| & | & | & | & |\n\\end{bmatrix}",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "18": {
+            "data": {
+                "content": "k",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "19": {
+            "data": {
+                "content": "U",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "2": {
+            "data": {
+                "content": "n",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "20": {
+            "data": {
+                "content": "u^{(1)}, ..., u^{(k)}",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "21": {
+            "data": {
+                "content": "",
+                "initial": true
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "22": {
+            "data": {
+                "content": "",
+                "initial": true
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "23": {
+            "data": {
+                "content": "",
+                "initial": true
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "24": {
+            "data": {
+                "content": "",
+                "initial": true
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "25": {
+            "data": {
+                "content": "",
+                "initial": true
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "26": {
+            "data": {
+                "content": "",
+                "initial": true
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "27": {
+            "data": {
+                "content": "U_\\text{reduce} = \\begin{bmatrix}\n| & | & | & | & |\\\\ \nu^{(1)} & u^{(2)} & u^{(3)} & \\ldots & u^{(k)} \\\\\n| & | & | & | & |\n\\end{bmatrix}",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "TOKEN"
+        },
+        "3": {
+            "data": {
+                "content": "k",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "4": {
+            "data": {
+                "content": "k",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "5": {
+            "data": {
+                "content": "u^{(1)}, u^{(2)}, ..., u^{(k)}",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "6": {
+            "data": {
+                "content": "u^{(1)}, u^{(2)}",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "7": {
+            "data": {
+                "content": "y",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "8": {
+            "data": {
+                "content": "x",
+                "initial": false
+            },
+            "mutability": "IMMUTABLE",
+            "type": "inline-latex"
+        },
+        "9": {
+            "data": {
+                "edgeId": "484",
+                "node": {
+                    "_id": "207",
+                    "_index": "nodes",
+                    "_score": 0.021392785,
+                    "_source": {
+                        "content": "Sources\nAn overview of gradient descent optimization algorithms\u200b => https://news.ycombinator.com/item?id=11943685\n\nFeature scaling\nidea: Make sure features are on the same scale. Otherwise: gradient desctakes a long time to converge\nInstead, \"scale\" the features approximately in the range \u200b\nMean normalization\nReplace \u200b with \u200b to make features have approximately zero mean.\n\nEx: \u200b, where max size of a house is 2000, avg size is 1000\n\nIn general: \n \u200b\n, where \u200b is the average value of \u200b\nand \u200b is the range (difference between max, min or standard deviation)\nVectorization\nThe implementation of gradient descent can be optimized by using vectors computations instead of loops in the code.\n\nEx: Multi-variable linear regression hypothesis\n \u200b\nHence, instead of performing the loop, a optimized vector library can be used to perform the computation.\n\nEx: Gradient descent update rule\nOriginal:\n \u200b\nVectorized implementation:\n \u200b, where \u200b\n\n, where \u200b\n\n",
+                        "title": "Gradient descent optimization",
+                        "user": "57b32e5cd17033956dd69c79"
+                    },
+                    "_type": "node"
+                },
+                "nodeId": "207",
+                "text": "Important: Feature scaling and mean normalization should be performed first"
+            },
+            "mutability": "IMMUTABLE",
+            "type": "CONTENT_LINK"
+        }
+    }
+}

@@ -1,0 +1,19 @@
+
+.addRelationWindow {
+    text-align: center;
+}
+
+.addRelationWindow h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.addRelationWindow-nodeSearch {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.addRelationWindow-nodeSearch .nodeSearch {
+    display: inline-block;
+    width: 50%;
+}

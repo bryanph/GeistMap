@@ -1,0 +1,33 @@
+/public/*.json
+/public/*.svg
+/public/js/*
+/public/css/*
+/public/bower_components/
+/public/bundle.js
+
+**/*.swp
+
+# python
+__pycache__/
+**/*.py[cod]
+
+# js
+frontend/app/config.js
+
+# django
+db.sqlite3
+migrations
+local_settings.py
+
+# npm
+node_modules
+npm-debug.log*
+
+# coverage
+.coverage
+htmlcov/
+
+# config files
+server/config/auth.js
+server/config/config.js
+

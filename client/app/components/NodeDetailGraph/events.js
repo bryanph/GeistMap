@@ -1,0 +1,3 @@
+/*
+ * Events specific to NodeDetailGraph
+ */

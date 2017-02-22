@@ -1,0 +1,21 @@
+    {
+      path: '{{ path }}',
+      name: '{{ camelCase component }}',
+      getComponent(nextState, cb) {
+        const importModules = Promise.all([
+          System.import('containers/{{ properCase component }}/reducer'),
+          System.import('containers/{{ properCase component }}/sagas'),
+          System.import('containers/{{ properCase component }}'),
+        ]);
+
+        const renderRoute = loadModule(cb);
+
+        importModules.then(([reducer, sagas, component]) => {
+          injectReducer('{{ camelCase component }}', reducer.default);
+          injectSagas(sagas.default);
+          renderRoute(component);
+        });
+
+        importModules.catch(errorLoading);
+      },
+    },$1

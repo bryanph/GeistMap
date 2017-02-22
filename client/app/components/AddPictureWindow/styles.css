@@ -1,0 +1,39 @@
+
+
+.addPictureWindow {
+    text-align: center;
+}
+
+.addPictureWindow h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.addPictureWindow-nodeSearch {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.addPictureWindow-nodeSearch .nodeSearch {
+    display: inline-block;
+    width: 50%;
+}
+
+.addPictureWindow-uploadDiv {
+    text-align: center;
+}
+.addPictureWindow-dropzone {
+    display: inline-block;
+    outline: 2px dashed #92b0b3;
+    outline-offset: -10px;
+    cursor: pointer;
+    width: 50%;
+    height: 200px;
+    line-height: 200px;
+    background-color: #c8dadf;
+    padding: 10px;
+    transition: outline-offset .15s ease-in-out, background-color .15s linear
+}
+.addPictureWindow-dropzoneActive {
+    background-color: white;
+}

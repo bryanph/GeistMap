@@ -1,0 +1,35 @@
+.top-bar, .actions {
+	display: none;
+}
+#content-wrap {
+	margin:0 !important;
+	padding:0 !important;
+	width:100%;
+}
+.public-chart {
+	margin: 0 !important;
+}
+.meta {
+	border-top:none !important;
+}
+.filters:after {
+    display: block;
+    position: relative;
+    content: 'Built with IATI Studio. Create your own charts on www.iatistudio.com.';
+    font-size: .8rem;
+    padding-top:.5rem;
+    color:$dark-gray;
+}
+footer {
+	display:none;
+}
+
+.public-chart .legend .color {
+	border-width:8px;
+	border-style:solid;
+}
+
+//set margins
+@page {
+	margin: 2cm;
+}

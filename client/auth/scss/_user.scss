@@ -1,0 +1,35 @@
+.user {
+	margin-top:1rem;
+	.page-title {
+		margin-bottom: 2rem;
+	}
+	.avatar {
+		text-align: center;
+		img {
+			width: 100%;
+			height: auto;
+			border-radius: 50%;
+			margin-bottom: 1rem;
+			margin-top:1rem;
+		}
+		p {
+			font-size:1.5rem;
+		}
+	}
+	label {
+		margin-bottom: 1.5rem;
+	}
+	h6 {
+		margin-bottom: 1rem;
+	}
+	p {
+		text-align: center;
+		margin-bottom: 1rem;
+	}
+	.button {
+		height:2.4375rem;
+		margin-bottom: .5rem;
+		line-height: 2.4375rem;
+		padding:0;
+	}
+}

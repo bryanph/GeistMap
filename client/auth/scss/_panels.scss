@@ -1,0 +1,80 @@
+.panel {
+	@include card(1);
+	text-align:center;
+	padding:1rem;
+	margin-bottom:1rem;
+	position: relative;
+	background:$white;
+	&.interact {
+		border-top:$primary-color .5rem solid;
+	}
+	&.with-logo {
+		margin-top:3rem;
+		padding-top:2.5rem;
+	}
+	.logo {
+		position:absolute;
+		width: 4rem;
+		height: 4rem;
+		top:-2.25rem;
+		left:50%;
+		margin-left:-2rem;
+		background: $menu-black;
+		border-radius:50%;
+		background-image:url(../img/is-logo.svg);
+		background-size:50%;
+		background-position:center;
+		background-repeat:no-repeat;
+	}
+	.nospacing {
+		margin-bottom: 0;
+	}
+	h3 {
+		font-weight: 700;
+		margin-bottom: .3rem;
+	}
+	.button {
+		width: 100%;
+		&.input-height {
+			height:2.4375rem;
+			padding:0;
+			line-height: 2.4375rem;
+		}
+		&.google {
+			@include button-style(#D50F25, auto, $white);
+		}
+		&.facebook {
+			@include button-style(#4c66a4, auto, $white);
+		}
+		&.twitter {
+			@include button-style(#55acee, auto, $white);
+		}
+		&.github {
+			@include button-style(#60b044, auto, $white);
+		}
+		.fa {
+			margin-right: .5rem;
+		}
+	}
+	.label {
+		text-align: left;
+	}
+	.divider {
+		margin:1rem 0 2rem 0;
+		border-bottom: 1px solid $medium-gray;
+		line-height: 0;
+		span {
+			background:$white;
+			padding:0 .5rem;
+		}
+	}
+	ul {
+		text-align: left;
+	}
+	&.error {
+		border:1px solid $alert-color;
+		ul {
+			margin-bottom: 0;
+		}
+	}
+}

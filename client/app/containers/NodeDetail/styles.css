@@ -1,0 +1,11 @@
+
+.nodeDetail {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 75rem;
+    flex-grow: 1;
+    padding-top: 25px;
+    /* max-width: initial; */
+}

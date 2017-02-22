@@ -1,0 +1,820 @@
+#content-wrap {
+	padding-top:3rem;
+    margin-left:3rem;
+    background:$light-bg;
+    min-height: 100vh;
+}
+
+a, button {
+	outline: 0 !important;
+}
+
+h1,h2,h3,h4,h5,h6 {
+}
+
+hr {
+    border-bottom:2px solid $primary-color;
+}
+
+//materialize the input and forms
+[type='text'], 
+[type='password'], 
+[type='date'], 
+[type='datetime'], [
+type='datetime-local'], 
+[type='month'], 
+[type='week'], 
+[type='email'], 
+[type='number'], 
+[type='search'], 
+[type='tel'], 
+[type='time'], 
+[type='url'], 
+[type='color'], 
+textarea {
+	// border-bottom:1px solid $dark-gray;
+	// padding-left:0;
+	// padding-right:0;
+ //    font-size: .9rem;
+ //    color:$black;
+	// &:after {
+	//     content: '';
+	//     display: block;
+	//     margin: auto;
+	//     height: 2px;
+	//     width: 0px;
+	//     background: transparent;
+	//     transition: all .3s ease;
+	//     margin-top: 0;
+	// }
+  // ~ .fake-line {
+  //   display: block;
+  //   margin: auto;
+  //   height: 2px;
+  //   width: 0px;
+  //   background: transparent;
+  //   transition: all .3s ease;
+  //   margin-top: -1.1rem;
+  //   margin-bottom:1.1rem;
+  // }
+	// &:focus {
+ //    border-bottom:1px solid $dark-gray;
+ //    ~ .fake-line {
+ //      width: 100%;
+ //      background: $primary-color;
+ //    }
+	// }
+    background:$white;
+    @include card(1);
+    border:0;
+    padding-left:.5rem;
+    padding-right:.5rem;
+    &:focus {
+        border:none;
+        @include card(1);
+        background:lighten($light-bg, 3%);
+    }
+}
+
+[type='checkbox'] + label, [type='radio'] + label {
+    margin-left:0;
+}
+
+select {
+	//padding-right:0;
+	//padding-left:0;
+	//border-bottom:1px solid $dark-gray;
+	outline:none !important;
+    transition: all .2s ease;
+    color:$black;
+    @include card(1);
+   /*  &:focus {
+        border-bottom:2px solid $primary-color;
+    } */
+    option, optgroup {
+        color:$black;
+    }
+}
+
+/* Remove default checkbox */
+[type="checkbox"]:not(:checked),
+[type="checkbox"]:checked {
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
+}
+
+// Checkbox Styles
+[type="checkbox"] {
+
+  // Text Label Style
+  + label {
+    position: relative;
+    padding-left: 35px;
+    cursor: pointer;
+    display: inline-block;
+    height: 25px;
+    line-height: 25px;
+    font-size: 1rem;
+
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
+  }
+
+  /* checkbox aspect */
+  + label:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 18px;
+    height: 18px;
+    z-index: 0;
+    border: 2px solid $dark-gray;
+    border-radius: 1px;
+    margin-top: 2px;
+    transition: .2s;
+  }
+
+  &:not(:checked):disabled + label:before {
+    border: none;
+    background-color: $dark-gray;
+  }
+}
+
+[type="checkbox"]:checked {
+  + label:before {
+    top: -4px;
+    left: -3px;
+    width: 12px; height: 22px;
+    border-top: 2px solid transparent;
+    border-left: 2px solid transparent;
+    border-right: 2px solid $primary-color;
+    border-bottom: 2px solid $primary-color;
+    transform: rotate(40deg);
+    backface-visibility: hidden;
+    transform-origin: 100% 100%;
+  }
+
+  &:disabled + label:before {
+    border-right: 2px solid $dark-gray;
+    border-bottom: 2px solid $dark-gray;
+  }
+}
+
+/***************
+  Radio Buttons
+***************/
+
+/* Remove default Radio Buttons */
+[type="radio"]:not(:checked),
+[type="radio"]:checked {
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
+}
+
+[type="radio"]:not(:checked) + label,
+[type="radio"]:checked + label {
+  position: relative;
+  padding-left: 35px;
+  cursor: pointer;
+  display: inline-block;
+  height: 25px;
+  line-height: 25px;
+  font-size: 1rem;
+  transition: .28s ease;
+
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  user-select: none;
+}
+
+[type="radio"] + label:before,
+[type="radio"] + label:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 4px;
+  width: 16px;
+  height: 16px;
+  z-index: 0;
+  transition: .28s ease;
+}
+
+/* Unchecked styles */
+[type="radio"]:not(:checked) + label:before {
+  border-radius: 50%;
+  border: 2px solid $dark-gray;
+}
+[type="radio"]:not(:checked) + label:after {
+  border-radius: 50%;
+  border: 2px solid $dark-gray;
+  z-index: -1;
+
+  transform: scale(0);
+}
+
+/* Checked styles */
+[type="radio"]:checked + label:before {
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+[type="radio"]:checked + label:after {
+  border-radius: 50%;
+  border: 2px solid $primary-color;
+  background-color: $primary-color;
+  z-index: 0;
+  transform: scale(1.02);
+}
+
+/* Radio With gap */
+[type="radio"].with-gap:checked + label:before {
+  border-radius: 50%;
+  border: 2px solid $primary-color;
+}
+[type="radio"].with-gap:checked + label:after {
+  border-radius: 50%;
+  border: 2px solid $primary-color;
+  background-color: $primary-color;
+  z-index: 0;
+  transform: scale(.5);
+}
+
+/* Disabled Radio With gap */
+/* [type="radio"].with-gap:disabled:checked + label:before {
+  border: 2px solid $input-disabled-color;
+}
+[type="radio"].with-gap:disabled:checked + label:after {
+  border: none;
+  background-color: $input-disabled-color;
+} */
+
+/* Disabled style */
+/* [type="radio"]:disabled:not(:checked) + label:before,
+[type="radio"]:disabled:checked + label:before {
+  background-color: transparent;
+  border-color: $input-disabled-color;
+}
+[type="radio"]:disabled + label {
+  color: $input-disabled-color;
+}
+[type="radio"]:disabled:not(:checked) + label:before {
+  border-color: $input-disabled-color;
+}
+[type="radio"]:disabled:checked + label:after {
+  background-color: $input-disabled-color;
+  border-color: $input-disabled-solid-color;
+} */
+
+/***************
+     Switch
+***************/
+.switch,
+.switch * {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+}
+
+.switch label {
+    cursor: pointer;
+}
+
+.switch label input[type=checkbox]{
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch label input[type=checkbox]:checked + .lever {
+    background-color: $primary-color;
+}
+
+.switch label input[type=checkbox]:checked + .lever:after {
+    background-color: $white;
+}
+
+.switch label .lever {
+    content: "";
+    display: inline-block;
+    position: relative;
+    width: 2.3rem;
+    height: 1.1rem;
+    background-color: darken($medium-gray,15%);
+    border-radius: 1rem;
+    margin-right: .8rem;
+    transition: background 0.3s ease;
+    vertical-align: middle;
+    margin: 0 1rem;
+}
+
+.switch label .lever:after {
+    content: "";
+    position: absolute;
+    display: inline-block;
+    width: .9rem;
+    height: .9rem;
+    background-color: $white;
+    border-radius: 50%;
+    //box-shadow: 0 1px 3px 1px rgba(0,0,0,.4);
+    left: .15rem;
+    top: .1rem;
+    transition: left 0.3s ease, background .3s ease, box-shadow 0.1s ease;
+}
+
+// Switch active style
+input[type=checkbox]:checked:not(:disabled) ~ .lever:active:after {
+       box-shadow: 0 1px 3px 1px rgba(0,0,0,0), 0 0 0 15px transparentize($primary-color, .9);
+}
+
+input[type=checkbox]:not(:disabled) ~ .lever:active:after {
+       box-shadow: 0 1px 3px 1px rgba(0,0,0,0), 0 0 0 15px rgba(0, 0, 0, .08);
+}
+
+.switch label input[type=checkbox]:checked + .lever:after {
+    left: 1.25rem;
+}
+
+// Disabled Styles
+.switch input[type=checkbox][disabled] + .lever{
+  cursor: default;
+}
+.switch label input[type=checkbox][disabled] + .lever:after,
+.switch label input[type=checkbox][disabled]:checked + .lever:after {
+    background-color: $light-gray;
+}
+
+
+//buttons
+.button {
+    font-weight: 400;
+	@include card(1);
+    transition: none;
+    font-size: 1rem;
+	&.flat {
+		box-shadow:none;
+		color:$primary-color;
+		background:transparent;
+		&:active {
+			background:$light-gray;
+		}
+	}
+    &:active {
+        background:darken($primary-color,10%);
+    }
+    &.secondary {
+        &:active {
+            background:darken(#777,15%);
+        }
+    }
+    &.blue {
+        background:$blue;
+        &:hover {
+            background:darken($blue,5%);
+        }
+        &:active {
+            background:darken($blue,10%);
+        }
+    }
+}
+
+//loader
+#loader {
+  text-indent: -9999px;
+  position:absolute;
+  left:50%;
+  width: 4rem;
+  height: 4rem;
+  margin-left:-2rem;
+  top:50%;
+  margin-top:-2rem;
+  background-image:url(../img/loader.svg);
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+}
+
+//animations
+.slide-enter, .slide-appear {
+    transform: translate(100%,0);
+    &.slide-enter-active, &.slide-appear-active {
+        transform: translate(0,0);
+        transition: all .3s ease;
+    }
+}
+
+.slide-leave {
+    transform: translate(0,0);
+    &.slide-leave-active {
+        transform: translate(100%,0);
+        transition: all .3s ease;
+    }
+}
+
+.slide-right-enter, .slide-right-appear {
+    transform: translate(-100%,0);
+    &.slide-right-enter-active, &.slide-right-appear-active {
+        transform: translate(0,0);
+        transition: all .3s ease;
+    }
+}
+
+.slide-right-leave {
+    transform: translate(0,0);
+    &.slide-right-leave-active {
+        transform: translate(-100%,0);
+        transition: all .3s ease;
+    }
+}
+
+.fade-enter, .fade-appear {
+    opacity: 0.01;
+    &.fade-enter-active, &.fade-appear-active {
+        opacity: 1;
+        transition: all .1s ease;
+    }
+}
+
+.fade-leave {
+    opacity: 1;
+    &.fade-leave-active {
+        opacity: 0.01;
+        transition: all .1s ease;
+    }
+}
+
+.fade-slow-enter, .fade-slow-appear {
+    opacity: 0.01;
+    &.fade-slow-enter-active, &.fade-slow-appear-active {
+        opacity: 1;
+        transition: all .5s ease;
+    }
+}
+
+.fade-slow-leave {
+    opacity: 1;
+    &.fade-slow-leave-active {
+        opacity: 0.01;
+        transition: all .5s ease;
+    }
+}
+
+.drop-enter, .drop-appear {
+    opacity: 0.01;
+    max-height: 0;
+    &.drop-enter-active, &.drop-appear-active {
+        opacity: 1;
+        max-height: 10rem;
+        transition: max-height .3s ease, opacity .5s ease;
+    }
+}
+
+.drop-leave {
+    opacity: 1;
+    max-height: 10rem;
+    &.drop-leave-active {
+        opacity: 0.01;
+        max-height: 0;
+        transition: max-height .4s ease, opacity .2s ease;
+    }
+}
+
+.drop-top-right-enter, .drop-top-right-appear {
+    opacity: 0.01;
+    transform:scale(0);
+    &.drop-top-right-enter-active, &.drop-top-right-appear-active {
+        opacity: 1;
+        transform:scale(1);
+        transition: transform .3s ease, opacity .5s ease;
+    }
+}
+
+.drop-top-right-leave {
+    opacity: 1;
+    transform:scale(1);
+    &.drop-top-right-leave-active {
+        opacity: 0.01;
+        transform:scale(0);
+        transition: transform .4s ease, opacity .2s ease;
+    }
+}
+
+.zoom-enter, .zoom-appear {
+    opacity: 0.01;
+    transform:scale(0);
+    &.zoom-enter-active, &.zoom-appear-active {
+        transform:scale(1);
+        opacity: 1;
+        transition: all .4s ease .1s;
+    }
+}
+
+.zoom-leave {
+    opacity: 1;
+    transform:scale(1);
+    &.zoom-leave-active {
+        opacity: 0.01;
+        transform:scale(0);
+        transition: all .3s ease;
+    }
+}
+
+//menu pusher
+.pusher {
+  transition:margin .2s ease;
+  &.pushed {
+    @include breakpoint(medium up) {
+       margin-left:10.2rem; 
+    }
+  }
+}
+
+//loaders
+.chart-loader {
+    position:fixed;
+    width: 100%;
+    background:none;
+    bottom:0;
+    top:0;
+    z-index: 12;
+    .content {
+        font-size: .7rem;
+        font-weight: bold;
+        top:50%;
+        margin-top:-1rem;
+        position:absolute;
+        text-align: center;
+        color:$black;
+        width: 100%;
+        img {
+            height:1.1rem;
+            width: auto;
+            margin-right: .4rem;
+            margin-top:-.5rem;
+        }
+    }
+    &.white {
+        .content {
+            color:$white;
+        }
+    }
+    &.nocontent {
+        .content {
+            display: none;
+        }
+    }
+    &.overlay {
+        background:rgba(0,0,0,.3);
+    }
+}
+
+#general-loader {
+    width: 100%;
+    text-align: center;
+    position:absolute;
+    img {
+        height:1.1rem;
+        width: auto;
+        margin-right: .4rem;
+        margin-top:-.5rem;
+    }
+    top:7rem;
+    font-size: .7rem;
+    font-weight: bold;
+}
+
+//ordering
+.order-by {
+    font-weight: bold;
+    .label {
+        display: inline-block;
+        color:$primary-color;
+        background:none;
+    }
+    button {
+        display: inline-block;
+        font-size: .9rem;
+        margin-left:1rem;
+        opacity: .6;
+        color:$primary-color;
+        &:hover {
+            opacity: 1;
+        }
+        &.active {
+            opacity: 1;
+            &:after {
+                @extend .mi-cb;
+                content: '\e5db';
+                float: right;
+                margin-top: -.2rem;
+                font-size: 1rem !important;
+                margin-left: .3rem;
+            }
+            &.reverse {
+                &:after {
+                    content: '\e5d8';
+                }
+            }
+        }
+    }
+}
+
+
+//notifications 
+.notifications {
+    position: fixed;
+    bottom:.5rem;
+    right:1rem;
+    z-index: 99;
+}
+.notification {
+    width:30rem;
+    @include card(2);
+    background:$blacker;
+    border-radius:$global-radius;
+    font-size:.9rem;
+    margin-bottom:.5rem;
+    padding:0 1rem;
+    position:relative;
+    color:$white;
+    //opacity: 0;
+    //transition:all .2s ease;
+    //transform:translate(100%, 0);
+    .notification-dismiss {
+        position: absolute;
+        top:.5rem;
+        right:1rem;
+        cursor: pointer;
+    }
+    &.notification-hidden {
+        opacity: 0;
+    }
+    &.notification-visible {
+        opacity: 1;
+        transform: translate(0,0);
+    }
+    &.success {
+
+    }
+    &.info {
+        background:$primary-color;
+    }
+    &.error {
+        background:$alert-color;
+    }
+}
+
+//modals
+.modal-overlay {
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+    position: fixed;
+    width: 100%;
+    height:100%;
+    z-index: 9998;
+    background:rgba(0,0,0,.6);
+}
+.modal-container {
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+    position: fixed;
+    display: table;
+    width: 100%;
+    height:100%;
+    z-index: 9999;
+    .row {
+        display: table-cell;
+        vertical-align: middle;
+    }
+    .modal {
+        background:$white;
+        border-radius:$global-radius;
+        @include card(2);
+        padding:1.5rem 2rem;
+        color:$black;
+        font-size: .9rem;
+        h6 {
+            color:$black;
+        }
+        .button {
+            margin-bottom: 0;
+            &.secondary {
+                margin-right: .5rem;
+            }
+        }
+        .actions {
+            text-align: right;
+        }
+    }
+}
+
+//tooltip
+.tooltip {
+    position: relative;
+    display: inline-block;
+    .tip {
+        white-space: nowrap;
+        color:$white;
+        position: absolute;
+        text-transform: none;
+        background:rgba($blacker,.95);
+        border-radius:$global-radius;
+        @include card(2);
+        font-size: .8rem;
+        width: auto;
+        max-width: 15rem;
+        text-align: left;
+        padding:.5rem .8rem;
+        line-height: 1rem;
+    }
+}
+
+//font stuff
+.page-title {
+    font-size: 1.3rem;
+    //color:$primary-color;
+}
+label {
+    .label {
+        padding:0;
+        background:none;
+        color:$chart-color;
+        font-weight: bold;
+        display: block;
+        font-size:.7rem;
+        margin-bottom: .3rem;
+    }
+}
+
+//wysiwyq editor
+.wysiwyq {
+    background:$white;
+    @include card(1);
+    .toolbar {
+        background:lighten($light-bg,2%);
+        border-bottom:1px solid $medium-gray;
+        button {
+            //border-right:1px solid $medium-gray;
+            padding:.6rem;
+            border-radius:0;
+            i {
+                font-size: 1.2rem;
+            }
+            &.bold {
+            }
+            &.italic {
+            }
+            &.underline {
+            }
+            &:hover {
+                background:$light-gray;
+            }
+            &:active, &.active {
+                background:$medium-gray;
+            }
+        }
+        select {
+            float:left;
+            width: auto;
+            box-shadow: none;
+            border:1px solid $medium-gray;
+            padding:0 2rem 0 .7rem;
+            margin: .4rem .5rem 0 1rem;
+            background-color:$white;
+            height:1.7rem;
+            font-size: .8rem;
+            background-position: right .4rem center;
+            background-origin: border-box;
+        }
+    }
+    .DraftEditor-editorContainer {
+        padding:1rem;
+    }
+    .public-DraftStyleDefault-block {
+        margin-bottom: 1rem;
+    }
+    .public-DraftStyleDefault-ol, .public-DraftStyleDefault-ul {
+        .public-DraftStyleDefault-block {
+            margin-bottom: 0;
+        }
+    }
+    .public-DraftEditorPlaceholder-root {
+        position: absolute;
+        pointer-events:none;
+        padding-left:1rem;
+        padding-top:1rem;
+        color:$dark-gray;
+    }
+}
+
+.error-page {
+    padding-top:2rem;
+}

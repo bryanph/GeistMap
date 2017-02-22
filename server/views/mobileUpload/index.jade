@@ -1,0 +1,107 @@
+doctype html
+html
+    head
+        meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width')
+    title test
+    style.
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Helvetica Neue,Roboto,  Helvetica, Arial, sans-serif;
+        }
+
+        .error {
+            background-color: red !important;
+        }
+
+        #fileInput {
+            visibility: hidden;
+        }
+        #fileInputDiv {
+            display: table;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            font-size: 4rem;
+            text-align: center;
+            cursor: pointer;
+            line-height: 100%;
+        }
+        #fileInputDiv span {
+            display: table-cell;
+            vertical-align: middle;
+        }
+
+    body
+        div#fileInputDiv()
+            span#mainText Click to select a !{fileType}
+        input#fileInput(type='file', accept="#{fileType}/*", capture="#{capture}")
+
+
+        script(type='text/javascript').
+            document.addEventListener('DOMContentLoaded', function () {
+                var token = "!{token}";
+
+                function sendPic() {
+                    var files = document.getElementById('fileInput').files
+
+                    if (!files) {
+                        return
+                    }
+
+                    var formData = new FormData()
+                    for (var i=0; i < files.length; i++) {
+                        formData.append('files', files.item(i))
+                    }
+
+                    function updateProgress(progressEvent) {
+                        if (progressEvent.lengthComputable) {
+                            var percentComplete = progressEvent.loaded / progressEvent.total
+
+                            document.getElementById('mainText').innerHTML = percentComplete + '%'
+                        }
+                        else {
+                            document.getElementById('mainText').innerHTML = 'Uploading...'
+                        }
+                    }
+
+                    function onComplete(event) {
+                        document.getElementById('fileInputDiv').className = "completed";
+                        document.getElementById('mainText').innerHTML = "Succesfully uploaded"
+                    }
+
+                    function onError(event) {
+                        console.log("called onError")
+                        document.getElementById('fileInputDiv').className = "error"
+                        document.getElementById('mainText').innerHTML = "An error occured, click to try again"
+                    }
+
+                    var request = new XMLHttpRequest();
+                    request.addEventListener('progress', updateProgress)
+                    // request.addEventListener('load', onComplete)
+                    // request.addEventListener('error', onError)
+                    request.addEventListener('abort', onError)
+                    request.open("POST", "/upload/mobile/photo/" + token)
+                    request.onreadystatechange = function(aEvt) {
+                        if (request.readyState == 4) {
+                            if (request.status == 200) {
+                                onComplete(aEvt)
+                            }
+                            else {
+                                onError(aEvt)
+                            }
+                        }
+                    }
+                    request.send(formData)
+                  }
+
+                var myInput = document.getElementById('fileInput');
+                myInput.addEventListener('change', sendPic, false);
+                myInput.click()
+
+                var myInputButton = document.getElementById('fileInputDiv')
+                myInputButton.addEventListener('click', function() {
+                    myInput.click();
+                })
+            })

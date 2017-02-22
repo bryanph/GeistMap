@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 19.2.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 800 350" style="enable-background:new 0 0 800 350;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:none;stroke:#BCBCBC;stroke-width:0.25;stroke-miterlimit:10;}
+	.st1{fill:#0097A7;}
+	.st2{font-family:'ProximaNova-Light';}
+	.st3{font-size:55.0675px;}
+	.st4{fill:#222222;}
+	.st5{font-size:15px;}
+	.st6{fill:none;stroke:#0097A7;stroke-width:7;stroke-linecap:round;stroke-miterlimit:10;}
+</style>
+<g id="Layer_1">
+	<line class="st0" x1="0" y1="0" x2="800" y2="0"/>
+	<line class="st0" x1="0" y1="50" x2="800" y2="50"/>
+	<line class="st0" x1="0" y1="100" x2="800" y2="100"/>
+	<line class="st0" x1="0" y1="150" x2="800" y2="150"/>
+	<line class="st0" x1="0" y1="200" x2="800" y2="200"/>
+	<line class="st0" x1="0" y1="250" x2="800" y2="250"/>
+	<line class="st0" x1="0" y1="300" x2="800" y2="300"/>
+	<line class="st0" x1="0" y1="350" x2="800" y2="350"/>
+	<line class="st0" x1="0" y1="0" x2="0" y2="350"/>
+	<line class="st0" x1="746.7" y1="0" x2="746.7" y2="350"/>
+	<line class="st0" x1="693.3" y1="0" x2="693.3" y2="350"/>
+	<line class="st0" x1="640" y1="0" x2="640" y2="350"/>
+	<line class="st0" x1="586.7" y1="0" x2="586.7" y2="350"/>
+	<line class="st0" x1="533.3" y1="0" x2="533.3" y2="350"/>
+	<line class="st0" x1="480" y1="0" x2="480" y2="350"/>
+	<line class="st0" x1="426.7" y1="0" x2="426.7" y2="350"/>
+	<line class="st0" x1="373.3" y1="0" x2="373.3" y2="350"/>
+	<line class="st0" x1="320" y1="0" x2="320" y2="350"/>
+	<line class="st0" x1="266.7" y1="0" x2="266.7" y2="350"/>
+	<line class="st0" x1="213.3" y1="0" x2="213.3" y2="350"/>
+	<line class="st0" x1="160" y1="0" x2="160" y2="350"/>
+	<line class="st0" x1="106.7" y1="0" x2="106.7" y2="350"/>
+	<line class="st0" x1="53.3" y1="0" x2="53.3" y2="350"/>
+	<line class="st0" x1="800" y1="0" x2="800" y2="350"/>
+</g>
+<g id="Layer_2">
+	<g>
+		<text transform="matrix(1 0 0 1 118.1704 211.2228)" class="st1 st2 st3">Start building your chart</text>
+		<text transform="matrix(1 0 0 1 237.7631 250.1779)"><tspan x="0" y="0" class="st4 st2 st5">We recommend you begin by setting some filters. </tspan><tspan x="13.9" y="18" class="st4 st2 st5">Then add some data items to draw your chart.</tspan></text>
+	</g>
+	<g>
+		<g>
+			<path class="st6" d="M400,160.7C457.6,38.1,598.4,31.4,747.6,36.4"/>
+			<g>
+				<polygon class="st1" points="779.7,37.7 733.8,54.6 745.2,36.5 735,17.7 				"/>
+			</g>
+		</g>
+	</g>
+</g>
+</svg>

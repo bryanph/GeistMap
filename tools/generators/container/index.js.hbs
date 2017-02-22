@@ -1,0 +1,36 @@
+/*
+ *
+ * {{ properCase name }}
+ *
+ */
+
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
+import select{{properCase name}} from './selectors';
+{{#if wantCSS}}
+import styles from './styles.css';
+{{/if}}
+
+export class {{ properCase name }} extends React.Component { // eslint-disable-line react/prefer-stateless-function
+  render() {
+    return (
+      {{#if wantCSS}}
+      <div className={ styles.{{ camelCase name }} }>
+      {{else}}
+      <div>
+      {{/if}}
+      This is {{properCase name}} container !
+      </div>
+    );
+  }
+}
+
+const mapStateToProps = select{{properCase name}}();
+
+function mapDispatchToProps(dispatch) {
+  return {
+    dispatch,
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)({{ properCase name }});

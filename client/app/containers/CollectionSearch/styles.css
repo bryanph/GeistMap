@@ -1,0 +1,22 @@
+.collectionSearch {
+    position: relative;
+}
+
+.collectionSearch-list {
+    z-index: 3;
+    width: 100%;
+    min-height: 10rem;
+    position: absolute;
+    background-color: white;
+    border: 1px solid;
+}
+
+.collectionSearch-no-result {
+    position: absolute;
+    /* padding: 0.4rem; */
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+
+}

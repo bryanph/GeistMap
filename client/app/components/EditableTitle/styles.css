@@ -1,0 +1,26 @@
+.EditableTitle {
+    cursor: pointer;
+    display: inline-block;
+    width: 90%;
+    min-height: 47px;
+}
+
+.EditableTitle-input {
+    text-align: center;
+    min-width: 120px;
+    padding: 0;
+    resize: none;
+    border: none;
+    font-size: 2rem;
+    line-height: 1.5;
+    font-family: "Helvetica Neue", Helvetica, Roboto,  Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    font-style: normal;
+    margin: 0;
+    color: #FF5722;
+}
+.EditableTitle-input:focus {
+    outline: none;
+    /* background-color: #FAFAFA; */
+    background-color: white;
+}

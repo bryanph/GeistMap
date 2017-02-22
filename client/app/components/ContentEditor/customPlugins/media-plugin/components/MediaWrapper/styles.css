@@ -1,0 +1,39 @@
+.media-wrapper {
+    z-index: 99;
+}
+
+.media-small {
+    width: 36%;
+    min-width: 200px;
+}
+.media-medium {
+    width: 48%;
+    min-width: 300px;
+}
+.media-big {
+    width: '100%';
+}
+
+
+.media-left-align {
+    position: relative;
+    float: left;
+    /* margin-right: 2%; */
+}
+.media-center-align {
+    margin: 0 auto;
+}
+.media-right-align {
+    position: relative;
+    float: right;
+    /* margin-left: 2%; */
+}
+
+.media-big.media-left-align {
+    margin: 0 auto;
+    float: none;
+}
+.media-big.media-right-align {
+    margin: 0 auto;
+    float:none;
+}

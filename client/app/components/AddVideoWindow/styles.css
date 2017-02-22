@@ -1,0 +1,39 @@
+
+
+.addVideoWindow {
+    text-align: center;
+}
+
+.addVideoWindow h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.addVideoWindow-nodeSearch {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.addVideoWindow-nodeSearch .nodeSearch {
+    display: inline-block;
+    width: 50%;
+}
+
+.addVideoWindow-uploadDiv {
+    text-align: center;
+}
+.addVideoWindow-dropzone {
+    display: inline-block;
+    outline: 2px dashed #92b0b3;
+    outline-offset: -10px;
+    cursor: pointer;
+    width: 50%;
+    height: 200px;
+    line-height: 200px;
+    background-color: #c8dadf;
+    padding: 10px;
+    transition: outline-offset .15s ease-in-out, background-color .15s linear
+}
+.addVideoWindow-dropzoneActive {
+    background-color: white;
+}

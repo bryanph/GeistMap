@@ -1,0 +1,39 @@
+
+
+.addAudioWindow {
+    text-align: center;
+}
+
+.addAudioWindow h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.addAudioWindow-nodeSearch {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.addAudioWindow-nodeSearch .nodeSearch {
+    display: inline-block;
+    width: 50%;
+}
+
+.addAudioWindow-uploadDiv {
+    text-align: center;
+}
+.addAudioWindow-dropzone {
+    display: inline-block;
+    outline: 2px dashed #92b0b3;
+    outline-offset: -10px;
+    cursor: pointer;
+    width: 50%;
+    height: 200px;
+    line-height: 200px;
+    background-color: #c8dadf;
+    padding: 10px;
+    transition: outline-offset .15s ease-in-out, background-color .15s linear
+}
+.addAudioWindow-dropzoneActive {
+    background-color: white;
+}

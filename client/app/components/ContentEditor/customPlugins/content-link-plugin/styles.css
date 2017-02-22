@@ -1,0 +1,83 @@
+/*
+ * LinkButton
+*/
+
+.button {
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #888;
+  cursor: pointer;
+  height: 1.5em;
+  width: 2.5em;
+  font-size: 1.5em;
+  line-height: 1.2em;
+  margin: 0;
+  text-decoration: none;
+}
+
+.button-active {
+  background-color: #2f2f2f;
+}
+
+/*
+ * Link
+*/
+
+.editor-contentLink {
+    display: inline;
+    position: 'relative';
+}
+
+.contentLink, .contentLink:visited {
+  /* color: #5e93c5; */
+  color: #FF7043;
+  text-decoration: none;
+
+  display: inline-block;
+  position: relative;
+
+}
+
+.contentLink:hover, .contentLink:focus {
+  color: #FF5722;
+  outline: 0; /* reset for :focus */
+  cursor: pointer;
+}
+
+.contentLink:active {
+  /* color: #4a7bab; */
+}
+
+.contentLinkDiv {
+    display: none;
+    position: absolute;
+    bottom: 0;
+    left: calc(50% - 200px);
+    left: 0;
+    height: 150px;
+    width: 400px;
+
+    z-index: 1000;
+    padding: 1.5rem 0;
+}
+
+.contentLink:hover > .contentLinkDiv, .contentLinkDiv:hover {
+    display: block;
+}
+.contentLinkDiv:hover {
+    display: block;
+    z-index: 1000;
+}
+
+.contentLinkDiv-container {
+    position: absolute;
+    background-color: rgb(51, 51, 51);
+    bottom: 2rem;
+    padding: 10px 20px;
+}
+
+.contentLinkDiv-buttons {
+    display: inline;
+    margin-left: 20px;
+}

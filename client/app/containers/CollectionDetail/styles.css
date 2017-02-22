@@ -1,0 +1,34 @@
+.collectionDetail-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+
+.collectionDetail-topcontrols {
+    /* max-width: 75rem; */
+    width: 80%;
+    margin: 20px auto;
+    /* margin: 0 1rem; */
+}
+
+.collectionDetail-description {
+    margin: 0 20px;
+    font-size: 1.4rem;
+}
+
+.collectionDetail-buttons {
+    position: absolute;
+    right: 30px;
+    bottom: 30px;
+    z-index: 99;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.collectionDetail-buttons > div {
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+

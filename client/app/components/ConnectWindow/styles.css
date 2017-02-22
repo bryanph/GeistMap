@@ -1,0 +1,11 @@
+.connectWindow {
+    position: 'relative';
+}
+
+.connectWindow-nodeSearch {
+    width: 100%;
+}
+
+.connectWindow-nodeSearch-list {
+    width: 100%;
+}

@@ -1,0 +1,14 @@
+.nodeOverview {
+    width: 100%;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    max-width: initial;
+}
+
+.nodeOverview-createButton {
+    text-align: center;
+}
+
+.nodeOverview-content {
+    margin-top: 60px;
+}

@@ -1,0 +1,366 @@
+/**
+*
+* ContentEditor
+*
+*/
+
+import React from 'react';
+import classNames from 'classnames'
+import { Editor, EditorState, RichUtils, getDefaultKeyBinding, KeyBindingUtil } from 'draft-js'
+const { hasCommandModifier } = KeyBindingUtil;
+
+import styles from './styles.css';
+
+const StyleButton = (props) => {
+    /*
+     * A button to use for the RichUtils button controls
+    */
+
+    const className = classNames(
+        'RichEditor-styleButton', 
+        { 'RichEditor-activeButton': props.active }
+    )
+
+    return (
+        <span className={className} onMouseDown={(e) => {
+            e.preventDefault(); props.onToggle(props.style) 
+        }}>
+            {props.label}
+        </span>
+    );
+}
+
+const BLOCK_TYPES = [
+    {label: 'H1', style: 'header-one'},
+    {label: 'H2', style: 'header-two'},
+    {label: 'H3', style: 'header-three'},
+    {label: 'H4', style: 'header-four'},
+    {label: 'H5', style: 'header-five'},
+    {label: 'H6', style: 'header-six'},
+    {label: 'Blockquote', style: 'blockquote'},
+    {label: 'UL', style: 'unordered-list-item'},
+    {label: 'OL', style: 'ordered-list-item'},
+    {label: 'Code Block', style: 'code-block'},
+]
+const BlockStyleControls = (props) => {
+    /*
+     * RichUtils button controls for block-style controls
+    */
+
+   const { editorState } = props
+   const selection = editorState.getSelection()
+   const blockType = editorState
+       .getCurrentContent()
+       .getBlockForKey(selection.getStartKey())
+       .getType();
+
+   return (
+       <div className="RichEditor-controls">
+           {BLOCK_TYPES.map((type) =>
+               <StyleButton
+                   key={type.label}
+                   active={type.style === blockType}
+                   label={type.label}
+                   onToggle={props.onToggle}
+                   style={type.style}
+               />
+           )}
+       </div>
+   )
+}
+
+var INLINE_STYLES = [
+    {label: 'Bold', style: 'BOLD'},
+    {label: 'Italic', style: 'ITALIC'},
+    {label: 'Underline', style: 'UNDERLINE'},
+    {label: 'Monospace', style: 'CODE'},
+];
+const InlineStyleControls = (props) => {
+    /*
+     * RichUtils button controls for inline-style controls
+    */
+
+    var currentStyle = props.editorState.getCurrentInlineStyle();
+    return (
+        <div className="RichEditor-controls">
+            {INLINE_STYLES.map(type =>
+                <StyleButton
+                    key={type.label}
+                    active={currentStyle.has(type.style)}
+                    label={type.label}
+                    onToggle={props.onToggle}
+                    style={type.style}
+                />
+                )}
+            </div>
+    );
+};
+
+
+// Custom style overrides (see https://facebook.github.io/draft-js/docs/advanced-topics-inline-styles.html)
+// custom inline styling
+const styleMap = {
+    CODE: {
+        backgroundColor: 'rgba(0, 0, 0, 0.05)',
+        fontFamily: '"Inconsolata", "Menlo", "Consolas", monospace',
+        fontSize: 16,
+        padding: 2,
+    },
+};
+// custom block styling
+function getBlockStyle(block) {
+    switch (block.getType()) {
+        case 'blockquote': return 'RichEditor-blockquote';
+        default: return null;
+    }
+}
+
+var getSelectedBlockElement = (range) => {
+
+    var firstNode = range.startContainer
+    do {
+        if (firstNode.getAttribute && firstNode.getAttribute('data-block') == 'true')
+            return firstNode
+        firstNode = firstNode.parentfirstNode
+    } while (firstNode != null)
+        return null
+};
+
+var getSelectionRange = () => {
+    /*
+     * Range from the current selection
+     * See https://developer.mozilla.org/en-US/docs/Web/API/Selection
+     * See https://developer.mozilla.org/en-US/docs/Web/API/Range
+    */
+    var selection = window.getSelection()
+    if (selection.rangeCount == 0) return null
+    return selection.getRangeAt(0)
+};
+
+class ContentEditor extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            editorState: EditorState.createEmpty()
+        }
+
+        this.onChange = this._onChange.bind(this)
+        this.handleKeyCommand = this.handleKeyCommand.bind(this)
+        this.toggleBlockType = (type) => this._toggleBlockType(type);
+        this.toggleInlineStyle = (style) => this._toggleInlineStyle(style);
+        this.focus = () => this.refs.editor.focus();
+        this.promptForLink = this._promptForLink.bind(this);
+    }
+
+    _onChange(editorState) {
+        this.setState({ editorState })
+
+        this._updateSelectionCoords(editorState);
+    }
+
+    _updateSelectionCoords() {
+        /*
+         * Determine position of the current selection on the screen so the PopOverMenu
+         * can be rendered in the right position
+         * // TODO: when to do this? - 2016-06-25
+        */
+        const { editorState } = this.state;
+        const selection = editorState.getSelection();
+
+
+        const styles = {
+            editorContainer: {
+                position: 'relative',
+                //paddingLeft: 48,
+            },
+            popOverControl: {
+                    width: 78, // Height and width are needed to compute the position
+                    height: 24,
+                    display: 'none', 
+                    top: 0,
+                    left: 0,
+                    position: 'absolute',
+                    zIndex: 998,
+                },
+                sideControl: {
+                        height: 24, // Required to figure out positioning
+                        //width: 48, // Needed to figure out how much to offset the sideControl left
+                        left: -48,
+                        display: 'none',
+                    }
+        }
+
+
+        let   popoverControlVisible = false,
+              popoverControlTop = null,
+              popoverControlLeft = null
+
+        const selectionRange = getSelectionRange()
+
+        if (selectionRange){
+
+            let rangeBounds = selectionRange.getBoundingClientRect()
+
+            console.log(rangeBounds);
+
+            if (!selectionRange.collapsed){
+
+                popoverControlVisible = true
+                var rangeWidth = rangeBounds.right - rangeBounds.left,
+                    rangeHeight = rangeBounds.bottom - rangeBounds.top
+                popoverControlTop = (rangeBounds.top - editorBounds.top)
+                    - styles.popOverControl.height
+                    - popoverSpacing
+                popoverControlLeft = 0
+                    + (rangeBounds.left - editorBounds.left)
+                    + (rangeWidth / 2)
+                    - (styles.popOverControl.width / 2)
+
+            }
+        }
+
+        this.setState({
+            popOverMenu: {
+                visible: popoverControlVisible,
+                top: popoverControlTop,
+                left: popoverControlLeft,
+            }
+        })
+
+    }
+
+    _promptForLink(e) {
+        e.preventDefault();
+        const {editorState} = this.state;
+        const selection = editorState.getSelection();
+
+        console.log(selection);
+
+        if (!selection.isCollapsed()) {
+            this.setState({
+                showURLInput: true,
+                urlValue: '',
+            }, () => {
+                    setTimeout(() => this.refs.url.focus(), 0);
+                });
+        }
+    }
+
+    _createLink(e) {
+        e.preventDefault();
+        const { editorState, urlValue } = this.state;
+        const entityKey = Entity.create('LINK', 'MUTABLE', { url: urlValue })
+
+        this.onChange(
+            RichUtils.toggleLink(
+                editorState,
+                editorState.getSelection(),
+                entityKey,
+            )
+        )
+    }
+
+    customKeyBindingFn(e) {
+        /*
+         * Return custom keys for key combinations to handle in handleKeyCommand
+        */
+
+        if (e.keyCode === 83 /* `S` key */ && hasCommandModifier(e)) {
+            return 'RichEditor-save';
+        }
+
+        return getDefaultKeyBinding(e);
+    }
+
+    customHandleKeyCommand(editorState, command) {
+        if (command === 'RichEditor-save') {
+            // TODO: handle save here - 2016-06-24
+            console.log("called RichEditor-save...");
+        }
+    }
+
+    handleKeyCommand(command) {
+        const newState = 
+            this.customHandleKeyCommand(
+                RichUtils.handleKeyCommand(this.state.editorState, command),
+                command
+            )
+
+        // TODO: Add your custom key commands here - 2016-06-24
+
+        if (newState) {
+            this.onChange(newState);
+            return true;
+        }
+        return false;
+    }
+
+    _toggleBlockType(blockType) {
+        this.onChange(
+            RichUtils.toggleBlockType(
+                this.state.editorState,
+                blockType
+            )
+        );
+    }
+
+    _toggleInlineStyle(inlineStyle) {
+        this.onChange(
+            RichUtils.toggleInlineStyle(
+                this.state.editorState,
+                inlineStyle
+            )
+        );
+    }
+
+    getBlockStyle(block) {
+        switch (block.getType()) {
+            case 'blockquote': return 'RichEditor-blockquote';
+            default: return null;
+        }
+    }
+
+
+    render() {
+        const { editorState } = this.state
+        var contentState = editorState.getCurrentContent();
+
+        const className = classNames(
+            'RichEditor-editor',
+            // hide placeholder when a block styling has been selected
+            { 'RichEditor-hidePlaceholder': 
+                !contentState.hasText() && contentState.getBlockMap().first().getType() !== 'unstyled'
+            }
+        )
+
+        return (
+            <div className="RichEditor-root">
+                <BlockStyleControls
+                    editorState={editorState}
+                    onToggle={this.toggleBlockType}
+                />
+                <InlineStyleControls
+                    editorState={editorState}
+                    onToggle={this.toggleInlineStyle}
+                />
+                <div className={className} onClick={this.focus}>
+                    <Editor
+                        keyBindingFn={this.customKeyBindingFn}
+                        blockStyleFn={getBlockStyle}
+                        customStyleMap={styleMap}
+                        editorState={editorState}
+                        handleKeyCommand={this.handleKeyCommand}
+                        onChange={this.onChange}
+                        placeholder="Content goes here..."
+                        ref="editor"
+                        spellCheck={true}
+                    />
+                </div>
+            </div>
+        );
+    }
+}
+
+            // <div className={ styles.contentEditor }>
+            // </div>
+export default ContentEditor;

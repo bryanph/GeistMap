@@ -1,0 +1,5 @@
+The HOC could create an initial state if no initial state is passed, and have an editorState parameter to allow outer containers to initialize the editorState. The point is that getEditorState() and similar methods give the editor state from the parent and not from within the Editor component, where it is out of sync. So it would solve the problem posed in this thread at least.
+
+Passing plugins could be done as a parameter to the HOC I suppose. What is the use case for dynamically adding/removing plugins? Also, how is this possible in the current plugin scheme?
+
+Anyway, this is just a possible approach. It seems to avoid some complexities I've found to exist in the current plugin architecture. I agree it doesn't really feel like a plugin approach, but then again I'm not sure if react really handles these kinds of patterns well because of the explicit prop passing everywhere.
