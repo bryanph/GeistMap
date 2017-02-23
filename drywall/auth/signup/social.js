@@ -101,7 +101,7 @@ export function signupSocial(req, res, next) {
     var displayName = req.session.socialProfile.displayName || '';
     var nameParts = displayName.split(' ');
     var fieldsToSet = {
-      isVerified: 'yes',
+      isVerified: 'no',
       'name.first': nameParts[0],
       'name.last': nameParts[1] || '',
       'name.full': displayName,
