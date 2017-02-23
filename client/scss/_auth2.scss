@@ -9,6 +9,19 @@ body {
     line-height: 1.5;
 }
 
+#app {
+    height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    padding: 0;
+
+    font-size: 1.7rem;
+    font-weight: 200;
+    margin-bottom: 0.5rem;
+}
+
 .panel {
     box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
     text-align: center;

@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 
 import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 
 import fetchJSON from './utils/fetch'
@@ -62,10 +63,10 @@ export const LoginForm = React.createClass({
                 style={styles.textField}
                 type="password"
             />
-          <RaisedButton
+          <FlatButton
             onClick={this.handleSubmit}   
             label="Log In"
-            style={styles.submitButton}
+            style={{marginTop: '20px'}}
             primary={true}
           />
         </form>

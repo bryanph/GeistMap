@@ -7,7 +7,7 @@ import Reset, { ResetSuccess } from './Reset'
 import Login from './Login'
 import Signup, { SignupSocial, SignupSuccess, SignupVerificationSuccess } from './Signup'
 import EmailConfirmation, { EmailConfirmationSuccess } from './EmailConfirmation'
-import { AccountVerification, VerificationResendSuccess } from './Verification'
+import AccountVerification, { VerificationResendSuccess } from './Verification'
 
 // TODO: just require foundaiton in some way... - 2016-08-09
 // const jQuery = require('jquery')
@@ -16,7 +16,7 @@ import { AccountVerification, VerificationResendSuccess } from './Verification'
 
 // $(document).foundation();
 // console.log(foundation)
-import "../scss/auth.scss"
+import "../scss/landing.scss"
 
 // TODO: get config in context somehow - 2016-08-11
 
@@ -24,8 +24,8 @@ import getMuiTheme from '../app/containers/App/muitheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 const App = (props) => (
     <MuiThemeProvider muiTheme={getMuiTheme()}>
-        <div className="row">
-            <div className="columns small-centered small-12 medium-9 large-5 xlarge-4 xxlarge-3">
+        <div className="row stretch">
+            <div className="main-container stretch columns small-centered small-12 medium-9 large-5 xlarge-4 xxlarge-3">
                 {props.children}
             </div>
         </div>

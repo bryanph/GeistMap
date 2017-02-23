@@ -64,7 +64,8 @@ export const Login = React.createClass({
             return (
                 <div>
                     <div className="panel">
-                        <h3>Log in</h3>
+                        <h2>Log in</h2>
+                        <span className="panel-authText">With</span>
                         <Social {...this.props} />
                         <Divider />
                         <LoginForm

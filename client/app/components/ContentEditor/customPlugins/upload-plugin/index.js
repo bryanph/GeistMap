@@ -165,7 +165,7 @@ export const UploadQRButton = withSocket(class extends React.Component {
         return (
             <div className={divClass} style={{width: '100%'}}>
                 <QRCode value={uploadUrl} size={256}/>
-                <a href={uploadUrl}>{uploadUrl}</a>
+                { /* <a href={uploadUrl}>{uploadUrl}</a> */ }
             </div>
         )
     }

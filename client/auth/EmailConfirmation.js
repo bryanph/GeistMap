@@ -9,6 +9,8 @@ import Social from './Social'
 import getHeaders from './headers'
 
 import { RenderErrors, ValidationErrors } from './Error'
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
 
 const EmailConfirmation  = React.createClass({
 
@@ -30,10 +32,7 @@ const EmailConfirmation  = React.createClass({
         return this.setState({errors: json.errors})
       }
 
-      window.location = '/'
-
-      // this.props.router.push('/auth/login/forgot/success')
-      // this.props.router.push('/auth/login/forgot/success')
+      this.props.router.push('/auth/login/forgot/success')
   },
 
   handleError: function(error) {
@@ -102,7 +101,7 @@ export const EmailConfirmationForm = React.createClass({
           method: 'POST',
           headers: getHeaders(),
           body: JSON.stringify({
-              email: this._email.value,
+              email: this._email.getValue(),
           })
       })
       .then(this.props.handleResponse)
@@ -114,13 +113,18 @@ export const EmailConfirmationForm = React.createClass({
     
     return (
         <form id="email_confirmation-form" ref={c => this._form = c}>
-            <input 
+            <TextField
                 defaultValue={this.props.email}
-                type="email" 
+                hintText="email"
                 ref={c => this._email = c}
-                placeholder="Email address"
+                type="email"
             />
-          <button onClick={this.handleSubmit} className="button input-height">Confirm your email address</button>
+          <FlatButton
+            onClick={this.handleSubmit}   
+            label="Confirm your email"
+            primary={true}
+            style={{marginTop: '20px'}}
+          />
         </form>
 
     )

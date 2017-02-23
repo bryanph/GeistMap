@@ -21,6 +21,20 @@ body {
     box-sizing: border-box;
 }
 
+#app {
+    height: 100%;
+
+    .stretch {
+        height: 100%;
+    }
+
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
 h1, h2, h3, h4, h5, h6 {
     margin: 0;
     padding: 0;
@@ -173,7 +187,7 @@ h1, h2, h3, h4, h5, h6 {
 /* TODO: Should be separated */
 
 .panel {
-    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    box-shadow: 0 9px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
     text-align: center;
     padding: 1.5rem;
     margin: 40px;

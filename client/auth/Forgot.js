@@ -7,7 +7,7 @@ import { Link } from 'react-router'
 import { RenderErrors, ValidationErrors } from './Error'
 import getHeaders from './headers'
 
-import RaisedButton from 'material-ui/RaisedButton';
+import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 
 const Forgot = React.createClass({
@@ -113,10 +113,11 @@ export const ForgotForm = React.createClass({
                 style={styles.textField}
 
             />
-            <RaisedButton
+            <FlatButton
                 onClick={this.handleSubmit}   
                 label="Reset password"
                 primary={true}
+                style={{marginTop: '20px'}}
             />
         </form>
     )

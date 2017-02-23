@@ -11,7 +11,10 @@ import getHeaders from './headers'
 import { RenderErrors, ValidationErrors } from './Error'
 import { ForgotPassword } from './Forgot'
 
-export const AccountVerification  = React.createClass({
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
+
+const AccountVerification  = React.createClass({
 
   propTypes: {
       oauthMessage: PropTypes.string,
@@ -33,6 +36,9 @@ export const AccountVerification  = React.createClass({
       // console.log('called...');
       // // TODO: account verification - 2016-05-10
       // window.location = '/'
+
+      console.log("pushing...");
+      console.log(this.props);
       this.props.router.push('/auth/account/verification/success')
 
       // this.props.router.push('/auth/login/forgot/success')
@@ -40,7 +46,7 @@ export const AccountVerification  = React.createClass({
   },
 
   handleError: function(error) {
-      console.error(error);
+      console.error(error.stack);
   },
 
   getInitialState: function() {
@@ -66,8 +72,9 @@ export const AccountVerification  = React.createClass({
 
     return (
 
-      <div>
-        <h3>An email has been sent to your email adress, follow the instructions in the mail to complete your sign-up</h3>
+    <div className="interact panel with-logo">
+        <h3>Email confirmation</h3>
+        <p>An email has been sent to your email adress, follow the instructions in the mail to complete your sign-up</p>
         <VerificationForm 
           handleError={this.handleError}
           handleResponse={this.handleResponse}
@@ -103,7 +110,7 @@ export const VerificationForm = React.createClass({
           method: 'POST',
           headers: getHeaders(),
           body: JSON.stringify({
-              email: this._email.value,
+              email: this._email.getValue(),
           })
       })
       .then(this.props.handleResponse)
@@ -114,12 +121,17 @@ export const VerificationForm = React.createClass({
     
     return (
         <form id="verification-form" ref={c => this._form = c}>
-            <input 
-                type="email" 
+            <TextField
+                hintText="email"
                 ref={c => this._email = c}
-                placeholder="Email"
+                type="email"
             />
-          <button className="button input-height" onClick={this.handleSubmit}>Resend email</button>
+          <FlatButton
+            onClick={this.handleSubmit}   
+            label="Resend email"
+            primary={true}
+            style={{marginTop: '20px'}}
+          />
         </form>
 
     )
@@ -129,6 +141,7 @@ export const VerificationForm = React.createClass({
 export const VerificationResendSuccess = (props) => (
       <div className="interact panel with-logo">
         <div className="logo"></div>
-        <h3>Another verification email has been sent to your email address, click on the link in the email to activate your account</h3>
+        <h3>Email confirmation</h3>
+        <p>Another verification email has been sent to your email address, click on the link in the email to activate your account</p>
       </div>
 )
