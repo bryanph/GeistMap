@@ -132,7 +132,7 @@ export const SignupForm = React.createClass({
                 headers: getHeaders(),
                 body: JSON.stringify({
                     email: this._email.input.value,
-                    username: this._username.input.value,
+                    username: this._email.input.value,
                     password: this._password.input.value,
                 })
             })
@@ -147,12 +147,6 @@ export const SignupForm = React.createClass({
                     <TextField
                         hintText="email"
                         ref={c => this._email = c}
-                        style={styles.textField}
-
-                    />
-                    <TextField
-                        hintText="username"
-                        ref={c => this._username = c}
                         style={styles.textField}
 
                     />

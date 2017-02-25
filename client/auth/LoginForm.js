@@ -52,7 +52,7 @@ export const LoginForm = React.createClass({
     return (
         <form id="signup-form" ref={c => this._form = c} style={styles.container}>
             <TextField
-                hintText="username"
+                hintText="email"
                 ref={c => this._username = c}
                 style={styles.textField}
 
@@ -66,6 +66,7 @@ export const LoginForm = React.createClass({
           <FlatButton
             onClick={this.handleSubmit}   
             label="Log In"
+            style={styles.submitButton}
             style={{marginTop: '20px'}}
             primary={true}
           />
