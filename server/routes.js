@@ -26,7 +26,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
         res.render("landing", {
             port: process.env.NODE_ENV === 'development' ? ':3000' : '',
             fileName: process.env.NODE_ENV === 'development' ? 'landing.bundle.js' : stats.assetsByChunkName.landing[0],
-            protocol: req.protocol,
+            protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
             title: "Geist",
             INITIAL_STATE: {
@@ -48,7 +48,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
         res.render("app", {
             port: process.env.NODE_ENV === 'development' ? ':3000' : '',
             fileName: process.env.NODE_ENV === 'development' ? 'app.bundle.js' : stats.assetsByChunkName.app[0],
-            protocol: req.protocol,
+            protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
             title: "Geist",
             INITIAL_STATE: {

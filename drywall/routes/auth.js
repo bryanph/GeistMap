@@ -77,7 +77,7 @@ export default function(app, config) {
         res.write(authTemplate({
             port: process.env.NODE_ENV === 'development' ? ':3000' : '',
             fileName: process.env.NODE_ENV === 'development' ? 'auth.bundle.js' : stats.assetsByChunkName.auth[0],
-            protocol: req.protocol,
+            protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
             INITIAL_STATE: {
                 projectName: req.app.config.projectName,
