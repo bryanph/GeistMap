@@ -24,7 +24,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
         res.render("landing", {
             protocol: req.protocol,
             host: req.headers.host.split(":")[0],
-            title: "GraphTodo",
+            title: "Geist",
             INITIAL_STATE: {
                 user: req.user, // TODO: Secure this - 2016-01-25
                 serverUiState: req.user && req.user.uiState,
@@ -44,7 +44,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
         res.render("app", {
             protocol: req.protocol,
             host: req.headers.host.split(":")[0],
-            title: "GraphTodo",
+            title: "Geist",
             INITIAL_STATE: {
                 user: req.user, // TODO: Secure this - 2016-01-25
                 serverUiState: req.user.uiState,
