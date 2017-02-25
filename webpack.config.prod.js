@@ -18,8 +18,8 @@ module.exports = {
         ],
     },
     output: {
-        filename: '[name].bundle.js',
-        chunkFilename: '[id].bundle.js',
+        filename: '[name].[hash].bundle.js',
+        chunkFilename: '[id].[hash].bundle.js',
         path: path.join(__dirname, 'public'),
         publicPath: '/static/'
     },
@@ -29,6 +29,13 @@ module.exports = {
                 'NODE_ENV': JSON.stringify('production')
             }
         }),
+        function() {
+            this.plugin("done", function(stats) {
+                require("fs").writeFileSync(
+                    path.join(__dirname, "stats.json"),
+                    JSON.stringify(stats.toJson()));
+            });
+        }
         // new webpack.optimize.UglifyJsPlugin({
         //     compressor: {
         //         warnings: false

@@ -9,6 +9,8 @@ import { mobileUploadMiddleware, mobileUploadView } from './api/private/mobileUp
 import config from "./config/config.js"
 import express from "express"
 
+const stats = require('../stats.json')
+
 // TODO: Separate routes into files - 2016-03-21
 module.exports = function(app, authRoutes, adminRoutes) {
 
@@ -22,6 +24,8 @@ module.exports = function(app, authRoutes, adminRoutes) {
 
     app.get('/', (req, res) => {
         res.render("landing", {
+            port: process.env.NODE_ENV === 'development' ? ':3000' : '',
+            fileName: process.env.NODE_ENV === 'development' ? 'landing.bundle.js' : stats.assetsByChunkName.landing[0],
             protocol: req.protocol,
             host: req.headers.host.split(":")[0],
             title: "Geist",
@@ -42,6 +46,8 @@ module.exports = function(app, authRoutes, adminRoutes) {
 
     app.get('/app/?*', ensureVerified, function(req, res) {
         res.render("app", {
+            port: process.env.NODE_ENV === 'development' ? ':3000' : '',
+            fileName: process.env.NODE_ENV === 'development' ? 'app.bundle.js' : stats.assetsByChunkName.app[0],
             protocol: req.protocol,
             host: req.headers.host.split(":")[0],
             title: "Geist",

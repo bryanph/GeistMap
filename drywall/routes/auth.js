@@ -17,6 +17,9 @@ import logout from '../auth/logout'
 import { verify, resendVerification } from '../auth/verification'
 import { authFlow, verificationFlow } from '../middleware/authentication'
 
+// TODO: make this generic? - 2017-02-25
+const stats = require('../../stats.json')
+
 export default function(app, config) {
 
     let router = express.Router();
@@ -72,6 +75,8 @@ export default function(app, config) {
         // TODO: custom template here - 2016-08-09
 
         res.write(authTemplate({
+            port: process.env.NODE_ENV === 'development' ? ':3000' : '',
+            fileName: process.env.NODE_ENV === 'development' ? 'auth.bundle.js' : stats.assetsByChunkName.auth[0],
             protocol: req.protocol,
             host: req.headers.host.split(":")[0],
             INITIAL_STATE: {
