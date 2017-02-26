@@ -1,0 +1,12 @@
+[Unit]
+Description=Geist
+
+[Service]
+WorkingDirectory=/home/bryan/graphtodo
+ExecStart=/usr/bin/nodejs index.js
+Restart=always
+RestartSec=3
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
