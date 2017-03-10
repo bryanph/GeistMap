@@ -2,4 +2,5 @@ public/
 repos/
 *.min.js
 *.bundle.js
+*.map
 tags

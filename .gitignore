@@ -30,4 +30,4 @@ htmlcov/
 # config files
 server/config/auth.js
 server/config/config.js
-
+stats.json
