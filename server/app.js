@@ -75,10 +75,10 @@ app.db.once('open', function () {
       //and... we have a data store
     });
 
-import drywallConfig from './config/auth'
-import setupDrywall from '../drywall/index.js'
+import authConfig from './config/auth'
+import setupAuthMiddleware from 'full-auth-middleware'
 
-const { authRoutes, adminRoutes } = setupDrywall(app, mongoose, drywallConfig)
+const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, authConfig)
 
 require('./routes')(app, authRoutes, adminRoutes);
 

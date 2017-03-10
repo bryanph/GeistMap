@@ -3,7 +3,7 @@
 */
 var passport = require('passport')
 
-import { authFlow, ensureVerified, ensureAccount } from '../drywall/index.js'
+import { authFlow, ensureVerified, ensureAccount } from 'full-auth-middleware'
 import uploadMiddleware from './api/private/upload'
 import { mobileUploadMiddleware, mobileUploadView } from './api/private/mobileUpload.js'
 import config from "./config/config.js"
