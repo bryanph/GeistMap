@@ -49,7 +49,10 @@ const sessionMiddleware = session({
 })
 
 app.set('view engine', 'jade');
-app.set('views', __dirname + '/views')
+app.set('views', [ 
+    __dirname + '/views', 
+    __dirname + '/node_modules/full-auth-middleware/views' 
+])
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
