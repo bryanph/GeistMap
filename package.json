@@ -176,12 +176,5 @@
     "webpack-dev-server": "NODE_ENV=development node server-dev",
     "dev": "parallelshell 'npm run webpack-dev-server' 'npm run watch:server'",
     "generate": "plop --plopfile tools/generators/index.js"
-  },
-  "babel": {
-    "presets": [
-      "react",
-      "es2015",
-      "stage-2"
-    ]
   }
 }

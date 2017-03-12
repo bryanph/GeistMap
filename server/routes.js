@@ -3,7 +3,7 @@
 */
 var passport = require('passport')
 
-import { authFlow, ensureVerified, ensureAccount } from 'full-auth-middleware'
+import { middleware } from 'full-auth-middleware'
 import uploadMiddleware from './api/private/upload'
 import { mobileUploadMiddleware, mobileUploadView } from './api/private/mobileUpload.js'
 import config from "./config/config.js"
@@ -44,7 +44,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
         })
     })
 
-    app.get('/app/?*', ensureVerified, function(req, res) {
+    app.get('/app/?*', middleware.ensureVerified, function(req, res) {
         res.render("app", {
             port: process.env.NODE_ENV === 'development' ? ':3000' : '',
             fileName: process.env.NODE_ENV === 'development' ? 'app.bundle.js' : stats.assetsByChunkName.app[0],
@@ -71,8 +71,8 @@ module.exports = function(app, authRoutes, adminRoutes) {
     /*
      * Upload
     */
-    app.post('/upload', ensureVerified, uploadMiddleware)
-    app.post('/upload/remove', ensureVerified, require('./api/private/removeFile'))
+    app.post('/upload', middleware.ensureVerified, uploadMiddleware)
+    app.post('/upload/remove', middleware.ensureVerified, require('./api/private/removeFile'))
 
     
     app.get('/upload/mobile/video/:token', function(req, res) {
@@ -147,6 +147,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
 
     // error handling
     app.use(function(error, req, res, next) {
+        console.error(error)
         if (error instanceof Error) {
             return res.status(500).send({
                 status: 500,

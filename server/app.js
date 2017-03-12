@@ -79,7 +79,7 @@ app.db.once('open', function () {
     });
 
 import authConfig from './config/auth'
-import setupAuthMiddleware from 'full-auth-middleware'
+const { setupAuthMiddleware } = require('full-auth-middleware')
 
 const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, authConfig)
 
