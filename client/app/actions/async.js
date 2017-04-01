@@ -527,11 +527,12 @@ export function fetchCollection(id) {
             types: [ GET_COLLECTION_REQUEST, GET_COLLECTION_SUCCESS, GET_COLLECTION_FAILURE ],
             endpoint: 'Collection.get',
             payload: [ id ],
-            schema: {
-                collection: Schemas.COLLECTION,
-                nodes: arrayOf(Schemas.NODE),
-                edges: arrayOf(Schemas.EDGE),
-            }
+            schema: Schemas.COLLECTION,
+            // schema: {
+            //     collection: Schemas.COLLECTION,
+            //     nodes: arrayOf(Schemas.NODE),
+            //     edges: arrayOf(Schemas.EDGE),
+            // }
         }
     }
 }

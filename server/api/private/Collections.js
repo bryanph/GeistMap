@@ -94,37 +94,66 @@ export default function(db, es) {
             //         nodes: results.records[0]._fields[0].map(mapIdentity),
             //         edges: results.records[0]._fields[1].map(mapEdges),
             //     })
-        get: function(user, id, res) {
+        get: function(user, rawId, res) {
             /*
              * Get node with id ${id} (including its neightbours)
              * // TODO: give this call an explicit name - 2016-07-15
              * // TODO: Check this call's performance - 2016-07-11
              */
 
-            // console.log("called get with id " + id);
+            console.log("called get collection with id " + rawId);
 
-            db.run(
-                "MATCH (u:User)--(c:Collection)" +
-                "WHERE u.id = {userId} " +
-                "AND id(c) = {id} " +
-                "OPTIONAL MATCH (c)<-[*0..5]-(:Collection)--(n:Node)-[e:EDGE*0..1]-(n2:Node) " +
-                // "OPTIONAL MATCH (c)<-[r:PARENT*0..5]-(:Collection)--(n:Node) " +
-                "RETURN c, collect(distinct n2), collect(distinct e)",
-                {
-                    id: neo4j.int(id),
-                    userId: user._id.toString(),
-                }
-            )
+            const id = neo4j.int(rawId)
+            const userId = user._id.toString()
+
+            Promise.all([
+                db.run(
+                    `MATCH (u:User)--(c:Collection) 
+                    WHERE u.id = {userId} AND id(c) = {id}
+                    RETURN c`,
+                    {
+                        id,
+                        userId,
+                    }
+                ),
+                db.run(
+                    `MATCH (u:User)--(c:Collection) 
+                    WHERE u.id = {userId} AND id(c) = {id}
+                    OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
+                    with collect(distinct n) as ns
+                    UNWIND ns as n1
+                    UNWIND ns as n2 
+                    OPTIONAL MATCH (n1)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
+                    OPTIONAL MATCH (n1)-[e:EDGE]-(n2)
+                    RETURN n1, collect(distinct id(c2)), collect(distinct e)
+                    ORDER BY id(n1)`,
+                    {
+                        id,
+                        userId,
+                    }
+                )
+            ])
             .then((results) => {
-                if (results.records.length === 0) {
-                    console.log("node not found..");
-                    return res(new Error(`Node with id ${id} was not found`))
+                console.log(results);
+
+                if (results[0].records.length === 0) {
+                    console.log("collection not found..");
+                    return res(new Error(`Collection with id ${id} was not found`))
                 }
 
-                res(null, {
-                    collection: mapIdentity(results.records[0]._fields[0]),
-                    nodes: results.records[0]._fields[1].map(mapIdentity),
-                    edges: _.flatMap(results.records[0]._fields[2]).map(mapEdges),
+                const collection = mapIdentity(results[0].records[0].get(0))
+
+                const nodes = results[1].records.map(row => ({
+                    ...mapIdentity(row.get(0)),
+                    collections: row.get(1).map(x => x.toString()), // ids for collections
+                    edges: row.get(2).map(mapEdges),
+                }))
+
+                console.log(collection, nodes);
+
+                return res(null, {
+                    ...collection,
+                    nodes,
                 })
             })
             .catch(handleError)
