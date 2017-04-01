@@ -101,32 +101,34 @@ export default function(db, es) {
              * // TODO: Check this call's performance - 2016-07-11
              */
 
-            console.log("called get collection with id " + rawId);
-
             const id = neo4j.int(rawId)
             const userId = user._id.toString()
 
             Promise.all([
+                // get all edges in the collection
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND id(c) = {id}
-                    RETURN c`,
+                    OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
+                    WITH c, collect(distinct n) as ns
+                    UNWIND ns as n1
+                    UNWIND ns as n2 
+                    OPTIONAL MATCH (n1)-[e:EDGE]-(n2)
+                    RETURN c, collect(distinct e)`,
                     {
                         id,
                         userId,
                     }
                 ),
+                // get all nodes in the collection, along with THEIR collections
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND id(c) = {id}
                     OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
-                    with collect(distinct n) as ns
-                    UNWIND ns as n1
-                    UNWIND ns as n2 
-                    OPTIONAL MATCH (n1)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    OPTIONAL MATCH (n1)-[e:EDGE]-(n2)
-                    RETURN n1, collect(distinct id(c2)), collect(distinct e)
-                    ORDER BY id(n1)`,
+                    WITH distinct n
+                    OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
+                    RETURN n, collect(distinct id(c2))
+                    ORDER BY id(n)`,
                     {
                         id,
                         userId,
@@ -134,7 +136,6 @@ export default function(db, es) {
                 )
             ])
             .then((results) => {
-                console.log(results);
 
                 if (results[0].records.length === 0) {
                     console.log("collection not found..");
@@ -142,18 +143,19 @@ export default function(db, es) {
                 }
 
                 const collection = mapIdentity(results[0].records[0].get(0))
+                const edges = results[0].records[0].get(1).map(mapEdges)
 
                 const nodes = results[1].records.map(row => ({
                     ...mapIdentity(row.get(0)),
                     collections: row.get(1).map(x => x.toString()), // ids for collections
-                    edges: row.get(2).map(mapEdges),
                 }))
 
-                console.log(collection, nodes);
-
                 return res(null, {
-                    ...collection,
-                    nodes,
+                    collection: {
+                        ...collection,
+                        nodes,
+                    },
+                    edges
                 })
             })
             .catch(handleError)

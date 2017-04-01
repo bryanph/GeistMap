@@ -78,14 +78,11 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
     render() {
         const { node, loadingStates } = this.props
 
-        // initial loading state
-        if (!node) {
-            return <Spinner style={{ height: '190px' }} />
-        }
+        console.log(this.props);
 
         // loading state on changing component
         if (loadingStates.GET_NODE || !node) {
-
+            return <Spinner style={{ height: '190px' }} />
         }
 
         // keymapping handlers, see App.js

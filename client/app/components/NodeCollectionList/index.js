@@ -104,6 +104,8 @@ class NodeCollectionList extends React.Component {
             'addCollection': this.toggleSearch
         }
 
+        console.log(collections);
+
         return (
             <HotKeys focused={true} attach={document.getElementById('app')} handlers={handlers}>
                 <CollectionCreateWindow

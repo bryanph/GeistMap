@@ -34,7 +34,14 @@ export default (events, simulation) => (zoom, paddingPercent=0.95, id=null) => (
                         .attr("r", (d) => NODE_RADIUS)
                         .attr("x", -8)
                         .attr("y", -8)
-                        .style("fill", d => colora(d.group))
+                        .style("fill", d => {
+                            console.log(d.collections);
+                            if (!d.collections) {
+                                return colora(d.group)
+                            }
+
+                            return colora(d.collections.sort().join(','))
+                        })
 
                     selection.append('text')
                         .attr("dx", NODE_RADIUS + 1)

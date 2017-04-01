@@ -10,19 +10,19 @@ import { connect } from 'react-redux';
 import NodeCollectionList from '../../components/NodeCollectionList'
 
 export class NodeCollectionListContainer extends React.Component { // eslint-disable-line react/prefer-stateless-function
-  render() {
-    return (
-      <NodeCollectionList 
-          addNodeToCollection={this.props.addNodeToCollection}
-          removeNodeFromCollection={this.props.removeNodeFromCollection}
-          showCreateCollectionWindow={this.props.showCreateCollectionWindow}
-          createCollection={this.props.createCollection}
-          node={this.props.node}
-          collections={this.props.collections}
-          outsideClickIgnoreClass="nodeCollectionList"
-      />
-    );
-  }
+    render() {
+        return (
+            <NodeCollectionList 
+                addNodeToCollection={this.props.addNodeToCollection}
+                removeNodeFromCollection={this.props.removeNodeFromCollection}
+                showCreateCollectionWindow={this.props.showCreateCollectionWindow}
+                createCollection={this.props.createCollection}
+                node={this.props.node}
+                collections={this.props.collections}
+                outsideClickIgnoreClass="nodeCollectionList"
+            />
+        );
+    }
 }
 
 import { getCollectionsByNodeId } from '../../reducers'
@@ -32,7 +32,7 @@ function mapStateToProps(state, props) {
 
     return {
         collections: getCollectionsByNodeId(state, props.id),
-        ...props,
+            ...props,
     }
 }
 

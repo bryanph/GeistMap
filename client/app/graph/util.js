@@ -27,8 +27,6 @@ export function colorNode(node) {
      * // TODO: find a better way to do this - 2016-07-29
      */
 
-    console.log(node.data(), 'called colorNode');
-
     // reset other nodes to original color
     const prevSelectedNodes = d3.select('.node-selected')
         .classed("node-selected", false)
@@ -39,7 +37,6 @@ export function colorNode(node) {
             }
 
             return colora(d.collections.sort().join(','))
-            // colora(d.group)
         })
 
     // color this node as the active node

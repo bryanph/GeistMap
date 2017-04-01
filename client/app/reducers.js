@@ -78,24 +78,24 @@ function nodes(state={}, action, collections) {
                 }
             }
 
-        case actionTypes.GET_COLLECTION_SUCCESS:
-            /*
-             * for all nodes, check if they are in the GET_COLLECTION response
-             * this is for keeping ColletionDetail page in sync
-             * // TODO: should this be nescessary? - 2016-07-29
-            */
+//         case actionTypes.GET_COLLECTION_SUCCESS:
+//             /*
+//              * for all nodes, check if they are in the GET_COLLECTION response
+//              * this is for keeping ColletionDetail page in sync
+//              * // TODO: should this be nescessary? - 2016-07-29
+//             */
 
-            return {
-                ...state,
-                ..._.mapValues(action.response.entities.nodes, (node) => ({
-                    ...node,
-                    collections: [ 
-                        ...(node.collections || []),
-                        action.response.result.collection 
-                    ]
+//             return {
+//                 ...state,
+//                 ..._.mapValues(action.response.entities.nodes, (node) => ({
+//                     ...node,
+//                     collections: [ 
+//                         ...(node.collections || []),
+//                         action.response.result.collection 
+//                     ]
                         
-                }))
-            }
+//                 }))
+//             }
 
         default:
             if (action.response && action.response.entities && action.response.entities.nodes) {
@@ -431,7 +431,7 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes) {
             return {
                 ...state,
                 [action.response.result.collection]: {
-                    nodes: action.response.result.nodes,
+                    nodes: action.response.entities.collections[action.response.result.collection].nodes,
                     edges: action.response.result.edges,
                 },
             }
@@ -1029,7 +1029,7 @@ export const getCollectionsByNodeId = (state, id) => {
         return []
     }
 
-    return (node.collections || []).map(id => getCollection(state, id))
+    return (node.collections || []).map(id => getCollection(state, id)).filter(x => x !== undefined)
     // return (node.properties.collections || []).map(id => getCollection(state, id))
 }
 

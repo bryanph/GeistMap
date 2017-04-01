@@ -37,10 +37,13 @@ export const NoNodesYet = (props) => (
 
 function loadData(props) {
     return props.loadCollection(props.id)
-        .then(() => {
+        .then((action) => {
             if (props.nodeId) {
                 props.loadNode(props.nodeId)
+                return action
             }
+
+            return action
         })
 }
 
@@ -70,7 +73,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
   render() {
       const { id, nodeId, collection, nodes, loadingStates } = this.props
 
-      if (loadingStates.GET_COLLECTION) {
+      if (loadingStates.GET_COLLECTION || loadingStates.GET_NODE) {
           return <Spinner />
       }
 
