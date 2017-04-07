@@ -83,6 +83,38 @@ const handleDroppedFiles = (getEditorState, setEditorState, handleUpload) => (
         }
 )
 
+const handlePastedFiles = (getEditorState, setEditorState, handleUpload) => (
+    function handlePastedFiles(
+        files: Array<Blob>,
+    ) : boolean {
+            // upload files
+
+            // TODO: check #files and max size before attempting upload.. - 2016-08-04
+
+            let body = new FormData()
+            files.forEach(file => {
+                body.append('files', file)
+            })
+
+            handleUpload(
+                body,
+                (files) => {
+                    // now render to the user's screen from the url provided by the server...
+
+                    insertFiles(getEditorState, setEditorState)(files)
+                },
+                (error) => {
+                    // notify user that uploading files has failed...
+                    console.error(error.stack);
+                },
+
+            )
+
+            return true
+
+        }
+)
+
 export default (config = {}) => {
 
     const handleUpload = config.handleUpload
@@ -97,6 +129,7 @@ export default (config = {}) => {
 
         return {
             handleDroppedFiles: handleDroppedFiles(getEditorState, setEditorState, handleUpload),
+            handlePastedFiles: handlePastedFiles(getEditorState, setEditorState, handleUpload),
         };
     }
 }
