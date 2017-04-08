@@ -1,5 +1,7 @@
 .media-wrapper {
     z-index: 99;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 .media-small {
@@ -18,15 +20,16 @@
 .media-left-align {
     position: relative;
     float: left;
-    /* margin-right: 2%; */
+    margin-right: 2%;
 }
 .media-center-align {
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
 }
 .media-right-align {
     position: relative;
     float: right;
-    /* margin-left: 2%; */
+    margin-left: 2%;
 }
 
 .media-big.media-left-align {

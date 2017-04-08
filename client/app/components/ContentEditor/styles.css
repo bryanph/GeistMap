@@ -17,6 +17,10 @@
   /* height: 80%; */
 }
 
+.ContentEditor-root figure {
+    margin: 0;
+}
+
 .ContentEditor-root-small {
 
 }
