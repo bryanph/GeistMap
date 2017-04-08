@@ -45,7 +45,10 @@ class CollectionExploreGraph extends React.Component {
 
         const nodeById = d3.map()
 
-        console.log(nodes, links);
+        nodes = nodes.map(node => ({
+            ...node,
+            radius: radiusScale(node.count || 0),
+        }))
 
         nodes.forEach(node => {
             nodeById.set(node.id, node)

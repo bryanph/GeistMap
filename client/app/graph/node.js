@@ -28,6 +28,7 @@ export default (events, simulation) => (zoom, paddingPercent=0.95, id=null) => (
                 enter.forEach(enterFn => enterFn(selection, scale))
 
                 // TODO: oh no you didn't... - 2016-09-03
+                // get rid of this...
                 if (enter.length !== 2) {
                     selection
                         .append('circle')

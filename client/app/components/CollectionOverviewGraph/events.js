@@ -11,13 +11,13 @@ export default (zoom, actions) => {
         enterNode: (selection, radiusScale) => {
             selection
                 .append('circle')
-                .attr("r", (d) => radiusScale(d.count || 0))
+                .attr("r", (d) => d.radius)
                 .attr("x", -8)
                 .attr("y", -8)
                 .style("fill", d => colora(d.group))
 
             selection.append('text')
-                .attr("dx", (d) => radiusScale(d.count || 0))
+                .attr("dx", (d) => d.radius)
                 .attr("dy", ".35em")
                 .text((d) => getLabelText(d.properties.name));
         },
