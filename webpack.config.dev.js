@@ -1,6 +1,8 @@
 var path = require('path');
 var webpack = require('webpack')
 
+var UnusedFilesWebpackPlugin = require("unused-files-webpack-plugin").UnusedFilesWebpackPlugin;
+
 module.exports = {
     // devtool: 'cheap-module-eval-source-map',
     devtool: 'inline-eval-cheap-source-map',
@@ -37,7 +39,10 @@ module.exports = {
     plugins: [
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin()
+        new webpack.NoErrorsPlugin(),
+        new UnusedFilesWebpackPlugin({
+            pattern: 'client/**/*.*'
+        })
     ],
     module: {
         loaders: [
