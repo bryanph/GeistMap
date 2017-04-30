@@ -18,9 +18,9 @@ module.exports = function(app, authRoutes, adminRoutes) {
      * Main routes
     */
 
-    // app.get('/', (req, res) => {
-    //     res.redirect('/app')
-    // })
+    app.get('/login', (req, res) => {
+        res.redirect('/app')
+    })
 
     app.get('/', (req, res) => {
         res.render("landing", {
