@@ -147,6 +147,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
 
     // error handling
     app.use(function(error, req, res, next) {
+        console.error('An error occurred!!!')
         console.error(error)
         if (error instanceof Error) {
             return res.status(500).send({

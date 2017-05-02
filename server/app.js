@@ -59,13 +59,14 @@ const sessionMiddleware = session({
     store: sessionStore
 })
 
-app.engine('.hbs', exphbs({ extname: '.hbs', defaultLayout: 'main' }))
+app.engine('.hbs', exphbs({ 
+    extname: '.hbs',
+    defaultLayout: false,
+    layoutsDir: path.join(__dirname, 'views/layouts'),
+    partialsDir: path.join(__dirname, 'views/partials'),
+}))
 app.set('view engine', '.hbs');
-app.set('views', [ 
-    __dirname + '/views', 
-    // __dirname + '/node_modules/full-auth-middleware/views' 
-    __dirname + '../../full-auth-middleware/lib/public' 
-])
+app.set('views',__dirname + '/views')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
