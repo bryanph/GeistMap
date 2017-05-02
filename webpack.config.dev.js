@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack')
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 var UnusedFilesWebpackPlugin = require("unused-files-webpack-plugin").UnusedFilesWebpackPlugin;
 
@@ -43,6 +44,7 @@ module.exports = {
         // new UnusedFilesWebpackPlugin({
         //     pattern: 'client/**/*.*'
         // })
+        new BundleAnalyzerPlugin(),
     ],
     module: {
         loaders: [

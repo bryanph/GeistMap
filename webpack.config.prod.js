@@ -1,5 +1,6 @@
 var path = require('path');
 var webpack = require('webpack')
+var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
     devtool: 'source-map',
@@ -35,12 +36,15 @@ module.exports = {
                     path.join(__dirname, "stats.json"),
                     JSON.stringify(stats.toJson()));
             });
-        }
+        },
         // new webpack.optimize.UglifyJsPlugin({
         //     compressor: {
         //         warnings: false
         //     }
         // })
+        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.optimize.AggressiveMergingPlugin(),
+        new BundleAnalyzerPlugin()
     ],
     module: {
         loaders: [

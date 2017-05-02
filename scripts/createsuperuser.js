@@ -15,16 +15,16 @@ const app = { db } // mock express app object for now...
 db.on('error', (error) => console.error('mongoose connection error: ' + error.message));
 db.once('open', () => {
 
-    require('full-auth-middleware/lib/schema/Note')(app, mongoose, authConfig);
-    require('full-auth-middleware/lib/schema/Status')(app, mongoose, authConfig);
-    require('full-auth-middleware/lib/schema/StatusLog')(app, mongoose, authConfig);
-    require('full-auth-middleware/lib/schema/Category')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/Note')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/Status')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/StatusLog')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/Category')(app, mongoose, authConfig);
 
-    require('full-auth-middleware/lib/schema/User')(app, mongoose, authConfig);
-    require('full-auth-middleware/lib/schema/Admin')(app, mongoose, authConfig);
-    require('full-auth-middleware/lib/schema/AdminGroup')(app, mongoose, authConfig);
-    require('full-auth-middleware/lib/schema/Account')(app, mongoose, authConfig);
-    require('full-auth-middleware/lib/schema/LoginAttempt')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/User')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/Admin')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/AdminGroup')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/Account')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/LoginAttempt')(app, mongoose, authConfig);
 
     Async.auto({
         rootEmail: (done) => {
