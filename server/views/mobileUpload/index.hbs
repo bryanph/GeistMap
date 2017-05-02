@@ -1,20 +1,18 @@
-doctype html
-html
-    head
-        meta(charset='utf-8')
-    meta(name='viewport', content='width=device-width')
-    title test
-    style.
+{{#extend "layout"}}
+    {{#content "header"}}
+        <title>Geist mobile upload</title>
+        <!-- <link key="layout" rel="stylesheet" href="/static/auth/layouts/default.min.css" />, -->
+        <!-- <link key="page" rel="stylesheet" href="/static/auth/pages/admin.min.css" /> -->
+        <link rel="stylesheet", href="/static/foundation-icons/foundation-icons.css" />
+      <style>
         html, body {
             height: 100%;
             margin: 0;
             font-family: Helvetica Neue,Roboto,  Helvetica, Arial, sans-serif;
         }
-
         .error {
             background-color: red !important;
         }
-
         #fileInput {
             visibility: hidden;
         }
@@ -32,76 +30,76 @@ html
             display: table-cell;
             vertical-align: middle;
         }
-
-    body
-        div#fileInputDiv()
-            span#mainText Click to select a !{fileType}
-        input#fileInput(type='file', accept="#{fileType}/*", capture="#{capture}")
+      </style>
+    {{/content}}
 
 
-        script(type='text/javascript').
+    {{#content "main"}}
+        <div id="fileInputDiv"><span id="mainText">Click to select a </span></div>
+        <input id="fileInput" type="file" accept="undefined/*" capture="undefined">
+        <script type="text/javascript">
             document.addEventListener('DOMContentLoaded', function () {
-                var token = "!{token}";
-
+                var token = "";
                 function sendPic() {
                     var files = document.getElementById('fileInput').files
-
-                    if (!files) {
-                        return
-                    }
-
+                        if (!files) {
+                            return
+                        }
                     var formData = new FormData()
-                    for (var i=0; i < files.length; i++) {
-                        formData.append('files', files.item(i))
-                    }
-
+                        for (var i=0; i < files.length; i++) {
+                            formData.append('files', files.item(i))
+                        }
                     function updateProgress(progressEvent) {
                         if (progressEvent.lengthComputable) {
                             var percentComplete = progressEvent.loaded / progressEvent.total
-
-                            document.getElementById('mainText').innerHTML = percentComplete + '%'
+                                document.getElementById('mainText').innerHTML = percentComplete + '%'
                         }
                         else {
                             document.getElementById('mainText').innerHTML = 'Uploading...'
                         }
                     }
-
                     function onComplete(event) {
                         document.getElementById('fileInputDiv').className = "completed";
                         document.getElementById('mainText').innerHTML = "Succesfully uploaded"
                     }
-
                     function onError(event) {
                         console.log("called onError")
-                        document.getElementById('fileInputDiv').className = "error"
-                        document.getElementById('mainText').innerHTML = "An error occured, click to try again"
+                            document.getElementById('fileInputDiv').className = "error"
+                            document.getElementById('mainText').innerHTML = "An error occured, click to try again"
                     }
-
                     var request = new XMLHttpRequest();
                     request.addEventListener('progress', updateProgress)
-                    // request.addEventListener('load', onComplete)
-                    // request.addEventListener('error', onError)
-                    request.addEventListener('abort', onError)
-                    request.open("POST", "/upload/mobile/photo/" + token)
-                    request.onreadystatechange = function(aEvt) {
-                        if (request.readyState == 4) {
-                            if (request.status == 200) {
-                                onComplete(aEvt)
-                            }
-                            else {
-                                onError(aEvt)
+                        // request.addEventListener('load', onComplete)
+                        // request.addEventListener('error', onError)
+                        request.addEventListener('abort', onError)
+                        request.open("POST", "/upload/mobile/photo/" + token)
+                        request.onreadystatechange = function(aEvt) {
+                            if (request.readyState == 4) {
+                                if (request.status == 200) {
+                                    onComplete(aEvt)
+                                }
+                                else {
+                                    onError(aEvt)
+                                }
                             }
                         }
-                    }
                     request.send(formData)
-                  }
-
+                }
                 var myInput = document.getElementById('fileInput');
                 myInput.addEventListener('change', sendPic, false);
                 myInput.click()
-
                 var myInputButton = document.getElementById('fileInputDiv')
                 myInputButton.addEventListener('click', function() {
                     myInput.click();
                 })
             })
+        </script>
+
+
+        <!-- <script src="/static/auth/admin.bundle.js"></script>; -->
+        <script src="{{protocol}}://{{host}}{{port}}/static/{{fileName}}" />
+        <script>var INITIAL_STATE = {{{ INITIAL_STATE }}}</script>
+
+        <div id="app"></div>
+    {{/content}}
+{{/extend}}

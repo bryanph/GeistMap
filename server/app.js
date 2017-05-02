@@ -4,7 +4,6 @@ import path from "path"
 import fs from "fs"
 import redis from "redis"
 import express from "express"
-import exphbs from 'express-handlebars'
 import bodyParser from 'body-parser'
 import http from 'http'
 import socket_io from "socket.io"
@@ -23,6 +22,18 @@ import DatabaseContainer from './utils/DatabaseContainer'
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
+
+
+/*
+ * setup handlebars with express
+*/
+const handlebars = require('handlebars')
+const layouts = require('handlebars-layouts')
+const exphbs = require('express-handlebars')
+
+handlebars.registerHelper(layouts(handlebars))
+handlebars.registerPartial('layout', fs.readFileSync(path.join(__dirname, './views/layouts/main.hbs'), 'utf-8'))
+
 
 let app = express();
 let server = http.Server(app)
@@ -48,10 +59,12 @@ const sessionMiddleware = session({
     store: sessionStore
 })
 
-app.set('view engine', 'jade');
+app.engine('.hbs', exphbs({ extname: '.hbs', defaultLayout: 'main' }))
+app.set('view engine', '.hbs');
 app.set('views', [ 
     __dirname + '/views', 
-    __dirname + '/node_modules/full-auth-middleware/views' 
+    // __dirname + '/node_modules/full-auth-middleware/views' 
+    __dirname + '../../full-auth-middleware/lib/public' 
 ])
 
 app.use(bodyParser.json());

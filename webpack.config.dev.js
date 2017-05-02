@@ -40,9 +40,9 @@ module.exports = {
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin(),
-        new UnusedFilesWebpackPlugin({
-            pattern: 'client/**/*.*'
-        })
+        // new UnusedFilesWebpackPlugin({
+        //     pattern: 'client/**/*.*'
+        // })
     ],
     module: {
         loaders: [
