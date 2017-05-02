@@ -1,5 +1,6 @@
 /public/*.json
 /public/*.svg
+/public/*.bundle.*
 /public/js/*
 /public/css/*
 /public/bower_components/
