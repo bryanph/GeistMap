@@ -44,7 +44,7 @@ module.exports = {
         // new UnusedFilesWebpackPlugin({
         //     pattern: 'client/**/*.*'
         // })
-        new BundleAnalyzerPlugin(),
+        new BundleAnalyzerPlugin({ openAnalyzer: false }),
     ],
     module: {
         loaders: [
