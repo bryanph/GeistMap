@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "description": "A personal knowledge base",
   "dependencies": {
-    "async": "~1.5.2",
+    "async": "2.4.*",
     "babel-core": "^6.7.4",
     "babel-polyfill": "^6.13.0",
     "babel-preset-stage-1": "^6.13.0",
@@ -67,6 +67,8 @@
     "passport-local-mongoose": "~4.0.0",
     "passport-twitter": "~1.0.3",
     "passport.socketio": "~3.6.1",
+    "prompt": "^1.0.0",
+    "promptly": "^2.2.0",
     "qrcode.react": "^0.6.1",
     "radium": "^0.17.1",
     "react": "~15.0.0",
