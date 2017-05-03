@@ -10,10 +10,9 @@
 
     {{#content "main"}}
         <!-- <script src="/static/auth/admin.bundle.js"></script>; -->
-        <script src="{{protocol}}://{{host}}{{port}}/static/{{fileName}}" />
-        <script>var INITIAL_STATE = {{{ INITIAL_STATE }}}</script>
-
         <div id="app"></div>
+        <script>var INITIAL_STATE = {{{ INITIAL_STATE }}}</script>
+        <script src="{{protocol}}://{{host}}{{port}}/static/{{fileName}}"></script>
     {{/content}}
 {{/extend}}
 

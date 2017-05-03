@@ -51,10 +51,10 @@ module.exports = function(app, authRoutes, adminRoutes) {
             protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
             title: "Geist",
-            INITIAL_STATE: {
+            INITIAL_STATE: JSON.stringify({
                 user: req.user, // TODO: Secure this - 2016-01-25
                 serverUiState: req.user.uiState,
-            }
+            })
         })
     })
 
