@@ -105,6 +105,16 @@ export default function(db, es) {
             const userId = user._id.toString()
 
             Promise.all([
+                // get collection
+                db.run(
+                    `MATCH (u:User)--(c:Collection) 
+                    WHERE u.id = {userId} AND id(c) = {id}
+                    RETURN c;`,
+                    {
+                        id,
+                        userId,
+                    }
+                ),
                 // get all edges in the collection
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
@@ -114,13 +124,13 @@ export default function(db, es) {
                     UNWIND ns as n1
                     UNWIND ns as n2 
                     OPTIONAL MATCH (n1)-[e:EDGE]-(n2)
-                    RETURN c, collect(distinct e)`,
+                    RETURN collect(distinct e)`,
                     {
                         id,
                         userId,
                     }
                 ),
-                // get all nodes in the collection, along with THEIR collections
+                // get all nodes in the collection, along with THEIR collections (ids)
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND id(c) = {id}
@@ -136,19 +146,19 @@ export default function(db, es) {
                 )
             ])
             .then((results) => {
-
                 if (results[0].records.length === 0) {
                     console.log("collection not found..");
                     return res(new Error(`Collection with id ${id} was not found`))
                 }
 
                 const collection = mapIdentity(results[0].records[0].get(0))
-                const edges = results[0].records[0].get(1).map(mapEdges)
-
-                const nodes = results[1].records.map(row => ({
-                    ...mapIdentity(row.get(0)),
-                    collections: row.get(1).map(x => x.toString()), // ids for collections
-                }))
+                const edges = results[1].records[0].get(0).map(mapEdges)
+                const nodes = results[2].records[0].get(0) === null ?
+                    [] : 
+                    results[2].records.map(row => ({
+                        ...mapIdentity(row.get(0)),
+                        collections: row.get(1).map(x => x.toString()), // ids for collections
+                    }))
 
                 return res(null, {
                     collection: {
