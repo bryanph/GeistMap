@@ -2,20 +2,14 @@ import React from 'react'
 import { Route, Link, IndexRoute, IndexRedirect, Redirect, BrowserHistory } from "react-router"
 
 import App from './containers/App'
-// import NodeOverview from './containers/NodeOverview'
-// import NodeBatchCreate from './containers/NodeBatchCreate'
 import Inbox from './containers/Inbox'
 import InboxEditor from './containers/InboxEditor'
 import CollectionOverview from "./containers/CollectionOverview"
 import CollectionOverviewEditor from "./containers/CollectionOverviewEditor"
-// import NodeList from './containers/NodeList'
-// import NodeDetail from './containers/NodeDetail'
 import CollectionDetail from './containers/CollectionDetail'
 import CollectionDetailEditor from './containers/CollectionDetailEditor'
-// import Explore from './containers/Explore'
 import NodeExplore from './containers/NodeExplore'
 import NodeExploreEditor from './containers/NodeExploreEditor'
-// import CollectionExplore from './containers/CollectionExplore'
 
 import io from 'socket.io-client'
 import { wrapPromise } from './utils/promise.js'
@@ -41,11 +35,6 @@ export default (
             <Route path="inbox" component={Inbox}/>
             <Route path="inbox/:id" component={Inbox}/>
             <Route path="inbox/:id/edit" component={InboxEditor}/>
-            { /* 
-                <Route path="nodes" component={NodeOverview}/>
-                <Route path="nodes/:id" component={NodeDetail}/>
-                <Route path="nodes/:id/edit" component={NodeDetail}/>
-            */ }
             <Route path="nodes" component={NodeExplore}/>
             <Route path="nodes/:id" component={NodeExplore}/>
             <Route path="nodes/:id/edit" component={NodeExploreEditor}/>

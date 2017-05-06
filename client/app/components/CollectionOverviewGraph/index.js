@@ -18,7 +18,6 @@ import createSimulation from '../../graph/simulation'
 import { arrowHead } from '../../graph/svgdefs.js'
 import { NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
 import createDrag from '../../graph/drag'
-import createEvents from '../../graph/events'
 import createCustomEvents from './events'
 import createLinkUpdates from '../../graph/link'
 import createNodeUpdates from '../../graph/node'
@@ -66,7 +65,7 @@ class CollectionExploreGraph extends React.Component {
         // EXIT selection
         node.exit().call(this.nodeUpdates.exitNode)
         // ENTER selection
-        node.enter().append('g').call(this.nodeDrag).call((selection) => this.nodeUpdates.enterNode(selection, radiusScale))
+        node.enter().append('g').call((selection) => this.nodeUpdates.enterNode(selection, radiusScale)).call(this.nodeDrag)
             // ENTER + UPDATE selection
             .merge(node).call(this.nodeUpdates.updateNode)
 
@@ -106,19 +105,15 @@ class CollectionExploreGraph extends React.Component {
 
 
         this.zoom = createZoom(this.d3Graph, WIDTH, HEIGHT)
-        this.drag = createDrag(this.simulation)({ connectNodes: connectCollections })
 
-        const events = createEvents(this.zoom, {
-            // loadNode,
-            // removeEdge,
-            // showGraphSideBar,
-        })
-        const customEvents = createCustomEvents(this.zoom, {
+        const customEvents = createCustomEvents({
             router: this.props.router,
             loadCollection,
             removeEdge,
             showCollectionSidebar,
         })
+
+        this.drag = createDrag(this.simulation)({ connectNodes: connectCollections }, customEvents.nodeClickNoDrag)
 
         this.nodeDrag = d3.drag()
             .on('drag', this.drag.drag.bind(this))
@@ -127,10 +122,10 @@ class CollectionExploreGraph extends React.Component {
 
         const nodeEnterEvents = [
             customEvents.enterNode,
-            customEvents.nodeClickNoDrag,
+            // customEvents.nodeClickNoDrag,
         ]
 
-        this.nodeUpdates = createNodeUpdates(customEvents, this.simulation)(this.zoom, 0.95, this.props.id)(nodeEnterEvents)
+        this.nodeUpdates = createNodeUpdates(customEvents, this.simulation)(this.zoom, 0.95)(nodeEnterEvents)
         this.linkUpdates = createLinkUpdates(customEvents)()
 
         this.update(this.props)
@@ -152,7 +147,6 @@ class CollectionExploreGraph extends React.Component {
         setTimeout(() => {
             console.log(this.props.selected);
             colorNode(d3.select(`#node-${this.props.selected}`))
-            // this.simulation.alpha(0.8).restart();
         }, 0)
     }
 
@@ -164,7 +158,6 @@ class CollectionExploreGraph extends React.Component {
         if (nextProps.selected && nextProps.selected !== this.props.selected) {
             setTimeout(() => {
                 colorNode(d3.select(`#node-${nextProps.selected}`))
-                // this.simulation.alpha(0.8).restart();
             }, 0)
         }
 

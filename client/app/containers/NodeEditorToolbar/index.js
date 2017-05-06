@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router'
 import {HotKeys} from 'react-hotkeys';
 
-import { NodeTitle, NodeSubtitle } from '../NodeDetail'
+import { NodeTitle, NodeSubtitle } from '../../components/NodeToolbar'
 import NodeCollectionList from '../../containers/NodeCollectionListContainer'
 import { EditButton, GraphButton, ExploreButton, CollectionGraphButton, TrashButton, DuplicateButton, AddRelationButton } from '../../components/Buttons'
 import SavedState from '../../containers/SavedState'

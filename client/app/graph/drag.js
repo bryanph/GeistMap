@@ -16,6 +16,7 @@ export default (simulation) => (actions, clickNoDrag) => {
              * Freeze the graph
             */
             if (!d3.event.active) {
+                console.log(d3.event.active);
                 simulation.alpha(0.8).restart();
             }
 
@@ -91,8 +92,7 @@ export default (simulation) => (actions, clickNoDrag) => {
                     clickNoDrag(d);
                 }
 
-                // TODO: we must perform the "click" code here? - 2016-08-24
-                simulation.stop()
+                // simulation.stop()
                 return
             }
 

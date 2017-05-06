@@ -101,12 +101,12 @@ class NodeExploreGraph extends React.Component {
         this.drag = createDrag(this.simulation)({ connectNodes })
         this.zoom = createZoom(this.d3Graph, WIDTH, HEIGHT)
 
-        this.events = createEvents(this.zoom, {
+        this.events = createEvents({
             loadNode,
             removeEdge,
             showGraphSideBar,
         })
-        this.customEvents = createCustomEvents(this.zoom, {
+        this.customEvents = createCustomEvents({
             router: this.props.router,
             loadNode,
             removeEdge,

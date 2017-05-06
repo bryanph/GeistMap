@@ -26,10 +26,11 @@ export default (events, simulation) => (zoom, paddingPercent=0.95, id=null) => (
                 // .on('dblclick', nodeDoubleClick)
 
                 enter.forEach(enterFn => enterFn(selection, scale))
+                console.log(enter.length);
 
                 // TODO: oh no you didn't... - 2016-09-03
                 // get rid of this...
-                if (enter.length !== 2) {
+                if (enter.length !== 1) {
                     selection
                         .append('circle')
                         .attr("r", (d) => NODE_RADIUS)
@@ -59,7 +60,6 @@ export default (events, simulation) => (zoom, paddingPercent=0.95, id=null) => (
                 // new nodes were added
                 // TODO: is there an on-render event? bind to that instead - 2016-07-28
                 setTimeout(() => zoom(paddingPercent, 1000), 1000)
-                // simulation.alpha(0.8).restart();
             }
 
             return selection

@@ -5,7 +5,7 @@
 import * as d3 from 'd3'
 import { colora, colorb, colorc, colorNode } from '../../graph/util'
 
-export default (zoom, actions) => {
+export default (actions) => {
 
     // TODO: must keep track of rxjs subsciptions somehow - 2016-07-29
 

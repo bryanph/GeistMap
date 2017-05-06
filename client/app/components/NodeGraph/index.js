@@ -100,13 +100,13 @@ class NodeOverviewGraph extends React.Component {
 
         this.zoom = createZoom(this.d3Graph, WIDTH, HEIGHT)
 
-        this.events = createEvents(this.zoom, {
+        this.events = createEvents({
             loadNode,
             removeEdge,
             showGraphSideBar,
             changeMainFocus
         })
-        this.customEvents = createCustomEvents(this.zoom, {
+        this.customEvents = createCustomEvents({
             loadNode,
             removeEdge,
             showGraphSideBar,

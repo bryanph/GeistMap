@@ -11,7 +11,6 @@ import NodeSearch from '../../containers/NodeSearch'
 import Spinner from '../../components/Spinner'
 import NodeExploreGraph from '../../containers/NodeExploreGraph'
 import NodeToolbar from '../../containers/NodeToolbar'
-import NodeList from '../../containers/NodeList'
 import SwitchGraphView from '../../components/SwitchGraphView'
 
 // TODO: don't store these calls in the store, becomes too heavy - 2016-07-15
@@ -95,20 +94,13 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
                 }
             {
                 this.props.id ? // instead check for loading state here...
-                    nodeView === 'graph' ?
-                        <NodeExploreGraph 
-                            id={this.props.id}
-                            nodes={this.props.nodes || []}
-                            links={this.props.edges || []}
-                            selectedNode={this.props.node}
-                            connectNodes2={this.connectNodes}
-                        />
-                        :
-                        <NodeList 
-                            id={this.props.id}
-                            nodes={this.props.nodes || []}
-                            selectedNode={this.props.node}
-                        />
+                    <NodeExploreGraph 
+                        id={this.props.id}
+                        nodes={this.props.nodes || []}
+                        links={this.props.edges || []}
+                        selectedNode={this.props.node}
+                        connectNodes2={this.connectNodes}
+                    />
                     :
                     <NoNodesYet id={this.props.id} selectNode={this.selectNode} />
             }

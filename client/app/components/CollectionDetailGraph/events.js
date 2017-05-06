@@ -4,7 +4,7 @@
 import * as d3 from 'd3'
 import { colora, colorb, colorc, colorNode } from '../../graph/util'
 
-export default (zoom, actions) => {
+export default (actions) => {
     return {
         // nodeClickNoDrag: (selection) => {
         nodeClickNoDrag: (d) => {

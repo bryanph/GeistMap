@@ -50,7 +50,6 @@ const App = React.createClass({
         var segment = pathname.split('/')[1] || 'root';
 
         const key = this.props.routes[2].path
-        console.log(key);
 
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()} key={key}>

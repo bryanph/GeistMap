@@ -22,7 +22,7 @@ import { TrashButton} from '../../components/Buttons'
 
 import { accentColor } from '../../containers/App/muitheme'
 
-import { NodeTitle, NodeSubtitle } from '../NodeDetail'
+import { NodeTitle, NodeSubtitle } from '../../components/NodeToolbar'
 
 export const CollectionDetailButton = (props) => (
     <Link to={`/app/collections/${props.id}/nodes`}>

@@ -106,12 +106,12 @@ class CollectionDetailGraph extends React.Component {
 
         this.zoom = createZoom(this.d3Graph, WIDTH, HEIGHT)
 
-        this.events = createEvents(this.zoom, {
+        this.events = createEvents({
             loadNode,
             removeEdge,
             showGraphSideBar,
         })
-        this.customEvents = createCustomEvents(this.zoom, {
+        this.customEvents = createCustomEvents({
             loadNode,
             removeEdge,
             showGraphSideBar,
@@ -148,7 +148,6 @@ class CollectionDetailGraph extends React.Component {
 
         setTimeout(() => {
             colorNode(d3.select(`#node-${this.props.selected}`))
-            // this.simulation.alpha(0.8).restart();
         }, 0)
     }
 
@@ -160,7 +159,6 @@ class CollectionDetailGraph extends React.Component {
         if (nextProps.selected && nextProps.selected !== this.props.selected) {
             setTimeout(() => {
                 colorNode(d3.select(`#node-${nextProps.selected}`))
-                // this.simulation.alpha(0.8).restart();
             }, 0)
         }
 

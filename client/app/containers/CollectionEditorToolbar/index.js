@@ -19,7 +19,7 @@ import EditableTitle from '../../components/EditableTitle'
 
 import { GraphButton, CreateCollectionButton, AddButton, EditButton, CollectionButton, AddRelationButton } from '../../components/Buttons'
 import { TrashButton} from '../../components/Buttons'
-import { NodeTitle, NodeSubtitle } from '../NodeDetail'
+import { NodeTitle, NodeSubtitle } from '../../components/NodeToolbar'
 
 import { accentColor } from '../../containers/App/muitheme'
 
