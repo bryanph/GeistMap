@@ -38,7 +38,7 @@ export default (options={}) => (enter=[], update=[], exit=[]) => {
 
             // TODO: oh no you didn't... - 2016-09-03
             // get rid of this...
-            if (enter.length === 0) {
+            if (!options.noDefaultEnter) {
                 selection
                     .append('circle')
                     .attr("r", (d) => NODE_RADIUS)

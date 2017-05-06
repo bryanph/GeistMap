@@ -112,6 +112,7 @@ class CollectionExploreGraph extends React.Component {
             .on('end', forceDrag.dragend.bind(this))
 
         this.nodeUpdates = createNodeUpdates({
+            noDefaultEnter: true,
             events: customEvents,
             zoom: this.zoom,
             paddingPercent: 0.95,

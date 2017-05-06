@@ -72,11 +72,6 @@ export default (simulation) => (actions, clickNoDrag) => {
              */
             const { nodes } = this.props
 
-            if (!d3.event.active) {
-                // simulation.alphaTarget(0);
-                simulation.alpha(0.8).restart();
-            }
-
             d.fx = null;
             d.fy = null;
 
@@ -116,6 +111,12 @@ export default (simulation) => (actions, clickNoDrag) => {
                     return actions.connect(d.id, node.id, "to", true)
                 }
             })
+
+            if (!d3.event.active) {
+                console.log('restarting!');
+                simulation.alphaTarget(0);
+                simulation.alpha(0.8).restart();
+            }
 
         }
     }
