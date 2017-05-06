@@ -11,58 +11,15 @@ export default (actions) => {
             /*
              * Render node tooltip
              */
-            // const domNodes = document.querySelectorAll('.node.enter-selection')
-            // const clickStream = Rx.Observable.fromEvent(domNodes, 'click')
+            const data = d
 
-            // const mouseDownStream = Rx.Observable.fromEvent(domNodes, 'mousedown')
-            // const mouseUpStream = Rx.Observable.fromEvent(domNodes, 'mouseup')
-            // // const mouseMoveStream = Rx.Observable.fromEvent(domNodes, 'mousemove')
+            // TODO: different way? - 2016-09-05
+            const { collectionId } = actions
 
-            // mouseDownStream.subscribe((e) => {
-            //     console.log('called mousedown...');
-            // })
-            // mouseUpStream.subscribe((e => {
-            //     console.log('called mouseup...');
-            // }))
-
-            // const clickNoDrag = Rx.Observable.zip(
-            //     mouseDownStream,
-            //     mouseUpStream
-            // ).filter(([startEvent, endEvent]) => {
-            //     // TODO: error bound for no drag - 2016-06-18
-            //     console.log('click...');
-            //     return startEvent.clientX === endEvent.clientX && startEvent.clientY === endEvent.clientY
-            // })
-            // .map(([e1, e2]) => d3.select(e2.target.parentNode))
-
-            // clickNoDrag.subscribe(nodeClickNoDrag.bind(null, showGraphSideBar))
-
-            // clickNoDrag.subscribe((e) => {
-            // clickStream.subscribe((e) => {
-                // for click outside behaviour
-                // e.preventDefault()
-                // e.stopPropagation()
-
-
-                const data = d
-
-                // TODO: different way? - 2016-09-05
-                const { collectionId } = actions
-
-                // TODO: handle the loading in the component based on the route - 2017-02-09
-                actions.loadNode(data.id, true)
-                    .then(() => actions.router.push(`/app/collections/${collectionId}/nodes/${data.id}`))
-                    .then(() => window.scrollTo(0, 0))
-
-                // actions.loadNode(data.id, true)
-                //     .then(() => actions.showGraphSideBar(data.id))
-                //     .then(() => window.scrollTo(0, 0))
-
-                // actions.showGraphSideBar(data.id)
-                // window.scrollTo(0, 0)
-                // colorNode(d3.select(`#node-${data.id}`))
-            // })
-
+            // TODO: handle the loading in the component based on the route - 2017-02-09
+            actions.loadNode(data.id, true)
+                .then(() => actions.router.push(`/app/collections/${collectionId}/nodes/${data.id}`))
+                .then(() => window.scrollTo(0, 0))
         },
         nodeDoubleClick: (d) => {
             d.fixed = false;

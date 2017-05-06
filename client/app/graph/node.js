@@ -5,10 +5,10 @@ import { colora, colorb, colorc, colorNode } from './util'
 import { NODE_RADIUS, WIDTH, HEIGHT } from './constants'
 import Rx from 'rx'
 
-export default (events, simulation) => (zoom, paddingPercent=0.95, id=null) => (enter=[], update=[], exit=[]) => {
+export default (options={}) => (enter=[], update=[], exit=[]) => {
     /*
      * enter, update, exit are arrays of callables which will be called with the current selection
-    */
+     */
 
     return {
         enterNode: (selection, scale) => {
@@ -19,37 +19,45 @@ export default (events, simulation) => (zoom, paddingPercent=0.95, id=null) => (
                     return `node-${d.id}`
                 }) // for later reference from data
                 .attr('r', NODE_RADIUS)
-                // TODO: set these events dynamically, must be able to specify these - 2016-07-28
-                .on('mouseover', _.debounce(events.nodeMouseOver, 200))
-                .on('mouseout', _.debounce(events.nodeMouseOut, 200))
-                // .on('click', nodeClick)
-                // .on('dblclick', nodeDoubleClick)
 
-                enter.forEach(enterFn => enterFn(selection, scale))
-                console.log(enter.length);
+            // TODO: align these event names? - 2017-05-06
+            if (options.events && options.events.nodeMouseOver) {
+                selection.on('mouseover', _.debounce(options.events.nodeMouseOver, 200))
+            }
+            if (options.events && options.events.nodeMouseOut) {
+                selection.on('mouseout', _.debounce(options.events.nodeMouseOver, 200))
+            }
+            if (options.events && options.events.nodeClick) {
+                selection.on('click', _.debounce(options.events.nodeClick, 200))
+            }
+            if (options.events && options.events.nodeDoubleClick) {
+                selection.on('doubleclick', _.debounce(options.events.nodeDoubleClick, 200))
+            }
 
-                // TODO: oh no you didn't... - 2016-09-03
-                // get rid of this...
-                if (enter.length !== 1) {
-                    selection
-                        .append('circle')
-                        .attr("r", (d) => NODE_RADIUS)
-                        .attr("x", -8)
-                        .attr("y", -8)
-                        .style("fill", d => {
-                            console.log(d.collections);
-                            if (!d.collections) {
-                                return colora(d.group)
-                            }
+            enter.forEach(enterFn => enterFn(selection, scale))
 
-                            return colora(d.collections.sort().join(','))
-                        })
+            // TODO: oh no you didn't... - 2016-09-03
+            // get rid of this...
+            if (enter.length === 0) {
+                selection
+                    .append('circle')
+                    .attr("r", (d) => NODE_RADIUS)
+                    .attr("x", -8)
+                    .attr("y", -8)
+                    .style("fill", d => {
+                        console.log(d.collections);
+                        if (!d.collections) {
+                            return colora(d.group)
+                        }
 
-                    selection.append('text')
-                        .attr("dx", NODE_RADIUS + 1)
-                        .attr("dy", ".35em")
-                        .text((d) => getLabelText(d.properties.name));
-                }
+                        return colora(d.collections.sort().join(','))
+                    })
+
+                selection.append('text')
+                    .attr("dx", NODE_RADIUS + 1)
+                    .attr("dy", ".35em")
+                    .text((d) => getLabelText(d.properties.name));
+            }
 
             // remove enter-selection flag for rxjs...
 
@@ -59,7 +67,7 @@ export default (events, simulation) => (zoom, paddingPercent=0.95, id=null) => (
                 console.log("in enter selection: " + selection.size());
                 // new nodes were added
                 // TODO: is there an on-render event? bind to that instead - 2016-07-28
-                setTimeout(() => zoom(paddingPercent, 1000), 1000)
+                setTimeout(() => options.zoom(options.paddingPercent || 0.95, 1000), 1000)
             }
 
             return selection

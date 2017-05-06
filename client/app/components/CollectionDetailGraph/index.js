@@ -34,9 +34,6 @@ class CollectionDetailGraph extends React.Component {
         /*
          * Go through the enter,update,exit cycle
         */
-       // TODO: avoid class methods for these types of things- 2016-06-19
-        // TODO: refactor this to generalize for all graphs - 2017-01-22
-
         let { nodes, links } = nextProps
 
         // console.log(`in update with ${nodes.length} nodes and ${links.length} links`);
@@ -68,7 +65,6 @@ class CollectionDetailGraph extends React.Component {
         node.enter().append('g').call(this.nodeUpdates.enterNode).call(this.nodeDrag)
             // ENTER + UPDATE selection
             .merge(node).call(this.nodeUpdates.updateNode)
-            // .merge(node).call((selection) => this.nodeUpdates.updateNode(selection, { selectedNode: this.props.selectedNode }))
 
         var link = this.d3Graph.selectAll('.node-link')
             .data(links, link => link.id)
@@ -80,9 +76,6 @@ class CollectionDetailGraph extends React.Component {
             // .merge(link).call(updateLink)
 
         this.simulation.nodes(nodes)
-            // .on("tick", () => {
-            //     this.d3Graph.call(ticked)
-            // })
 
         this.simulation.force("link")
             .links(links)
@@ -111,7 +104,7 @@ class CollectionDetailGraph extends React.Component {
             removeEdge,
             showGraphSideBar,
         })
-        this.customEvents = createCustomEvents({
+        const customEvents = createCustomEvents({
             loadNode,
             removeEdge,
             showGraphSideBar,
@@ -119,17 +112,21 @@ class CollectionDetailGraph extends React.Component {
             collectionId,
         })
 
-        this.drag = createDrag(this.simulation)({ connectNodes }, this.customEvents.nodeClickNoDrag)
+        const forceDrag = createDrag(this.simulation)({ connect: connectNodes }, customEvents.nodeClickNoDrag)
         this.nodeDrag = d3.drag()
-            .on('drag', this.drag.drag.bind(this))
-            .on('start', this.drag.dragstart.bind(this))
-            .on('end', this.drag.dragend.bind(this))
+            .on('drag', forceDrag.drag.bind(this))
+            .on('start', forceDrag.dragstart.bind(this))
+            .on('end', forceDrag.dragend.bind(this))
 
         const nodeEnterEvents = [
             // this.customEvents.nodeClickNoDrag   
         ]
 
-        this.nodeUpdates = createNodeUpdates(this.events, this.simulation)(this.zoom, 0.95, null)(nodeEnterEvents)
+        this.nodeUpdates = createNodeUpdates({
+            events: this.events,
+            zoom: this.zoom,
+            paddingPercent: 0.95,
+        })(nodeEnterEvents)
         this.linkUpdates = createLinkUpdates(this.events)()
 
         // append tooltip to the dom

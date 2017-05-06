@@ -586,12 +586,6 @@ export default function(db, es) {
 
         },
 
-        getNodeGraph: function(user, res) {
-            /*
-             * Get all connections to and from this node
-             */
-        },
-
         search: function(user, query, res) {
             /*
              * Full text search for a node

@@ -114,7 +114,7 @@ class NodeOverviewGraph extends React.Component {
             router: this.props.router,
         })
 
-        this.drag = createDrag(this.simulation)({ connectNodes }, this.customEvents.nodeClickNoDrag)
+        this.drag = createDrag(this.simulation)({ connect: connectNodes }, this.customEvents.nodeClickNoDrag)
         this.nodeDrag = d3.drag()
             .on('drag', this.drag.drag.bind(this))
             .on('start', this.drag.dragstart.bind(this))
@@ -124,7 +124,11 @@ class NodeOverviewGraph extends React.Component {
             // this.customEvents.nodeClickNoDrag   
         ]
 
-        this.nodeUpdates = createNodeUpdates(this.events, this.simulation)(this.zoom, 0.95, null)(nodeEnterEvents)
+        this.nodeUpdates = createNodeUpdates({
+            events: this.events,
+            zoom: this.zoom,
+            paddingPercent: 0.95,
+        })(nodeEnterEvents)
         this.linkUpdates = createLinkUpdates(this.events)()
 
         // append tooltip to the dom

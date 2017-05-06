@@ -14,16 +14,14 @@ export default (simulation) => (actions, clickNoDrag) => {
         dragstart: function(d) {
             /*
              * Freeze the graph
-            */
-            if (!d3.event.active) {
-                console.log(d3.event.active);
-                simulation.alpha(0.8).restart();
-            }
-
-           startX = d3.event.x
-           startY = d3.event.y
+             */
+            startX = d3.event.x
+            startY = d3.event.y
 
             const { nodes } = this.props
+
+            console.log('calling dragstart...');
+            console.log(nodes);
 
             // simulation.stop()
             nodes.forEach(node => {
@@ -35,7 +33,7 @@ export default (simulation) => (actions, clickNoDrag) => {
             /*
              * Set a graphical indicator for when hovering over another node
              * O(n): we must check distance to all other nodes
-            */
+             */
 
             // first just move ...
             d.fx = d3.event.x;
@@ -63,19 +61,21 @@ export default (simulation) => (actions, clickNoDrag) => {
                     d3.select(`#node-${node.id}`)
                         .classed('node-hovered', true)
                         .select('circle')
-                            .style("fill", secondaryColor)
-                        
+                        .style("fill", secondaryColor)
+
                 }
             })
         },
         dragend: function(d) {
             /*
              * Create an edge to all nodes which are being hovered over
-            */
+             */
             const { nodes } = this.props
 
-
-            if (!d3.event.active) simulation.alphaTarget(0);
+            if (!d3.event.active) {
+                // simulation.alphaTarget(0);
+                simulation.alpha(0.8).restart();
+            }
 
             d.fx = null;
             d.fy = null;
@@ -113,7 +113,7 @@ export default (simulation) => (actions, clickNoDrag) => {
 
                 if (distanceToNode < NODE_RADIUS) {
                     // create an edge from this node to otherNode
-                    return actions.connectNodes(d.id, node.id, "to", true)
+                    return actions.connect(d.id, node.id, "to", true)
                 }
             })
 

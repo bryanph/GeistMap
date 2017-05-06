@@ -98,7 +98,7 @@ class NodeExploreGraph extends React.Component {
         this.simulation = simulation
         this.ticked = ticked
 
-        this.drag = createDrag(this.simulation)({ connectNodes })
+        this.drag = createDrag(this.simulation)({ connect: connectNodes })
         this.zoom = createZoom(this.d3Graph, WIDTH, HEIGHT)
 
         this.events = createEvents({
@@ -123,7 +123,11 @@ class NodeExploreGraph extends React.Component {
             this.customEvents.nodeClickNoDrag   
         ]
 
-        this.nodeUpdates = createNodeUpdates(this.events, this.simulation)(this.zoom, 0.95, this.props.id)(nodeEnterEvents)
+        this.nodeUpdates = createNodeUpdates({
+            events: this.events,
+            zoom: this.zoom,
+            paddingPercent: 0.95,
+        })(nodeEnterEvents)
         this.linkUpdates = createLinkUpdates(this.events)()
 
         // append tooltip to the dom

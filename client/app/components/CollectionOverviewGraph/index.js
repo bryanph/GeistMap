@@ -44,12 +44,8 @@ class CollectionExploreGraph extends React.Component {
 
         const nodeById = d3.map()
 
-        nodes = nodes.map(node => ({
-            ...node,
-            radius: radiusScale(node.count || 0),
-        }))
-
         nodes.forEach(node => {
+            node.radius = radiusScale(node.count || 0)
             nodeById.set(node.id, node)
         })
 
@@ -79,10 +75,6 @@ class CollectionExploreGraph extends React.Component {
             // .merge(link).call(updateLink)
 
         this.simulation.nodes(nodes)
-            // .on("tick", () => {
-            //     this.d3Graph.call(ticked)
-            // })
-
         this.simulation.force("link")
             .links(links)
 
@@ -113,19 +105,18 @@ class CollectionExploreGraph extends React.Component {
             showCollectionSidebar,
         })
 
-        this.drag = createDrag(this.simulation)({ connectNodes: connectCollections }, customEvents.nodeClickNoDrag)
-
+        const forceDrag = createDrag(this.simulation)({ connect: connectCollections }, customEvents.nodeClickNoDrag)
         this.nodeDrag = d3.drag()
-            .on('drag', this.drag.drag.bind(this))
-            .on('start', this.drag.dragstart.bind(this))
-            .on('end', this.drag.dragend.bind(this))
+            .on('drag', forceDrag.drag.bind(this))
+            .on('start', forceDrag.dragstart.bind(this))
+            .on('end', forceDrag.dragend.bind(this))
 
-        const nodeEnterEvents = [
-            customEvents.enterNode,
-            // customEvents.nodeClickNoDrag,
-        ]
+        this.nodeUpdates = createNodeUpdates({
+            events: customEvents,
+            zoom: this.zoom,
+            paddingPercent: 0.95,
+        })([ customEvents.enterNode ], [], [])
 
-        this.nodeUpdates = createNodeUpdates(customEvents, this.simulation)(this.zoom, 0.95)(nodeEnterEvents)
         this.linkUpdates = createLinkUpdates(customEvents)()
 
         this.update(this.props)

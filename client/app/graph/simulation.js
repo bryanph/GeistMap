@@ -27,6 +27,9 @@ export default (WIDTH, HEIGHT) => ({
 
 
 function linkArc(d, curved=false) {
+    /*
+     * only arc if there is a two-way link
+    */
     // TODO: check adjacencyMap for whether there is an edge the otherway as well - 2017-01-22
     const dx = d.target.x - d.source.x;
     const dy = d.target.y - d.source.y;
