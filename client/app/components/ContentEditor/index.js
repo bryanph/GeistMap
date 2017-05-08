@@ -364,8 +364,6 @@ class RichEditor extends React.Component {
         const prevContent = this.state.editorState.getCurrentContent()
         const content = editorState.getCurrentContent()
 
-        // console.log(content.getBlockMap().toJS());
-
         if (forceUpdate || prevContent !== content) {
             this.persistState(content)
             this.persistContentLinks(editorState, this.state.editorState)

@@ -16,24 +16,17 @@ class Link extends React.Component {
 
     render() {
         const { router, getEditorState, setEditorState } = this.props
-        const { node, nodeId, edgeId } = Entity.get(this.props.entityKey).getData();
-        // TODO: instead, get actual node and edge here - 2016-10-20
+        const { nodeId, edgeId } = this.props
 
         const href = path.resolve(window.location.pathname, `../../${nodeId}/edit`)
-
-        // console.log(this.props);
-        // const selection = getEditorState().getSelection()
-        // console.log(getEditorState().getSelection().serialize());
-        // console.log(selection);
-        //
-        // console.log(node);
+        const node = this.props.node
 
         return (
             <a href={href} target="_blank" className="contentLink">
                 {this.props.children}
                 <div className="contentLinkDiv" contenteditable="false">
                     <div className="contentLinkDiv-container">
-                        { node.properties && node.properties.name || node._source.title }
+                        { node.properties && node.properties.name }
                         <div className="contentLinkDiv-buttons">
                             <EditButton
                                 onTouchTap={() => router.push(href)}
@@ -88,5 +81,19 @@ Link.propTypes = {
 }
 
 import { removeEdge } from '../.././../../actions/async'
+import { getNode } from '../.././../../reducers'
 
-export default connect(null, { removeEdge })(withRouter(Link));
+function mapStateToProps(state, props) {
+    // get the node associated with this link to display its title
+
+    const { nodeId, edgeId } = Entity.get(props.entityKey).getData();
+
+    return {
+        nodeId,
+        edgeId,
+        node: getNode(state, nodeId)
+    }
+
+}
+
+export default connect(mapStateToProps, { removeEdge })(withRouter(Link));

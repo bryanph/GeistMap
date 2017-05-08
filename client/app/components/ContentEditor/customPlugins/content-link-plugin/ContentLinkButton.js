@@ -21,7 +21,6 @@ class ContentLinkButton extends React.Component {
   }
 
   _confirmContentLink() {
-      console.log('inserting..', this.props);
       this.props.setEditorState(insertContentLink(this.props.getEditorState(), {
               nodeId: this.props.nodeId,
               node: this.props.node,
