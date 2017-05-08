@@ -6,6 +6,10 @@ export const colora = scaleOrdinal(schemeCategory20)
 export const colorb = scaleOrdinal(schemeCategory20b)
 export const colorc = scaleOrdinal(schemeCategory20c)
 
+colora(undefined)
+colorb(undefined)
+colorc(undefined)
+
 import { secondaryColor } from '../containers/App/muitheme'
 
 export const radiusScale = d3.scaleLinear().range(10, 20)
