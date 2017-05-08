@@ -250,8 +250,8 @@ class RichEditor extends React.Component {
                             // console.log(block.getType());
                             // console.log(blockContainsEntityType(block, 'inline-latex'));
                             return ['unstyled', 'header-three', 'header-four', 'header-five', 'blockquote', 'code-block', 'unordered-list-item', 'ordered-list-item'].includes(block.getType()) && block.getText() !== '' 
-                            return !blockContainsEntityType(block, 'inline-latex') 
-                                && block.getType() === 'unstyled'
+                            // return !blockContainsEntityType(block, 'inline-latex') 
+                                // && block.getType() === 'unstyled'
                         })
                     },
                     components: !this.props.withoutContentLink ?
@@ -278,15 +278,16 @@ class RichEditor extends React.Component {
         }
 
         // editorState set globally
+        // by default, force this state transition
         if (this.props.globalEditorState !== nextProps.globalEditorState) {
-            this.onChange(nextProps.globalEditorState, null, false)
+            console.log('globalEditorState was changed!!!');
+            this.onChange(nextProps.globalEditorState, null, true)
         }
     }
 
     persistContentLinks(editorState, prevEditorState) {
         // get diffs here for Entities
         // walk through all nested entities, see what entities were added, and what entities were removed. For all added entities do a request, for all removed entities do a request
-        // TODO: this onCHange should run at a delay - 2016-10-28
 
         const prevEntities = this.state.entities
 
@@ -320,7 +321,7 @@ class RichEditor extends React.Component {
         const added = _.difference(entities, prevEntities)
         const removed = _.difference(prevEntities, entities)
 
-        // console.log(prevEntities, entities);
+        // console.log('added!', added);
 
         added.forEach((entityKey) => {
             // add this entity remotely on the server
@@ -341,7 +342,7 @@ class RichEditor extends React.Component {
         removed.forEach((entityKey) => {
             // remove this entity remotely on the server
 
-            console.log('removed ', entityKey);
+            // console.log('removed ', entityKey);
 
             const entity = Entity.get(entityKey)
             const { edgeId } = entity.getData()

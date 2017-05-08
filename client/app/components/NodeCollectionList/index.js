@@ -50,13 +50,11 @@ class NodeCollectionList extends React.Component {
     }
 
     toggleSearch() {
-        console.log('calling toggleSearch..');
         this.setState({ searchToggle: true })
     }
 
     addNodeToCollection(ESCollection) {
         // _id here, because this is an elastic search node representation
-        console.log('calling addNodeToCollection...');
         this.props.addNodeToCollection(ESCollection._id, this.props.node.id)
 
         this.setState({ searchToggle: false })
@@ -71,7 +69,6 @@ class NodeCollectionList extends React.Component {
 
     onCollectionCreated(action) {
         // now add node to the collection as well
-        console.log('called onCollectionCreated..');
         const collectionId = action.response.result
 
         this.props.addNodeToCollection(collectionId, this.props.node.id)
@@ -103,8 +100,6 @@ class NodeCollectionList extends React.Component {
         const handlers = {
             'addCollection': this.toggleSearch
         }
-
-        console.log(collections);
 
         return (
             <HotKeys focused={true} attach={document.getElementById('app')} handlers={handlers}>

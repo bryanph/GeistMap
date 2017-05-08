@@ -1,6 +1,6 @@
 /**
  *
- * AddRelationWindow
+ * AddNodeToCollectionWindow
  *
  */
 
@@ -37,7 +37,7 @@ export const OrDivider = (props) => (
 )
 
 // TODO: this redux pattern for modals can be generalized into a HOC - 2016-07-12
-class AddRelationWindow extends React.Component {
+class AddNodeToCollectionWindow extends React.Component {
 
     constructor(props) {
         super(props);
@@ -99,10 +99,10 @@ class AddRelationWindow extends React.Component {
                 open={this.props.open}
                 onRequestClose={this.handleClose}
             >
-                <div className={"addRelationWindow"}>
+                <div className={"AddNodeToCollectionWindow"}>
 
                     <h3>An existing node</h3>
-                    <div className={"addRelationWindow-nodeSearch"}>
+                    <div className={"AddNodeToCollectionWindow-nodeSearch"}>
                         <NodeSearch
                             id={this.props.id}
                             onSearchClick={this.addNodeToCollection}
@@ -120,7 +120,7 @@ class AddRelationWindow extends React.Component {
         );
     }
 }
-AddRelationWindow.propTypes = {
+AddNodeToCollectionWindow.propTypes = {
     id: PropTypes.string.isRequired,
     hideAddRelationWindow: PropTypes.func.isRequired,
     addEdge: PropTypes.func.isRequired,
@@ -128,4 +128,4 @@ AddRelationWindow.propTypes = {
     setEditorState: PropTypes.func.isRequired,
 };
 
-export default withRouter(AddRelationWindow);
+export default withRouter(AddNodeToCollectionWindow);

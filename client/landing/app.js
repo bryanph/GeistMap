@@ -15,17 +15,17 @@ const mainSection = {
 const rows = {
     connections: {
         header: "Relations first",
-        content: "Instead of trying to organize all your thoughts and notes in folders, organize your notes by defining relations between them",
+        content: "Instead of trying to organize all your thoughts and notes in folders, organize your notes by defining relations between them. This is ideal for studying or research",
         imageSrc: "/static/img/graph1.png",
     },
     explore: {
             header: "Explore your thoughts",
-            content: "Easily and quickly explore your thoughts and notes by traversing between them and their collections",
+            content: "Easily and quickly explore your thoughts by traversing between them and their collections",
             imageSrc: "/static/img/graph3.png",
     },
     collections: {
-            header: "Organize with collections",
-            content: "Besides relations, notes can be added to one or more collections to quickly navigate between groups of notes",
+            header: "Organise with collections",
+            content: "Besides relations, nodes can be added to one or more collections to quickly navigate between groups of nodes",
             imageSrc: "/static/img/graph2.png",
     },
     // connections: {

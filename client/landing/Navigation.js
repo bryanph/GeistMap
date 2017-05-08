@@ -12,7 +12,7 @@ export const Actions = (props) => (
         <FlatButton label="Contact me" primary={true} href="mailto:bryanhaakman@gmail.com" 
             labelStyle={{fontSize: '1rem'}}
         />
-        <FlatButton label="Contact me via Twitter" primary={true} href="https://twitter.com/bphaakman" 
+        <FlatButton label="Twitter" primary={true} href="https://twitter.com/bphaakman" 
             labelStyle={{fontSize: '1rem'}}
         />
         <FlatButton label="Login" primary={true} href="/auth/login" 

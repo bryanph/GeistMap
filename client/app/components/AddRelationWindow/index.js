@@ -78,18 +78,12 @@ class AddRelationWindow extends React.Component {
 
         // TODO: how do we handle links from non-text? - 2016-07-08
 
-        // return this.props.addEdge(this.props.id, nodeId, text)
-        //     .then(action => {
-
         const entityKey = Entity.create(ENTITY_TYPE, 'IMMUTABLE', { node, nodeId, text });
+
+        // force the update
         this.props.setEditorState(RichUtils.toggleLink(editorState, selection, entityKey));
 
         return Promise.resolve()
-                // this._createContentLinkEntity(nodeId, action.response.result)
-            // })
-            // .catch(error => console.error(error.stack))
-
-        // this.props.hideWindow()
     }
 
     addRelation(nodeId) {
@@ -109,23 +103,28 @@ class AddRelationWindow extends React.Component {
         this.props.hideWindow()
     }
 
-    addNodeWithRelation() {
+    addNodeWithRelation(selectedText) {
         const { editorState } = this.props
         const isContentLink = !!this.props.editorState
 
-        console.log("addNodeWithRelation", this.props.fromCollectionDetail);
+        const nodeToCreate = {
+            name: selectedText,
+            content: '',
+        }
 
+        // in the inbox
         if (this.props.fromBatch) {
-            this.props.createBatchNode()
+            this.props.createBatchNode(nodeToCreate)
                 .then(action => action.response.entities.nodes[action.response.result])
                 .then(node => (
                     (isContentLink ?  this.addContentLink(node, node.id, editorState) : this.addRelation(node.id)).then(() => node)
                         // this.props.connectNodes(this.props.id, id, "to", true).then(() => id)
                 ))
 
+        // in the collection detail view
         } else if (this.props.fromCollectionDetail) {
             const { collectionId } = this.props
-            this.props.createNode()
+            this.props.createNode(nodeToCreate)
                 .then(action => action.response.entities.nodes[action.response.result])
                 .then(node => {
                     return this.props.addNodeToCollection(collectionId, node.id).then(() => node)
@@ -134,16 +133,17 @@ class AddRelationWindow extends React.Component {
                     (isContentLink ?  this.addContentLink(node, node.id, editorState) : this.addRelation(node.id)).then(() => node)
                     // this.props.connectNodes(this.props.id, id).then(() => id)
                 ))
-                .then(node => this.props.router.push(`/app/collections/${collectionId}/nodes/${node.id}`))
+                // .then(node => this.props.router.push(`/app/collections/${collectionId}/nodes/${node.id}`))
         }
+        // in the explore view
         else {
-            this.props.createNode()
+            this.props.createNode(nodeToCreate)
                 .then(action => action.response.entities.nodes[action.response.result])
                 .then(node => (
                     (isContentLink ?  this.addContentLink(node, node.id, editorState) : this.addRelation(node.id)).then(() => node)
                     // this.props.connectNodes(this.props.id, id).then(() => id)
                 ))
-                .then(node => this.props.router.push(`/app/nodes/${node.id}`))
+                // .then(node => this.props.router.push(`/app/nodes/${node.id}`))
             // .then((id) => this.props.showGraphSideBar(id))
 
         }
@@ -188,7 +188,7 @@ class AddRelationWindow extends React.Component {
                     </div>
                     <OrDivider />
                     <h3>To a new node</h3>
-                    <AddNodeWithRelationButton onTouchTap={this.addNodeWithRelation} />
+                    <AddNodeWithRelationButton onTouchTap={() => this.addNodeWithRelation(selectedText)} />
                 </div>
             </Dialog>
         );
