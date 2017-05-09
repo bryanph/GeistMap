@@ -128,7 +128,7 @@ class AllSearch extends React.Component {
                         searchResults={searchResults}
                         onClick={this.onSearchClick}
                         outsideClickIgnoreClass='allSearch'
-                        close={() => {console.log('called close'); this.setState({ opened: false })}}
+                        close={() => this.setState({ opened: false })}
                     />
                     : null
             }

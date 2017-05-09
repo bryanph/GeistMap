@@ -165,7 +165,7 @@ class Topbar extends React.Component {
             this.props.router.push(`/app/collections/${id}`)
         } 
         else if (result._index === 'nodes') {
-            this.props.router.push(`/app/nodes/${id}`)
+            this.props.router.push(`/app/nodes/${id}/edit`)
         }
     }
 
