@@ -104,6 +104,7 @@ class NodeSearch extends React.Component {
                     placeholder={ this.props.placeholder || "Search for a node..."}
                     onChange={this.onChange}
                     onFocus={ (e) => { this.setState({opened: true}) }}
+                    autoFocus
                     ref="searchTextField"
                     value={this.state.searchValue}
                 />
