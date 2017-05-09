@@ -52,6 +52,10 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import ContentEditorShortcuts from '../ContentEditorShortcuts'
 
+import asyncEach from 'async/each'
+import parallel from 'async/parallel'
+import debounce from '../../utils/debounce'
+
 const wrapMui = (Component) => (
     (props) => (
         <MuiThemeProvider muiTheme={getMuiTheme()}>
@@ -165,8 +169,9 @@ class RichEditor extends React.Component {
         this.getEditorState = this.getEditorState.bind(this)
         this.focus = this.focus.bind(this)
 
-        this.persistState = _.debounce(this.persistState.bind(this), 1000)
-        this.persistContentLinks = _.debounce(this.persistContentLinks.bind(this), 1000)
+        this.persistState = this.persistState.bind(this)
+        // this.persistState = _.debounce(this.persistState.bind(this), 1000)
+        this.persistContentLinks = debounce(this.persistContentLinks.bind(this), 1000)
 
         this.blockRenderMap = DefaultDraftBlockRenderMap.merge(
             this.customBlockRendering(props)
@@ -323,14 +328,14 @@ class RichEditor extends React.Component {
 
         // console.log('added!', added);
 
-        added.forEach((entityKey) => {
+        const addedPromises = added.map((entityKey) => {
             // add this entity remotely on the server
 
             const entity = Entity.get(entityKey)
 
             const { node, nodeId, text } = entity.getData()
 
-            this.props.addEdge(this.props.id, nodeId, text)
+            return this.props.addEdge(this.props.id, nodeId, text)
                 .then(action => {
                     const edgeId = action.response.result
 
@@ -339,15 +344,13 @@ class RichEditor extends React.Component {
                 .catch(error => console.error(error.stack))
         })
 
-        removed.forEach((entityKey) => {
+        const removedPromises = removed.map((entityKey) => {
             // remove this entity remotely on the server
-
-            // console.log('removed ', entityKey);
 
             const entity = Entity.get(entityKey)
             const { edgeId } = entity.getData()
 
-            this.props.removeEdge(edgeId)
+            return this.props.removeEdge(edgeId)
         })
 
         // call some "add" event for every added entity, some "remove" event for every removed entity
@@ -356,7 +359,7 @@ class RichEditor extends React.Component {
             entities,
         })
 
-        return editorState
+        return Promise.all([ ...addedPromises, ...removedPromises ])
 
     }
 
@@ -365,8 +368,9 @@ class RichEditor extends React.Component {
         const content = editorState.getCurrentContent()
 
         if (forceUpdate || prevContent !== content) {
-            this.persistState(content)
+            // the order here is important, because the function above still modifies the global Entity object
             this.persistContentLinks(editorState, this.state.editorState)
+                .then(() => this.persistState(content))
         }
 
         this.setState({
@@ -392,7 +396,6 @@ class RichEditor extends React.Component {
         /*
          * when clicking outside of the editor
         */
-
         // if (!this.state.editorState.getCurrentContent().hasText()) {
             this.setState({ collapsed: true })
         // }
