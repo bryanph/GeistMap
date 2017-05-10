@@ -105,7 +105,6 @@ export class NodeBatchCreateGraph extends React.Component { // eslint-disable-li
     render() {
         const { nodes, links, selectedNode, loadingStates } = this.props
 
-        // console.log(loadingStates.GET_ALL_BATCH_NODES);
         if (loadingStates.GET_ALL_BATCH_NODES) {
             return <Spinner style={{ height: '80%' }} />
         }

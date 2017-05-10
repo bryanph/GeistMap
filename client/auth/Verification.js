@@ -33,12 +33,9 @@ const AccountVerification  = React.createClass({
           return this.setState({errors: json.errors})
       }
 
-      // console.log('called...');
       // // TODO: account verification - 2016-05-10
       // window.location = '/'
 
-      console.log("pushing...");
-      console.log(this.props);
       this.props.router.push('/auth/account/verification/success')
 
       // this.props.router.push('/auth/login/forgot/success')

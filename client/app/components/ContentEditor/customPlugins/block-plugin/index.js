@@ -40,11 +40,9 @@ function keyBindingFn(e) {
 
 export default (config = {}) => {
     function handleKeyCommand(command, { getEditorState, setEditorState }) {
-        // console.log('called handleKeyCommand...');
         const editorState = getEditorState()
 
         // let newState = RichUtils.handleKeyCommand(editorState, command)
-        // console.log(newState);
 
         if (command === 'insert-header-three') {
             const nextState = RichUtils.toggleBlockType(
@@ -117,8 +115,6 @@ export default (config = {}) => {
 
             // const afterSplit = Modifier.splitBlock(afterRemoval, targetSelection);
 
-            // console.log(blockType);
-
             const afterRemoval = Modifier.removeRange(
                 contentState,
                 selectionState,
@@ -155,9 +151,6 @@ export default (config = {}) => {
 
             if (blockTypesNoNewLine.includes(blockType)) { 
                 // remove the blocktype
-                // console.log('removing blockType...');
-                // console.log(RichUtils.tryToRemoveBlockStyle(editorState));
-                // console.log(removeSelectedBlocksStyle(editorState))
                 // const newState = removeSelectedBlocksStyle(editorState)
                 const newState = RichUtils.toggleBlockType(
                     newEditorState,

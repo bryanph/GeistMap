@@ -27,9 +27,6 @@ class BlockControlButton extends React.Component {
       const editorState = props.getEditorState();
       const selection = editorState.getSelection();
 
-      // console.log(selection.getStartKey());
-      // console.log(selection.getAnchorKey());
-
       const blockType = editorState
           .getCurrentContent()
           .getBlockForKey(selection.getStartKey() || selection.getAnchorKey())

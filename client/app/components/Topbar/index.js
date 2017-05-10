@@ -160,8 +160,6 @@ class Topbar extends React.Component {
     }
 
     navigate(result) {
-        console.log('called!');
-        console.log(result);
         const id  = result._id
         if(result._index === "collections2") { // TODO: do this differently - 2017-05-10
             this.props.router.push(`/app/collections/${id}`)

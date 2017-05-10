@@ -38,15 +38,11 @@ class NodeExploreGraph extends React.Component {
 
         let { nodes, links } = nextProps
 
-        // console.log(`in update with ${nodes.length} nodes and ${links.length} links`);
-
         const nodeById = d3.map()
 
         nodes.forEach(node => {
             nodeById.set(node.id, node)
         })
-
-        // console.log(_.map(nodes, x => x.id));
 
         links.forEach(link => {
             link.source = nodeById.get(link.start)

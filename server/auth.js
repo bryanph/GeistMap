@@ -33,7 +33,6 @@ passport.use(new TwitterStrategy(config.auth.twitter,
 passport.use(new LocalStrategy(Account.authenticate()));
 
 passport.serializeUser(function(user, done) {
-  // console.log("serializing user:", user._id)
   done(null, user);
 })
 passport.deserializeUser(function(obj, done) {

@@ -78,8 +78,6 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
     render() {
         const { node, loadingStates } = this.props
 
-        console.log(this.props);
-
         // loading state on changing component
         if (loadingStates.GET_NODE || !node) {
             return <Spinner style={{ height: '190px' }} />
@@ -92,8 +90,6 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
             'duplicate': this.duplicateNode,
             'trash': this.removeNode,
         }
-
-        console.log(this.props.page, 'called');
 
         return (
             <HotKeys focused={true} attach={document.getElementById('app')} handlers={handlers} style={{ width: '100%' }}>

@@ -34,8 +34,6 @@ export function isActive(editorState) {
 
     const called = false
 
-    // console.log(getSelectionEntity(editorState))
-
     // TODO: write a helper method for this - 2016-09-23
     return getSelectionEntity(editorState)
 }

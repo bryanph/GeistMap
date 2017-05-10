@@ -81,8 +81,6 @@ export default (options={}) => (enter=[], update=[], exit=[]) => {
             return selection
         }, 
         exitNode: (selection) => {
-            // console.log('called removeNode');
-            // console.log(selection.size());
             selection.remove()
 
             return selection

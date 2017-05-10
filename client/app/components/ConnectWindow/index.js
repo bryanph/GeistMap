@@ -38,8 +38,6 @@ class ConnectWindow extends React.Component {
 
         const selection = editorState.getSelection();
 
-        console.log("Creating content link entity...");
-
         const entityKey = Entity.create(ENTITY_TYPE, 'IMMUTABLE', { nodeId, edgeId });
         setEditorState(RichUtils.toggleLink(editorState, selection, entityKey));
     }
@@ -69,7 +67,6 @@ class ConnectWindow extends React.Component {
 
         // TODO: how do we handle links from non-text? - 2016-07-08
 
-        console.log('in connectWindow...');
         this.props.addEdge(this.props.id, node._id, text)
             .then(action => {
                 this.createContentLinkEntity(node._id, action.response.result)

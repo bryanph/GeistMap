@@ -40,8 +40,6 @@ function linkArc(d, curved=false) {
     // distance from source node to edge of target node
     // const nodeDistance = lineDistance - d.target.r
 
-    // console.log(d);
-
     const sourceRadius = d.source.radius || NODE_RADIUS
     const targetRadius = d.target.radius || NODE_RADIUS
 
@@ -68,7 +66,6 @@ function drawPath(d) {
         'Z'
     ].join(' ')
 
-    console.log(path);
     return path
 }
 

@@ -20,9 +20,6 @@ export default (simulation) => (actions, clickNoDrag) => {
 
             const { nodes } = this.props
 
-            console.log('calling dragstart...');
-            console.log(nodes);
-
             // simulation.stop()
             nodes.forEach(node => {
                 node.fx = node.x
@@ -40,7 +37,6 @@ export default (simulation) => (actions, clickNoDrag) => {
             d.fy = d3.event.y; 
 
             // TODO: instead just stop simulation, update node position and call tick manually - 2016-08-24
-            // console.log('calling tick...');
             // simulation.tick()
 
             const { nodes } = this.props
@@ -113,7 +109,6 @@ export default (simulation) => (actions, clickNoDrag) => {
             })
 
             if (!d3.event.active) {
-                console.log('restarting!');
                 simulation.alphaTarget(0);
                 simulation.alpha(0.8).restart();
             }

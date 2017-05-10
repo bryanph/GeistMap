@@ -53,8 +53,6 @@ module.exports = function(db, es) {
 
     return {
         // get: function(user, id, res) {
-        //     console.log("called get with id " + id);
-
         //     // TODO: patch db.cypher to use promises - 2016-05-29
         //     db.run(
         //         "MATCH (c:Collection) " +
@@ -181,7 +179,6 @@ module.exports = function(db, es) {
         //      * // TODO: can this call work? - 2016-07-13
         //      */
 
-        //     console.log("called getByIds with id " + ids);
         //     // TODO: don't get neighbours in this call? - 2016-07-13
 
         //     db.run(
@@ -265,9 +262,6 @@ module.exports = function(db, es) {
              * Create a new collection
              */
 
-            // console.log('called create...');
-            // console.log(data);
-
             data.author = user;
 
             // TODO: collections should be unique by name? - 2016-07-19
@@ -297,8 +291,6 @@ module.exports = function(db, es) {
             /*
              * Update properties of collection with id ${id}
              */
-
-            // console.log('called update... ' + id);
 
             const updatedData = _.pick(data, ['name', 'editorState', 'editorPlainText'])
 
@@ -363,8 +355,6 @@ module.exports = function(db, es) {
             // TODO: assert edge type is defined - 2016-04-02
             // TODO: How will we manage this? 2016-04-02
 
-            // console.log('called addNode...');
-
             if (typeof collectionId === 'string') {
                 collectionId = parseInt(collectionId)
             }
@@ -413,9 +403,6 @@ module.exports = function(db, es) {
                 //         "CREATE (tc)-[te]->(c)",
                 //         // "RETURN collect(se, tc) as edges",
                 // }, function(error, results2) {
-                //     console.log(results);
-                //     console.log(results2);
-                    
                 //     res(null, results[0].in)
                 // })
         },
@@ -424,8 +411,6 @@ module.exports = function(db, es) {
             /*
              * Remove node with id #{id} from collection
             */
-            // console.log("called removeNode...");
-
             if (typeof collectionId === 'string') {
                 collectionId = parseInt(collectionId)
             }
@@ -464,8 +449,6 @@ module.exports = function(db, es) {
             // TODO: Add an edge type argument - 2016-06-06
             // TODO: assert edge type is defined - 2016-04-02
             // TODO: How will we manage this? 2016-04-02
-
-            // console.log('called connect...');
 
             if (typeof collection1 === 'string') {
                 collection1 = parseInt(collection1)
@@ -532,8 +515,6 @@ module.exports = function(db, es) {
              * Remove edge with id ${id}
              */
 
-            // console.log("called removeEdge with id " + id);
-
             db.run(
                 "MATCH (u:User)--(:Collection)-[e]->(:Collection)--(u:User) " +
                 "WHERE u.id = {userId} " +
@@ -568,6 +549,7 @@ module.exports = function(db, es) {
                 index: config.es.collectionIndex,
                 // explain: true,
                 body: {
+                    "min_score": 0.1,
                     "query": {
                         "bool": {
                             "must": [

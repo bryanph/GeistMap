@@ -58,8 +58,6 @@ module.exports = function(db, es) {
 
     return {
         get: function(user, id, res) {
-            // console.log("called get with id " + id);
-
             // TODO: also need the outgoing edges for ContentLink - 2016-10-20
             db.run(
                 "MATCH (u:User)--(n:Node) " +
@@ -144,8 +142,6 @@ module.exports = function(db, es) {
              * // TODO: Check this call's performance - 2016-07-11
              */
 
-            // console.log("called getWithNeighbours with id " + id);
-
             db.run(
                 "MATCH (u:User)--(n:Node) " +
                 "WHERE u.id = {userId} AND id(n) = {id} " +
@@ -182,8 +178,6 @@ module.exports = function(db, es) {
              * Get node with id ${id} (including adjacent nodes distance of max 2 away)
              * // TODO: Check this call's performance - 2016-07-11
              */
-
-            // console.log("called getL2 with id " + id);
 
             // TODO: Limit the number of results and notify if the numer of results were limited for performance reasons- 2016-07-15
             db.run(
@@ -226,9 +220,6 @@ module.exports = function(db, es) {
              * Create a new node
              */
 
-            // console.log('called create...');
-            // console.log(data);
-
             data.author = user;
 
             db.run(
@@ -258,9 +249,6 @@ module.exports = function(db, es) {
              * clean-up later on, and provide persistence of sessions later on as well
              * // TODO: create nodes on client-side only, then persist later when user changes its name - 2016-07-23
             */
-
-//             console.log('called createBatchNode...');
-//             console.log(data);
 
             data.author = user;
 
@@ -382,8 +370,6 @@ module.exports = function(db, es) {
              * Permanently delete node with id #{id}
              */
 
-            // console.log("called removeNode with id " + id);
-
             // TODO: also prompt user to remove collections if they aren't referenced by any other nodes? - 2016-07-18
             db.run(
                 "MATCH (u:User)--(n:Node) " +
@@ -466,8 +452,6 @@ module.exports = function(db, es) {
             // TODO: assert edge type is defined - 2016-04-02
             // TODO: How will we manage this? 2016-04-02
 
-            // console.log('called connect...');
-
             if (typeof node1 === 'string') {
                 node1 = parseInt(node1)
             }
@@ -525,8 +509,6 @@ module.exports = function(db, es) {
             // TODO: Need to store extra info about the text? - 2016-06-25
             // TODO: How to deal with overlapping edge content? - 2016-06-25
 
-            // console.log('called addEdge...');
-
             if (typeof node1 === 'string') {
                 node1 = parseInt(node1)
             }
@@ -573,8 +555,6 @@ module.exports = function(db, es) {
              * Remove edge with id ${id}
              */
 
-            // console.log("called removeEdge with id " + id);
-
             db.run(
                 "MATCH (u:User)--(:Node)-[e]->(:Node)--(u:User) " +
                 "WHERE u.id = {userId} " +
@@ -601,6 +581,7 @@ module.exports = function(db, es) {
             es.search({
                 index: config.es.nodeIndex,
                 body: {
+                    "min_score": 0.1,
                     "query": {
                         "bool": {
                             "must": [
@@ -659,6 +640,7 @@ module.exports = function(db, es) {
             es.search({
                 index: [config.es.nodeIndex, config.es.collectionIndex],
                 body: {
+                    "min_score": 0.1,
                     "query": {
                         "bool": {
                             "must": [

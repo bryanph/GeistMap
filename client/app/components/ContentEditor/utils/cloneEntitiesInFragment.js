@@ -10,7 +10,6 @@ export default function cloneEntitiesInFragment(fragment, customEntityMap) {
         block.getCharacterList().forEach(character => {
             const key = character.getEntity();
             if (key !== null) {
-                // console.log(key);
                 // entities[key] = Entity.get(key);
                 entities[key] = customEntityMap ? customEntityMap[key] : Entity.get(key);
             }

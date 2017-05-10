@@ -60,8 +60,6 @@ const EmailConfirmation  = React.createClass({
         validationErrors,
     } = this.state
 
-    console.log(this.props);
-
     return (
 
         <div className="interact panel with-logo">
@@ -109,8 +107,6 @@ export const EmailConfirmationForm = React.createClass({
   },
 
   render: function() {
-      console.log(this.props);
-    
     return (
         <form id="email_confirmation-form" ref={c => this._form = c}>
             <TextField

@@ -54,8 +54,6 @@ export const Login = React.createClass({
             } = this.props
 
 
-            console.log(this.props);
-
             const {
                 errors,
                 validationErrors,

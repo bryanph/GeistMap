@@ -36,9 +36,6 @@ module.exports = function(app, db, redisClient, es) {
 
     return {
         updateUi: function(user, uiState, res) {
-            console.log('called updateUi');
-            console.log(uiState);
-
             return User
                 .findOneAndUpdate({_id: user._id}, {$set: { uiState: uiState }}, { new: true })
                 .exec()
@@ -61,8 +58,6 @@ module.exports = function(app, db, redisClient, es) {
                 })
                 // expire token after 10 minutes
                 redisClient.expire(token, 60 * 10)
-
-                console.log("generated token", token, socket.id, user.id);
 
                 res(null, token)
             })

@@ -15,7 +15,6 @@ import AccountVerification, { VerificationResendSuccess } from './Verification'
 // const foundation = require('foundation-sites')
 
 // $(document).foundation();
-// console.log(foundation)
 import "../scss/landing.scss"
 
 // TODO: get config in context somehow - 2016-08-11

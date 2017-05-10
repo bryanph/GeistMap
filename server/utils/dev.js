@@ -12,7 +12,6 @@ function printTrace(x) {
 }
 
 function print(x) {
-    console.log(x);
     return x
 }
 

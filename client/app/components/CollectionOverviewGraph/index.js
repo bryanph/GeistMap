@@ -37,8 +37,6 @@ class CollectionExploreGraph extends React.Component {
 
         let { nodes, links } = nextProps
 
-        // console.log(`in update with ${nodes.length} nodes and ${links.length} links`);
-
         const maxNodeCount = d3.max(nodes, (d) => d.count)
         const radiusScale = d3.scaleLinear().domain([0, maxNodeCount]).range([10, 20])
 
@@ -137,7 +135,6 @@ class CollectionExploreGraph extends React.Component {
         }
 
         setTimeout(() => {
-            console.log(this.props.selected);
             colorNode(d3.select(`#node-${this.props.selected}`))
         }, 0)
     }

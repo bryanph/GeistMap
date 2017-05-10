@@ -16,14 +16,12 @@ import Spinner from '../../components/Spinner'
 class CollectionEditor extends React.Component {
 
     componentWillMount() {
-        console.log('loading collection..');
         this.props.loadCollection(this.props.id)
     }
 
     componentWillReceiveProps(nextProps) {
         // TODO: set active collection if id is set - 2016-10-05
         if (nextProps.id && this.props.id !== nextProps.id) {
-            console.log('loading collection...');
             this.props.loadCollection(nextProps.id)
         }
     }

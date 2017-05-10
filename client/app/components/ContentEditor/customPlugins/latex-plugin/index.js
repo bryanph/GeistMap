@@ -64,11 +64,7 @@ function texHandleKeyCommand(command: string, { getEditorState, setEditorState }
 
     //     const fragments = getFragmentFromSelection(editorState)
 
-    //     console.log("setting fragments...", fragments);
-
     //     const rawBlocks = convertBlocksToRaw(contentState, fragments)
-
-    //     console.log("raw blocks...", rawBlocks);
 
 
     //     window.localStorage.setItem('draftjs-copyState', JSON.stringify(rawBlocks))
@@ -99,8 +95,6 @@ export default (config = {}) => {
                 const fragments = getFragmentFromSelection(editorState)
                 let rawBlocks = convertBlocksToRaw(contentState, fragments)
                 rawBlocks.editorKey = getEditorKey()
-
-                // console.log(rawBlocks);
 
                 window.localStorage.setItem('draftjs-copyState', JSON.stringify(rawBlocks))
                 
@@ -283,7 +277,6 @@ export default (config = {}) => {
                     };
                 }
                 // if (block.getType() === 'inline-latex') {
-                //     console.log('with inline...');
                 //     return {
                 //         component: TeXBlock,
                 //         editable: false,

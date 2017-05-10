@@ -12,8 +12,6 @@ export default (zoom, actions) => {
 
             const data = node.datum()
 
-            console.log('called nodeClickNoDrag in graph/events.js...');
-
             actions.loadNode(data.id, true)
                 .then(() => actions.showGraphSideBar(data.id))
                 .then(() => window.scrollTo(0, 0))

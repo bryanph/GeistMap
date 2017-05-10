@@ -103,8 +103,6 @@ export default (config = {}) => {
                         }
                     }
                     // } else if (type === 'atomic') {
-                    //     console.log("Returning atomic!!!");
-                    //     console.log(contentBlock.getData());
                     //     return {
                     //         component: Media,
                     //         editable: false,

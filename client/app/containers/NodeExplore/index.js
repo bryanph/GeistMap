@@ -71,7 +71,6 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
 
     connectNodes(from, to) {
         // TODO: temporarity until we get a better solution... - 2016-07-29
-        console.log(`called connectNodes from ${from} to ${to}`);
 
         this.props.connectNodes(from, to)
             .then(() => loadData(this.props))
@@ -125,8 +124,6 @@ import { getNode, getL2Nodes, getL2Edges } from '../../reducers'
 
 function mapStateToProps(state, props) {
     const id = (props.params && props.params.id) || props.id
-
-    // console.log('changed route? ', id);
 
     return {
         id: id,

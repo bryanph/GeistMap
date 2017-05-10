@@ -414,8 +414,6 @@ export function fetchRemoveEdge(id, start, end) {
 }
 export function removeEdge(id) {
     // i need to know the from. and to properties of the edge, how to pass?
-    console.log("removing edge with id ", id);
-
     return (dispatch, getState) => {
         // get from, to edge id's then dispatch them to fetchRemoveEdge
         const edge = getEdge(getState(), id)

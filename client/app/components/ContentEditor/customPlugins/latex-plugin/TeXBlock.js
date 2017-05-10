@@ -139,7 +139,6 @@ export default class TeXBlock extends React.Component {
         };
         this._startEdit = () => {
             // TODO: why is a timeout needed here? - 2016-08-22
-            console.log(this.refs.textarea);
             setTimeout(() => this.refs.textarea.textarea.focus(), 0)
             const onStartEdit = this.props.onStartEdit || this.props.blockProps.onStartEdit
             onStartEdit(this.props.entityKey || this.props.block.getKey(), this.props.inline);

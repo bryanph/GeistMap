@@ -77,11 +77,7 @@ function notifyUser(req, res, next) {
         }
     })
 
-    console.log(fileObjects);
-    console.log("notifying user...");
-
     socket.emit('mobileUpload', fileObjects, (ack) => {
-        console.log("got ack!", ack);
         if (!ack) {
             // remove all files
             files.forEach((file) => {

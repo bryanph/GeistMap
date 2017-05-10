@@ -74,7 +74,6 @@ class extends React.Component {
             />
         ))
 
-        console.log(searchResults);
         const directMatch = _.find(searchResults, (r) => r._source.title === searchValue)
 
         // TODO: make this div free-floating relative to some defined block - 2016-07-11

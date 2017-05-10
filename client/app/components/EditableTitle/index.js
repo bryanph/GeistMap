@@ -18,7 +18,6 @@ import './styles.css'
 //         type='text' {...props} 
 //         ref={(input) => {
 //             if (input) {
-//                 console.log(input.refs.textarea);
 //                 input.refs.textarea.select()
 //             }
 //         }}
@@ -83,7 +82,6 @@ class EditableTitle extends React.Component {
 
     onClick(e) {
         this.setState({ editable: true }, () => {
-            console.log(this.refs.input);
             // this.refs.input.select()
         })
     }

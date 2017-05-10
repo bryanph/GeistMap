@@ -51,7 +51,6 @@ export default function createSocketMiddleware(_socket) {
             response => {
                 // check if a new request has been made in the meantime, then discard
                 if (preserveOrder && requestCount < store.getState().requestCount[requestType]) {
-                    console.log('discarding response......');
                     return null
                 }
 

@@ -17,8 +17,6 @@ import { Link } from 'react-router'
 
 import { primaryColor, lightTextColor } from '../App/muitheme.js'
 
-console.log(lightTextColor);
-
 const styles = {
     drawer: {
         backgroundColor: primaryColor,

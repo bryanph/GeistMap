@@ -5,9 +5,7 @@ export default (root, viewboxWidth, viewboxHeight, allowZoomIn=false) => {
     const zoom = d3.zoom()
         .scaleExtent([1/4, 2])
         .on('zoom', function () {
-            // console.log("zoom", d3.event.transform);
             root.attr("transform", d3.event.transform)
-            // console.trace("zoom", d3.event.translate, d3.event.scale);
             // root.attr('transform',
             //     'translate(' + d3.event.translate + ')'
             //         +   'scale(' + d3.event.scale     + ')');
@@ -29,15 +27,6 @@ export default (root, viewboxWidth, viewboxHeight, allowZoomIn=false) => {
         var scale = (paddingPercent || 0.75) / Math.max(width / fullWidth, height / fullHeight);
         if (!allowZoomIn && scale > 1) return
         var translate = [fullWidth / 2 - scale * midX, fullHeight / 2 - scale * midY];
-
-        // console.log(root.node());
-        // console.log(bbox);
-        // console.log("fullwidth/height", fullWidth, fullHeight);
-        // console.log("width, height",width, height);
-        // console.log("bbox x,y", bbox.x, bbox.y);
-        // console.log("midpoints", midX, midY);
-        console.log(transitionDuration);
-        console.log("actual translate", translate, scale);
 
         function transform() {
             return d3.zoomIdentity

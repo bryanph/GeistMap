@@ -9,7 +9,6 @@ export default function enhancedFetch(url, options={}) {
 
    options.credentials= 'same-origin'
 
-   console.log(options.headers);
    if(typeof options.body !== 'string') {
       options.body = JSON.stringify(options.body);
    }

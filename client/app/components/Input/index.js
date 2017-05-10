@@ -19,9 +19,7 @@ export function controlled(InputComponent) {
         }
 
         // componentWillReceiveProps(nextProps) {
-        //     console.log(nextProps);
         //     if (nextProps.value !== this.state.value) {
-        //         console.log(nextProps.value);
         //         this.setState({ value: nextProps.value })
         //     }
         // }

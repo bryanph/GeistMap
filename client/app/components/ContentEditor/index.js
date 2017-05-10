@@ -252,8 +252,6 @@ class RichEditor extends React.Component {
                         }
 
                         return selectedBlocks.every(block => {
-                            // console.log(block.getType());
-                            // console.log(blockContainsEntityType(block, 'inline-latex'));
                             return ['unstyled', 'header-three', 'header-four', 'header-five', 'blockquote', 'code-block', 'unordered-list-item', 'ordered-list-item'].includes(block.getType()) && block.getText() !== '' 
                             // return !blockContainsEntityType(block, 'inline-latex') 
                                 // && block.getType() === 'unstyled'
@@ -285,7 +283,6 @@ class RichEditor extends React.Component {
         // editorState set globally
         // by default, force this state transition
         if (this.props.globalEditorState !== nextProps.globalEditorState) {
-            console.log('globalEditorState was changed!!!');
             this.onChange(nextProps.globalEditorState, null, true)
         }
     }
@@ -325,8 +322,6 @@ class RichEditor extends React.Component {
         // diff the previous entities and the current entities
         const added = _.difference(entities, prevEntities)
         const removed = _.difference(prevEntities, entities)
-
-        // console.log('added!', added);
 
         const addedPromises = added.map((entityKey) => {
             // add this entity remotely on the server

@@ -36,8 +36,6 @@ class CollectionDetailGraph extends React.Component {
         */
         let { nodes, links } = nextProps
 
-        // console.log(`in update with ${nodes.length} nodes and ${links.length} links`);
-
         const nodeById = d3.map()
 
         // set extra properties here
