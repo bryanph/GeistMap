@@ -1,9 +1,9 @@
 
 
-import _ from 'lodash'
-import fs from 'fs'
-import crypto from 'crypto'
-import config from "../../config/config.js"
+const _ = require('lodash')
+const fs = require('fs')
+const crypto = require('crypto')
+const config = require("../../config/config.js")
 
 const removeFile = function(req, res, next) {
     const fileName = req.body.fileName

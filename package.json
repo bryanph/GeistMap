@@ -51,7 +51,6 @@
     "numeral": "~1.5.3",
     "promptly": "^2.2.0",
     "qrcode.react": "^0.6.1",
-    "radium": "^0.17.1",
     "react": "~15.0.0",
     "react-addons-css-transition-group": "^15.3.2",
     "react-autosize-textarea": "^0.3.2",
@@ -129,7 +128,7 @@
     "build:drywall": "grunt build",
     "build:scss": "cat client/scss/app.scss | node-sass --include-path public/ --include-path client/scss --output-style expanded > public/css/app.css",
     "watch:client": "webpack --progress --colors --watch",
-    "watch:server": "NODE_ENV=development nodemon --debug --watch server index.js",
+    "watch:server": "NODE_ENV=development nodemon --inspect --watch server index.js",
     "webpack-dev-server": "NODE_ENV=development node server-dev",
     "dev": "parallelshell 'npm run webpack-dev-server' 'npm run watch:server'",
     "generate": "plop --plopfile tools/generators/index.js"

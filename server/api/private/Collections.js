@@ -1,17 +1,16 @@
 
 "use strict"
 
-import DatabaseContainer from '../../utils/DatabaseContainer'
-import _ from 'lodash'
+const _ = require('lodash')
 const neo4j = require('neo4j-driver').v1
 
-import config from '../../config/config'
-import { print, printTrace } from '../../utils/dev'
+const config = require('../../config/config')
+const { print, printTrace } = require('../../utils/dev')
 
-import {
+const {
     updateCollectionIndex,
     removeCollectionDocument,
-} from '../../fulltext'
+} = require('../../fulltext')
 
 function handleError(error) {
     console.log(error);
@@ -45,7 +44,7 @@ function mapEdges(node) {
     return node
 }
 
-export default function(db, es) {
+module.exports = function(db, es) {
     /*
      * initialize with
      * db: Neo4j database instance
@@ -155,16 +154,20 @@ export default function(db, es) {
                 const edges = results[1].records[0].get(0).map(mapEdges)
                 const nodes = results[2].records[0].get(0) === null ?
                     [] : 
-                    results[2].records.map(row => ({
-                        ...mapIdentity(row.get(0)),
-                        collections: row.get(1).map(x => x.toString()), // ids for collections
-                    }))
+                    results[2].records.map(row => (
+                        Object.assign({},
+                            mapIdentity(row.get(0)),
+                            {
+                                collections: row.get(1).map(x => x.toString()), // ids for collections
+                            }
+                        )
+                    ))
 
                 return res(null, {
-                    collection: {
-                        ...collection,
-                        nodes,
-                    },
+                    collection: Object.assign({},
+                        collection,
+                        { nodes }
+                    ),
                     edges
                 })
             })
@@ -228,13 +231,15 @@ export default function(db, es) {
                 }
             )
             .then((results) => {
-
-                return res(null, results.records.map(row => ({
-                        ...mapIdentity(row.get(0)),
-                        edges: _.flatten(row.get(1)).map(mapEdges),
-                        count: row.get(2).toNumber(),
-                    }))
-                )
+                return res(null, results.records.map(row => (
+                    Object.assign({},
+                        mapIdentity(row.get(0)),
+                        {
+                            edges: _.flatten(row.get(1)).map(mapEdges),
+                            count: row.get(2).toNumber(),
+                        }
+                    )
+                )))
             })
             .catch(handleError)
         },
@@ -560,7 +565,7 @@ export default function(db, es) {
             //    res(null, body.hits.hits)
            // })
             es.search({
-                index: 'collections',
+                index: config.es.collectionIndex,
                 // explain: true,
                 body: {
                     "query": {

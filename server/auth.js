@@ -1,6 +1,6 @@
-import passport from 'passport'
-import Account from './models/Account'
-import config from './config/config'
+const passport = require('passport')
+const Account = require('./models/Account')
+const config = require('./config/config')
 
 var LocalStrategy = require('passport-local').Strategy;
 var TwitterStrategy = require('passport-twitter').Strategy;

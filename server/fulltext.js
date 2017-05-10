@@ -1,16 +1,18 @@
+const config = require('./config/config')
 
-const nodeIndex = 'nodes'
-const collectionIndex = 'collections'
+const nodeIndex = config.es.nodeIndex
+const collectionIndex = config.es.collectionIndex
 
-// TODO: also index on collections - 2016-07-11
-// TODO: also index on draftjs text - 2016-07-11
-export function updateIndex(es, user, node) {
+const nodeMappingType = config.es.nodeMappingType
+const collectionMappingType = config.es.collectionMappingType
+
+exports.updateIndex = function updateIndex(es, userid, node) {
     return es.index({
-        index: 'nodes',
-        type: 'node',
+        index: nodeIndex,
+        type: nodeMappingType,
         id: node.id,
         body: {
-            user: user._id.toString(),
+            user: userid,
             title: node.properties.name,
             content: node.properties.editorPlainText,
             // collections: node.collections
@@ -20,20 +22,20 @@ export function updateIndex(es, user, node) {
     .catch(error => console.error(error))
 }
 
-export function removeNodeDocument(es, id) {
+exports.removeNodeDocument = function removeNodeDocument(es, id) {
     return es.delete({
-        index: 'nodes',
-        type: 'node',
+        index: nodeIndex,
+        type: nodeMappingType,
         id: id,
     })
     .then(res => console.log(res))
     .catch(error => console.error(error))
 }
 
-export function updateCollectionIndex(es, user, collection) {
+exports.updateCollectionIndex = function updateCollectionIndex(es, user, collection) {
     return es.index({
-        index: 'collections',
-        type: 'collection',
+        index: collectionIndex,
+        type: collectionMappingType,
         id: collection.id,
         body: {
             user: user._id.toString(),
@@ -47,10 +49,10 @@ export function updateCollectionIndex(es, user, collection) {
     .catch(error => console.error(error))
 }
 
-export function removeCollectionDocument(es, id) {
+exports.removeCollectionDocument = function removeCollectionDocument(es, id) {
     return es.delete({
-        index: 'collections',
-        type: 'collection',
+        index: collectionIndex,
+        type: collectionMappingType,
         id: id,
     })
     .then(res => console.log(res))

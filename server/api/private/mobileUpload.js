@@ -1,12 +1,12 @@
 
-import fs from 'fs'
-import crypto from 'crypto'
-import config from "../../config/config.js"
-import io from 'socket.io'
+const fs = require('fs')
+const crypto = require('crypto')
+const config = require("../../config/config.js")
+const io = require('socket.io')
 
 const multer = require('multer');
 
-import { upload, checkSpace, uploadResponse } from './upload'
+const { upload, checkSpace, uploadResponse } = require('./upload')
 
 function checkMobileToken(req, res, next) {
     const redisClient = req.redisClient
@@ -102,9 +102,9 @@ function notifyUser(req, res, next) {
     
 }
 
-export const mobileUploadMiddleware = [ checkMobileToken, upload, checkSpace, notifyUser, uploadResponse ]
+exports.mobileUploadMiddleware = [ checkMobileToken, upload, checkSpace, notifyUser, uploadResponse ]
 
-export const mobileUploadView = (req, res) => {
+exports.mobileUploadView = (req, res) => {
     return res.render("mobileUpload/index", {
         token: req.params.token
     })

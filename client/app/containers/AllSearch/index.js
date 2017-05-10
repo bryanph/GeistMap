@@ -38,7 +38,7 @@ class extends React.Component {
             <ListItem 
                 onTouchTap={() => this.onClick(result)}
                 primaryText={result._source.title || result._source.name}
-                secondaryText={result._index === 'collections' ? "Collection" : "Node"}
+                secondaryText={result._index === 'collections2' ? "Collection" : "Node"}
             />
         ))
 

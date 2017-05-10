@@ -1,24 +1,22 @@
 "use strict"
 
-import path from "path"
-import fs from "fs"
-import redis from "redis"
-import express from "express"
-import bodyParser from 'body-parser'
-import http from 'http'
-import socket_io from "socket.io"
-// import passportSocketIo from "passport.socketio"
-import session from 'express-session'
-import cookieParser from 'cookie-parser'
-import connect_mongo from "connect-mongo"
-import connectRedis from "connect-redis";
+const path = require("path")
+const fs = require("fs")
+const redis = require("redis")
+const express = require("express")
+const bodyParser = require('body-parser')
+const http = require('http')
+const socket_io = require("socket.io")
+const session = require('express-session')
+const cookieParser = require('cookie-parser')
+const connect_mongo = require("connect-mongo")
+const connectRedis = require("connect-redis")
 const neo4j = require('neo4j-driver').v1
-import elasticsearch from 'elasticsearch'
-import mongoose from "mongoose"
+const elasticsearch = require('elasticsearch')
+const mongoose = require("mongoose")
 mongoose.Promise = global.Promise; // use ES6 promises
 
-import config from "./config/config.js"
-import DatabaseContainer from './utils/DatabaseContainer'
+const config = require("./config/config.js")
 
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
@@ -92,7 +90,7 @@ app.db.once('open', function () {
       //and... we have a data store
     });
 
-import authConfig from './config/auth'
+const authConfig = require('./config/auth')
 const { setupAuthMiddleware } = require('full-auth-middleware')
 
 const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, authConfig)
@@ -112,13 +110,9 @@ const es = elasticsearch.Client({
   }]
 })
 
-DatabaseContainer.setDb(db);
-DatabaseContainer.setIo(io);
-
-
-import createCollectionAPI from "./api/private/Collections"
-import createNodeAPI from './api/private/Node'
-import createUserAPI from './api/private/User'
+const createCollectionAPI = require("./api/private/Collections")
+const createNodeAPI = require('./api/private/Node')
+const createUserAPI = require('./api/private/User')
 
 const NodeAPI = createNodeAPI(db, es)
 const CollectionAPI = createCollectionAPI(db, es)

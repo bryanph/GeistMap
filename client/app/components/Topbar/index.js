@@ -160,11 +160,13 @@ class Topbar extends React.Component {
     }
 
     navigate(result) {
+        console.log('called!');
+        console.log(result);
         const id  = result._id
-        if(result._index === "collections") {
+        if(result._index === "collections2") { // TODO: do this differently - 2017-05-10
             this.props.router.push(`/app/collections/${id}`)
         } 
-        else if (result._index === 'nodes') {
+        else if (result._index === 'nodes2') { // TODO: do this differently - 2017-05-10
             this.props.router.push(`/app/nodes/${id}/edit`)
         }
     }

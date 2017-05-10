@@ -3,8 +3,6 @@ const Async = require('async');
 const promptly = require('promptly');
 
 const config = require('../server/config/config.js')
-const authConfig = require('../server/config/auth')
-const { setupAuthMiddleware } = require('full-auth-middleware')
 
 const mongoose = require('mongoose')
 mongoose.Promise = global.Promise; // use ES6 promises
@@ -15,16 +13,16 @@ const app = { db } // mock express app object for now...
 db.on('error', (error) => console.error('mongoose connection error: ' + error.message));
 db.once('open', () => {
 
-    require('full-auth-middleware/schema/Note')(app, mongoose, authConfig);
-    require('full-auth-middleware/schema/Status')(app, mongoose, authConfig);
-    require('full-auth-middleware/schema/StatusLog')(app, mongoose, authConfig);
-    require('full-auth-middleware/schema/Category')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/Note')(app, mongoose, config);
+    require('full-auth-middleware/schema/Status')(app, mongoose, config);
+    require('full-auth-middleware/schema/StatusLog')(app, mongoose, config);
+    require('full-auth-middleware/schema/Category')(app, mongoose, config);
 
-    require('full-auth-middleware/schema/User')(app, mongoose, authConfig);
-    require('full-auth-middleware/schema/Admin')(app, mongoose, authConfig);
-    require('full-auth-middleware/schema/AdminGroup')(app, mongoose, authConfig);
-    require('full-auth-middleware/schema/Account')(app, mongoose, authConfig);
-    require('full-auth-middleware/schema/LoginAttempt')(app, mongoose, authConfig);
+    require('full-auth-middleware/schema/User')(app, mongoose, config);
+    require('full-auth-middleware/schema/Admin')(app, mongoose, config);
+    require('full-auth-middleware/schema/AdminGroup')(app, mongoose, config);
+    require('full-auth-middleware/schema/Account')(app, mongoose, config);
+    require('full-auth-middleware/schema/LoginAttempt')(app, mongoose, config);
 
     Async.auto({
         rootEmail: (done) => {

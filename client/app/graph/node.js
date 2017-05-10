@@ -45,7 +45,6 @@ export default (options={}) => (enter=[], update=[], exit=[]) => {
                     .attr("x", -8)
                     .attr("y", -8)
                     .style("fill", d => {
-                        console.log(d.collections);
                         if (!d.collections) {
                             return colora(d.group)
                         }
@@ -64,7 +63,6 @@ export default (options={}) => (enter=[], update=[], exit=[]) => {
             selection.classed('enter-selection', false)
 
             if (selection.size() > 0) {
-                console.log("in enter selection: " + selection.size());
                 // new nodes were added
                 // TODO: is there an on-render event? bind to that instead - 2016-07-28
                 setTimeout(() => options.zoom(options.paddingPercent || 0.95, 1000), 1000)

@@ -1,4 +1,4 @@
-import path from "path"
+const path = require("path")
 
 const env = process.env.NODE_ENV;
 
@@ -32,4 +32,4 @@ const config = {
     "uploadLimit": 2 * Math.pow(2,30), // 2Gb, for now for free users?
 }
 
-export default config
+module.exports = config

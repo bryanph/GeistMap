@@ -1,13 +1,13 @@
 
-import _ from 'lodash'
-import fs from 'fs'
-import crypto from 'crypto'
-import config from "../../config/config.js"
+const _ = require('lodash')
+const fs = require('fs')
+const crypto = require('crypto')
+const config = require("../../config/config.js")
 
 const multer = require('multer');
 
 
-export const checkSpace = function(req, res, next) {
+const checkSpace = function(req, res, next) {
     const user = req.user
     const files = req.files;
 
@@ -51,7 +51,7 @@ const filterFiles = (req, file, cb) => {
     cb(null, true)
 }
 
-export const upload = multer({
+const upload = multer({
     storage : storage,
     limits: {
         fields: 10,
@@ -62,7 +62,7 @@ export const upload = multer({
 }).array('files', 1);
 
 // TODO: make files private for user - 2016-06-26
-export const uploadResponse = function(req, res) {
+const uploadResponse = function(req, res) {
     const files = req.files;
     const user = req.user
 
@@ -104,5 +104,9 @@ export const uploadResponse = function(req, res) {
 
 }
 
-export default [ upload, checkSpace, uploadResponse ]
+module.exports = { 
+    upload,
+    checkSpace,
+    uploadResponse 
+}
 

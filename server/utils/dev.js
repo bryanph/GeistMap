@@ -6,12 +6,17 @@
  * For use with promises
 */
 
-export function printTrace(x) {
+function printTrace(x) {
     console.error(x.stack)
     return x
 }
 
-export function print(x) {
+function print(x) {
     console.log(x);
     return x
+}
+
+module.exports = {
+    printTrace,
+    print
 }

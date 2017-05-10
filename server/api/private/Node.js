@@ -2,17 +2,16 @@
 
 "use strict"
 
-import DatabaseContainer from '../../utils/DatabaseContainer'
-import _ from 'lodash'
+const _ = require('lodash')
 const neo4j = require('neo4j-driver').v1
 
-import config from '../../config/config'
-import { print, printTrace } from '../../utils/dev'
+const config = require('../../config/config')
+const { print, printTrace } = require('../../utils/dev')
 
-import {
+const {
     updateIndex,
     removeNodeDocument,
-} from '../../fulltext'
+} = require('../../fulltext')
 
 function handleError(error) {
     if (error.stack) {
@@ -50,7 +49,7 @@ function mapEdges(node) {
 }
 
 
-export default function(db, es) {
+module.exports = function(db, es) {
     /*
      * initialized with
      * db: Neo4j database instance
@@ -80,10 +79,10 @@ export default function(db, es) {
                 const collections = results.records[0]._fields[1].map(mapIdentity)
 
                 res(null, {
-                    node: {
-                        ...mapIdentity(results.records[0]._fields[0]),
-                        collections: collections.map(x => x.id)
-                    },
+                    node: Object.assign({},
+                        mapIdentity(results.records[0]._fields[0]),
+                        { collections: collections.map(x => x.id) }
+                    ),
                     collections,
                 })
             })
@@ -166,10 +165,10 @@ export default function(db, es) {
                 const collections = results.records[0]._fields[3].map(mapIdentity)
 
                 res(null, {
-                    node: {
-                        ...mapIdentity(results.records[0]._fields[0]),
-                        collections: collections.map(x => x.id),
-                    },
+                    node: Object.assign({},
+                        mapIdentity(results.records[0]._fields[0]),
+                        { collections: collections.map(x => x.id) }
+                    ),
                     connectedNodes: results.records[0]._fields[1].map(mapIdentity),
                     edges: results.records[0]._fields[2].map(mapEdges),
                     collections,
@@ -208,10 +207,10 @@ export default function(db, es) {
                 // const collections = results.records[0]._fields[3].map(mapIdentity)
 
                 res(null, {
-                    node: {
-                        ...mapIdentity(results.records[0]._fields[0]),
-                        collections: results.records[0]._fields[3].map(mapIdentity),
-                    },
+                    node: Object.assign({},
+                        mapIdentity(results.records[0]._fields[0]),
+                        { collections: results.records[0]._fields[3].map(mapIdentity) }
+                    ),
                     connectedNodes: results.records[0]._fields[1].map(mapIdentity),
                     // TODO: do this in neo4j instead - 2016-07-18
                     edges: _.flatMap(results.records[0]._fields[2]).map(mapEdges),
@@ -247,7 +246,7 @@ export default function(db, es) {
                 res(null, result)
 
                 // now update ES indexes
-                updateIndex(es, user, result)
+                updateIndex(es, user._id.toString(), result)
                     
             })
             .catch(handleError)
@@ -280,7 +279,7 @@ export default function(db, es) {
                 res(null, result)
 
                 // now update ES indexes
-                updateIndex(es, user, result)
+                updateIndex(es, user._id.toString(), result)
                     
             })
             .catch(handleError)
@@ -305,13 +304,17 @@ export default function(db, es) {
             )
             .then((results) => {
                 // TODO: we shouldn't need collect() - 2016-07-23
+                //
 
-                return res(null, results.records.map(row => ({
-                        ...mapIdentity(row.get(0)),
-                        collections: row.get(1).map(mapIdentity),
-                        edges: row.get(2).map(mapEdges),
-                    }))
-                )
+                return res(null, results.records.map( row => (
+                    Object.assign({},
+                        mapIdentity(row.get(0)),
+                        {
+                            collections: row.get(1).map(mapIdentity),
+                            edges: row.get(2).map(mapEdges),
+                        }
+                    )
+                )))
             })
             .catch(handleError)
         },
@@ -369,7 +372,7 @@ export default function(db, es) {
                 res(null, result)
 
                 // now update ES indexes...
-                updateIndex(es, user, result)
+                updateIndex(es, user._id.toString(), result)
             })
             .catch(handleError)
         },
@@ -428,13 +431,17 @@ export default function(db, es) {
                 const node = mapIdentity(results.records[0]._fields[0])
                 const collections = results.records[0]._fields[1].map(mapIdentity)
 
-                res(null, {
-                    ...node,
-                    collections,
-                })
+                res(null, Object.assign(node,
+                    { collections }
+                ))
+
+                // res(null, {
+                //     ...node,
+                //     collections,
+                // })
 
                 // now update ES indexes
-                updateIndex(es, user, node)
+                updateIndex(es, user._id.toString(), node)
             })
             .catch(handleError)
         },
@@ -592,7 +599,7 @@ export default function(db, es) {
             */
 
             es.search({
-                index: 'nodes',
+                index: config.es.nodeIndex,
                 body: {
                     "query": {
                         "bool": {
@@ -650,7 +657,7 @@ export default function(db, es) {
             */
 
             es.search({
-                index: ['nodes', 'collections'],
+                index: [config.es.nodeIndex, config.es.collectionIndex],
                 body: {
                     "query": {
                         "bool": {

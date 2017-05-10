@@ -1,20 +1,20 @@
 "use strict"
 
-import DatabaseContainer from '../../utils/DatabaseContainer'
-import _ from 'lodash'
+const _ = require('lodash')
 const neo4j = require('neo4j-driver').v1
 
-import config from '../../config/config'
-import { print, printTrace } from '../../utils/dev'
+const config = require('../../config/config')
+const { print, printTrace } = require('../../utils/dev')
 
-import {
+const {
     updateIndex,
     removeNodeDocument,
-} from '../../fulltext'
+} = require('../../fulltext')
 
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 mongoose.Promise = global.Promise; // use ES6 promises
-import crypto from 'crypto'
+
+const crypto = require('crypto')
 
 
 function handleError(error) {
@@ -26,7 +26,7 @@ function handleError(error) {
     }
 }
 
-export default function(app, db, redisClient, es) {
+module.exports = function(app, db, redisClient, es) {
     /*
      * initialized with
      * db: Neo4j database instance

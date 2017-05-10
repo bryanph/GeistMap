@@ -3,11 +3,11 @@
 */
 var passport = require('passport')
 
-import { middleware } from 'full-auth-middleware'
-import uploadMiddleware from './api/private/upload'
-import { mobileUploadMiddleware, mobileUploadView } from './api/private/mobileUpload.js'
-import config from "./config/config.js"
-import express from "express"
+const { middleware } = require('full-auth-middleware')
+const { upload, checkSpace, uploadResponse } = require('./api/private/upload')
+const { mobileUploadMiddleware, mobileUploadView } =  require('./api/private/mobileUpload.js')
+const config = require('./config/config.js')
+const express = require('express')
 
 const stats = require('../stats.json')
 
@@ -71,7 +71,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
     /*
      * Upload
     */
-    app.post('/upload', middleware.ensureVerified, uploadMiddleware)
+    app.post('/upload', middleware.ensureVerified, [ upload, checkSpace, uploadResponse ])
     app.post('/upload/remove', middleware.ensureVerified, require('./api/private/removeFile'))
 
     
