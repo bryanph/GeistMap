@@ -30,6 +30,16 @@ const config = {
 
     "uploadDir": path.join(process.cwd(), 'assets/uploads'),
     "uploadLimit": 2 * Math.pow(2,30), // 2Gb, for now for free users?
+
+    "es": {
+        // TODO: instead use aliases in ES? - 2017-05-10
+        // so make 'nodes' map to whatever index
+        nodeIndex: 'nodes2',
+        nodeMappingType: 'node_type',
+
+        collectionIndex: 'collections2',
+        collectionMappingType: 'collection_type',
+    }
 }
 
 module.exports = config
