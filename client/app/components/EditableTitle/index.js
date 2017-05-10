@@ -9,8 +9,6 @@ import enhanceWithClickOutside from 'react-onclickoutside'
 import { DebouncedTextField } from '../../components/Input'
 
 import { controlled, debounced } from '../../components/Input'
-import Textarea from 'react-autosize-textarea'
-var TextareaAutosize = require('react-autosize-textarea');
 
 import './styles.css'
 // export const InputText = (props) => (

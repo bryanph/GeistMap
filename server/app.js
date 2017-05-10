@@ -9,7 +9,6 @@ const http = require('http')
 const socket_io = require("socket.io")
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
-const connect_mongo = require("connect-mongo")
 const connectRedis = require("connect-redis")
 const neo4j = require('neo4j-driver').v1
 const elasticsearch = require('elasticsearch')
@@ -42,9 +41,6 @@ let io = socket_io(server)
 */
 const redisClient = redis.createClient()
 redisClient.on('error', (error) => console.error(error))
-
-// const MongoStore = connect_mongo(session)
-// let sessionStore = new MongoStore(config.database)
 
 const RedisStore = connectRedis(session)
 var sessionStore = new RedisStore({ client: redisClient });

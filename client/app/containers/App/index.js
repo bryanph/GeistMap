@@ -15,7 +15,6 @@ import getMuiTheme from '../../containers/App/muitheme.js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { HotKeys } from 'react-hotkeys'
-var ReactCSSTransitionGroup = require('react-addons-css-transition-group');
 
 const keyMapping = {
     'explore': 'ctrl+alt+e',
@@ -62,17 +61,6 @@ const App = React.createClass({
                         { this.renderError() }
 
                         { this.props.children }
-
-                        { /* <ReactCSSTransitionGroup
-                            style={{ height: '100%' }}
-                            transitionName="fadeLeft"
-                            transitionEnterTimeout={500}
-                            transitionLeaveTimeout={300}
-                        >
-                             { React.cloneElement(this.props.children || <div />, { key: pathname }) }
-                        </ReactCSSTransitionGroup>
-                        */ }
-
                     </div>
                 </HotKeys>
             </MuiThemeProvider>
