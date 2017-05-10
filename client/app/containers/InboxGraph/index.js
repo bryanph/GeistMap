@@ -30,8 +30,6 @@ NodeOverviewGraphContainer.propTypes = {
 import { loadNode, connectNodes, createBatchNode, updateNode, removeNode, removeEdge, getAllBatchNodes, clearBatchNodes } from '../../actions/async'
 import { showGraphSideBar, hideGraphSideBar, setTitle, changeMainFocus } from '../../actions/ui'
 
-import { pure } from 'recompose'
-
 export default connect(null, {
     connectNodes,
     createBatchNode,

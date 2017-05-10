@@ -56,7 +56,6 @@ function mapStateToProps(state, props) {
 
 import { connectNodes, loadNode, removeEdge } from '../../actions/async'
 import { showGraphSideBar } from '../../actions/ui'
-import { pure } from 'recompose'
 
 export default connect(mapStateToProps, {
     connectNodes,

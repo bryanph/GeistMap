@@ -6,10 +6,6 @@ import ReactDOM from 'react-dom'
 import * as d3 from 'd3'
 // import './styles.css'
 
-// TODO: Use Rx.js Observables for event combinations? - 2016-06-16
-// see https://gist.github.com/staltz/868e7e9bc2a7b8c1f754
-// take your time to read through this
-
 import { browserHistory } from 'react-router'
 
 import createZoom from '../../graph/zoom'
@@ -181,7 +177,7 @@ NodeExploreGraph.propTypes = {
     connectNodes: PropTypes.func.isRequired,
 }
 
-import { pure } from 'recompose'
+import { pure } from 'recompose/pure'
 import { withRouter } from 'react-router'
 
 export default pure(withRouter(NodeExploreGraph))

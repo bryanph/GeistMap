@@ -3,7 +3,6 @@ import * as d3 from 'd3'
 import { getLabelText } from './util'
 import { colora, colorb, colorc, colorNode } from './util'
 import { NODE_RADIUS, WIDTH, HEIGHT } from './constants'
-import Rx from 'rx'
 
 export default (options={}) => (enter=[], update=[], exit=[]) => {
     /*
@@ -59,7 +58,6 @@ export default (options={}) => (enter=[], update=[], exit=[]) => {
             }
 
             // remove enter-selection flag for rxjs...
-
             selection.classed('enter-selection', false)
 
             if (selection.size() > 0) {

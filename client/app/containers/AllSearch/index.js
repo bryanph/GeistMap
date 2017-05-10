@@ -9,7 +9,6 @@ import { searchAll } from '../../actions/async'
 
 import enhanceWithClickOutside from 'react-onclickoutside'
 
-import { pure } from 'recompose'
 import {HotKeys} from 'react-hotkeys';
 
 // TODO: this can be factored out or the different Search components... - 2016-08-01

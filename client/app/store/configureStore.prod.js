@@ -3,8 +3,6 @@ import rootReducer from '../reducers';
 import thunk from 'redux-thunk'
 import promise from 'redux-promise'
 
-import io from 'socket.io-client'
-
 import createSocketMiddleware from '../middleware/api'
 import restApiMiddleware from '../middleware/restApi'
 import { batchStoreEnhancer, batchMiddleware } from '../middleware/batch'

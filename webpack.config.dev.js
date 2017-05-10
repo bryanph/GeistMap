@@ -59,7 +59,6 @@ module.exports = {
             //     loaders: ['react-hot', 'babel-loader'],
             //     include: path.join(__dirname, 'client')
             // },
-            { test: /\.coffee/, loaders: ['coffee-loader'] },
             { test: /\.json/, loaders: ['json'] },
             // { test: /\.s?css$/, loaders: ['style', 'css', 'sass'] },
             { test: /\.css$/, loaders: ['style', 'css'] },

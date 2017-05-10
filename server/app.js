@@ -17,9 +17,7 @@ mongoose.Promise = global.Promise; // use ES6 promises
 
 const config = require("./config/config.js")
 
-require('es6-promise').polyfill();
 require('isomorphic-fetch');
-
 
 /*
  * setup handlebars with express

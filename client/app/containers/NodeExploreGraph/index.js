@@ -32,7 +32,6 @@ NodeExploreGraphContainer.propTypes = {
 
 import { connectNodes, loadNode, removeEdge } from '../../actions/async'
 import { showGraphSideBar } from '../../actions/ui'
-import { pure } from 'recompose'
 
 export default connect(null, {
     connectNodes,

@@ -7,12 +7,10 @@
 import React from 'react';
 import classNames from 'classnames'
 import enhanceWithClickOutside from 'react-onclickoutside'
-import { withContext } from 'recompose'
 import { Map } from 'immutable';
 import blockContainsEntityType from './utils/blockContainsEntityType'
 
 // TODO: is this nescessary here? - 2016-08-02
-// import Editor from 'draft-js-plugins-editor-wysiwyg';
 import { EditorState, Entity, DefaultDraftBlockRenderMap, convertToRaw, convertFromRaw } from 'draft-js';
 import createInlinePlugin from './customPlugins/inline-plugin';
 import createBlockPlugin from './customPlugins/block-plugin';
@@ -96,15 +94,9 @@ const toolbarTheme = {
     'toolbar-item-active': 'ContentEditor-hoverbar-item-active',
 }
 
-// import 'draft-js-link-plugin/lib/plugin.css'
-// import 'draft-js-inline-plugin/lib/plugin.css'
-// import 'draft-js-block-plugin/lib/plugin.css'
-// import 'draft-js-toolbar-plugin/lib/plugin.css'
-
 import { Provider, connect } from 'react-redux'
 import { removeEdge } from '../../actions/async'
 import { showAddRelationWindow } from '../../actions/ui'
-import withProps from 'recompose/withProps'
 import store from '../../app'
 
 import ConnectWindow from '../../components/ConnectWindow'
