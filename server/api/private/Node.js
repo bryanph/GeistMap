@@ -57,36 +57,6 @@ module.exports = function(db, es) {
     */
 
     return {
-        get: function(user, id, res) {
-            // TODO: also need the outgoing edges for ContentLink - 2016-10-20
-            db.run(
-                "MATCH (u:User)--(n:Node) " +
-                "WHERE u.id = {userId} AND id(n) = {id} " +
-                "OPTIONAL MATCH (n)-[:IN]->(:Collection)-[*0..5]->(c:Collection) " +
-                "RETURN n as node, collect(c) as collections",
-                {
-                    id: neo4j.int(id),
-                    userId: user._id.toString()
-                }
-            )
-            .then((results) => {
-                if (results.records.length === 0) {
-                    return res(`Node with id ${id} was not found`)
-                }
-
-                const collections = results.records[0]._fields[1].map(mapIdentity)
-
-                res(null, {
-                    node: Object.assign({},
-                        mapIdentity(results.records[0]._fields[0]),
-                        { collections: collections.map(x => x.id) }
-                    ),
-                    collections,
-                })
-            })
-            .catch(handleError)
-        },
-
         getAll: function(user, res) {
             /*
              * Get all nodes
@@ -136,17 +106,51 @@ module.exports = function(db, es) {
             .catch(handleError)
         },
 
+        get: function(user, id, res) {
+            // TODO: also need the outgoing edges for ContentLink - 2016-10-20
+            db.run(
+                "MATCH (u:User)--(n:Node) " +
+                "WHERE u.id = {userId} AND id(n) = {id} " +
+                "OPTIONAL MATCH (n)-[:IN]->(:Collection)-[*0..5]->(c:Collection) " +
+                "RETURN n as node, collect(c) as collections",
+                {
+                    id: neo4j.int(id),
+                    userId: user._id.toString()
+                }
+            )
+            .then((results) => {
+                if (results.records.length === 0) {
+                    return res(`Node with id ${id} was not found`)
+                }
+
+                const collections = results.records[0]._fields[1].map(mapIdentity)
+
+                res(null, {
+                    node: Object.assign({},
+                        mapIdentity(results.records[0]._fields[0]),
+                        { collections: collections.map(x => x.id) }
+                    ),
+                    collections,
+                })
+            })
+            .catch(handleError)
+        },
+
         getWithNeighbours: function(user, id, res) {
             /*
              * Get node with id ${id} (including its neightbours)
              * // TODO: Check this call's performance - 2016-07-11
              */
 
+            console.log(user._id.toString());
+            console.log(id);
+            console.log(neo4j.int(id));
+
             db.run(
                 "MATCH (u:User)--(n:Node) " +
                 "WHERE u.id = {userId} AND id(n) = {id} " +
                 "OPTIONAL MATCH (n)-[:IN]->(:Collection)-[*0..5]->(c:Collection) " +
-                "OPTIONAL MATCH (n:Node)-[e:EDGE]-(n2:Node) " +
+                "OPTIONAL MATCH (n)-[e:EDGE]-(n2:Node) " +
                 "RETURN n as node, collect(distinct n2) as otherNodes, collect(distinct e) as edges, collect(distinct c) as collections",
                 {
                     userId: user._id.toString(),
