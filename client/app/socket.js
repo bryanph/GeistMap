@@ -3,6 +3,7 @@
 */
 
 import io from 'socket.io-client'
+import withProps from 'recompose/withProps'
 
 const _socket = io('/');
 

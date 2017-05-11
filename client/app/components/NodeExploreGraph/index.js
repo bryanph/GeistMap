@@ -177,7 +177,7 @@ NodeExploreGraph.propTypes = {
     connectNodes: PropTypes.func.isRequired,
 }
 
-import { pure } from 'recompose/pure'
+import pure from 'recompose/pure'
 import { withRouter } from 'react-router'
 
 export default pure(withRouter(NodeExploreGraph))
