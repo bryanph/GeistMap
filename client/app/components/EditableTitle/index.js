@@ -29,7 +29,7 @@ class InputText extends React.Component {
     }
 
     componentDidMount() {
-        this.input.select()
+        this.textarea.select()
     }
 
     render() {
@@ -39,11 +39,7 @@ class InputText extends React.Component {
             // TODO: why does this ref callback keep getting called? - 2016-08-23
             <TextareaAutosize
                 type='text' {...this.props} 
-                ref={(input) => {
-                    if (input) {
-                        this.input = input.refs.textarea
-                    }
-                }}
+                innerRef={(ref) => { this.textarea = ref }}
                 className="EditableTitle-input" 
             />
             

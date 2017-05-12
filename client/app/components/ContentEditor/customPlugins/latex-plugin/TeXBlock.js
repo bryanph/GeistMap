@@ -138,8 +138,8 @@ export default class TeXBlock extends React.Component {
             onRemove(this.props.entityKey || this.props.block.getKey(), this.props.inline);
         };
         this._startEdit = () => {
-            // TODO: why is a timeout needed here? - 2016-08-22
-            setTimeout(() => this.refs.textarea.textarea.focus(), 0)
+            console.log(this.textarea);
+            setTimeout(() => this.textarea.focus(), 0)
             const onStartEdit = this.props.onStartEdit || this.props.blockProps.onStartEdit
             onStartEdit(this.props.entityKey || this.props.block.getKey(), this.props.inline);
         };
@@ -222,7 +222,7 @@ export default class TeXBlock extends React.Component {
                         className="TeXEditor-texValue"
                         onKeyDown={this._onKeyPress}
                         onChange={this._onValueChange}
-                        ref="textarea"
+                        innerRef={(ref) => this.textarea = ref}
                         placeholder="Fill in TeX here..."
                         value={this.state.texValue}
                     />
