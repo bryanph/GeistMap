@@ -99,10 +99,10 @@ class AddNodeToCollectionWindow extends React.Component {
                 open={this.props.open}
                 onRequestClose={this.handleClose}
             >
-                <div className={"AddNodeToCollectionWindow"}>
+                <div className={"addNodeToCollectionWindow"}>
 
                     <h3>An existing node</h3>
-                    <div className={"AddNodeToCollectionWindow-nodeSearch"}>
+                    <div className={"addNodeToCollectionWindow-nodeSearch"}>
                         <NodeSearch
                             id={this.props.id}
                             onSearchClick={this.addNodeToCollection}
