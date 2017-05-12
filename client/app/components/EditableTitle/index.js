@@ -9,6 +9,7 @@ import enhanceWithClickOutside from 'react-onclickoutside'
 import { DebouncedTextField } from '../../components/Input'
 
 import { controlled, debounced } from '../../components/Input'
+import TextareaAutosize from 'react-autosize-textarea'
 
 import './styles.css'
 // export const InputText = (props) => (
@@ -36,7 +37,7 @@ class InputText extends React.Component {
 
         return (
             // TODO: why does this ref callback keep getting called? - 2016-08-23
-            <Textarea 
+            <TextareaAutosize
                 type='text' {...this.props} 
                 ref={(input) => {
                     if (input) {

@@ -14,7 +14,10 @@ class Errors extends React.Component {
     }
 
     componentWillReceiveProps = () => {
-        this.setState({ open: true })
+        if (this.props.error) {
+            console.error("An error occurred", error)
+            this.setState({ open: true })
+        }
     }
 
     handleActionTouchTap = () => {

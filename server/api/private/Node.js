@@ -142,10 +142,6 @@ module.exports = function(db, es) {
              * // TODO: Check this call's performance - 2016-07-11
              */
 
-            console.log(user._id.toString());
-            console.log(id);
-            console.log(neo4j.int(id));
-
             db.run(
                 "MATCH (u:User)--(n:Node) " +
                 "WHERE u.id = {userId} AND id(n) = {id} " +
