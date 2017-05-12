@@ -89,12 +89,12 @@
   "scripts": {
     "test:server": "mocha server/ --recursive",
     "test:client": "",
+    "publish": "./scripts/publish.sh",
     "clean": "rm -f public/*.bundle.js public/*.map",
     "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js",
     "build:webpack:dev": "webpack",
     "build": "npm run clean && npm run build:webpack",
     "build:dev": "npm run build:webpack:dev",
-    "build:drywall": "grunt build",
     "build:scss": "cat client/scss/app.scss | node-sass --include-path public/ --include-path client/scss --output-style expanded > public/css/app.css",
     "watch:client": "webpack --progress --colors --watch",
     "watch:server": "NODE_ENV=development nodemon --inspect --watch server index.js",
