@@ -44,7 +44,7 @@ module.exports = {
         // })
         new webpack.optimize.UglifyJsPlugin(),
         new webpack.optimize.AggressiveMergingPlugin(),
-        new BundleAnalyzerPlugin()
+        // new BundleAnalyzerPlugin()
     ],
     module: {
         loaders: [
