@@ -14,9 +14,13 @@ function keyBindingFn(e) {
 
     return null
 }
-function handleKeyCommand(command: string, { getEditorState, setEditorState }): DraftHandleValue {
+function handleKeyCommand(
+    command: string, 
+    editorState: EditorState, 
+    { setEditorState }
+): DraftHandleValue {
     if (command === 'link') {
-        setEditorState(insertLink(getEditorState()))
+        setEditorState(insertLink(editorState))
         return 'handled'
     }
     return 'not-handled'
@@ -25,14 +29,14 @@ function handleKeyCommand(command: string, { getEditorState, setEditorState }): 
 const linkPlugin = (config = {}) => {
   const theme = config.theme || styles;
 
-  return ({ getEditorState, setEditorState, setReadOnly, getClipboard, focus }) => {
+  return ({ setEditorState, setReadOnly, getClipboard, focus }) => {
       return {
           decorators: [{
               strategy: linkStrategy,
               component: (props) => <Link {...props} theme={theme} />,
           }],
           keyBindingFn: keyBindingFn,
-          handleKeyCommand: (command) => handleKeyCommand(command, { getEditorState, setEditorState }),
+          handleKeyCommand: (command, editorState) => handleKeyCommand(command, editorState, { setEditorState }),
       }
   }
 };

@@ -19,9 +19,13 @@ function keyBindingFn(e) {
 const linkPlugin = (config = {}) => {
     const theme = config.theme || styles;
 
-    function handleKeyCommand(command: string, { getEditorState, setEditorState }): DraftHandleValue {
+    function handleKeyCommand(
+        command: string,
+        editorState,
+        { setEditorState }
+    ): DraftHandleValue {
         if (command === 'content-link') {
-            setEditorState(insertContentLink(getEditorState(), {
+            setEditorState(insertContentLink(editorState, {
                 nodeId: config.nodeId,
                 showAddRelationWindow: config.showAddRelationWindow,
                 removeEdge: config.removeEdge,
@@ -41,7 +45,7 @@ const linkPlugin = (config = {}) => {
                 component: (props) => <ContentLink {...props} theme={theme} getEditorState={getEditorState} setEditorState={setEditorState} />,
             }],
             keyBindingFn: keyBindingFn,
-            handleKeyCommand: (command) => handleKeyCommand(command, { getEditorState, setEditorState }),
+            handleKeyCommand: (command, editorState) => handleKeyCommand(command, editorState, { setEditorState }),
         }
     }
 };

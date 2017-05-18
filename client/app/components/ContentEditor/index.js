@@ -27,7 +27,7 @@ import createLatexPlugin from './customPlugins/latex-plugin'
 import createDndPlugin from './customPlugins/dnd-plugin';
 import createImagePlugin from './customPlugins/image-plugin';
 
-import createAutoListPlugin from 'draft-js-autolist-plugin'
+import createAutoListPlugin from './customPlugins/list-plugin'
 
 import './styles.css';
 import 'draft-js/dist/Draft.css'

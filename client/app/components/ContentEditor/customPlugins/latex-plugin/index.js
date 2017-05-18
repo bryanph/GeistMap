@@ -45,16 +45,20 @@ function texKeyBindingFn(e) {
     return null
 }
 
-function texHandleKeyCommand(command: string, { getEditorState, setEditorState }): DraftHandleValue {
+function texHandleKeyCommand(
+    command: string,
+    editorState: EditorState,
+    { setEditorState }
+): DraftHandleValue {
     if (command === 'tex') {
-        setEditorState(insertTeXBlock(getEditorState()), true)
+        setEditorState(insertTeXBlock(editorState), true)
         return 'handled'
     } else if (command === 'inline-tex') {
-        setEditorState(insertTeXBlock(getEditorState(), true), true)
+        setEditorState(insertTeXBlock(editorState, true), true)
         return 'handled'
     }
     // } else if (command === 'copy') {
-    //     const editorState = getEditorState()
+    //     const editorState = editorState
     //     const selection = editorState.getSelection()
     //     const contentState = editorState.getCurrentContent()
 
@@ -189,8 +193,7 @@ export default (config = {}) => {
                     inline: true,
                 }
             }],
-            handlePastedText: (text, html) => {
-                const editorState = getEditorState()
+            handlePastedText: (text, html, editorState) => {
                 const internalClipboard = getClipboard()
 
                 if (internalClipboard) {
@@ -299,7 +302,7 @@ export default (config = {}) => {
                 }
             },
             keyBindingFn: texKeyBindingFn,
-            handleKeyCommand: (command) => texHandleKeyCommand(command, { getEditorState, setEditorState }),
+            handleKeyCommand: (command, editorState) => texHandleKeyCommand(command, editorState, { setEditorState }),
         };
     }
 }

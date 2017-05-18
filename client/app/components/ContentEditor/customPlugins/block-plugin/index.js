@@ -39,14 +39,11 @@ function keyBindingFn(e) {
 }
 
 export default (config = {}) => {
-    function handleKeyCommand(command, { getEditorState, setEditorState }) {
-        const editorState = getEditorState()
-
-        // let newState = RichUtils.handleKeyCommand(editorState, command)
+    function handleKeyCommand(command, editorState, { setEditorState }) {
 
         if (command === 'insert-header-three') {
             const nextState = RichUtils.toggleBlockType(
-                getEditorState(),
+                editorState,
                 'header-three',
             );
 
@@ -58,7 +55,7 @@ export default (config = {}) => {
         }
         if (command === 'insert-header-four') {
             const nextState = RichUtils.toggleBlockType(
-                getEditorState(),
+                editorState,
                 'header-four',
             );
 
@@ -70,7 +67,7 @@ export default (config = {}) => {
         }
         if (command === 'insert-header-five') {
             const nextState = RichUtils.toggleBlockType(
-                getEditorState(),
+                editorState,
                 'header-five',
             );
 
@@ -82,7 +79,7 @@ export default (config = {}) => {
         }
         if (command === 'insert-blockquote') {
             const nextState = RichUtils.toggleBlockType(
-                getEditorState(),
+                editorState,
                 'blockquote',
             );
 
@@ -94,7 +91,7 @@ export default (config = {}) => {
         }
         if (command === 'insert-code') {
             const nextState = RichUtils.toggleBlockType(
-                getEditorState(),
+                editorState,
                 'code-block',
             );
 

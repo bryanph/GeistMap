@@ -6,8 +6,8 @@ import InlineControls from './InlineControls';
 
 export default (config) => {
     return {
-        handleKeyCommand(command, { getEditorState, setEditorState }) {
-            const newState = RichUtils.handleKeyCommand(getEditorState(), command);
+        handleKeyCommand(command, editorState, { setEditorState }) {
+            const newState = RichUtils.handleKeyCommand(editorState, command);
             if (newState) {
                 setEditorState(newState);
                 return 'handled';
