@@ -4,7 +4,7 @@ import { withRouter } from 'react-router'
 import { Entity, SelectionState, RichUtils } from 'draft-js';
 import { EditButton, TrashButton } from '../../../../components/Buttons'
 
-import { getSelectionEntity } from 'draftjs-utils'
+import { getSelectionEntity } from '../../utils/inline'
 
 import path from 'path'
 

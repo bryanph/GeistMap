@@ -38,7 +38,6 @@
     "draft-js": "0.10.1",
     "draft-js-autolist-plugin": "1.0.0",
     "draft-js-entity-props-plugin": "1.0.2",
-    "draftjs-utils": "0.2.7",
     "file-loader": "0.8.5",
     "flow-bin": "0.30.0",
     "ip": "1.1.5",

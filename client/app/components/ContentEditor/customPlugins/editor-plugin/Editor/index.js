@@ -134,8 +134,6 @@ class PluginEditor extends Component {
 
         for (const plugin of plugins) {
             if (typeof plugin[methodName] !== 'function') continue;
-            console.log(plugin[methodName]);
-            console.log(methodName, newArgs);
             const result = plugin[methodName](...newArgs);
             if (result === true) return true;
         }

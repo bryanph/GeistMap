@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Entity, RichUtils } from 'draft-js';
 
-import { getSelectionEntity } from 'draftjs-utils'
+import { getSelectionEntity } from '../../utils/inline.js'
 
 export function insertContentLink(editorState, { nodeId, showAddRelationWindow, removeEdge }) {
     /*
