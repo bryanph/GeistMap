@@ -11,7 +11,6 @@ const express = require('express')
 
 const stats = require('../stats.json')
 
-// TODO: Separate routes into files - 2016-03-21
 module.exports = function(app, authRoutes, adminRoutes) {
 
     /*
@@ -29,8 +28,9 @@ module.exports = function(app, authRoutes, adminRoutes) {
             protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
             title: "Geist",
+            ga: config.ga,
             INITIAL_STATE: JSON.stringify({
-                user: req.user, // TODO: Secure this - 2016-01-25
+                user: req.user,
                 serverUiState: req.user && req.user.uiState,
                 projectName: req.app.config.projectName,
                 version: req.app.config.version,
@@ -39,7 +39,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
                 oauthGitHub: !!req.app.config.oauth.github.key,
                 oauthFacebook: !!req.app.config.oauth.facebook.key,
                 oauthGoogle: !!req.app.config.oauth.google.key,
-                oauthTumblr: !!req.app.config.oauth.tumblr.key
+                oauthTumblr: !!req.app.config.oauth.tumblr.key,
             })
         })
     })
@@ -51,8 +51,9 @@ module.exports = function(app, authRoutes, adminRoutes) {
             protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
             title: "Geist",
+            ga: config.ga,
             INITIAL_STATE: JSON.stringify({
-                user: req.user, // TODO: Secure this - 2016-01-25
+                user: req.user,
                 serverUiState: req.user.uiState,
             })
         })

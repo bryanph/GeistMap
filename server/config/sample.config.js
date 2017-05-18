@@ -39,7 +39,8 @@ const config = {
 
         collectionIndex: 'collections2',
         collectionMappingType: 'collection_type',
-    }
+    },
+    "ga": "UA-XXXXX-Y",
 }
 
 module.exports = config
