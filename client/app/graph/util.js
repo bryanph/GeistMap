@@ -35,8 +35,6 @@ export function colorNode(d) {
         return colora(d.group)
     }
 
-    console.log(d.properties.name, d.collections.sort().join(','));
-
     return colora(d.collections.sort().join(','))
 }
 
