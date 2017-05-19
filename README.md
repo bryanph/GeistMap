@@ -11,7 +11,7 @@ See [this blog post](https://medium.com/@bphaakman/building-a-open-source-person
 You can try Geist [here](https://www.geist.fyi). Please note that this version is basically running the master branch. I am currently managing my pkb in this live version but I can't guarentee full stability at this moment.
 
 ## Roadmap
-Will follow
+Can be found [here](https://github.com/bryanph/Geist/blob/master/meta/roadmaps/2017.md).
 
 ## Installation instructions
 Will follow
