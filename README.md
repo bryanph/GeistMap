@@ -1,8 +1,17 @@
 # Geist
 A personal knowledge base with a focus on connections.
 
-Currently running at https://www.geist.fyi
+See [this blog post](https://medium.com/@bphaakman/building-a-open-source-personal-knowledge-base-45c25f5a4324) for why I am making this.
 
-See [this blog post](https://medium.com/@bphaakman/building-a-open-source-personal-knowledge-base-45c25f5a4324) for an introduction.
+## Links
+* [Introduction](https://medium.com/@bphaakman/building-a-open-source-personal-knowledge-base-45c25f5a4324)
+* [Feature requests](https://github.com/bryanph/Geist/issues/57)
 
-Installation instructions will follow soon
+## Live version
+You can try Geist [here](https://www.geist.fyi). Please note that this version is basically running the master branch. I am currently managing my pkb in this live version but I can't guarentee full stability at this moment.
+
+## Roadmap
+Will follow
+
+## Installation instructions
+Will follow
