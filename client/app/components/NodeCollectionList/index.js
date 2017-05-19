@@ -41,7 +41,6 @@ class NodeCollectionList extends React.Component {
 
         this.toggleSearch = this.toggleSearch.bind(this)
         this.addNodeToCollection = this.addNodeToCollection.bind(this)
-        this.createCollection = this.createCollection.bind(this)
         this.openWindow = this.openWindow.bind(this)
         this.hideWindow = this.hideWindow.bind(this)
         this.onCollectionCreated = this.onCollectionCreated.bind(this)
@@ -58,13 +57,6 @@ class NodeCollectionList extends React.Component {
         this.props.addNodeToCollection(ESCollection._id, this.props.node.id)
 
         this.setState({ searchToggle: false })
-    }
-
-    createCollection(collection) {
-        // this.setState({ searchToggle: false })
-        // this.props.showCreateCollectionWindow(collection)
-
-        // TODO: now also add the current node to the collection  - 2016-07-12
     }
 
     onCollectionCreated(action) {

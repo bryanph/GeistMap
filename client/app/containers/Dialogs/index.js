@@ -25,6 +25,7 @@ export class Dialogs extends React.Component { // eslint-disable-line react/pref
               open={uiState.createCollectionWindowOpened}
               createCollection={this.props.createCollection}
               hideWindow={this.props.hideCreateCollectionWindow}
+              onCompleted={(action) => this.props.router.push(`/app/collections/${action.response.result}`)}
           />
           <AddRelationWindow
               id={uiState.windowProps.nodeId}

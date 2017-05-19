@@ -44,12 +44,11 @@ class CollectionCreateWindow extends React.Component {
 
         // const promise = this.props.createCollection({ name, description })
         this.props.createCollection({ name })
-            .then((action) => action.response.result)
-            .then((id) => this.props.router.push(`/app/collections/${id}`))
-
-        if (this.props.onCompleted) {
-            promise.then(this.props.onCompleted)
-        }
+            .then((action) => {
+                if (this.props.onCompleted) {
+                    return this.props.onCompleted(action)
+                }
+            })
     }
 
     render() {
