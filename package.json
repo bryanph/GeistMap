@@ -88,7 +88,7 @@
   "scripts": {
     "test:server": "mocha server/ --recursive",
     "test:client": "",
-    "publish": "./scripts/publish.sh",
+    "deploy": "./scripts/deploy.sh",
     "clean": "rm -f public/*.bundle.js public/*.map",
     "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js",
     "build:webpack:dev": "webpack",
