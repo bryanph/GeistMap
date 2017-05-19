@@ -21,7 +21,7 @@ const linkPlugin = (config = {}) => {
 
     function handleKeyCommand(
         command: string,
-        editorState,
+        editorState: EditorState,
         { setEditorState }
     ): DraftHandleValue {
         if (command === 'content-link') {
