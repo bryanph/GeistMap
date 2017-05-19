@@ -1,7 +1,7 @@
 
 import * as d3 from 'd3'
 import { NODE_RADIUS } from './constants'
-import { colora, colorb, colorc } from './util'
+import { colorNode } from './util'
 import { secondaryColor } from '../containers/App/muitheme'
 
 export default (simulation) => (actions, clickNoDrag) => {
@@ -44,7 +44,7 @@ export default (simulation) => (actions, clickNoDrag) => {
             const prevHoveredNodes = d3.selectAll('.node-hovered')
             // back to their default color again
             prevHoveredNodes.select('circle')
-                .style("fill", d => colora(d.group))
+                .style("fill", colorNode)
             prevHoveredNodes.classed('node-hovered', false)
 
             nodes.forEach(node => {
@@ -90,7 +90,7 @@ export default (simulation) => (actions, clickNoDrag) => {
             const prevHoveredNodes = d3.selectAll('.node-hovered')
             // back to their default color again
             prevHoveredNodes.select('circle')
-                .style("fill", d => colora(d.group))
+                .style("fill", colorNode)
             prevHoveredNodes.classed('node-hovered', false)
 
             nodes.forEach(node => {

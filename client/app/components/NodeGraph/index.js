@@ -17,7 +17,7 @@ import createEvents from '../../graph/events'
 import createCustomEvents from './events'
 import createLinkUpdates from '../../graph/link'
 import createNodeUpdates from '../../graph/node'
-import { colora, colorb, colorc, colorNode } from '../../graph/util'
+import {colorActiveNode } from '../../graph/util'
 
 class NodeOverviewGraph extends React.Component {
     constructor(props) {
@@ -139,7 +139,7 @@ class NodeOverviewGraph extends React.Component {
         });
 
         if (this.props.selectedNode) {
-            colorNode(d3.select(`#node-${this.props.selectedNode.id}`))
+            colorActiveNode(d3.select(`#node-${this.props.selectedNode.id}`))
         }
     }
 
@@ -149,7 +149,7 @@ class NodeOverviewGraph extends React.Component {
         this.update(nextProps)
 
         if (nextProps.selectedNode && nextProps.selectedNode !== this.props.selectedNode) {
-            colorNode(d3.select(`#node-${nextProps.selectedNode.id}`))
+            colorActiveNode(d3.select(`#node-${nextProps.selectedNode.id}`))
         }
 
         return false

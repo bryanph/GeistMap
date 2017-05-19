@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import { colora, colorb, colorc, colorNode } from './util'
+import { colorActiveNode } from './util'
 
 export default (zoom, actions) => {
 
@@ -16,7 +16,7 @@ export default (zoom, actions) => {
                 .then(() => actions.showGraphSideBar(data.id))
                 .then(() => window.scrollTo(0, 0))
 
-            colorNode(node)
+            colorActiveNode(node)
         },
         nodeDoubleClick: (d) => {
             d.fixed = false;

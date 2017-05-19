@@ -6,6 +6,7 @@ export const colora = scaleOrdinal(schemeCategory20)
 export const colorb = scaleOrdinal(schemeCategory20b)
 export const colorc = scaleOrdinal(schemeCategory20c)
 
+// work around for now to make sure collections have a fixed color
 colora(undefined)
 colorb(undefined)
 colorc(undefined)
@@ -26,7 +27,20 @@ export function getLabelText(text) {
     return text.slice(0, 15) + '...'
 }
 
-export function colorNode(node) {
+export function colorNode(d) {
+    /*
+     * Assign a color to a node based on its collections
+    */
+    if (!d.collections) {
+        return colora(d.group)
+    }
+
+    console.log(d.properties.name, d.collections.sort().join(','));
+
+    return colora(d.collections.sort().join(','))
+}
+
+export function colorActiveNode(node) {
     /*
      * // TODO: find a better way to do this - 2016-07-29
      */
@@ -35,13 +49,7 @@ export function colorNode(node) {
     const prevSelectedNodes = d3.select('.node-selected')
         .classed("node-selected", false)
         .select('circle')
-        .style("fill", d => {
-            if (!d.collections) {
-                return colora(d.group)
-            }
-
-            return colora(d.collections.sort().join(','))
-        })
+        .style("fill", colorNode)
 
     // color this node as the active node
     node

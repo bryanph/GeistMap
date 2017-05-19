@@ -8,7 +8,7 @@ import './styles.css'
 
 import { browserHistory } from 'react-router'
 
-import { colorNode } from '../../graph/util'
+import { colorActiveNode } from '../../graph/util'
 import createZoom from '../../graph/zoom'
 import createSimulation from '../../graph/simulation'
 import { arrowHead } from '../../graph/svgdefs.js'
@@ -131,7 +131,7 @@ class CollectionExploreGraph extends React.Component {
         }
 
         setTimeout(() => {
-            colorNode(d3.select(`#node-${this.props.selected}`))
+            colorActiveNode(d3.select(`#node-${this.props.selected}`))
         }, 0)
     }
 
@@ -142,7 +142,7 @@ class CollectionExploreGraph extends React.Component {
 
         if (nextProps.selected && nextProps.selected !== this.props.selected) {
             setTimeout(() => {
-                colorNode(d3.select(`#node-${nextProps.selected}`))
+                colorActiveNode(d3.select(`#node-${nextProps.selected}`))
             }, 0)
         }
 

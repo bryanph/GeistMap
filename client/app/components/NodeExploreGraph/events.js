@@ -3,7 +3,6 @@
  * Events specific to NodeOverviewGraph
  */
 import * as d3 from 'd3'
-import { colora, colorb, colorc, colorNode } from '../../graph/util'
 
 export default (actions) => {
 

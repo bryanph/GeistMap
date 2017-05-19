@@ -17,7 +17,7 @@ import createEvents from '../../graph/events'
 import createCustomEvents from './events'
 import createLinkUpdates from '../../graph/link'
 import createNodeUpdates from '../../graph/node'
-import { colora, colorb, colorc, colorNode } from '../../graph/util'
+import { colorActiveNode } from '../../graph/util'
 
 class CollectionDetailGraph extends React.Component {
     constructor(props) {
@@ -138,7 +138,7 @@ class CollectionDetailGraph extends React.Component {
 
 
         setTimeout(() => {
-            colorNode(d3.select(`#node-${this.props.selected}`))
+            colorActiveNode(d3.select(`#node-${this.props.selected}`))
         }, 0)
     }
 
@@ -149,7 +149,7 @@ class CollectionDetailGraph extends React.Component {
 
         if (nextProps.selected && nextProps.selected !== this.props.selected) {
             setTimeout(() => {
-                colorNode(d3.select(`#node-${nextProps.selected}`))
+                colorActiveNode(d3.select(`#node-${nextProps.selected}`))
             }, 0)
         }
 

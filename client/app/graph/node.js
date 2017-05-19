@@ -1,7 +1,7 @@
 
 import * as d3 from 'd3'
 import { getLabelText } from './util'
-import { colora, colorb, colorc, colorNode } from './util'
+import { colorNode } from './util'
 import { NODE_RADIUS, WIDTH, HEIGHT } from './constants'
 
 export default (options={}) => (enter=[], update=[], exit=[]) => {
@@ -43,13 +43,7 @@ export default (options={}) => (enter=[], update=[], exit=[]) => {
                     .attr("r", (d) => NODE_RADIUS)
                     .attr("x", -8)
                     .attr("y", -8)
-                    .style("fill", d => {
-                        if (!d.collections) {
-                            return colora(d.group)
-                        }
-
-                        return colora(d.collections.sort().join(','))
-                    })
+                    .style("fill", colorNode)
 
                 selection.append('text')
                     .attr("dx", NODE_RADIUS + 1)

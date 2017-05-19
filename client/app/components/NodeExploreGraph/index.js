@@ -12,7 +12,7 @@ import createZoom from '../../graph/zoom'
 import createSimulation from '../../graph/simulation'
 import { arrowHead } from '../../graph/svgdefs.js'
 import { NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
-import { colorNode } from '../../graph/util'
+import { colorActiveNode } from '../../graph/util'
 import createDrag from '../../graph/drag'
 import createEvents from '../../graph/events'
 import createCustomEvents from './events'
@@ -131,7 +131,7 @@ class NodeExploreGraph extends React.Component {
         // color based on the node id passed in by the props
 
         if (this.props.selectedNode) {
-            colorNode(d3.select(`#node-${this.props.selectedNode.id}`))
+            colorActiveNode(d3.select(`#node-${this.props.selectedNode.id}`))
         }
 
         this.simulation.on('tick', () => {
@@ -149,7 +149,7 @@ class NodeExploreGraph extends React.Component {
         this.update(nextProps)
 
         if (nextProps.selectedNode && nextProps.selectedNode !== this.props.selectedNode) {
-            colorNode(d3.select(`#node-${nextProps.selectedNode.id}`))
+            colorActiveNode(d3.select(`#node-${nextProps.selectedNode.id}`))
         }
 
         return false

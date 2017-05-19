@@ -284,7 +284,7 @@ module.exports = function(db, es) {
                 "WHERE u.id = {userId} " +
                 "OPTIONAL MATCH (n)-[:IN]->(:Collection)-[*0..5]->(c:Collection) " +
                 "OPTIONAL MATCH (n)-[r:EDGE]->(:BatchNode) " +
-                "RETURN n, collect(c), collect(r) " +
+                "RETURN n, collect(distinct c), collect(distinct r) " +
                 "ORDER BY n.modified DESC",
                 {
                     userId: user._id.toString(),
