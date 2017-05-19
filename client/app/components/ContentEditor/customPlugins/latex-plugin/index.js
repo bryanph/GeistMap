@@ -31,7 +31,7 @@ function findTex(contentBlock, callback) {
 }
 
 function texKeyBindingFn(e) {
-    if (e.keyCode === 219 && KeyBindingUtil.isCtrlKeyCommand(e)) { // ctrl-[
+    if (e.keyCode === 77 && KeyBindingUtil.isCtrlKeyCommand(e)) { // ctrl-m
         if (e.shiftKey) {
             return 'tex'
         }

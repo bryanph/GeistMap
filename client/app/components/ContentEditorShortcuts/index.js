@@ -170,11 +170,11 @@ class ContentEditorShortcuts extends React.Component {
                                 </div>
                                 <div>
                                     <Shortcut 
-                                        shortcut={["Ctrl", "["]}
+                                        shortcut={["Ctrl", "m"]}
                                         text="TeX inline"
                                     />
                                     <Shortcut 
-                                        shortcut={["Ctrl", "]"]}
+                                        shortcut={["Ctrl", "M"]}
                                         text="TeX block"
                                     />
                                 </div>
