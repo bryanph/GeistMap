@@ -5,21 +5,36 @@ require('../css/global.css')
 
 import React from 'react'
 import ReactDom from 'react-dom'
-import { browserHistory } from "react-router-dom"
+import { AppContainer } from 'react-hot-loader'
 
 import configureStore from './store/configureStore';
+import Root from './containers/Root'
 
 const initialState = Object.assign({}, window.INITIAL_STATE)
 
 const store = configureStore(initialState)
 
+// TODO: get rid of this export - 2017-05-20
 export default store
 
-import Root from './containers/Root'
-
 document.addEventListener('DOMContentLoaded', function () {
-     ReactDom.render(
-          <Root store={store} />,
-          document.getElementById('app')
-     );
+    ReactDom.render(
+        <AppContainer>
+            <Root store={store} />
+        </AppContainer>
+        ,
+        document.getElementById('app')
+    );
 });
+
+if (module.hot) {
+  module.hot.accept('./containers/Root', () => {
+    const NextApp = require('./containers/Root').default;
+    ReactDOM.render(
+      <AppContainer>
+        <NextApp/>
+      </AppContainer>,
+      document.getElementById('root')
+    );
+  });
+}

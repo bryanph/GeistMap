@@ -5,6 +5,7 @@
         "stage-1"
     ],
     "plugins": [
-        "transform-flow-strip-types"
+        "transform-flow-strip-types",
+        "react-hot-loader/babel"
     ]
 }

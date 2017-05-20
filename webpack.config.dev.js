@@ -12,16 +12,19 @@ module.exports = {
         app: [ 
             'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
             'babel-polyfill',
+            'react-hot-loader/patch',
             './client/app/app.js',
         ],
         auth: [
             'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
             'babel-polyfill',
+            'react-hot-loader/patch',
             './client/auth/app.js', 
         ],
         landing: [
             'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
             'babel-polyfill',
+            'react-hot-loader/patch',
             './client/landing/app.js', 
         ],
     },
@@ -50,17 +53,11 @@ module.exports = {
         loaders: [
             {
                 test: /\.jsx?$/,
-                loaders: ['react-hot', 'babel-loader'],
+                loaders: ['babel-loader'],
                 exclude: /(node_modules|bower_components)/,
                 // include: path.join(__dirname, 'client')
             },
-            // {
-            //     test: /(\.js|\.jsx)$/,
-            //     loaders: ['react-hot', 'babel-loader'],
-            //     include: path.join(__dirname, 'client')
-            // },
             { test: /\.json/, loaders: ['json'] },
-            // { test: /\.s?css$/, loaders: ['style', 'css', 'sass'] },
             { test: /\.css$/, loaders: ['style', 'css'] },
             { test: /\.scss$/, loaders: ['style', 'css', 'sass'] },
             { test: /\.png$/, loader: "url-loader?limit=100000" },
