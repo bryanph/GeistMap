@@ -1,19 +1,21 @@
 import * as d3 from 'd3'
+import { zoom as d3Zoom } from 'd3-zoom'
 
 export default (root, viewboxWidth, viewboxHeight, allowZoomIn=false) => {
 
-    const zoom = d3.zoom()
+    const zoom = d3Zoom()
         .scaleExtent([1/4, 2])
-        .on('zoom', function () {
-            root.attr("transform", d3.event.transform)
-            // root.attr('transform',
-            //     'translate(' + d3.event.translate + ')'
-            //         +   'scale(' + d3.event.scale     + ')');
-        })
+        // .on('zoom', function () {
+        //     root.attr("transform", d3.event.transform)
+        //     // root.attr('transform',
+        //     //     'translate(' + d3.event.translate + ')'
+        //     //         +   'scale(' + d3.event.scale     + ')');
+        // })
 
 
 
     function zoomFit(paddingPercent, transitionDuration) {
+        console.log('calling zoom!');
         var bbox = root.node().getBBox();
         var parent = root.node().parentElement;
         var fullWidth = viewboxWidth,

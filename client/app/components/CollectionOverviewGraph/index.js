@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom'
 import * as d3 from 'd3'
 import './styles.css'
 
-import { browserHistory } from 'react-router'
+import { browserHistory } from 'react-router-dom'
 
 import { colorActiveNode } from '../../graph/util'
 import createZoom from '../../graph/zoom'
@@ -88,18 +88,20 @@ class CollectionExploreGraph extends React.Component {
         const { simulation, ticked } = createSimulation(WIDTH, HEIGHT)
         this.simulation = simulation
         this.ticked = ticked
-
-
         this.zoom = createZoom(this.d3Graph, WIDTH, HEIGHT)
 
         const customEvents = createCustomEvents({
-            router: this.props.router,
+            router: this.props.
             loadCollection,
             removeEdge,
             showCollectionSidebar,
         })
 
-        const forceDrag = createDrag(this.simulation)({ connect: connectCollections }, customEvents.nodeClickNoDrag)
+        const forceDrag = createDrag(this.simulation)({
+            click: customEvents.nodeClick,
+            connect: connectCollections,
+        })
+
         this.nodeDrag = d3.drag()
             .on('drag', forceDrag.drag.bind(this))
             .on('start', forceDrag.dragstart.bind(this))
@@ -171,6 +173,6 @@ CollectionExploreGraph.propTypes = {
     connectNodes: PropTypes.func.isRequired,
 }
 
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 export default withRouter(CollectionExploreGraph)

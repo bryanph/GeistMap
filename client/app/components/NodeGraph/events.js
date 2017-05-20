@@ -5,12 +5,12 @@ import * as d3 from 'd3'
 
 export default (actions) => {
     return {
-        // nodeClickNoDrag: (selection) => {
-        nodeClickNoDrag: (d) => {
+        // nodeClick: (selection) => {
+        nodeClick: (d) => {
             /*
              * Render node tooltip
              */
-            actions.router.push(`/app/inbox/${d.id}`)
+            actions.history.push(`/app/inbox/${d.id}`)
         },
         nodeDoubleClick: (d) => {
             d.fixed = false;

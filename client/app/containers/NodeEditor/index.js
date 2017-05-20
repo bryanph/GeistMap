@@ -6,7 +6,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import NodeEditorToolbar from '../../containers/NodeEditorToolbar'
 import ContentEditor from '../../containers/NodeContentEditor'

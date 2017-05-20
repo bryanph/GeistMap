@@ -6,7 +6,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Link, withRouter } from 'react-router'
+import { Link, withRouter } from 'react-router-dom'
 import {HotKeys} from 'react-hotkeys';
 import moment from 'moment'
 
@@ -69,12 +69,12 @@ export class CollectionToolbar extends React.Component { // eslint-disable-line 
 
     editNode() {
         const { router, page, id } = this.props
-        router.push(`/app/${page}/${id}/edit`)
+        router.location.push(`/app/${page}/${id}/edit`)
     }
 
     toGraphView() {
         const { router, page, id } = this.props
-        router.push(`/app/${page}/${id}/`)
+        router.location.push(`/app/${page}/${id}/`)
     }
 
     removeCollection() {
@@ -83,7 +83,7 @@ export class CollectionToolbar extends React.Component { // eslint-disable-line 
         const result = window.confirm(`Are you sure you want to remove '${this.props.collection.properties.name}'`)
         if (result) {
             this.props.removeCollection(this.props.collection.id)
-                .then(() => router.push(`/app/${page}/${id}`))
+                .then(() => router.location.push(`/app/${page}/${id}`))
         }
     }
 

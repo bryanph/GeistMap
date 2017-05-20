@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDom from 'react-dom'
-import { Router, Route, Link, IndexRoute, Redirect, browserHistory } from "react-router"
+import { BrowserRouter, Route, Link, Redirect, Switch } from "react-router-dom"
 
 import Forgot, { ForgotSuccess } from './Forgot'
 import Reset, { ResetSuccess } from './Reset'
@@ -25,7 +25,23 @@ const App = (props) => (
     <MuiThemeProvider muiTheme={getMuiTheme()}>
         <div className="row stretch">
             <div className="main-container stretch columns small-centered small-12 medium-9 large-5 xlarge-4 xxlarge-3">
-                {props.children}
+                <Switch>
+                    <Route path="login" component={Login}/>
+                    <Route path="signup" component={Signup}/>
+                    <Route path="signup/success" component={SignupVerificationSuccess}/>
+                    <Route path="signup/social" component={EmailConfirmation}/>
+                    <Route path="signup/social/:email" component={EmailConfirmation}/>
+                    <Route path="signup/social/success" component={EmailConfirmationSuccess}/>
+                    <Route path="login/forgot" component={Forgot}/>
+                    <Route path="login/forgot/success" component={ForgotSuccess}/>
+
+                    <Route path="login/reset/:email/:token" component={Reset}/>
+                    <Route path="login/reset/success" component={ResetSuccess}/>
+
+                    <Route path="account/verification" component={AccountVerification}/>
+                    <Route path="account/verification/success" component={VerificationResendSuccess}/>
+                    <Route path="*" component={Login}/>
+                </Switch>
             </div>
         </div>
     </MuiThemeProvider>
@@ -34,24 +50,10 @@ const App = (props) => (
 // TODO: Take from the main config 2016-05-04
 const baseURL = '/auth'
 
-const routes = (
-    <Route path={baseURL} component={App}>
-        <Route path="login" component={Login}/>
-        <Route path="signup" component={Signup}/>
-        <Route path="signup/success" component={SignupVerificationSuccess}/>
-        <Route path="signup/social" component={EmailConfirmation}/>
-        <Route path="signup/social/:email" component={EmailConfirmation}/>
-        <Route path="signup/social/success" component={EmailConfirmationSuccess}/>
-        <Route path="login/forgot" component={Forgot}/>
-        <Route path="login/forgot/success" component={ForgotSuccess}/>
-
-        <Route path="login/reset/:email/:token" component={Reset}/>
-        <Route path="login/reset/success" component={ResetSuccess}/>
-
-        <Route path="account/verification" component={AccountVerification}/>
-        <Route path="account/verification/success" component={VerificationResendSuccess}/>
-        <Route path="*" component={Login}/>
-    </Route>
+const Router = () => (
+    <BrowserRouter>
+        <Route path={baseURL} component={App} />
+    </BrowserRouter>
 )
 
 function createElement(Component, props) {

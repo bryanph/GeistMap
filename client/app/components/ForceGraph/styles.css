@@ -1,0 +1,88 @@
+
+svg {
+    width: "100%";
+}
+
+.svg-container { 
+	display: inline-block;
+	position: relative;
+	width: 100%; /* ratio between SVG height and width */
+	/* padding-bottom: 100%; */ 
+	vertical-align: middle; 
+	overflow: hidden; 
+
+    flex-grow: 1;
+
+    height: 100%;
+    max-height: 100%;
+
+    background-color: white;
+    margin-top: 16px;
+    border-top: 1px solid #ddd;
+}
+
+.svg-content {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    max-height: 100%;
+    width: 100%;
+}
+
+.node circle {
+    fill: #888888;
+    stroke: #fff;
+    stroke-width: 2px;
+}
+.node:hover {
+    cursor: pointer;
+    fill: #000000;
+}
+
+.node text {
+    fill: #0F073B;
+    stroke: none;
+    font-size: 1em;
+    pointer-events: none;
+    z-index: 99;
+}
+
+.node-hovered circle {
+    fill: #000000;
+}
+
+.node-link {
+    stroke: #FF7043;
+    stroke-width: 3px;
+    color: #D4D6D7;
+    stroke-opacity: .6;
+    fill: none;
+
+    /* shaft-width: 1px; */
+    /* stroke-width:1.5px */
+    /* font-size: 8px; */
+    /* padding: 3px; */
+    /* text-color-external: #000000; */
+    /* text-color-internal: #FFFFFF; */
+}
+.node-link:hover {
+    cursor: pointer;
+}
+
+.node-tooltip {
+    position: absolute;
+    text-align: center;
+    width: 60px;
+    height: 12px;
+    padding: 8px;
+    margin-top: -20px;
+    font: 10px sans-serif;
+    background: #000;
+    pointer-events: none;
+}
+
+.nodeGraph-sideBar {
+    width: 100%;
+    height: 200px;
+}

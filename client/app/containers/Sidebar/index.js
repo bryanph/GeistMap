@@ -13,7 +13,7 @@ import Divider from 'material-ui/Divider';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ActionGroupWork from 'material-ui/svg-icons/action/group-work';
 
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 
 import { primaryColor, lightTextColor } from '../App/muitheme.js'
 
@@ -54,7 +54,7 @@ class Sidebar extends React.Component {
     createNode() {
         this.props.createBatchNode(defaultNode)
             .then(action => action.response.result)
-            .then(id => this.props.router.push(`/app/inbox/${id}/edit`))
+            .then(id => this.props.history.push(`/app/inbox/${id}/edit`))
 
         this.props.toggleNav()
     }

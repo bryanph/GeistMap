@@ -8,7 +8,7 @@ import React, { PropTypes } from 'react';
 
 import './styles.css';
 
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { FlatButton, Dialog } from 'material-ui'
 import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'
@@ -69,7 +69,7 @@ class AddNodeToCollectionWindow extends React.Component {
             .then(id => (
                 this.props.addNodeToCollection(collection.id, id).then(() => id)
             ))
-            .then(id => this.props.router.push(`/app/collections/${collection.id}/nodes/${id}`))
+            .then(id => this.props.history.push(`/app/collections/${collection.id}/nodes/${id}`))
             // .then((id) => this.props.showGraphSideBar(id))
 
         this.props.hideWindow()

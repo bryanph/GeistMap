@@ -10,7 +10,7 @@ import { searchCollection, resetSearchCollection } from '../../actions/async'
 import { showCreateCollectionWindow } from '../../actions/ui'
 
 import './styles.css'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import enhanceWithClickOutside from 'react-onclickoutside'
 
@@ -124,7 +124,7 @@ class CollectionSearch extends React.Component {
     // createCollection(collection) {
     //     this.props.showCreateCollectionWindow(collection)
     //         // .then(action => action.response.result)
-    //         // .then(id => this.props.router.push(`/app/collections/${id}`))
+    //         // .then(id => this.props.history.push(`/app/collections/${id}`))
     // }
 
     render() {

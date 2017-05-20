@@ -1,7 +1,6 @@
 
 import React, { PropTypes } from 'react'
-import { browserHistory } from "react-router"
-import { Link } from "react-router"
+import { browserHistory, Link } from "react-router-dom"
 
 import Social from './Social'
 

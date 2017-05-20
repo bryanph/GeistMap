@@ -11,8 +11,8 @@ import NodeEditor from '../../containers/NodeEditor'
 
 export class CollectionDetailEditor extends React.Component { // eslint-disable-line react/prefer-stateless-function
   render() {
-      const collectionId = this.props.params.id
-      const nodeId = this.props.params.nodeId
+      const collectionId = this.props.match.params.id
+      const nodeId = this.props.match.params.nodeId
     return (
         <NodeEditor 
             className="nodeBatchCreate-sidebar" 

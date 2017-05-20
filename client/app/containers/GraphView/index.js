@@ -1,6 +1,6 @@
 /*
  *
- * NodeBatchCreateGraph
+ * GraphView
  *
  */
 
@@ -48,7 +48,7 @@ export const NoNodesYet = (props) => (
 )
 
 
-export class NodeBatchCreateGraph extends React.Component { // eslint-disable-line react/prefer-stateless-function
+export class GraphView extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
     constructor(props) {
         super(props)
@@ -76,7 +76,6 @@ export class NodeBatchCreateGraph extends React.Component { // eslint-disable-li
                 console.log(this.props);
 
                 this.props.history.push(`/app/inbox/${lastModifiedNode}`)
-                // this.props.showGraphSideBar(lastModifiedNode)
             })
     }
 
@@ -91,7 +90,6 @@ export class NodeBatchCreateGraph extends React.Component { // eslint-disable-li
         this.props.createBatchNode(node)
             .then((action) => {
                 this.props.history.push(`/app/inbox/${action.response.result}/`)
-                // this.props.showGraphSideBar(action.response.result)
             })
     }
 
@@ -162,8 +160,8 @@ function mapStateToProps(state, props) {
     }
 }
 
-import {createBatchNode, clearBatchNodes, getAllBatchNodes, loadNode } from '../../actions/async'
-import {setTitle, showGraphSideBar, hideGraphSideBar} from '../../actions/ui'
+import { createBatchNode, clearBatchNodes, getAllBatchNodes, loadNode } from '../../actions/async'
+import { setTitle } from '../../actions/ui'
 
 export default connect(mapStateToProps, {
     createBatchNode,
@@ -173,4 +171,4 @@ export default connect(mapStateToProps, {
     setTitle,
     showGraphSideBar,
     hideGraphSideBar,
-})(withRouter(NodeBatchCreateGraph));
+})(withRouter(GraphView));

@@ -10,7 +10,8 @@ import classNames from 'classnames'
 export const Notification = React.createClass({
     componentDidMount: function() {
         this.timeout = setTimeout(() => {
-          store.dispatch(invalidateNotification())  
+            // TODO: no direct imports of store - 2017-05-19
+            store.dispatch(invalidateNotification())  
         } , 5000)
     },
 

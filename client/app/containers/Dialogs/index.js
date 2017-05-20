@@ -6,7 +6,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import CollectionCreateWindow from '../../components/CollectionCreateWindow'
 import AddRelationWindow from '../../components/AddRelationWindow'
@@ -25,7 +25,7 @@ export class Dialogs extends React.Component { // eslint-disable-line react/pref
               open={uiState.createCollectionWindowOpened}
               createCollection={this.props.createCollection}
               hideWindow={this.props.hideCreateCollectionWindow}
-              onCompleted={(action) => this.props.router.push(`/app/collections/${action.response.result}`)}
+              onCompleted={(action) => this.props.history.push(`/app/collections/${action.response.result}`)}
           />
           <AddRelationWindow
               id={uiState.windowProps.nodeId}

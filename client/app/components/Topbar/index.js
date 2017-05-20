@@ -4,9 +4,8 @@ import _ from 'lodash'
 import React from 'react'
 import { PropTypes } from 'react'
 import { connect } from 'react-redux'
-import store from '../../app'
 import classNames from 'classnames'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import { Notification } from '../general/Notification.react.jsx'
 
@@ -162,10 +161,10 @@ class Topbar extends React.Component {
     navigate(result) {
         const id  = result._id
         if(result._index.startsWith("collections")) { // TODO: do this differently - 2017-05-10
-            this.props.router.push(`/app/collections/${id}`)
+            this.props.history.push(`/app/collections/${id}`)
         } 
         else if (result._index.startsWith('nodes')) { // TODO: do this differently - 2017-05-10
-            this.props.router.push(`/app/nodes/${id}/edit`)
+            this.props.history.push(`/app/nodes/${id}/edit`)
         }
     }
 
@@ -175,7 +174,6 @@ class Topbar extends React.Component {
                 <Sidebar 
                     open={this.props.navOpened}
                     toggleNav={this.props.toggleNav}
-                    router={this.props.router}
                     createNode={this.props.createNode}
                     createBatchNode={this.props.createBatchNode}
                     showCreateCollectionWindow={this.props.showCreateCollectionWindow}

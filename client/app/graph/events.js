@@ -4,7 +4,7 @@ import { colorActiveNode } from './util'
 export default (zoom, actions) => {
 
     return {
-        nodeClickNoDrag: (e) => {
+        nodeClick: (e) => {
             /*
              * Render node tooltip
              */

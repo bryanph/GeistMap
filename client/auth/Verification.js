@@ -1,8 +1,8 @@
 
 
 import React, { PropTypes } from 'react'
-import { withRouter } from "react-router"
-import { Link } from "react-router"
+import { withRouter } from "react-router-dom"
+import { Link } from "react-router-dom"
 import fetchJSON from './utils/fetch'
 
 import Social from './Social'
@@ -36,10 +36,10 @@ const AccountVerification  = React.createClass({
       // // TODO: account verification - 2016-05-10
       // window.location = '/'
 
-      this.props.router.push('/auth/account/verification/success')
+      this.props.history.push('/auth/account/verification/success')
 
-      // this.props.router.push('/auth/login/forgot/success')
-      // this.props.router.push('/auth/login/forgot/success')
+      // this.props.history.push('/auth/login/forgot/success')
+      // this.props.history.push('/auth/login/forgot/success')
   },
 
   handleError: function(error) {

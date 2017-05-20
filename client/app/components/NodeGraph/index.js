@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom'
 import * as d3 from 'd3'
 import './styles.css'
 
-import { browserHistory } from 'react-router'
+import { browserHistory } from 'react-router-dom'
 
 import createZoom from '../../graph/zoom'
 import createSimulation from '../../graph/simulation'
@@ -105,21 +105,24 @@ class NodeOverviewGraph extends React.Component {
             removeEdge,
             showGraphSideBar,
             changeMainFocus,
-            router: this.props.router,
+            history: this.props.history,
         })
 
-        this.drag = createDrag(this.simulation)({ connect: connectNodes }, this.customEvents.nodeClickNoDrag)
+        this.drag = createDrag(this.simulation)({ 
+            connect: connectNodes,
+            click: this.customEvents.nodeClick
+        })
         this.nodeDrag = d3.drag()
             .on('drag', this.drag.drag.bind(this))
             .on('start', this.drag.dragstart.bind(this))
             .on('end', this.drag.dragend.bind(this))
 
         const nodeEnterEvents = [
-            // this.customEvents.nodeClickNoDrag   
+            // this.customEvents.nodeClick   
         ]
 
         this.nodeUpdates = createNodeUpdates({
-            events: this.events,
+            events: this.customEvents,
             zoom: this.zoom,
             paddingPercent: 0.95,
         })(nodeEnterEvents)
@@ -177,6 +180,6 @@ NodeOverviewGraph.propTypes = {
     connectNodes: PropTypes.func.isRequired,
 }
 
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 export default withRouter(NodeOverviewGraph)

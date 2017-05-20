@@ -6,7 +6,7 @@
 
 import React, { PropTypes } from 'react';
 
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { FlatButton, Dialog } from 'material-ui'
 import { ControlledTextField } from '../Input'
 import CollectionSearch from '../../containers/CollectionSearch'
@@ -84,7 +84,7 @@ class AddCollectionRelationWindow extends React.Component {
                     (isContentLink ?  this.addContentLink(node, node.id, editorState) : this.addRelation(node.id)).then(() => node)
                     // this.props.connectNodes(this.props.id, id).then(() => id)
                 ))
-                .then(node => this.props.router.push(`/app/collections/${collectionId}/nodes/${node.id}`))
+                .then(node => this.props.history.push(`/app/collections/${collectionId}/nodes/${node.id}`))
         }
         else {
             this.props.createNode()
@@ -93,7 +93,7 @@ class AddCollectionRelationWindow extends React.Component {
                     (isContentLink ?  this.addContentLink(node, node.id, editorState) : this.addRelation(node.id)).then(() => node)
                     // this.props.connectNodes(this.props.id, id).then(() => id)
                 ))
-                .then(node => this.props.router.push(`/app/nodes/${node.id}`))
+                .then(node => this.props.history.push(`/app/nodes/${node.id}`))
             // .then((id) => this.props.showGraphSideBar(id))
 
         }

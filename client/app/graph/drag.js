@@ -1,10 +1,13 @@
-
-import * as d3 from 'd3'
+import { 
+    event as currentEvent,
+    selectAll as d3SelectAll,
+    select as d3Select 
+} from 'd3-selection'
 import { NODE_RADIUS } from './constants'
 import { colorNode } from './util'
 import { secondaryColor } from '../containers/App/muitheme'
 
-export default (simulation) => (actions, clickNoDrag) => {
+export default (simulation) => (actions) => {
 
     // TODO: ew... - 2016-08-24
     let startX = null
@@ -15,13 +18,13 @@ export default (simulation) => (actions, clickNoDrag) => {
             /*
              * Freeze the graph
              */
-            startX = d3.event.x
-            startY = d3.event.y
+            startX = currentEvent.x
+            startY = currentEvent.y
 
-            const { nodes } = this.props
+            const nodeSelection = d3SelectAll('.node')
 
             // simulation.stop()
-            nodes.forEach(node => {
+            nodeSelection.each(node => {
                 node.fx = node.x
                 node.fy = node.y
             })
@@ -33,28 +36,26 @@ export default (simulation) => (actions, clickNoDrag) => {
              */
 
             // first just move ...
-            d.fx = d3.event.x;
-            d.fy = d3.event.y; 
+            d.fx = currentEvent.x;
+            d.fy = currentEvent.y; 
 
-            // TODO: instead just stop simulation, update node position and call tick manually - 2016-08-24
-            // simulation.tick()
+            // const { nodes } = this.props
+            const nodeSelection = d3SelectAll('.node')
 
-            const { nodes } = this.props
-
-            const prevHoveredNodes = d3.selectAll('.node-hovered')
+            const prevHoveredNodes = d3SelectAll('.node-hovered')
             // back to their default color again
             prevHoveredNodes.select('circle')
                 .style("fill", colorNode)
             prevHoveredNodes.classed('node-hovered', false)
 
-            nodes.forEach(node => {
+            nodeSelection.each(node => {
                 if (node === d) return
 
                 const distanceToNode = Math.sqrt((node.x - d.x)**2 + (node.y - d.y)**2)
 
                 if (distanceToNode < NODE_RADIUS) {
                     // change background color
-                    d3.select(`#node-${node.id}`)
+                    d3Select(`#node-${node.id}`)
                         .classed('node-hovered', true)
                         .select('circle')
                         .style("fill", secondaryColor)
@@ -66,34 +67,36 @@ export default (simulation) => (actions, clickNoDrag) => {
             /*
              * Create an edge to all nodes which are being hovered over
              */
-            const { nodes } = this.props
+            const nodeSelection = d3SelectAll('.node')
+            // const { nodes } = this.props
 
             d.fx = null;
             d.fy = null;
 
-            const dx = Math.abs(startX - d3.event.x)
-            const dy = Math.abs(startY - d3.event.y)
+            // if we only moved the mouse in a square of 8px, assume it was a click instead of a drag
+            const dx = Math.abs(startX - currentEvent.x)
+            const dy = Math.abs(startY - currentEvent.y)
             if (dx < 8 && dy < 8) {
-                nodes.forEach(node => {
+                nodeSelection.each(node => {
                     node.fx = null
                     node.fy = null
                 })
 
-                if (clickNoDrag) {
-                    clickNoDrag(d);
-                }
+                // if (actions.click) {
+                //     actions.click(d);
+                // }
 
                 // simulation.stop()
                 return
             }
 
-            const prevHoveredNodes = d3.selectAll('.node-hovered')
+            const prevHoveredNodes = d3SelectAll('.node-hovered')
             // back to their default color again
             prevHoveredNodes.select('circle')
                 .style("fill", colorNode)
             prevHoveredNodes.classed('node-hovered', false)
 
-            nodes.forEach(node => {
+            nodeSelection.each(node => {
                 // undo fixed state as set in dragstart
                 node.fx = null
                 node.fy = null
@@ -108,7 +111,7 @@ export default (simulation) => (actions, clickNoDrag) => {
                 }
             })
 
-            if (!d3.event.active) {
+            if (!currentEvent.active) {
                 simulation.alphaTarget(0);
                 simulation.alpha(0.8).restart();
             }

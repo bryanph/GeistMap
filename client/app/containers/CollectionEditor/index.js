@@ -7,7 +7,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import CollectionEditorToolbar from '../../containers/CollectionEditorToolbar'
 import ContentEditor from '../../containers/CollectionContentEditor'

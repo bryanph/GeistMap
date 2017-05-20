@@ -6,17 +6,13 @@ import * as d3 from 'd3'
 
 export default (actions) => {
 
-    const clickSubscriptionsById = {
-
-    }
-
     return {
-        nodeClickNoDrag: (selection) => {
+        nodeClick: (selection) => {
             /*
              * Render node tooltip
              */
             selection.on('click', (d) => {
-                actions.router.push(`/app/nodes/${d.id}`)
+                actions.router.location.push(`/app/nodes/${d.id}`)
             })
         },
         nodeDoubleClick: (d) => {

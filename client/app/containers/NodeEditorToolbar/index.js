@@ -6,7 +6,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import {HotKeys} from 'react-hotkeys';
 
 import { NodeTitle, NodeSubtitle } from '../../components/NodeToolbar'
@@ -76,17 +76,17 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
 
     editNode() {
         const { router, page, id } = this.props
-        router.push(`/app/${page}/${id}/edit`)
+        router.location.push(`/app/${page}/${id}/edit`)
     }
 
     editCollection() {
         const { router, page, collectionId } = this.props
-        router.push(`/app/collections/${collectionId}/`)
+        router.location.push(`/app/collections/${collectionId}/`)
     }
 
     toGraphView() {
         const { router, page, id } = this.props
-        router.push(`/app/${page}/${id}/`)
+        router.location.push(`/app/${page}/${id}/`)
     }
 
     removeNode() {
@@ -102,14 +102,14 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
     }
 
     exploreNode() {
-        this.props.router.push(`/app/nodes/${this.props.node.id}`)
+        this.props.history.push(`/app/nodes/${this.props.node.id}`)
     }
 
     duplicateNode() {
         const { router, page, id } = this.props
         this.props.duplicateNode(id, page === "inbox")
             .then(action =>
-                router.push(`/app/${page}/${action.response.result}`)
+                router.location.push(`/app/${page}/${action.response.result}`)
             )
     }
 

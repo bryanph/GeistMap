@@ -2,8 +2,7 @@
 
 import React, { PropTypes } from 'react'
 import fetchJSON from './utils/fetch'
-import { withRouter } from "react-router"
-import { Link } from 'react-router'
+import { withRouter, Link } from "react-router-dom"
 
 import { RenderErrors, ValidationErrors } from './Error'
 import getHeaders from './headers'
@@ -22,7 +21,7 @@ const Reset = React.createClass({
           return this.setState({errors: json.errors})
       }
 
-      this.props.router.push('/auth/login/reset/success')
+      this.props.history.push('/auth/login/reset/success')
   },
 
   handleError: function(error) {

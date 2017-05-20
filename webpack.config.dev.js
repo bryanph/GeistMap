@@ -5,8 +5,8 @@ var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlug
 var UnusedFilesWebpackPlugin = require("unused-files-webpack-plugin").UnusedFilesWebpackPlugin;
 
 module.exports = {
-    devtool: 'cheap-module-eval-source-map',
-    // devtool: 'inline-eval-cheap-source-map',
+    // devtool: 'source-map',
+    devtool: 'inline-eval-cheap-source-map',
 
     entry: {
         app: [ 

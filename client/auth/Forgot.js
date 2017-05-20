@@ -1,8 +1,8 @@
 
 import React, { PropTypes } from 'react'
 import fetchJSON from './utils/fetch'
-import { withRouter } from "react-router"
-import { Link } from 'react-router'
+import { withRouter } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import { RenderErrors, ValidationErrors } from './Error'
 import getHeaders from './headers'
@@ -20,7 +20,7 @@ const Forgot = React.createClass({
           return this.setState({errors: json.errors})
       }
 
-      this.props.router.push('/auth/login/forgot/success')
+      this.props.history.push('/auth/login/forgot/success')
   },
 
   handleError: function(error) {

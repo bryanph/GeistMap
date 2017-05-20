@@ -1,7 +1,6 @@
 
 import React, { PropTypes } from 'react'
-import { withRouter } from "react-router"
-import { Link } from "react-router"
+import { Link } from "react-router-dom"
 import fetchJSON from './utils/fetch'
 
 import Social from './Social'
@@ -37,9 +36,6 @@ const Signup  = React.createClass({
             }
 
             window.location = '/app'
-
-            // this.props.router.push('/auth/login/forgot/success')
-            // this.props.router.push('/auth/login/forgot/success')
         },
 
         handleError: function(error) {
@@ -94,7 +90,7 @@ const Signup  = React.createClass({
         }
 })
 
-export default withRouter(Signup)
+export default Signup
 
 
 const styles = {

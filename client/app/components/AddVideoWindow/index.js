@@ -9,7 +9,7 @@ import React, { PropTypes } from 'react';
 
 import './styles.css';
 
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { FlatButton, Dialog } from 'material-ui'
 import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'

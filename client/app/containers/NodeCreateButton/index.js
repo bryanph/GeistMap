@@ -7,7 +7,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import AddButton from '../../components/AddButton'
 
 import IconMenu from 'material-ui/IconMenu';
@@ -31,7 +31,7 @@ export class NodeCreateButton extends React.Component { // eslint-disable-line r
     createNode() {
         return this.props.createBatchNode(defaultNode)
             .then(action => action.response.result)
-            .then(id => this.props.router.push(`/app/inbox/${id}`))
+            .then(id => this.props.history.push(`/app/inbox/${id}`))
     }
 
     createCollection() {

@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom'
 import * as d3 from 'd3'
 // import './styles.css'
 
-import { browserHistory } from 'react-router'
+import { browserHistory } from 'react-router-dom'
 
 import createZoom from '../../graph/zoom'
 import createSimulation from '../../graph/simulation'
@@ -102,18 +102,21 @@ class CollectionDetailGraph extends React.Component {
             loadNode,
             removeEdge,
             showGraphSideBar,
-            router: this.props.router,
+            router: this.props.
             collectionId,
         })
 
-        const forceDrag = createDrag(this.simulation)({ connect: connectNodes }, customEvents.nodeClickNoDrag)
+        const forceDrag = createDrag(this.simulation)({ 
+            connect: connectNodes, 
+            click: customEvents.nodeClick 
+        })
         this.nodeDrag = d3.drag()
             .on('drag', forceDrag.drag.bind(this))
             .on('start', forceDrag.dragstart.bind(this))
             .on('end', forceDrag.dragend.bind(this))
 
         const nodeEnterEvents = [
-            // this.customEvents.nodeClickNoDrag   
+            // this.customEvents.nodeClick   
         ]
 
         this.nodeUpdates = createNodeUpdates({
@@ -178,6 +181,6 @@ CollectionDetailGraph.propTypes = {
     connectNodes: PropTypes.func.isRequired,
 }
 
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 export default withRouter(CollectionDetailGraph)

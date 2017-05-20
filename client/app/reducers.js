@@ -13,7 +13,6 @@ import _ from 'lodash'
 
 import * as actionTypes from './actions/async'
 import * as uiTypes from './actions/ui'
-import { LOCATION_CHANGE } from 'react-router-redux'
 
 // function entities(state=initialEntities, action) {
 //     if (action.response && action.response.entities) {
@@ -870,8 +869,6 @@ function editorState(state=null, action) {
     }
 }
 
-import { routerReducer as routing } from 'react-router-redux'
-
 function rootReducer(state={}, action) {
     return {
         entities: entities(state.entities, action),
@@ -884,7 +881,6 @@ function rootReducer(state={}, action) {
         inboxNodes: inboxNodes(state.inboxNodes, action),
         batchNodes: batchNodes(state.batchNodes, action),
         // errorMessage: errorMessage(state.errorMessage, action),
-        routing: routing(state.routing, action),
         loadingStates: loadingStates(state.loadingStates, action),
         synced: synced(state.synced, action),
         allSearch: allSearch(state.allSearch, action),
@@ -907,7 +903,6 @@ function rootReducer(state={}, action) {
 //     nodesAndEdgesByCollectionId,
 //     inboxNodes,
 //     // errorMessage,
-//     routing,
 //     requestCount,
 //     synced,
 //     nodeSearch,

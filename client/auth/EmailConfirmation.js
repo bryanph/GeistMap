@@ -1,8 +1,7 @@
 
 
 import React, { PropTypes } from 'react'
-import { browserHistory, withRouter } from "react-router"
-import { Link } from 'react-router'
+import { browserHistory, withRouter, Link } from "react-router-dom"
 import fetchJSON from './utils/fetch'
 
 import Social from './Social'
@@ -32,7 +31,7 @@ const EmailConfirmation  = React.createClass({
         return this.setState({errors: json.errors})
       }
 
-      this.props.router.push('/auth/login/forgot/success')
+      this.props.history.push('/auth/login/forgot/success')
   },
 
   handleError: function(error) {

@@ -50,7 +50,7 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
     selectNode(ESNode) {
         const id = ESNode._id
 
-        this.props.router.push(`/app/nodes/${id}`)
+        this.props.history.push(`/app/nodes/${id}`)
     }
 
     componentWillMount() {
@@ -118,7 +118,7 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
   }
 }
 
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 import { getNode, getL2Nodes, getL2Edges } from '../../reducers'
 

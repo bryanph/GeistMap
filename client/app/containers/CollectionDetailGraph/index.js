@@ -1,7 +1,7 @@
 
 import _ from 'lodash'
 import React, { PropTypes } from 'react'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 

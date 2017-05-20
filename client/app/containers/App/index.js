@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
+import { withRouter, Switch, Route, IndexRedirect, Redirect} from "react-router-dom"
 
 import { resetErrorMessage } from '../../reducers'
 import { isLoggedIn } from '../../utils/login.js'
 
 import Topbar from "../../components/Topbar";
-import PublicTopbar from "../../components/PublicTopbar"
 
 import Dialogs from '../../containers/Dialogs'
 import Errors from '../../containers/Errors'
@@ -15,6 +15,16 @@ import getMuiTheme from '../../containers/App/muitheme.js';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import { HotKeys } from 'react-hotkeys'
+
+
+import Inbox from '../Inbox'
+import InboxEditor from '../InboxEditor'
+import CollectionOverview from "../CollectionOverview"
+import CollectionOverviewEditor from "../CollectionOverviewEditor"
+import CollectionDetail from '../CollectionDetail'
+import CollectionDetailEditor from '../CollectionDetailEditor'
+import NodeExplore from '../NodeExplore'
+import NodeExploreEditor from '../NodeExploreEditor'
 
 const keyMapping = {
     'explore': 'ctrl+alt+e',
@@ -28,11 +38,26 @@ const keyMapping = {
 
 import './styles.css'
 
-const App = React.createClass({
+class App extends React.Component {
+    constructor(props) {
+        super(props)
 
-    renderError: function() {
+        this.renderError = this.renderError.bind(this)
+    }
+
+    componentWillMount() {
+        if (window.ga) {
+            this.props.history.listen((location) => {
+                console.log(location.pathname);
+                window.ga('set', 'page', location.pathname + location.search);
+                window.ga('send', 'pageview')
+            })
+        }
+    }
+
+    renderError() {
         const { errorMessage } = this.props
-            
+
         if (!errorMessage) {
             return null
         }
@@ -40,33 +65,55 @@ const App = React.createClass({
         return (
             <h1>{errorMessage}</h1>
         )
-    },
+    }
 
-    render: function() {
-        const { isLoggedIn } = this.props
-        const { pathname } = this.props.location
+    render() {
+        const { match, location, isLoggedIn } = this.props
 
-        var segment = pathname.split('/')[1] || 'root';
-
-        const key = this.props.routes[2].path
+        console.log(this.props);
 
         return (
-            <MuiThemeProvider muiTheme={getMuiTheme()} key={key}>
+            <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
                     <div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-                        <Dialogs params={this.props.params} location={this.props.location} />
+                        <Dialogs 
+                            params={match.params} 
+                            location={location} 
+                        />
                         <Errors />
                         <Topbar />
 
                         { this.renderError() }
 
-                        { this.props.children }
+                        <Switch>
+                            <Route path={`${match.path}/inbox`} component={Inbox}/>
+                            <Route path={`${match.path}/inbox/:id`} component={Inbox}/>
+                            <Route path={`${match.path}/inbox/:id/edit`} component={InboxEditor}/>
+                            <Route path={`${match.path}/nodes`} component={NodeExplore}/>
+                            <Route path={`${match.path}/nodes/:id`} component={NodeExplore}/>
+                            <Route path={`${match.path}/nodes/:id/edit`} component={NodeExploreEditor}/>
+                            <Route path={`${match.path}/collections`} component={CollectionOverview}/>
+                            <Route path={`${match.path}/collections/:id`} component={CollectionOverview}/>
+                            <Route path={`${match.path}/collections/:id/edit`} component={CollectionOverviewEditor}/>
+
+                            <Route path={`${match.path}/collections/:id/nodes`} component={CollectionDetail}/>
+                            <Route path={`${match.path}/collections/:id/nodes/:nodeId`} component={CollectionDetail}/>
+                            <Route path={`${match.path}/collections/:id/nodes/:nodeId/edit`} component={CollectionDetailEditor}/>
+                            <Route path={`${match.path}/collections/:id/nodes/:nodeId/edit`} component={CollectionDetailEditor}/>
+                            <Redirect from={`${match.path}/`} to={`${match.path}/inbox`}/>
+                        </Switch>
+                        {
+                            /*
+                    <Route path="explore/collections" component={CollectionExplore}/>
+                    <Route path="explore/collections/:id" component={CollectionExplore}/>
+                    */
+                        }
                     </div>
                 </HotKeys>
             </MuiThemeProvider>
         )   
     }
-})
+}
 
 function mapStateToProps(state, props) {
     return {
@@ -77,5 +124,5 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
     resetErrorMessage
-})(App)
+})(withRouter(App))
 

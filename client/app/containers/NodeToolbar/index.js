@@ -6,7 +6,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import {HotKeys} from 'react-hotkeys';
 
 import { NodeTitle, NodeSubtitle } from '../../components/NodeToolbar'
@@ -42,12 +42,12 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
 
     editNode() {
         const { router, page, id } = this.props
-        router.push(`/app/${page}/${id}/edit`)
+        router.location.push(`/app/${page}/${id}/edit`)
     }
 
     editCollection() {
         const { router, page, collectionId } = this.props
-        router.push(`/app/collections/${collectionId}/`)
+        router.location.push(`/app/collections/${collectionId}/`)
     }
 
     removeNode() {
@@ -55,7 +55,7 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
         const result = window.confirm(`Are you sure you want to remove '${this.props.node.properties.name}'`)
         if (result) {
             this.props.removeNode(id)
-            router.push(`/app/${page}/`)
+            router.location.push(`/app/${page}/`)
         }
     }
 
@@ -64,14 +64,14 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
     }
 
     exploreNode() {
-        this.props.router.push(`/app/nodes/${this.props.node.id}`)
+        this.props.history.push(`/app/nodes/${this.props.node.id}`)
     }
 
     duplicateNode() {
         const { router, page, id } = this.props
         this.props.duplicateNode(id, page === "inbox")
             .then(action =>
-                router.push(`/app/${page}/${action.response.result}`)
+                router.location.push(`/app/${page}/${action.response.result}`)
             )
     }
 

@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom'
 import * as d3 from 'd3'
 // import './styles.css'
 
-import { browserHistory } from 'react-router'
+import { browserHistory } from 'react-router-dom'
 
 import createZoom from '../../graph/zoom'
 import createSimulation from '../../graph/simulation'
@@ -90,7 +90,6 @@ class NodeExploreGraph extends React.Component {
         this.simulation = simulation
         this.ticked = ticked
 
-        this.drag = createDrag(this.simulation)({ connect: connectNodes })
         this.zoom = createZoom(this.d3Graph, WIDTH, HEIGHT)
 
         this.events = createEvents({
@@ -99,24 +98,27 @@ class NodeExploreGraph extends React.Component {
             showGraphSideBar,
         })
         this.customEvents = createCustomEvents({
-            router: this.props.router,
+            router: this.props.
             loadNode,
             removeEdge,
             showGraphSideBar,
         })
 
-
+        this.drag = createDrag(this.simulation)({ 
+            connect: connectNodes,
+            click: this.customEvents.nodeClick,
+        })
         this.nodeDrag = d3.drag()
             .on('drag', this.drag.drag.bind(this))
             .on('start', this.drag.dragstart.bind(this))
             .on('end', this.drag.dragend.bind(this))
 
         const nodeEnterEvents = [
-            this.customEvents.nodeClickNoDrag   
+            this.customEvents.nodeClick   
         ]
 
         this.nodeUpdates = createNodeUpdates({
-            events: this.events,
+            events: this.customEvents,
             zoom: this.zoom,
             paddingPercent: 0.95,
         })(nodeEnterEvents)
@@ -178,6 +180,6 @@ NodeExploreGraph.propTypes = {
 }
 
 import pure from 'recompose/pure'
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 
 export default pure(withRouter(NodeExploreGraph))

@@ -21,11 +21,11 @@ export default (actions) => {
                 .attr("dy", ".35em")
                 .text((d) => getLabelText(d.properties.name));
         },
-        nodeClickNoDrag: (data) => {
+        nodeClick: (data) => {
             /*
              * Render node tooltip
              */
-            actions.router.push(`/app/collections/${data.id}/`)
+            actions.router.location.push(`/app/collections/${data.id}/`)
         },
         nodeDoubleClick: (d) => {
             d.fixed = false;

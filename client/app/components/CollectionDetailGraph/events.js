@@ -6,7 +6,7 @@ import * as d3 from 'd3'
 export default (actions) => {
     return {
         // nodeClickNoDrag: (selection) => {
-        nodeClickNoDrag: (d) => {
+        nodeClick: (d) => {
             /*
              * Render node tooltip
              */
@@ -17,7 +17,7 @@ export default (actions) => {
 
             // TODO: handle the loading in the component based on the route - 2017-02-09
             actions.loadNode(data.id, true)
-                .then(() => actions.router.push(`/app/collections/${collectionId}/nodes/${data.id}`))
+                .then(() => actions.router.location.push(`/app/collections/${collectionId}/nodes/${data.id}`))
                 .then(() => window.scrollTo(0, 0))
         },
         nodeDoubleClick: (d) => {

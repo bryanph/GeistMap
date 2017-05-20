@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router-dom'
 import { Entity, SelectionState, RichUtils } from 'draft-js';
 import { EditButton, TrashButton } from '../../../../components/Buttons'
 
@@ -29,7 +29,7 @@ class Link extends React.Component {
                         { node.properties && node.properties.name }
                         <div className="contentLinkDiv-buttons">
                             <EditButton
-                                onTouchTap={() => router.push(href)}
+                                onTouchTap={() => router.location.push(href)}
                             />
                             <TrashButton
                                 label={"Remove"}

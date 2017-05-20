@@ -1,8 +1,8 @@
 import * as d3 from 'd3'
 import { NODE_RADIUS, WIDTH, HEIGHT } from './constants'
 
-export default (WIDTH, HEIGHT) => ({
-    simulation: d3.forceSimulation()
+export default (WIDTH, HEIGHT) => (
+    d3.forceSimulation()
         // .alphaTarget(0.01)
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
@@ -15,15 +15,8 @@ export default (WIDTH, HEIGHT) => ({
         )
         .force("x", d3.forceX().strength(0.05))
         .force("y", d3.forceY().strength(0.05))
-        .force("center", d3.forceCenter(WIDTH / 2, HEIGHT / 2)),
-
-    ticked: (selection) => {
-        selection.selectAll('.node')
-            .call(transformNode);
-        selection.selectAll('.node-link')
-            .call(transformLink);
-    }
-})
+        .force("center", d3.forceCenter(WIDTH / 2, HEIGHT / 2))
+)
 
 
 
@@ -70,7 +63,7 @@ function drawPath(d) {
 }
 
 
-const transformNode = (selection) => {
+export const transformNode = (selection) => {
     return selection
         // .attr("cx", d => d.x)
         // .attr("cy", d => d.y)
@@ -87,7 +80,7 @@ const transformNode = (selection) => {
 };
 
 
-const transformLink = (selection) => {
+export const transformLink = (selection) => {
     // TODO: proper selection here for tick - 2016-06-13
     return selection
         .attr('d', (d) => linkArc(d, d.curved))
