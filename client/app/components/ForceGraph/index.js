@@ -219,6 +219,10 @@ class ForceGraph extends React.Component {
         if (nodes.length !== this.props.nodes.length || links.length !== this.props.links.length) {
             this.restartSimulation()
         }
+
+        if (this.props.selectedNode) {
+            colorActiveNode(d3Select(`#node-${this.props.selectedNode.id}`))
+        }
     }
 
     restartSimulation() {
@@ -263,18 +267,11 @@ class ForceGraph extends React.Component {
         });
 
         this.update(this.props)
-
-        // if (this.props.selectedNode) {
-        //     colorActiveNode(d3Select(`#node-${this.props.selectedNode.id}`))
-        // }
     }
 
     shouldComponentUpdate(nextProps) {
         this.update(nextProps)
 
-        // if (nextProps.selectedNode && nextProps.selectedNode !== this.props.selectedNode) {
-        //     colorActiveNode(d3Select(`#node-${nextProps.selectedNode.id}`))
-        // }
         return false
     }
 
