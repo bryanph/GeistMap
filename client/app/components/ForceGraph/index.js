@@ -429,8 +429,9 @@ class ForceGraph extends React.Component {
             this.restartSimulation()
         }
 
-        if (this.props.selectedId) {
-            colorActiveNode(d3Select(`#node-${this.props.selectedId}`))
+        if (nextProps.selectedId) {
+            console.log('color with ', nextProps.selectedId);
+            colorActiveNode(d3Select(`#node-${nextProps.selectedId}`))
         }
     }
 
@@ -465,6 +466,7 @@ class ForceGraph extends React.Component {
             removeEdge: removeCollectionEdge,
             connect: connectCollections,
         })
+        // TODO: collectionId should be not be static like this - 2017-05-21
         this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collectionId, {
             history: this.props.history,
             removeEdge,
@@ -496,6 +498,7 @@ class ForceGraph extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
+        console.log('should component update?', nextProps.selectedId);
         this.update(nextProps)
 
         return false

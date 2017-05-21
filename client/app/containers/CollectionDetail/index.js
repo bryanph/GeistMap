@@ -116,7 +116,7 @@ function mapStateToProps(state, props) {
     const collectionId = props.match.params && props.match.params.id
     const nodeId = props.match.params && props.match.params.nodeId
 
-    console.log(collectionId);
+    console.log(nodeId);
 
     return {
         collectionId,

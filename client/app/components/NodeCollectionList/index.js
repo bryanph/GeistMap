@@ -140,14 +140,14 @@ class NodeCollectionList extends React.Component {
 import { withRouter } from 'react-router-dom'
 
 // TODO: change to Link components - 2016-07-12
-export const NodeCollectionItem = withRouter(({ id, nodeId, name, onDelete, router }) => {
+export const NodeCollectionItem = withRouter(({ id, nodeId, name, onDelete, history }) => {
     // {/* 
     //     <a href={`/app/collections/${id}`} className='collection-item'>{ name }</a>
     // */} 
     return (
         <Chip
             onRequestDelete={() => onDelete(id)}
-            onTouchTap={() => router.location.push(`/app/collections/${id}/nodes/${nodeId}`)}
+            onTouchTap={() => history.push(`/app/collections/${id}/nodes/${nodeId}`)}
             style={styles.chip}
         >
             { name }

@@ -15,7 +15,7 @@ class Link extends React.Component {
 
 
     render() {
-        const { router, getEditorState, setEditorState } = this.props
+        const { history, getEditorState, setEditorState } = this.props
         const { nodeId, edgeId } = this.props
 
         const href = path.resolve(window.location.pathname, `../../${nodeId}/edit`)
@@ -26,10 +26,10 @@ class Link extends React.Component {
                 {this.props.children}
                 <div className="contentLinkDiv" contenteditable="false">
                     <div className="contentLinkDiv-container">
-                        { node.properties && node.properties.name }
+                        { node && node.properties && node.properties.name }
                         <div className="contentLinkDiv-buttons">
                             <EditButton
-                                onTouchTap={() => router.location.push(href)}
+                                onTouchTap={() => history.push(href)}
                             />
                             <TrashButton
                                 label={"Remove"}
