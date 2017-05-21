@@ -22,7 +22,7 @@ class CollectionDetailGraphContainer extends React.Component {
                 collectionId={this.props.collectionId}
                 nodes={nodes}
                 links={links} 
-                selectedNode={this.props.selectedNode}
+                selectedId={this.props.selectedNode.id}
                 { ...this.props }
             />
         )

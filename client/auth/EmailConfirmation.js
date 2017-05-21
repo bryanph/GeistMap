@@ -66,7 +66,7 @@ const EmailConfirmation  = React.createClass({
             <h3>Email confirmation</h3>
             <p>Enter your email address in the form below to get started</p>
             <EmailConfirmationForm 
-                email={this.props.params && this.props.params.email || ''}
+                email={this.props.match.params && this.props.match.params.email || ''}
                 handleError={this.handleError}
                 handleResponse={this.handleResponse}
             />

@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 
 // TODO: only import things you need - 2016-07-25
 import * as d3 from 'd3'
+import { scaleLinear } from 'd3-scale'
 import { drag as d3Drag } from 'd3-drag'
 import { select as d3Select } from 'd3-selection'
 import './styles.css'
@@ -33,6 +34,7 @@ function getLabelText(text) {
 }
 
 import { colorNode } from '../../graph/util'
+
 const createEnterNode = (actions: { click: Function }) => {
     /*
      * HOF for enterNode
@@ -68,8 +70,51 @@ const createEnterNode = (actions: { click: Function }) => {
 
     }
 }
+
+const createEnterCollection = (actions: { click: Function }) => {
+    /*
+     * HOF for enterNode
+    */
+    return (selection, click) => {
+        selection
+            .attr("class", "node")
+            // .classed('enter-selection', true) // for rxjs..
+            // for later reference from data
+            .attr('id', (d) => {
+                return `node-${d.id}`
+            }) 
+            // TODO: this is the only difference between createEnterNode and this function
+            // .attr('r', (d) => d.radius)
+
+        selection.on('click', actions.click)
+
+        selection
+            .append('circle')
+            .attr("r", (d) => d.radius)
+            .attr("x", -8)
+            .attr("y", -8)
+            .style("fill", colorNode)
+
+        selection.append('text')
+            .attr("dx", (d) => d.radius)
+            .attr("dy", ".35em")
+            .text((d) => getLabelText(d.properties.name));
+
+        // remove enter-selection flag for rxjs...
+        // selection.classed('enter-selection', false)
+
+        return selection
+
+    }
+}
 const updateNode = (selection) => {
-    console.log('calling updateNode');
+    selection.select('text').text(d => {
+        return getLabelText(d.properties.name)
+    })
+
+    return selection
+}
+const updateCollection = (selection) => {
     selection.select('text').text(d => {
         return getLabelText(d.properties.name)
     })
@@ -125,8 +170,169 @@ const createInboxEvents = (simulation, actions) => {
     })
 
     return (node, link) => {
-        console.log(node, link);
+        console.log('inbox', node.enter().size(), node.exit().size());
+        // EXIT selection
+        node.exit().remove()
+        // ENTER selection
+        node.enter().append('g').call(enterNode).call(nodeDrag)
+        // ENTER + UPDATE selection
+            .merge(node).call(updateNode)
+        
+        // EXIT selection
+        link.exit().remove()
+        // ENTER selection
+        link.enter().insert('g', ":first-child").call(enterLink)
+        // ENTER + UPDATE selection
+        // .merge(link).call(updateLink)
+    }
+}
 
+
+const createExploreEvents = (simulation, actions) => {
+    /*
+     * in first call creates the drag() object
+     * Afterwards, can be called with node an link DOM nodes
+     */
+    console.log('calling createExploreEvents');
+
+    const onNodeClick = (d) => {
+        actions.history.push(`/app/nodes/${d.id}`)
+    }
+
+    const onConnect = (from, to) => {
+        // TODO: make sure this change is represented in the graph
+        return actions.connectNodes(from, to)
+    }
+
+    const drag = createDrag(simulation)({ 
+        connect: onConnect,
+        click: onNodeClick,
+    })
+
+    // TODO: find a way to not have to bind with this here
+    // problem is that in the drag event require the actual 'nodes'
+    const nodeDrag = d3Drag()
+        .on('drag', drag.drag.bind(this))
+        .on('start', drag.dragstart.bind(this))
+        .on('end', drag.dragend.bind(this))
+
+    const enterNode = createEnterNode({
+        click: onNodeClick
+    })
+    const enterLink = createEnterLink({
+        doubleClick: (d) => actions.removeEdge(d.id)
+    })
+
+    return (node, link) => {
+        console.log('explore', node.enter().size(), node.exit().size());
+        // EXIT selection
+        node.exit().remove()
+        // ENTER selection
+        node.enter().append('g').call(enterNode).call(nodeDrag)
+        // ENTER + UPDATE selection
+            .merge(node).call(updateNode)
+        
+        // EXIT selection
+        link.exit().remove()
+        // ENTER selection
+        link.enter().insert('g', ":first-child").call(enterLink)
+        // ENTER + UPDATE selection
+        // .merge(link).call(updateLink)
+    }
+}
+
+
+const createCollectionOverviewEvents = (simulation, actions) => {
+    /*
+     * in first call creates the drag() object
+     * Afterwards, can be called with node an link DOM nodes
+     */
+    console.log('calling createCollectionOverviewEvents');
+
+    const onCollectionClick = (d) => {
+        actions.history.push(`/app/collections/${d.id}`)
+    }
+
+    const onConnect = (from, to) => {
+        // TODO: make sure this change is represented in the graph
+        return actions.connect(from, to)
+    }
+
+    const drag = createDrag(simulation)({ 
+        connect: onConnect,
+        click: onCollectionClick,
+    })
+
+    // TODO: find a way to not have to bind with this here
+    // problem is that in the drag event require the actual 'nodes'
+    const collectionDrag = d3Drag()
+        .on('drag', drag.drag.bind(this))
+        .on('start', drag.dragstart.bind(this))
+        .on('end', drag.dragend.bind(this))
+
+    const enterCollection = createEnterCollection({
+        click: onCollectionClick
+    })
+    const enterLink = createEnterLink({
+        doubleClick: (d) => actions.removeEdge(d.id)
+    })
+
+    return (node, link) => {
+        // EXIT selection
+        node.exit().remove()
+        // ENTER selection
+        node.enter().append('g').call(enterCollection).call(collectionDrag)
+        // ENTER + UPDATE selection
+            .merge(node).call(updateCollection)
+        
+        // EXIT selection
+        link.exit().remove()
+        // ENTER selection
+        link.enter().insert('g', ":first-child").call(enterLink)
+        // ENTER + UPDATE selection
+        // .merge(link).call(updateLink)
+    }
+}
+
+const createCollectionDetailEvents = (simulation, collectionId, actions) => {
+    /*
+     * in first call creates the drag() object
+     * Afterwards, can be called with node an link DOM nodes
+     */
+    console.log('calling createCollectionDetailEvents');
+
+    console.log(collectionId);
+
+    const onNodeClick = (d) => {
+        actions.history.push(`/app/collections/${collectionId}/nodes/${d.id}`)
+    }
+
+    const onConnect = (from, to) => {
+        // TODO: make sure this change is represented in the graph
+        return actions.connectNodes(from, to)
+    }
+
+    const drag = createDrag(simulation)({ 
+        connect: onConnect,
+        click: onNodeClick,
+    })
+
+    // TODO: find a way to not have to bind with this here
+    // problem is that in the drag event require the actual 'nodes'
+    const nodeDrag = d3Drag()
+        .on('drag', drag.drag.bind(this))
+        .on('start', drag.dragstart.bind(this))
+        .on('end', drag.dragend.bind(this))
+
+    const enterNode = createEnterNode({
+        click: onNodeClick
+    })
+    const enterLink = createEnterLink({
+        doubleClick: (d) => actions.removeEdge(d.id)
+    })
+
+    return (node, link) => {
+        console.log('collection_detail', node.enter().size(), node.exit().size());
         // EXIT selection
         node.exit().remove()
         // ENTER selection
@@ -158,6 +364,7 @@ class ForceGraph extends React.Component {
         */
         let { nodes, links, graphType } = nextProps
 
+        // TODO: I actually need previous graph-type events as well in order to do a proper exit() call
         // let events;
         // switch(graphType) {
         //     case 'inbox':
@@ -177,11 +384,15 @@ class ForceGraph extends React.Component {
         //         break;
         // }
 
-        // TODO: shouldn't need to create a map here
         let nodeById = {}
+
+        // TODO: this only applies to CollectionOverview
+        const maxNodeCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
+        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([10, 20])
 
         // set extra properties here
         nodes.forEach(node => {
+            node.radius = radiusScale(node.count || 0)
             nodeById[node.id] = node
         })
 
@@ -189,8 +400,6 @@ class ForceGraph extends React.Component {
             link.source = nodeById[link.start]
             link.target = nodeById[link.end]
         })
-
-        console.log(nodes, links);
 
         // set data
         var node = this.d3Graph.selectAll('.node')
@@ -220,8 +429,8 @@ class ForceGraph extends React.Component {
             this.restartSimulation()
         }
 
-        if (this.props.selectedNode) {
-            colorActiveNode(d3Select(`#node-${this.props.selectedNode.id}`))
+        if (this.props.selectedId) {
+            colorActiveNode(d3Select(`#node-${this.props.selectedId}`))
         }
     }
 
@@ -231,7 +440,7 @@ class ForceGraph extends React.Component {
     }
 
     componentDidMount() {
-        const { loadNode, removeEdge, connectNodes } = this.props
+        const { loadNode, removeEdge, connectNodes, connectCollections, removeCollectionEdge, collectionId } = this.props
 
         this.d3Graph = d3Select(ReactDOM.findDOMNode(this.refs.graph));
         this.d3Graph.append('defs').call(arrowHead)
@@ -240,6 +449,23 @@ class ForceGraph extends React.Component {
         this.zoom = createZoom(this.d3Graph, WIDTH, HEIGHT)
 
         this.inboxEvents = createInboxEvents.call(this, this.simulation, {
+            history: this.props.history,
+            removeEdge,
+            connectNodes,
+        })
+        // TODO: connectNodes requires a re-fetch at the moment
+        this.exploreEvents = createExploreEvents.call(this, this.simulation, {
+            history: this.props.history,
+            removeEdge,
+            connectNodes,
+        })
+        // TODO: where to do the data fetching required for the different graphs?
+        this.collectionOverviewEvents = createCollectionOverviewEvents.call(this, this.simulation, {
+            history: this.props.history,
+            removeEdge: removeCollectionEdge,
+            connect: connectCollections,
+        })
+        this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collectionId, {
             history: this.props.history,
             removeEdge,
             connectNodes,

@@ -7,7 +7,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import CollectionDetailGraph from '../../containers/CollectionDetailGraph'
+import ForceGraph from '../../components/ForceGraph'
 import AddButton from '../../components/AddButton'
 import NodeToolbar from '../../containers/NodeToolbar'
 import Spinner from '../../components/Spinner'
@@ -36,7 +36,7 @@ export const NoNodesYet = (props) => (
 
 
 function loadData(props) {
-    return props.loadCollection(props.id)
+    return props.loadCollection(props.collectionId)
         .then((action) => {
             if (props.nodeId) {
                 props.loadNode(props.nodeId)
@@ -60,7 +60,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.id !== this.props.id) {
+        if (nextProps.collectionId !== this.props.collectionId) {
             loadData(nextProps)
         }
 
@@ -71,7 +71,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
     }
 
   render() {
-      const { id, nodeId, collection, nodes, loadingStates } = this.props
+      const {nodeId, collection, nodes, links, loadingStates } = this.props
 
       if (loadingStates.GET_COLLECTION || loadingStates.GET_NODE) {
           return <Spinner />
@@ -81,18 +81,21 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
         <div className='graphView'>
                 {
                     this.props.nodeId ? // TODO: check for is integer instead - 2016-10-07
-                        <NodeToolbar 
+                        <NodeToolbar
                             id={nodeId}
-                            collectionId={this.props.id}
-                            page={`collections/${id}/nodes`}
+                            collectionId={this.props.collectionId}
+                            page={`collections/${this.props.collectionId}/nodes`}
                         />
                         : null
                 }
                 {
                     nodes.length ?
-                        <CollectionDetailGraph 
-                            collectionId={this.props.id} 
-                            selected={this.props.nodeId}
+                        <ForceGraph 
+                            nodes={nodes || []}
+                            links={links || []}
+                            collectionId={this.props.collectionId} 
+                            selectedId={this.props.nodeId}
+                            graphType="collectionDetail"
                         />
                         : <NoNodesYet createNode={() => this.props.showAddNodeToCollectionWindow({ collection })}/>
                 }
@@ -107,17 +110,20 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
   }
 }
 
-import { getCollection, isSynced, getNodesByCollectionId } from '../../reducers'
+import { getCollection, isSynced, getNodesByCollectionId, getEdgesByCollectionId } from '../../reducers'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
-    const nodeId = (props.params && props.params.nodeId) || props.nodeId
+    const collectionId = props.match.params && props.match.params.id
+    const nodeId = props.match.params && props.match.params.nodeId
+
+    console.log(collectionId);
 
     return {
-        id: id,
+        collectionId,
         nodeId,
-        nodes: getNodesByCollectionId(state, id),
-        collection: getCollection(state, id),
+        nodes: getNodesByCollectionId(state, collectionId),
+        collection: getCollection(state, collectionId),
+        links: getEdgesByCollectionId(state, collectionId),
         saved: isSynced(state),
         loadingStates: state.loadingStates
     }

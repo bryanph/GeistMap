@@ -48,7 +48,6 @@ class App extends React.Component {
     componentWillMount() {
         if (window.ga) {
             this.props.history.listen((location) => {
-                console.log(location.pathname);
                 window.ga('set', 'page', location.pathname + location.search);
                 window.ga('send', 'pageview')
             })
@@ -70,8 +69,6 @@ class App extends React.Component {
     render() {
         const { match, location, isLoggedIn } = this.props
 
-        console.log(this.props);
-
         return (
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
@@ -86,19 +83,14 @@ class App extends React.Component {
                         { this.renderError() }
 
                         <Switch>
-                            <Route path={`${match.path}/inbox`} component={Inbox}/>
-                            <Route path={`${match.path}/inbox/:id`} component={Inbox}/>
+                            <Route exact path={`${match.path}/inbox/:id?`} component={Inbox}/>
                             <Route path={`${match.path}/inbox/:id/edit`} component={InboxEditor}/>
-                            <Route path={`${match.path}/nodes`} component={NodeExplore}/>
-                            <Route path={`${match.path}/nodes/:id`} component={NodeExplore}/>
+                            <Route exact path={`${match.path}/nodes/:id?`} component={NodeExplore}/>
                             <Route path={`${match.path}/nodes/:id/edit`} component={NodeExploreEditor}/>
-                            <Route path={`${match.path}/collections`} component={CollectionOverview}/>
-                            <Route path={`${match.path}/collections/:id`} component={CollectionOverview}/>
+                            <Route exact path={`${match.path}/collections/:id?`} component={CollectionOverview}/>
                             <Route path={`${match.path}/collections/:id/edit`} component={CollectionOverviewEditor}/>
 
-                            <Route path={`${match.path}/collections/:id/nodes`} component={CollectionDetail}/>
-                            <Route path={`${match.path}/collections/:id/nodes/:nodeId`} component={CollectionDetail}/>
-                            <Route path={`${match.path}/collections/:id/nodes/:nodeId/edit`} component={CollectionDetailEditor}/>
+                            <Route exact path={`${match.path}/collections/:id/nodes/:nodeId?`} component={CollectionDetail}/>
                             <Route path={`${match.path}/collections/:id/nodes/:nodeId/edit`} component={CollectionDetailEditor}/>
                             <Redirect from={`${match.path}/`} to={`${match.path}/inbox`}/>
                         </Switch>

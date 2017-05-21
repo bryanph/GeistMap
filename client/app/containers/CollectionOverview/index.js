@@ -7,7 +7,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import CollectionOverviewGraph from '../../components/CollectionOverviewGraph'
+import ForceGraph from '../../components/ForceGraph'
 import { accentColor } from '../App/muitheme.js'
 
 import { AddButton } from '../../components/Buttons'
@@ -71,14 +71,13 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
             }
         {
             collections.length ?
-                    <CollectionOverviewGraph
-                        selected={this.props.id}
-                        nodes={collections}
-                        links={collectionLinks} 
+                    <ForceGraph
+                        selectedId={this.props.id}
+                        nodes={collections || []}
+                        links={collectionLinks || []} 
                         connectCollections={this.props.connectCollections}
-                        showCollectionSidebar={this.props.showCollectionSidebar}
-                        loadCollection={this.props.loadCollection}
                         removeEdge={this.props.removeCollectionEdge}
+                        graphType={'collectionOverview'}
 
                     />
                 : <NoCollectionsYet createCollection={this.props.showCreateCollectionWindow}/>
@@ -96,7 +95,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
 import { getCollection, getCollections, getCollectionEdges } from '../../reducers'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
+    const id = (props.match.params && props.match.params.id) || props.id
 
     return {
         id,

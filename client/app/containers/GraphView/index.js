@@ -124,7 +124,7 @@ export class GraphView extends React.Component { // eslint-disable-line react/pr
                         <ForceGraph 
                             nodes={nodes}
                             links={links}
-                            selectedNode={this.props.selectedNode}
+                            selectedId={this.props.selectedNode.id}
                             graphType={'inbox'}
                         />
                         :
@@ -146,7 +146,7 @@ export class GraphView extends React.Component { // eslint-disable-line react/pr
 import { getNode, getBatchNodes, getEdgesForNodes } from '../../reducers.js'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
+    const id = (props.match.params && props.match.params.id) || props.id
 
     const nodes = getBatchNodes(state)
     const selectedNode = getNode(state, id)

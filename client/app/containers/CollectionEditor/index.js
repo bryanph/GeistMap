@@ -55,8 +55,8 @@ import { getCollection } from '../../reducers'
 
 function mapStateToProps(state, props) {
     return {
-        id: props.params.id,
-        collection: getCollection(state, props.params.id),
+        id: props.match.params.id,
+        collection: getCollection(state, props.match.params.id),
         loadingStates: state.loadingStates,
         shortcutWindow: state.serverUiState.shortcutWindow,
     }

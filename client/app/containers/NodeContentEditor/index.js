@@ -65,7 +65,7 @@ import { hideAddPictureWindow, hideAddVideoWindow, hideAddAudioWindow, hideConne
 import { addEdge, updateNode, removeEdge } from '../../actions/async'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
+    const id = props.id || (props.match.params && props.match.params.id)
 
     const node = getNode(state, id)
 
@@ -77,8 +77,9 @@ function mapStateToProps(state, props) {
         ...props,
     }
 }
+import { withRouter } from 'react-router-dom'
 
-export default connect(mapStateToProps, { 
+export default withRouter(connect(mapStateToProps, { 
     addEdge,
     hideConnectWindow,
     hideAddPictureWindow,
@@ -88,5 +89,5 @@ export default connect(mapStateToProps, {
     removeEdge,
     showAddRelationWindow,
     addFile,
-})(NodeContentEditor)
+})(NodeContentEditor))
 

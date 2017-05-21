@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 
 import NodeSearch from '../../containers/NodeSearch'
 import Spinner from '../../components/Spinner'
-import NodeExploreGraph from '../../containers/NodeExploreGraph'
+import ForceGraph from '../../containers/ForceGraph'
 import NodeToolbar from '../../containers/NodeToolbar'
 import SwitchGraphView from '../../components/SwitchGraphView'
 
@@ -82,10 +82,7 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
         <div className="graphView">
                 {
                     this.props.id ? // TODO: check for is integer instead - 2016-10-07
-                        <NodeToolbar 
-                            id={this.props.id}
-                            page="nodes"
-                        />
+                        <NodeToolbar page="nodes" />
                         : null
                 }
                 {
@@ -93,12 +90,13 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
                 }
             {
                 this.props.id ? // instead check for loading state here...
-                    <NodeExploreGraph 
+                    <ForceGraph 
                         id={this.props.id}
                         nodes={this.props.nodes || []}
                         links={this.props.edges || []}
-                        selectedNode={this.props.node}
+                        selectedId={this.props.node && this.props.node.id}
                         connectNodes2={this.connectNodes}
+                        graphType={'explore'}
                     />
                     :
                     <NoNodesYet id={this.props.id} selectNode={this.selectNode} />
@@ -123,7 +121,7 @@ import { withRouter } from 'react-router-dom'
 import { getNode, getL2Nodes, getL2Edges } from '../../reducers'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
+    const id = props.match.params && props.match.params.id
 
     return {
         id: id,
@@ -142,4 +140,4 @@ export default connect(mapStateToProps, {
     loadNodeL2,
     connectNodes,
     setTitle,
-})(withRouter(NodeExplore))
+})(NodeExplore)

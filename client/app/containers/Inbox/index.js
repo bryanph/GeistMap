@@ -1,6 +1,6 @@
 /*
  *
- * NodeBatchCreateGraph
+ * Inbox
  *
  */
 
@@ -48,7 +48,7 @@ export const NoNodesYet = (props) => (
 )
 
 
-export class NodeBatchCreateGraph extends React.Component { // eslint-disable-line react/prefer-stateless-function
+export class Inbox extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
     constructor(props) {
         super(props)
@@ -72,8 +72,6 @@ export class NodeBatchCreateGraph extends React.Component { // eslint-disable-li
                 if (!nodeIds.length) return
 
                 const lastModifiedNode = nodeIds[0]
-
-                console.log(this.props);
 
                 this.props.history.push(`/app/inbox/${lastModifiedNode}`)
                 // this.props.showGraphSideBar(lastModifiedNode)
@@ -126,7 +124,7 @@ export class NodeBatchCreateGraph extends React.Component { // eslint-disable-li
                         <ForceGraph 
                             nodes={nodes}
                             links={links}
-                            selectedNode={this.props.selectedNode}
+                            selectedId={selectedNode && selectedNode.id}
                             graphType={'inbox'}
                         />
                         :
@@ -148,7 +146,7 @@ export class NodeBatchCreateGraph extends React.Component { // eslint-disable-li
 import { getNode, getBatchNodes, getEdgesForNodes } from '../../reducers.js'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
+    const id = (props.match.params && props.match.params.id) || props.id
 
     const nodes = getBatchNodes(state)
     const selectedNode = getNode(state, id)
@@ -173,4 +171,4 @@ export default connect(mapStateToProps, {
     setTitle,
     showGraphSideBar,
     hideGraphSideBar,
-})(withRouter(NodeBatchCreateGraph));
+})(withRouter(Inbox));

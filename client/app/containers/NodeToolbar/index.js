@@ -41,21 +41,21 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
     }
 
     editNode() {
-        const { router, page, id } = this.props
-        router.location.push(`/app/${page}/${id}/edit`)
+        const {history , page, id } = this.props
+        history.push(`/app/${page}/${id}/edit`)
     }
 
     editCollection() {
-        const { router, page, collectionId } = this.props
-        router.location.push(`/app/collections/${collectionId}/`)
+        const { history, page, collectionId } = this.props
+        history.push(`/app/collections/${collectionId}/`)
     }
 
     removeNode() {
-        const { router, page, id } = this.props
+        const { history, page, id } = this.props
         const result = window.confirm(`Are you sure you want to remove '${this.props.node.properties.name}'`)
         if (result) {
             this.props.removeNode(id)
-            router.location.push(`/app/${page}/`)
+            history.push(`/app/${page}/`)
         }
     }
 
@@ -68,10 +68,10 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
     }
 
     duplicateNode() {
-        const { router, page, id } = this.props
+        const { history, page, id } = this.props
         this.props.duplicateNode(id, page === "inbox")
             .then(action =>
-                router.location.push(`/app/${page}/${action.response.result}`)
+                history.push(`/app/${page}/${action.response.result}`)
             )
     }
 
@@ -105,7 +105,7 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
                     }
                     <div className="nodeToolbar-title">
                         <NodeTitle 
-                            title={this.props.node.properties.name} 
+                            title={this.props.node.properties.name}
                             updateNode={this.props.updateNode.bind(this, this.props.node.id)}
                         />
                         <NodeSubtitle
@@ -157,21 +157,22 @@ import { updateNode, removeNode, duplicateNode, removeEdge } from '../../actions
 import { showAddRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
+    const id = props.id || (props.match.params && props.match.params.id)
 
     const selectedNode = getNode(state, id)
 
     return {
+        id,
         opened: state.uiState.showGraphSideBarOpened,
         node: selectedNode,
         loadingStates: state.loadingStates,
     }
 }
 
-export default connect(mapStateToProps, {
+export default withRouter(connect(mapStateToProps, {
     updateNode,
     removeNode,
     duplicateNode,
     removeEdge,
     showAddRelationWindow
-})(withRouter(NodeToolbar));
+})(NodeToolbar));

@@ -36,12 +36,12 @@ class NodeEditor extends React.Component {
 
         return (
             <div className='graphView'>
-                <NodeEditorToolbar 
+                <NodeEditorToolbar
                     id={this.props.id}
                     collectionId={this.props.collectionId}
                     page={this.props.page}
                 />
-                <ContentEditor 
+                <ContentEditor
                     id={this.props.id} 
                     withToolbar={false}
                     shortcutWindow={shortcutWindow}
@@ -54,7 +54,7 @@ class NodeEditor extends React.Component {
 import { getNode } from '../../reducers.js'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
+    const id = props.id || (props.match.params && props.match.params.id)
 
     return {
         id,

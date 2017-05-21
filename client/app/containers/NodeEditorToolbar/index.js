@@ -75,18 +75,18 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
     }
 
     editNode() {
-        const { router, page, id } = this.props
-        router.location.push(`/app/${page}/${id}/edit`)
+        const { history, page, id } = this.props
+        history.push(`/app/${page}/${id}/edit`)
     }
 
     editCollection() {
-        const { router, page, collectionId } = this.props
-        router.location.push(`/app/collections/${collectionId}/`)
+        const { history, page, collectionId } = this.props
+        history.push(`/app/collections/${collectionId}/`)
     }
 
     toGraphView() {
-        const { router, page, id } = this.props
-        router.location.push(`/app/${page}/${id}/`)
+        const { history, page, id } = this.props
+        history.push(`/app/${page}/${id}/`)
     }
 
     removeNode() {
@@ -106,10 +106,10 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
     }
 
     duplicateNode() {
-        const { router, page, id } = this.props
+        const { history, page, id } = this.props
         this.props.duplicateNode(id, page === "inbox")
             .then(action =>
-                router.location.push(`/app/${page}/${action.response.result}`)
+                history.push(`/app/${page}/${action.response.result}`)
             )
     }
 
@@ -194,7 +194,7 @@ import { updateNode, removeNode, duplicateNode, removeEdge } from '../../actions
 import { showAddRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
+    const id = props.id || (props.match.params && props.match.params.id)
 
     const selectedNode = getNode(state, id)
 
@@ -205,10 +205,10 @@ function mapStateToProps(state, props) {
     }
 }
 
-export default connect(mapStateToProps, {
+export default withRouter(connect(mapStateToProps, {
     updateNode,
     removeNode,
     duplicateNode,
     removeEdge,
     showAddRelationWindow
-})(withRouter(NodeEditorToolbar));
+})(NodeEditorToolbar))

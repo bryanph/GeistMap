@@ -68,22 +68,22 @@ export class CollectionToolbar extends React.Component { // eslint-disable-line 
     }
 
     editNode() {
-        const { router, page, id } = this.props
-        router.location.push(`/app/${page}/${id}/edit`)
+        const { history, page, id } = this.props
+        history.push(`/app/${page}/${id}/edit`)
     }
 
     toGraphView() {
-        const { router, page, id } = this.props
-        router.location.push(`/app/${page}/${id}/`)
+        const { history, page, id } = this.props
+        history.push(`/app/${page}/${id}/`)
     }
 
     removeCollection() {
-        const { router, page, id } = this.props
+        const { history, page, id } = this.props
 
         const result = window.confirm(`Are you sure you want to remove '${this.props.collection.properties.name}'`)
         if (result) {
             this.props.removeCollection(this.props.collection.id)
-                .then(() => router.location.push(`/app/${page}/${id}`))
+                .then(() => history.push(`/app/${page}/${id}`))
         }
     }
 
@@ -148,7 +148,7 @@ import { updateCollection, removeCollection, duplicateCollection, removeEdge } f
 import { showAddCollectionRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
-    const id = (props.params && props.params.id) || props.id
+    const id = props.match.params && props.match.params.id
 
     const selectedCollection = getCollection(state, id)
 
@@ -159,10 +159,10 @@ function mapStateToProps(state, props) {
     }
 }
 
-export default connect(mapStateToProps, {
+export default withRouter(connect(mapStateToProps, {
     updateCollection,
     removeCollection,
     duplicateCollection,
     removeEdge,
     showAddCollectionRelationWindow,
-})(withRouter(CollectionToolbar));
+})(CollectionToolbar));

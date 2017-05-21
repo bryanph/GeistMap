@@ -6,6 +6,7 @@
 
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom'
 
 import NodeEditor from '../../containers/NodeEditor'
 
@@ -13,6 +14,8 @@ export class CollectionDetailEditor extends React.Component { // eslint-disable-
   render() {
       const collectionId = this.props.match.params.id
       const nodeId = this.props.match.params.nodeId
+
+      console.log(collectionId, nodeId);
     return (
         <NodeEditor 
             className="nodeBatchCreate-sidebar" 
@@ -24,4 +27,4 @@ export class CollectionDetailEditor extends React.Component { // eslint-disable-
   }
 }
 
-export default CollectionDetailEditor
+export default withRouter(CollectionDetailEditor)

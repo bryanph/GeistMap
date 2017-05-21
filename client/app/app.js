@@ -27,14 +27,17 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 });
 
+// disable redbox-react
+delete AppContainer.prototype.unstable_handleError
+
 if (module.hot) {
-  module.hot.accept('./containers/Root', () => {
-    const NextApp = require('./containers/Root').default;
-    ReactDOM.render(
-      <AppContainer>
-        <NextApp/>
-      </AppContainer>,
-      document.getElementById('root')
-    );
-  });
+    module.hot.accept('./containers/Root', () => {
+        const NextApp = require('./containers/Root').default;
+        ReactDOM.render(
+            <AppContainer>
+                <NextApp/>
+            </AppContainer>,
+            document.getElementById('root')
+        );
+    });
 }

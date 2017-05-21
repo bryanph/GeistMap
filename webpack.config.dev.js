@@ -6,7 +6,7 @@ var UnusedFilesWebpackPlugin = require("unused-files-webpack-plugin").UnusedFile
 
 module.exports = {
     // devtool: 'source-map',
-    devtool: 'inline-eval-cheap-source-map',
+    devtool: 'eval-source-map',
 
     entry: {
         app: [ 
