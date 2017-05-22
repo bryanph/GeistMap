@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react'
 import { connect } from 'react-redux'
 import { withRouter, Switch, Route, IndexRedirect, Redirect} from "react-router-dom"
 
-import { resetErrorMessage } from '../../reducers'
 import { isLoggedIn } from '../../utils/login.js'
 
 import Topbar from "../../components/Topbar";
@@ -114,7 +113,5 @@ function mapStateToProps(state, props) {
     }
 }
 
-export default connect(mapStateToProps, {
-    resetErrorMessage
-})(withRouter(App))
+export default connect(mapStateToProps, {})(withRouter(App))
 

@@ -144,7 +144,7 @@ export class CollectionToolbar extends React.Component { // eslint-disable-line 
 }
 
 import { getCollection } from '../../reducers'
-import { updateCollection, removeCollection, duplicateCollection, removeEdge } from '../../actions/async'
+import { updateCollection, removeCollection, removeEdge } from '../../actions/async'
 import { showAddCollectionRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
@@ -162,7 +162,6 @@ function mapStateToProps(state, props) {
 export default withRouter(connect(mapStateToProps, {
     updateCollection,
     removeCollection,
-    duplicateCollection,
     removeEdge,
     showAddCollectionRelationWindow,
 })(CollectionToolbar));

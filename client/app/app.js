@@ -27,6 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
     );
 });
 
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
+
 // disable redbox-react
 delete AppContainer.prototype.unstable_handleError
 

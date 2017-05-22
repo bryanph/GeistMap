@@ -1,9 +1,21 @@
-import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin();
+import React, { Component, PropTypes } from 'react'
+import { Provider } from 'react-redux'
+import routes from '../../routes'
 
+import Router from '../../routes'
 
-if (process.env.NODE_ENV === 'production') {
-  module.exports = require('./Root.prod')
-} else {
-  module.exports = require('./Root.dev')
+export default class Root extends Component {
+    render() {
+        const { store } = this.props
+        return (
+            <Provider store={store}>
+                <Router />
+            </Provider>
+        )
+    }
+}
+
+Root.propTypes = {
+    store: PropTypes.object.isRequired,
+    history: PropTypes.object.isRequired
 }

@@ -476,7 +476,7 @@ class ForceGraph extends React.Component {
         //TODO: set to true on initial tick
         let zoomed = false;
         const ticked = (selection) => {
-            if (!zoomed && this.simulation.alpha() < 0.6) {
+            if (!zoomed && this.simulation.alpha() < 0.75) {
                 zoomed = true
                 this.zoom(0.95, 1000)
             }

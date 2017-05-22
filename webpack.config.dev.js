@@ -41,11 +41,21 @@ module.exports = {
         // publicPath: '/static/'
     },
     plugins: [
-        new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin(),
+        new webpack.NoEmitOnErrorsPlugin(),
         new UnusedFilesWebpackPlugin({
             pattern: 'client/**/*.*'
+        }),
+        new webpack.LoaderOptionsPlugin({
+            // test: /\.xxx$/, // may apply this only for some modules
+            options: {
+                sassLoaders: {
+                    includePaths: [
+                        path.resolve(__dirname, './client/scss'),
+                        path.resolve(__dirname, './public'),
+                    ]
+                }
+            }
         })
         // new BundleAnalyzerPlugin({ openAnalyzer: false }),
     ],
@@ -57,29 +67,18 @@ module.exports = {
                 exclude: /(node_modules|bower_components)/,
                 // include: path.join(__dirname, 'client')
             },
-            { test: /\.json/, loaders: ['json'] },
-            { test: /\.css$/, loaders: ['style', 'css'] },
-            { test: /\.scss$/, loaders: ['style', 'css', 'sass'] },
+            { test: /\.json/, loaders: ['json-loader'] },
+            { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
+            { test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'sass-loader'] },
             { test: /\.png$/, loader: "url-loader?limit=100000" },
             { test: /\.jpg$/, loader: "file-loader?name=[path][name]" },
             { test: /\.svg/, loader: "file-loader" }
         ]
     },
-
-  // Tell babel that we want to hot-reload
-  babelQuery: {
-    presets: ['react-hmre'],
-  },
-  // TODO: get rid of this shit - 2016-08-09
-  resolve: {
+    // TODO: get rid of this shit - 2016-08-09
+    resolve: {
         alias: {
             styles: path.join(__dirname, './client/scss') 
         },
-    },
-  sassLoaders: {
-        includePaths: [
-            path.resolve(__dirname, './client/scss'),
-            path.resolve(__dirname, './public'),
-        ]
     },
 }

@@ -59,10 +59,10 @@ module.exports = {
             //     loaders: ['react-hot', 'babel-loader'],
             //     include: path.join(__dirname, 'client')
             // },
-            { test: /\.json/, loaders: ['json'] },
+            { test: /\.json/, loaders: ['json-loader'] },
             // { test: /\.s?css$/, loaders: ['style', 'css', 'sass'] },
-            { test: /\.css$/, loaders: ['style', 'css'] },
-            { test: /\.scss$/, loaders: ['style', 'css', 'sass'] },
+            { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
+            { test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'sass-loader'] },
             { test: /\.png$/, loader: "url-loader?limit=100000" },
             { test: /\.jpg$/, loader: "file-loader?name=[path][name]" },
             { test: /\.svg/, loader: "file-loader" }

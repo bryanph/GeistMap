@@ -12,7 +12,7 @@ import CollectionCreateWindow from '../../components/CollectionCreateWindow'
 import Chip from 'material-ui/Chip';
 import enhanceWithClickOutside from 'react-onclickoutside'
 
-import { primaryColor, secondaryColor, textColor } from '../../containers/App/muitheme'
+import { primaryColor, secondaryColor } from '../../containers/App/muitheme'
 import { HotKeys } from 'react-hotkeys';
 
 const styles = {
@@ -118,7 +118,6 @@ class NodeCollectionList extends React.Component {
                     !this.state.searchToggle ?
                         <Chip
                             backgroundColor={secondaryColor}
-                            labelColor={textColor}
                             onTouchTap={this.toggleSearch}
                             style={styles.chip}
                         >Add Collection

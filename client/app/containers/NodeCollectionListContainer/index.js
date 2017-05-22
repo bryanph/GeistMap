@@ -15,7 +15,6 @@ export class NodeCollectionListContainer extends React.Component { // eslint-dis
             <NodeCollectionList 
                 addNodeToCollection={this.props.addNodeToCollection}
                 removeNodeFromCollection={this.props.removeNodeFromCollection}
-                showCreateCollectionWindow={this.props.showCreateCollectionWindow}
                 createCollection={this.props.createCollection}
                 node={this.props.node}
                 collections={this.props.collections}
@@ -26,7 +25,7 @@ export class NodeCollectionListContainer extends React.Component { // eslint-dis
 }
 
 import { getCollectionsByNodeId } from '../../reducers'
-import { addNodeToCollection, removeNodeFromCollection, showCreateCollectionWindow, createCollection } from '../../actions/async'
+import { addNodeToCollection, removeNodeFromCollection, createCollection } from '../../actions/async'
 
 function mapStateToProps(state, props) {
 
@@ -39,6 +38,5 @@ function mapStateToProps(state, props) {
 export default connect(mapStateToProps, { 
     addNodeToCollection, 
     removeNodeFromCollection, 
-    showCreateCollectionWindow, 
     createCollection,
 })(NodeCollectionListContainer);
