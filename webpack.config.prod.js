@@ -37,12 +37,20 @@ module.exports = {
                     JSON.stringify(stats.toJson()));
             });
         },
-        // new webpack.optimize.UglifyJsPlugin({
-        //     compressor: {
-        //         warnings: false
-        //     }
-        // })
-        new webpack.optimize.UglifyJsPlugin(),
+        new webpack.LoaderOptionsPlugin({
+            // test: /\.xxx$/, // may apply this only for some modules
+            options: {
+                sassLoaders: {
+                    includePaths: [
+                        path.resolve(__dirname, './client/scss'),
+                        path.resolve(__dirname, './public'),
+                    ]
+                }
+            }
+        }),
+        new webpack.optimize.UglifyJsPlugin({
+            sourceMap: true
+        }),
         new webpack.optimize.AggressiveMergingPlugin(),
         // new BundleAnalyzerPlugin()
     ],
@@ -54,24 +62,12 @@ module.exports = {
                 exclude: /(node_modules|bower_components)/,
                 // include: path.join(__dirname, 'client')
             },
-            // {
-            //     test: /(\.js|\.jsx)$/,
-            //     loaders: ['react-hot', 'babel-loader'],
-            //     include: path.join(__dirname, 'client')
-            // },
             { test: /\.json/, loaders: ['json-loader'] },
-            // { test: /\.s?css$/, loaders: ['style', 'css', 'sass'] },
             { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
             { test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'sass-loader'] },
             { test: /\.png$/, loader: "url-loader?limit=100000" },
             { test: /\.jpg$/, loader: "file-loader?name=[path][name]" },
             { test: /\.svg/, loader: "file-loader" }
         ]
-    },
-    sassLoaders: {
-        includePaths: [
-            path.resolve(__dirname, './client/scss'),
-            path.resolve(__dirname, './public'),
-        ]
-    },
+    }
 }

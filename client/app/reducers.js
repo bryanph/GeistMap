@@ -195,6 +195,9 @@ function collections(state={}, action) {
 }
 
 function adjacencyMap(state={}, action) {
+    /*
+     * To what nodes does this node link?
+    */
     switch(action.type) {
         case actionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
@@ -227,6 +230,9 @@ function adjacencyMap(state={}, action) {
 }
 
 function reverseAdjacencyMap(state={}, action) {
+    /*
+     * What nodes link to this node?
+    */
     switch(action.type) {
         case actionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
@@ -416,12 +422,11 @@ function batchNodes(state=[], action) {
 }
 
 
-function nodesAndEdgesByCollectionId(state={}, action, nodes) {
+function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
     /*
      * stores a mapping of collection ids to the contained nodes and edges involved with those nodes
     */
 
-   // TODO: really need immutablejs... - 2016-07-15
     // TODO: make nodes/edges keys a mapping as well so we can easily remove the keys - 2016-07-18
     // also, order doesnt matter anyway
     switch(action.type) {
@@ -462,23 +467,8 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes) {
            const nodeStart = nodes[edge.start]
            const nodeEnd = nodes[edge.end]
 
+           // TODO: call a selector for this - 2017-05-22
            const targetCollectionIds = _.union(nodeStart.collections, nodeEnd.collections)
-
-           // console.log(nodeStart, nodeEnd);
-//            console.log(_(targetCollectionIds)
-//                 .keyBy(x => x)
-//                 .mapValues(id => ({
-//                     ...(state[id] || {}),
-//                     edges: [ 
-//                         ...((state[id] || {}).edges || {}),
-//                         edge.id,
-//                     ],
-//                     nodes: [  // for when endNode is not in collection
-//                         ...((state[id] || {}).nodes || {}),
-//                         nodeEnd.id
-//                     ],
-//                 }))
-//                 .value())
 
             // TODO: should we add edge when endNode is not actually in the collection? - 2017-02-09
 
@@ -507,8 +497,9 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes) {
             // get the node to be removed and its edges
             // remove the node from all collections that have been fetched as well as the edges
 
+            // get all collections containing this node
             const collectionIds = _.intersection(
-                nodes[action.nodeId].collections,
+                nodes[action.nodeId].collections, // TODO: call a selector for this - 2017-05-22
                 Object.keys(state)
             )
 
@@ -516,15 +507,15 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes) {
                 return state
             }
 
-            const mappedCollectionIds = _.map(collectionIds, collectionId => ({
-                ...state,
-                [collectionId]: {
-                    nodes: _.without((state[collectionId] && state[collectionId].nodes) || [], action.nodeId),
-                    edges: (state[collectionId] && state[collectionId].edges) || [],
-                },
-            }))
-
-            const changedState = _.fromPairs(collectionIds, mappedCollectionIds)
+            // remove node from the list and all edges containing this node
+            let changedState = {}
+            collectionIds.forEach(id => {
+                changedState[id] = {
+                    nodes: _.without((state[id] && state[id].nodes) || [], action.nodeId),
+                    edges: _.without((state[id] && state[id].edges) || [], ...getEdgeIdsByNodeId(globalState, action.nodeId)),
+                    // edges: (state[id] && state[id].edges) || [], // TODO: also remove edges involved - 2017-05-22
+                }
+            })
 
             return {
                 ...state,
@@ -877,7 +868,7 @@ function rootReducer(state={}, action) {
         edgeListMap: edgeListMap(state.edgeListMap, action),
         pathL1Cache: pathL1Cache(state.pathL1Cache, action),
         pathL2Cache: pathL2Cache(state.pathL2Cache, action),
-        nodesAndEdgesByCollectionId: nodesAndEdgesByCollectionId(state.nodesAndEdgesByCollectionId, action, (state.entities && state.entities.nodes) || {}),
+        nodesAndEdgesByCollectionId: nodesAndEdgesByCollectionId(state.nodesAndEdgesByCollectionId, action, (state.entities && state.entities.nodes) || {}, state),
         inboxNodes: inboxNodes(state.inboxNodes, action),
         batchNodes: batchNodes(state.batchNodes, action),
         // errorMessage: errorMessage(state.errorMessage, action),
