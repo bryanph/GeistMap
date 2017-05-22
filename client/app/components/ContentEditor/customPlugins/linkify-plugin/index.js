@@ -1,7 +1,7 @@
 import Link from './Link';
 import linkStrategy from './linkStrategy';
 import styles from './styles.css';
-import decorateComponentWithProps from 'decorate-component-with-props';
+import withProps from 'recompose/withProps'
 
 const defaultTheme = {
   link: styles.link,
@@ -20,7 +20,7 @@ const linkPlugin = (config = {}) => {
     decorators: [
       {
         strategy: linkStrategy,
-        component: decorateComponentWithProps(Link, { theme, target }),
+        component: withProps({ theme, target })(Link)
       },
     ],
   };

@@ -1,7 +1,13 @@
-import { scaleOrdinal, schemeCategory20, schemeCategory20b, schemeCategory20c } from 'd3'
 import { accentColor } from '../containers/App/muitheme.js'
+import {
+    scaleOrdinal,
+    scaleLinear,
+    schemeCategory20,
+    schemeCategory20b,
+    schemeCategory20c
+} from 'd3-scale'
+import { select as d3Select } from 'd3-selection'
 
-import * as d3 from 'd3'
 export const colora = scaleOrdinal(schemeCategory20)
 export const colorb = scaleOrdinal(schemeCategory20b)
 export const colorc = scaleOrdinal(schemeCategory20c)
@@ -13,7 +19,7 @@ colorc(undefined)
 
 import { secondaryColor } from '../containers/App/muitheme'
 
-export const radiusScale = d3.scaleLinear().range(10, 20)
+export const radiusScale = scaleLinear().range(10, 20)
 
 export function getLabelText(text) {
     /*
@@ -44,7 +50,7 @@ export function colorActiveNode(node) {
      */
 
     // reset other nodes to original color
-    const prevSelectedNodes = d3.select('.node-selected')
+    const prevSelectedNodes = d3Select('.node-selected')
         .classed("node-selected", false)
         .select('circle')
         .style("fill", colorNode)

@@ -1,21 +1,28 @@
-import * as d3 from 'd3'
+import {
+    forceSimulation,
+    forceX,
+    forceY,
+    forceManyBody,
+    forceLink,
+    forceCenter
+} from 'd3-force'
 import { NODE_RADIUS, WIDTH, HEIGHT } from './constants'
 
 export default (WIDTH, HEIGHT) => (
-    d3.forceSimulation()
+    forceSimulation()
         // .alphaTarget(0.01)
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
-        .force("charge", d3.forceManyBody().strength(-300))
+        .force("charge", forceManyBody().strength(-300))
         .force("link", 
-            d3.forceLink()
+            forceLink()
                 .id(d => d.id)
                 .distance(100)
                 .strength(0.1)
         )
-        .force("x", d3.forceX().strength(0.05))
-        .force("y", d3.forceY().strength(0.05))
-        .force("center", d3.forceCenter(WIDTH / 2, HEIGHT / 2))
+        .force("x", forceX().strength(0.05))
+        .force("y", forceY().strength(0.05))
+        .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
 )
 
 
