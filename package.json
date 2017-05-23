@@ -20,7 +20,7 @@
     "lodash": "4.17.4",
     "mongoose": "4.9.9",
     "multer": "1.1.0",
-    "neo4j-driver": "1.2.*",
+    "neo4j-driver": "1.3.0",
     "normalizr": "2.0.0",
     "promptly": "2.2.0",
     "socket.io": "2.0.1"
@@ -93,7 +93,7 @@
     "build:dev": "npm run build:webpack:dev",
     "build:scss": "cat client/scss/app.scss | node-sass --include-path public/ --include-path client/scss --output-style expanded > public/css/app.css",
     "watch:client": "webpack --progress --colors --watch",
-    "watch:server": "NODE_ENV=development nodemon --inspect --watch server index.js",
+    "watch:server": "NODE_ENV=development nodemon --watch server index.js",
     "webpack-dev-server": "NODE_ENV=development node server-dev",
     "dev": "parallelshell 'npm run webpack-dev-server' 'npm run watch:server'",
     "generate": "plop --plopfile tools/generators/index.js"

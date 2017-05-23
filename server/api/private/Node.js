@@ -176,40 +176,73 @@ module.exports = function(db, es) {
         getL2: function(user, id, res) {
             /*
              * Get node with id ${id} (including adjacent nodes distance of max 2 away)
-             * // TODO: Check this call's performance - 2016-07-11
+             * // TODO: should also get collection ids of all nodes - 2017-05-23
              */
 
             // TODO: Limit the number of results and notify if the numer of results were limited for performance reasons- 2016-07-15
-            db.run(
-                "MATCH (u:User)--(n:Node)-[e:EDGE*0..2]-(n2:Node) " +
-                // rule for matching nodes that are distance of 3 away, but target node is "in" the max path
-                // "OPTIONAL MATCH (n2)-[e:EDGE]-(n3:Node) WHERE n3" + 
-                "WHERE u.id = {userId} " +
-                "AND id(n) = {id} " +
-                "OPTIONAL MATCH (n)-[:IN]->(:Collection)-[*0..5]->(c:Collection) " +
-                "RETURN n as node, collect(distinct n2) as otherNodes, collect(distinct e) as edges, collect(c) as collections",
-                {
-                    id: neo4j.int(id),
-                    userId: user._id.toString(),
-                }
-            )
+            Promise.all([
+                // get this node
+                db.run(
+                    `MATCH (u:User)--(n:Node) 
+                    WHERE u.id = {userId} AND id(n) = {id}
+                    OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
+                    return n, collect(distinct c2)`,
+                    {
+                        id: neo4j.int(id),
+                        userId: user._id.toString(),
+                    }
+                ),
+                // get all the nodes within a path 2 of node (including the node itself) along with their collections
+                db.run(
+                    `MATCH (u:User)--(n:Node) 
+                    WHERE u.id = {userId} AND id(n) = {id}
+                    OPTIONAL MATCH (n)-[:EDGE*0..2]-(n2:Node)
+                    WITH distinct n2
+                    OPTIONAL MATCH (n2)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
+                    return n2, collect(distinct id(c2))
+                    ORDER BY id(n2)`,
+                    {
+                        id: neo4j.int(id),
+                        userId: user._id.toString(),
+                    }
+                ),
+                // get all edges for l2
+                db.run(
+                    `MATCH (u:User)--(n:Node)
+                    WHERE u.id = {userId} AND id(n) = {id}
+                    OPTIONAL MATCH path=(n)-[e:EDGE*0..2]-(:Node)
+                    WITH rels(path) as rels
+                    UNWIND rels as rel
+                    WITH DISTINCT rel
+                    RETURN rel`,
+                    {
+                        id: neo4j.int(id),
+                        userId: user._id.toString(),
+                    }
+                ),
+            ])
             .then((results) => {
-                if (results.records.length === 0) {
+                if (results[0].records.length === 0) {
                     return res(`Node with id ${id} was not found`)
                 }
 
-                // const collections = results.records[0]._fields[3].map(mapIdentity)
+                let node = mapIdentity(results[0].records[0].get(0))
+                node.collections = results[0].records[0].get(1).map(mapIdentity)
+
+                const otherNodes = results[1].records.map(row => {
+                    return Object.assign({},
+                        mapIdentity(row.get(0)),
+                            {
+                                collections: row.get(1).map(x => x.toString()), // ids for collections
+                            }
+                    )
+                })
+                const otherEdges = results[2].records.map(row => mapEdges(row.get(0)))
 
                 res(null, {
-                    node: Object.assign({},
-                        mapIdentity(results.records[0]._fields[0]),
-                        { collections: results.records[0]._fields[3].map(mapIdentity) }
-                    ),
-                    connectedNodes: results.records[0]._fields[1].map(mapIdentity),
-                    // TODO: do this in neo4j instead - 2016-07-18
-                    edges: _.flatMap(results.records[0]._fields[2]).map(mapEdges),
-                    // edges: results.records[0]._fields[2].map(mapEdges),
-                    // collections,
+                    node,
+                    connectedNodes: otherNodes,
+                    edges: otherEdges,
                 })
             })
             .catch(handleError)

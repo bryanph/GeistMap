@@ -306,6 +306,7 @@ function edgeListMap(state={}, action) {
 
             if (action.response && action.response.entities && action.response.entities.edges) {
                 _.forEach(action.response.entities.edges, edge => {
+                    console.log(edge.start);
                     map[edge.start].from.push(edge.id)
                     map[edge.end].to.push(edge.id)
                 })
