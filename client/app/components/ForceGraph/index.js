@@ -113,9 +113,11 @@ const updateNode = (selection) => {
     return selection
 }
 const updateCollection = (selection) => {
-    selection.select('text').text(d => {
-        return getLabelText(d.properties.name)
-    })
+    selection.select('text')
+        .attr("dx", (d) => d.radius)
+        .attr("dy", ".35em")
+        .text((d) => getLabelText(d.properties.name));
+
     selection.select('circle')
         .attr("r", (d) => d.radius)
 
