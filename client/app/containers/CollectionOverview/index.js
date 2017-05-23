@@ -76,7 +76,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                         nodes={collections || []}
                         links={collectionLinks || []} 
                         connectCollections={this.props.connectCollections}
-                        removeEdge={this.props.removeCollectionEdge}
+                        removeCollectionEdge={this.props.removeCollectionEdge}
                         graphType={'collectionOverview'}
 
                     />

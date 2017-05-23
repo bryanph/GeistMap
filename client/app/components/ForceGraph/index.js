@@ -116,6 +116,8 @@ const updateCollection = (selection) => {
     selection.select('text').text(d => {
         return getLabelText(d.properties.name)
     })
+    selection.select('circle')
+        .attr("r", (d) => d.radius)
 
     return selection
 }

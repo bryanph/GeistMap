@@ -174,17 +174,36 @@ function collections(state={}, action) {
             }
         case actionTypes.REMOVE_NODE_SUCCESS:
             // TODO: decrement node count for the corresponding collections - 2016-08-26
+            // TODO: actually, not nescessary, since we'll just refetch it? - 2017-05-23
             return state
         case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
             return {
                 ...state,
                 [action.collectionId]: {
                     ...state[action.collectionId],
-                    count: (state[action.collectionId] && state[action.collectionId].count) || 0 - 1
+                    count: (state[action.collectionId] && state[action.collectionId].count) || 1 - 1
                 }
             }
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
             return _.omit(state, action.collectionId)
+
+        case actionTypes.CONNECT_COLLECTIONS_SUCCESS:
+            return {
+                ...state,
+                [action.end]: {
+                    ...state[action.end],
+                    count: state[action.end].count + state[action.start].count
+                }
+            }
+        case actionTypes.REMOVE_COLLECTION_EDGE_SUCCESS:
+            return {
+                ...state,
+                [action.end]: {
+                    ...state[action.end],
+                    count: state[action.end].count - state[action.start].count
+                }
+            }
+
         default:
             if (action.response && action.response.entities && action.response.entities.collections) {
                 return _.merge({}, state, action.response.entities.collections)
