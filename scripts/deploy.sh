@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 npm run build
 ssh graphtodo "cd graphtodo && git pull"
 ssh graphtodo "cd graphtodo && npm install && npm prune"
