@@ -11,19 +11,16 @@ module.exports = {
     entry: {
         app: [ 
             'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
-            'babel-polyfill',
             'react-hot-loader/patch',
             './client/app/app.js',
         ],
         auth: [
             'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
-            'babel-polyfill',
             'react-hot-loader/patch',
             './client/auth/app.js', 
         ],
         landing: [
             'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
-            'babel-polyfill',
             'react-hot-loader/patch',
             './client/landing/app.js', 
         ],

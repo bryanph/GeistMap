@@ -6,15 +6,12 @@ module.exports = {
     devtool: 'source-map',
     entry: {
         app: [ 
-            'babel-polyfill',
             './client/app/app.js',
         ],
         auth: [
-            'babel-polyfill',
             './client/auth/app.js', 
         ],
         landing: [
-            'babel-polyfill',
             './client/landing/app.js', 
         ],
     },
