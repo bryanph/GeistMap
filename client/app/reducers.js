@@ -423,7 +423,7 @@ function batchNodes(state=[], action) {
             return _.without(state, action.nodeId)
         case actionTypes.GET_ALL_BATCH_NODES_SUCCESS:
             // TODO: we also need to explicitly store edges? because we MUST only select edges that are explicitly between these nodes - 2016-07-23
-            return action.response.result
+            return action.response.result.nodes
         case actionTypes.CREATE_BATCH_NODE_SUCCESS:
             return [ ...state, action.response.result ]
         case actionTypes.DUPLICATE_NODE_SUCCESS:

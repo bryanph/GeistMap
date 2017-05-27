@@ -12,7 +12,7 @@ import './styles.css'
 
 import ForceGraph from '../../containers/ForceGraph'
 import NodeToolbar from '../../containers/NodeToolbar'
-import { AddButton, ClearButton } from '../../components/Buttons'
+import { AddButton } from '../../components/Buttons'
 import Spinner from '../../components/Spinner'
 
 const defaultNode = {
@@ -26,15 +26,6 @@ export const AddNodeShootButton = (props) => (
 )
 AddNodeShootButton.propTypes = {
     createNode: PropTypes.func.isRequired
-}
-
-export const ClearBatchButton = (props) => (
-    <ClearButton
-        onTouchTap={() => props.clearBatchNodes()}
-    />
-)
-ClearBatchButton.propTypes = {
-    clearBatchNodes: PropTypes.func.isRequired
 }
 
 import { accentColor, darkAccentColor } from '../App/muitheme.js'
@@ -54,7 +45,6 @@ export class Inbox extends React.Component { // eslint-disable-line react/prefer
         super(props)
 
         this.createBatchNode = this.createBatchNode.bind(this)
-        this.clearBatchNodes = this.clearBatchNodes.bind(this)
     }
 
 
@@ -93,15 +83,6 @@ export class Inbox extends React.Component { // eslint-disable-line react/prefer
             })
     }
 
-    clearBatchNodes() {
-        const result = window.confirm("You want to clear the inbox? (This doesn't remove the nodes)")
-        if (result) {
-            this.props.clearBatchNodes()
-            this.props.history.push(`/app/inbox/`)
-            // .then(() => this.props.hideGraphSideBar())
-        }
-    }
-
     render() {
         const { nodes, links, selectedNode, loadingStates } = this.props
 
@@ -134,9 +115,6 @@ export class Inbox extends React.Component { // eslint-disable-line react/prefer
                     <AddNodeShootButton
                         createNode={this.createBatchNode}
                     />
-                    <ClearBatchButton
-                        clearBatchNodes={this.clearBatchNodes}
-                    />
                 </div>
             </div>
         );
@@ -160,12 +138,11 @@ function mapStateToProps(state, props) {
     }
 }
 
-import {createBatchNode, clearBatchNodes, getAllBatchNodes, loadNode } from '../../actions/async'
+import {createBatchNode, getAllBatchNodes, loadNode } from '../../actions/async'
 import {setTitle, showGraphSideBar, hideGraphSideBar} from '../../actions/ui'
 
 export default connect(mapStateToProps, {
     createBatchNode,
-    clearBatchNodes,
     getAllBatchNodes,
     loadNode,
     setTitle,

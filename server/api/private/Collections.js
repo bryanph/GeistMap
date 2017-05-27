@@ -119,7 +119,7 @@ module.exports = function(db, es) {
                     OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
                     WITH c, collect(distinct n) as ns
                     UNWIND ns as n1
-                    UNWIND ns as n2 
+                    UNWIND ns as n2
                     OPTIONAL MATCH (n1)-[e:EDGE]-(n2)
                     RETURN collect(distinct e)`,
                     {

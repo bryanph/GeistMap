@@ -48,7 +48,10 @@ export function getAllBatchNodes() {
         [CALL_API]: {
             types: [ GET_ALL_BATCH_NODES_REQUEST, GET_ALL_BATCH_NODES_SUCCESS, GET_ALL_BATCH_NODES_FAILURE ],
             endpoint: 'Node.getAllBatchNodes',
-            schema: arrayOf(Schemas.NODE),
+            schema: {
+                nodes: arrayOf(Schemas.NODE),
+                edges: arrayOf(Schemas.EDGE),
+            }
         }
     }
 }

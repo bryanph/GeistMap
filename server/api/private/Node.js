@@ -311,31 +311,40 @@ module.exports = function(db, es) {
              * Get all nodes created in the batch create graph
              */
 
-            // TODO: fetch collections for nodes here as well? - 2016-08-24
-            db.run(
-                "MATCH (u:User)--(n:BatchNode) " +
-                "WHERE u.id = {userId} " +
-                "OPTIONAL MATCH (n)-[:IN]->(:Collection)-[*0..5]->(c:Collection) " +
-                "OPTIONAL MATCH (n)-[r:EDGE]->(:BatchNode) " +
-                "RETURN n, collect(distinct c), collect(distinct r) " +
-                "ORDER BY n.modified DESC",
-                {
-                    userId: user._id.toString(),
-                }
-            )
+            // fetch all nodes that have no collection attached
+            Promise.all([
+                db.run(
+                    `MATCH (u:User)--(n:Node)
+                    WHERE u.id = {userId}
+                    AND NOT (n)-[:IN]->(:Collection)
+                    RETURN n
+                    ORDER BY n.modified DESC`,
+                    {
+                        userId: user._id.toString(),
+                    }
+                ),
+                db.run(
+                    `MATCH (u:User)--(n:Node)
+                    WHERE u.id = {userId}
+                    AND NOT (n)-[:IN]->(:Collection)
+                    WITH collect(n) as nodes
+                    UNWIND nodes as nodes1
+                    UNWIND nodes as nodes2
+                    OPTIONAL MATCH (nodes1)-[r:EDGE]->(nodes2)
+                    RETURN collect(distinct r)`,
+                    {
+                        userId: user._id.toString(),
+                    }
+                ),
+            ])
             .then((results) => {
-                // TODO: we shouldn't need collect() - 2016-07-23
-                //
+                const nodes = results[0].records.map(row => mapIdentity(row.get(0)))
+                const edges = results[1].records[0]._fields[0].map(mapEdges)
 
-                return res(null, results.records.map( row => (
-                    Object.assign({},
-                        mapIdentity(row.get(0)),
-                        {
-                            collections: row.get(1).map(mapIdentity),
-                            edges: row.get(2).map(mapEdges),
-                        }
-                    )
-                )))
+                return res(null, {
+                    nodes,
+                    edges,
+                })
             })
             .catch(handleError)
         },
