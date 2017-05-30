@@ -24,9 +24,9 @@ export default function configureStore(initialState) {
     // Middleware you want to use in development:
     // applyMiddleware(d1, d2, d3),
     // Required! Enable Redux DevTools with the monitors you chose
-    applyMiddleware(batchMiddleware, thunk, promise, socketMiddleware, restApiMiddleware),
-    batchStoreEnhancer,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+    applyMiddleware(thunk, promise, socketMiddleware, restApiMiddleware),
+    // batchStoreEnhancer,
+    // window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
   );
 
   return createStore(rootReducer, initialState, enhancer);
