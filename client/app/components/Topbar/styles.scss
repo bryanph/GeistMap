@@ -1,0 +1,50 @@
+@import '~styles/settings';
+
+.topbar {
+    /* background-color: #e9ebee; */
+    background-color: $primary-color;
+    height: 56px;
+    color: white;
+
+    position: relative;
+    overflow: hidden;
+}
+
+.topbar-left {
+    float: left;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    // margin-left: 10px;
+
+}
+
+.topbar-logo {
+    height: 56px;
+    line-height: 56px;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    color: inherit;
+    text-decoration: none;
+
+    span {
+        font-style: italic;
+        font-weight: bold;
+        font-size: 35px;
+        font-family: $font-family-text;
+    }
+}
+
+.topbar-actions {
+    float: right;
+    display: flex;
+    align-items: center;
+    height: 56px;
+    margin-right: 10px;
+}
+
+.topbar-actions > div:not(:last-child){
+    margin-right: 0.5rem;
+}

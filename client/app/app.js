@@ -7,25 +7,7 @@ import React from 'react'
 import ReactDom from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 
-import configureStore from './store/configureStore';
 import Root from './containers/Root'
-
-const initialState = Object.assign({}, window.INITIAL_STATE)
-
-const store = configureStore(initialState)
-
-// TODO: get rid of this export - 2017-05-20
-export default store
-
-document.addEventListener('DOMContentLoaded', function () {
-    ReactDom.render(
-        <AppContainer>
-            <Root store={store} />
-        </AppContainer>
-        ,
-        document.getElementById('app')
-    );
-});
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
@@ -33,14 +15,19 @@ injectTapEventPlugin();
 // disable redbox-react
 delete AppContainer.prototype.unstable_handleError
 
+const render = Component => {
+    ReactDom.render(
+        <AppContainer>
+            <Component />
+        </AppContainer>
+        ,
+        document.getElementById('app')
+    );
+}
+
+document.addEventListener('DOMContentLoaded', () => render(Root));
+
+
 if (module.hot) {
-    module.hot.accept('./containers/Root', () => {
-        const NextApp = require('./containers/Root').default;
-        ReactDOM.render(
-            <AppContainer>
-                <NextApp/>
-            </AppContainer>,
-            document.getElementById('root')
-        );
-    });
+    module.hot.accept('./containers/Root', () => { render(Root) })
 }

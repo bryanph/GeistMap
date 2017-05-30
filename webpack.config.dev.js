@@ -10,17 +10,17 @@ module.exports = {
 
     entry: {
         app: [ 
-            'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+            'webpack-dev-server/client?http://localhost:3000',
             'react-hot-loader/patch',
             './client/app/app.js',
         ],
         auth: [
-            'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+            'webpack-dev-server/client?http://localhost:3000',
             'react-hot-loader/patch',
             './client/auth/app.js', 
         ],
         landing: [
-            'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+            'webpack-dev-server/client?http://localhost:3000',
             'react-hot-loader/patch',
             './client/landing/app.js', 
         ],
@@ -46,7 +46,8 @@ module.exports = {
         new webpack.LoaderOptionsPlugin({
             // test: /\.xxx$/, // may apply this only for some modules
             options: {
-                sassLoaders: {
+                context: '/',
+                sassLoader: {
                     includePaths: [
                         path.resolve(__dirname, './client/scss'),
                         path.resolve(__dirname, './public'),

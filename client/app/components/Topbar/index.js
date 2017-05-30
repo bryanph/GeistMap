@@ -5,98 +5,39 @@ import React from 'react'
 import { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import classNames from 'classnames'
-import { withRouter } from 'react-router-dom'
-
-import { Notification } from '../general/Notification.react.jsx'
+import { Link, withRouter } from 'react-router-dom'
 
 import {
     Toolbar,
     ToolbarGroup,
-    ToolbarTitle
+    ToolbarTitle,
+    Avatar
 } from 'material-ui'
 
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import IconButton from 'material-ui/IconButton/IconButton';
 import FontIcon from 'material-ui/FontIcon';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
 import PersonIcon from 'material-ui/svg-icons/social/person';
 import ActionMenu from 'material-ui/svg-icons/navigation/menu';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
-
-import {
-    Avatar,
-    Badge,
-} from 'material-ui'
-
-import NodeCreateButton from '../../containers/NodeCreateButton'
 import Sidebar from '../../containers/Sidebar'
 import AllSearch from '../../containers/AllSearch'
 
-import './styles.css'
+import './styles.scss'
 
 import { primaryColor, accentColor } from '../../containers/App/muitheme.js'
 
-const styles = {
-    topbar: {
-        backgroundColor: primaryColor,
-        color: '#fff'
-    },
-    menuButtonContainer: {
-        backgroundColor: accentColor,
-    },
-    menuButton: {
-        color: '#fff',
-        width: 72,
-        height: 72,
-        // padding: 16,
-    },
-    menuIcon: {
-        width: 36,
-        height: 36,
-    },
-    logo: {
-        marginLeft: '10px',
-    },
-}
 
+export const Logo = (props) => (
+    <Link to="/app" className="topbar-logo">
+        <span className="topbar-logo">Geist</span>
+    </Link>
+)
 
-export const Logo = ({pageTitle, ...props}) => {
-    // const title = pageTitle ? `ThinkTool - ${pageTitle}` : 'ThinkTool'
-    // const title = ''
-    const title = pageTitle || ''
-    return <ToolbarTitle text={title} {...props} /> 
-}
-Logo.propTypes = {
-    
-}
-
-
-export const NotificationCenter = React.createClass({
-
-    propTypes: {
-        
-    },
-
-    render: function() {
-        
-        return (
-            <Badge
-                badgeContent={0}
-                primary={true}
-            >
-                <NotificationsIcon />
-            </Badge>
-        )
-    }
-})
 
 export const ProfileButton = React.createClass({
-
-    propTypes: {
-        
-    },
 
     render: function() {
         const { user } = this.props
@@ -121,35 +62,29 @@ export const ProfileButton = React.createClass({
     }
 })
 
-class ExtraButton extends React.Component {
-    constructor(props) {
-        super(props)
+import FlatButton from 'material-ui/FlatButton';
+import InboxIcon from 'material-ui/svg-icons/content/inbox';
+const InboxButton = (props) => (
+    <FlatButton
+        label="Inbox"
+        icon={<InboxIcon />}
+        style={{ color: 'white' }}
+        onTouchTap={props.onClick}
+    />
+)
 
-        this.showShortcutWindow = this.showShortcutWindow.bind(this)
-    }
 
-    showShortcutWindow() {
-        this.props.updateUi({
-            shortcutWindow: true
-        })
-    }
-
-    render() {
-        const { updateUi } = this.props
-
-        return (
-            <IconMenu
-                iconButtonElement={
-                    <IconButton><MoreVertIcon color='white' /></IconButton>
-                    }
-                    targetOrigin={{horizontal: 'right', vertical: 'top'}}
-                    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                >
-                    <MenuItem onTouchTap={this.showShortcutWindow} primaryText="Show keyboard shortcuts" />
-                </IconMenu>       
-        )
-    }
+import FloatingActionButton from 'material-ui/FloatingActionButton'
+import ContentAdd from 'material-ui/svg-icons/content/add';
+const AddButton = (props) => (
+    <FloatingActionButton onTouchTap={props.onClick} mini={true}>
+        <ContentAdd />
+    </FloatingActionButton>
+)
+AddButton.propTypes = {
+    onClick: PropTypes.func.isRequired,
 }
+
 
 class Topbar extends React.Component {
     constructor(props) {
@@ -160,59 +95,39 @@ class Topbar extends React.Component {
 
     navigate(result) {
         const id  = result._id
-        if(result._index.startsWith("collections")) { // TODO: do this differently - 2017-05-10
+
+        if(result._index.startsWith("collections")) {
             this.props.history.push(`/app/collections/${id}`)
         } 
-        else if (result._index.startsWith('nodes')) { // TODO: do this differently - 2017-05-10
+        else if (result._index.startsWith('nodes')) {
             this.props.history.push(`/app/nodes/${id}/edit`)
         }
     }
 
     render() {
-        return ( 
+        const { showInboxSidebar } = this.props
+
+        return (
             <div className="topbar">
-                <Sidebar 
-                    open={this.props.navOpened}
-                    toggleNav={this.props.toggleNav}
-                    createNode={this.props.createNode}
-                    createBatchNode={this.props.createBatchNode}
-                    showCreateCollectionWindow={this.props.showCreateCollectionWindow}
-                    hideGraphSideBar={this.props.hideGraphSideBar}
-                />
-                <Toolbar style={styles.topbar}>
-                    <ToolbarGroup firstChild={true}>
-                        <div className="topbar-menu" style={styles.menuButtonContainer}>
-                            <IconButton 
-                                tooltip="Menu" 
-                                style={styles.menuButton} 
-                                iconStyle={styles.menuIcon}
-                                onTouchTap={() => this.props.toggleNav()}
-                            >
-                                <ActionMenu color={'#fff'} />
-                            </IconButton>
-                        </div>
-                        <Logo style={styles.logo} pageTitle={this.props.title} className={'topbar-logo'}/>
-                    </ToolbarGroup>
-                    <ToolbarGroup firstChild={true} style={{width: '25rem'}}>
+                <div className="topbar-left">
+                    <div className="topbar-inbox">
+                        <InboxButton onClick={() => showInboxSidebar()} />
+                        
+                    </div>
+                    <div className="topbar-search">
                         <AllSearch 
-                            onSearchClick={this.navigate} 
+                            onSearchClick={this.navigate}
                         />
-                    </ToolbarGroup>
-                    <ToolbarGroup>
-                        <div className="topbar-create">
-                            <ExtraButton
-                                updateUi={this.props.updateUi}
-                            />
-                            <NodeCreateButton 
-                                style={{marginRight: '1rem'}}
-                            />
-                            <ProfileButton 
-                                user={this.props.user}
-                            />
-                            <FontIcon className="muidocs-icon-custom-sort" />
-                        </div>
-                    </ToolbarGroup>
-                </Toolbar>
+                    </div>
+                </div>
+
+                <Logo />
+
+                <div className="topbar-actions">
+                    <AddButton />
+                    <ProfileButton user={this.props.user} />
+
+                </div>
             </div>
         )
 
