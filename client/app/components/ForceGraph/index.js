@@ -146,8 +146,6 @@ const createInboxEvents = (simulation, actions) => {
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
      */
-    console.log('calling createInboxEvents');
-
     const onNodeClick = (d) => {
         actions.history.push(`/app/inbox/${d.id}`)
     }
@@ -172,7 +170,6 @@ const createInboxEvents = (simulation, actions) => {
     })
 
     return (node, link) => {
-        console.log('inbox', node.enter().size(), node.exit().size());
         // EXIT selection
         node.exit().remove()
         // ENTER selection
@@ -195,8 +192,6 @@ const createExploreEvents = (simulation, actions) => {
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
      */
-    console.log('calling createExploreEvents');
-
     const onNodeClick = (d) => {
         actions.history.push(`/app/nodes/${d.id}`)
     }
@@ -226,7 +221,6 @@ const createExploreEvents = (simulation, actions) => {
     })
 
     return (node, link) => {
-        console.log('explore', node.enter().size(), node.exit().size());
         // EXIT selection
         node.exit().remove()
         // ENTER selection
@@ -249,8 +243,6 @@ const createCollectionOverviewEvents = (simulation, actions) => {
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
      */
-    console.log('calling createCollectionOverviewEvents');
-
     const onCollectionClick = (d) => {
         actions.history.push(`/app/collections/${d.id}`)
     }
@@ -301,10 +293,6 @@ const createCollectionDetailEvents = (simulation, collectionId, actions) => {
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
      */
-    console.log('calling createCollectionDetailEvents');
-
-    console.log(collectionId);
-
     const onNodeClick = (d) => {
         actions.history.push(`/app/collections/${collectionId}/nodes/${d.id}`)
     }
@@ -334,7 +322,6 @@ const createCollectionDetailEvents = (simulation, collectionId, actions) => {
     })
 
     return (node, link) => {
-        console.log('collection_detail', node.enter().size(), node.exit().size());
         // EXIT selection
         node.exit().remove()
         // ENTER selection
@@ -408,8 +395,6 @@ class ForceGraph extends React.Component {
             link.target = nodeById[link.end]
         })
 
-        console.log(nodes.map(n => n.id), links.map(l => l.id));
-
         // set data
         var node = this.d3Graph.selectAll('.node')
             .data(nodes, node => node.id)
@@ -439,7 +424,6 @@ class ForceGraph extends React.Component {
         }
 
         if (nextProps.selectedId) {
-            console.log('color with ', nextProps.selectedId);
             colorActiveNode(d3Select(`#node-${nextProps.selectedId}`))
         }
     }
@@ -507,7 +491,6 @@ class ForceGraph extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        console.log('should component update?', nextProps.selectedId);
         this.update(nextProps)
 
         return false

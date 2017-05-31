@@ -2,38 +2,38 @@
  * LinkButton
 */
 
-.button {
-  box-sizing: border-box;
-  background: #fff;
-  border: 1px solid #ddd;
-  color: #888;
-  cursor: pointer;
-  height: 1.5em;
-  width: 2.5em;
-  font-size: 1.5em;
-  line-height: 1.2em;
-  margin: 0;
-  text-decoration: none;
-}
+/* .button { */
+/*   box-sizing: border-box; */
+/*   background: #fff; */
+/*   border: 1px solid #ddd; */
+/*   color: #888; */
+/*   cursor: pointer; */
+/*   height: 1.5em; */
+/*   width: 2.5em; */
+/*   font-size: 1.5em; */
+/*   line-height: 1.2em; */
+/*   margin: 0; */
+/*   text-decoration: none; */
+/* } */
 
-.button-active {
-  background-color: #2f2f2f;
-}
+/* .button-active { */
+/*   background-color: #2f2f2f; */
+/* } */
 
 /*
  * Link
 */
-.link, .link:visited {
-  color: #5e93c5;
-  text-decoration: none;
-}
+/* .link, .link:visited { */
+/*   color: #5e93c5; */
+/*   text-decoration: none; */
+/* } */
 
-.link:hover, .link:focus {
-  color: #7eadda;
-  outline: 0; /* reset for :focus */
-  cursor: pointer;
-}
+/* .link:hover, .link:focus { */
+/*   color: #7eadda; */
+/*   outline: 0; /1* reset for :focus *1/ */
+/*   cursor: pointer; */
+/* } */
 
-.link:active {
-  color: #4a7bab;
-}
+/* .link:active { */
+/*   color: #4a7bab; */
+/* } */

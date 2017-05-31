@@ -3,27 +3,20 @@ import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import { SearchTextField500 } from '../../components/Input/SearchTextField'
 import { List, ListItem } from 'material-ui/List'
 import { searchAll } from '../../actions/async'
 
-import enhanceWithClickOutside from 'react-onclickoutside'
-
 import {HotKeys} from 'react-hotkeys';
+import Portal from 'react-portal'
+
+import './styles.scss'
 
 // TODO: this can be factored out or the different Search components... - 2016-08-01
-const AllSearchList = enhanceWithClickOutside(
-class extends React.Component {
+class AllSearchList extends React.Component {
     constructor(props) {
         super(props)
 
-        this.handleClickOutside = this.handleClickOutside.bind(this)
         this.onClick = this.onClick.bind(this)
-    }
-
-    handleClickOutside(e) {
-        this.props.close()
-        // this.props.resetSearchCollection()
     }
 
     onClick(result) {
@@ -41,37 +34,48 @@ class extends React.Component {
             />
         ))
 
+        let content = null
+        if (searchValue.length === 0){
+            content = <span className="allSearch-no-result">Try a search term</span>
+        }
+        else if (searchResults.length === 0) {
+            content = <span className="allSearch-no-result">No results. Try another search term</span>
+        }
+        else {
+            content = (
+                <List>
+                    { listItems }
+                </List>
+            )
+
+        }
+
         return (
-            <div className='nodeSearch-list'>
-                {
-                    searchResults.length === 0 ?
-                        <span className="nodeSearch-no-result">No results. Try another search term</span>
-                    :
-                        <List>
-                            { listItems }
-                        </List>
-                }
+            <div className='allSearch-list'>
+                { content }
             </div>
             
         )
     }
-})
+}
 AllSearchList.propTypes = {
     searchResults: PropTypes.array.isRequired,
 }
 
-const styles = {
-    // TODO: should be done in parent, not here. - 2016-08-05
-    centerSearchField: {
-        // textAlign: 'center',
-        // verticalAlign: 'middle',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        // flexDirection: 'column',
-        // height: '100%'
-    }
-}
+import { Input } from 'semantic-ui-react'
+import { Button, Icon } from 'semantic-ui-react'
+
+// only rendered on desktop
+const SearchInput = (props) => (
+    <Input icon='search' size='small' placeholder='Search...' className="allSearch-input" {...props} />
+)
+
+import { ResponsiveButton } from '../../components/button'
+// only rendered on mobile
+const SearchInputButton = (props) => (
+    <ResponsiveButton iconName="search" name="search" className="allSearch-inputButton" />
+)
+
 
 class AllSearch extends React.Component {
     constructor(props) {
@@ -109,28 +113,25 @@ class AllSearch extends React.Component {
             }
         }
 
+        const input = (
+                <SearchInput 
+                    onChange={this.onChange}
+                    onFocus={ (e) => { this.setState({opened: true}) }}
+                    ref="searchTextField"
+                    value={this.state.searchValue}
+                />
+        )
+
         return (
-            <HotKeys focused={true} attach={document.getElementById('app')} handlers={handlers} className='allSearch' style={{width: '100%'}}>
-                <div style={styles.centerSearchField}>
-                    <SearchTextField500
-                        placeholder="Search"
-                        onChange={this.onChange}
-                        onFocus={ (e) => { this.setState({opened: true}) }}
-                        ref="searchTextField"
-                        value={this.state.searchValue}
-                    />
-                </div>
-            {
-                this.state.opened && searchValue.length !== 0 ?
+            <HotKeys focused={true} attach={document.getElementById('app')} handlers={handlers} className='allSearch'>
+                <SearchInputButton />
+                <Portal closeOnEsc closeOnOutsideClick openByClickOn={input}>
                     <AllSearchList
                         searchValue={searchValue}
                         searchResults={searchResults}
                         onClick={this.onSearchClick}
-                        outsideClickIgnoreClass='allSearch'
-                        close={() => this.setState({ opened: false })}
                     />
-                    : null
-            }
+                </Portal>
             </HotKeys>
         )
     }

@@ -1,0 +1,22 @@
+@import '~styles/settings';
+
+.responsiveButton {
+    color: white;
+    font-weight: 400;
+    font-size: 1.2rem;
+    padding: .78571429em;
+    border-radius: .28571429rem;
+
+    span {
+        @media only screen and (max-width: $max-screen-width) {
+            display: none;
+        }
+    }
+
+    &:hover {
+        background-color: rgba(153, 153, 153, 0.2);
+    }
+    &:active {
+        background-color: rgba(153, 153, 153, 0.5);
+    }
+}

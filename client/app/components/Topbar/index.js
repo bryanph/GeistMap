@@ -37,52 +37,42 @@ export const Logo = (props) => (
 )
 
 
-export const ProfileButton = React.createClass({
-
-    render: function() {
-        const { user } = this.props
-        const firstLetter = 
-            (user.firstName && user.firstName.charAt(0).toUpperCase()) || 
-            (user.lastName && user.lastName.charAt(0).toUpperCase()) ||
-            (user.username && user.username.charAt(0).toUpperCase())
-
-        return (
-            // TODO: first letter of name of user - 2016-07-28
-            <IconMenu
-                style={{ cursor: 'pointer' }}
-                iconButtonElement={<Avatar backgroundColor={accentColor}>{firstLetter}</Avatar>}
-                anchorOrigin={{horizontal: 'right', vertical: 'top'}}
-                targetOrigin={{horizontal: 'right', vertical: 'top'}}
-            >
-                <a href="/auth/logout" style={{textDecoration: 'none'}}>
-                    <MenuItem primaryText="Logout" />
-                </a>
-            </IconMenu>
-        )
-    }
-})
-
-import FlatButton from 'material-ui/FlatButton';
-import InboxIcon from 'material-ui/svg-icons/content/inbox';
+import { Button, Icon } from 'semantic-ui-react'
 const InboxButton = (props) => (
-    <FlatButton
-        label="Inbox"
-        icon={<InboxIcon />}
-        style={{ color: 'white' }}
-        onTouchTap={props.onClick}
-    />
+    <button className="topbar-inboxButton" {...props}>
+        <Icon name="inbox" size="large" /> <span>Inbox</span>
+    </button>
 )
 
+// import FloatingActionButton from 'material-ui/FloatingActionButton'
+// import ContentAdd from 'material-ui/svg-icons/content/add';
+// const AddButton = (props) => (
+//     <FloatingActionButton onTouchTap={props.onClick} mini={true}>
+//         <ContentAdd />
+//     </FloatingActionButton>
+// )
+// AddButton.propTypes = {
+//     onClick: PropTypes.func.isRequired,
+// }
 
-import FloatingActionButton from 'material-ui/FloatingActionButton'
-import ContentAdd from 'material-ui/svg-icons/content/add';
 const AddButton = (props) => (
-    <FloatingActionButton onTouchTap={props.onClick} mini={true}>
-        <ContentAdd />
-    </FloatingActionButton>
+    <Button circular icon="plus" size="large" className="topbar-action" {...props} />
 )
-AddButton.propTypes = {
-    onClick: PropTypes.func.isRequired,
+
+import { Dropdown, Input } from 'semantic-ui-react'
+const ProfileButton = ({ user }) => {
+    const firstLetter = 
+        (user.firstName && user.firstName.charAt(0).toUpperCase()) || 
+        (user.lastName && user.lastName.charAt(0).toUpperCase()) ||
+        (user.username && user.username.charAt(0).toUpperCase())
+
+    return (
+        <Dropdown icon='filter' pointing="top right" floating button className='topbar-action icon circular large'>
+            <Dropdown.Menu>
+                <Dropdown.Item as={'a'} href="/auth/logout" icon="log out" text='Logout' />
+            </Dropdown.Menu>
+        </Dropdown>
+    )
 }
 
 
@@ -91,6 +81,7 @@ class Topbar extends React.Component {
         super(props)
 
         this.navigate = this.navigate.bind(this)
+        this.createNode = this.createNode.bind(this)
     }
 
     navigate(result) {
@@ -104,6 +95,13 @@ class Topbar extends React.Component {
         }
     }
 
+    createNode() {
+        return this.props.createBatchNode({ name: 'Untitled', content: '' })
+            .then(action => action.response.result)
+            .then(id => this.props.history.push(`/app/inbox/${id}`))
+    }
+
+
     render() {
         const { showInboxSidebar } = this.props
 
@@ -112,7 +110,6 @@ class Topbar extends React.Component {
                 <div className="topbar-left">
                     <div className="topbar-inbox">
                         <InboxButton onClick={() => showInboxSidebar()} />
-                        
                     </div>
                     <div className="topbar-search">
                         <AllSearch 
@@ -124,7 +121,7 @@ class Topbar extends React.Component {
                 <Logo />
 
                 <div className="topbar-actions">
-                    <AddButton />
+                    <AddButton onClick={this.createNode}/>
                     <ProfileButton user={this.props.user} />
 
                 </div>

@@ -68,9 +68,13 @@ module.exports = {
             { test: /\.json/, loaders: ['json-loader'] },
             { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
             { test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'sass-loader'] },
-            { test: /\.png$/, loader: "url-loader?limit=100000" },
-            { test: /\.jpg$/, loader: "file-loader?name=[path][name]" },
-            { test: /\.svg/, loader: "file-loader" }
+			{ test: /\.(png|jpg)$/, loader: 'file-loader?name=images/[name].[hash].[ext]' },
+			{ test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/font-woff'},
+			{ test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/font-woff'},
+			{ test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/octet-stream'},
+			{ test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]'},
+			{ test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=images/[name].[hash].[ext]&mimetype=image/svg+xml' }
+
         ]
     },
     // TODO: get rid of this shit - 2016-08-09

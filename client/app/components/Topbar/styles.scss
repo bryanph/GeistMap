@@ -7,7 +7,8 @@
     color: white;
 
     position: relative;
-    overflow: hidden;
+    // padding: 5px;
+    // overflow: hidden;
 }
 
 .topbar-left {
@@ -15,9 +16,34 @@
     display: flex;
     align-items: center;
     height: 56px;
-    // margin-left: 10px;
-
+    margin-left: 5px;
 }
+
+.topbar-inbox {
+    // padding: 0 10px;
+}
+
+.topbar-inboxButton {
+    color: white;
+    font-weight: 400;
+    font-size: 1.2rem;
+    padding: 10px;
+    border-radius: .28571429rem;
+
+    span {
+        @media only screen and (max-width: $max-screen-width) {
+            display: none;
+        }
+    }
+
+    &:hover {
+        background-color: rgba(153, 153, 153, 0.2);
+    }
+    &:active {
+        background-color: rgba(153, 153, 153, 0.5);
+    }
+}
+
 
 .topbar-logo {
     height: 56px;
@@ -32,8 +58,15 @@
     span {
         font-style: italic;
         font-weight: bold;
-        font-size: 35px;
+        font-size: 2.3rem;
         font-family: $font-family-text;
+    }
+
+    opacity: 0.8;
+    transition: opacity ease-in 85ms;
+    &:hover {
+        color: inherit;
+        opacity: 1;
     }
 }
 
@@ -42,9 +75,13 @@
     display: flex;
     align-items: center;
     height: 56px;
-    margin-right: 10px;
+    margin-right: 5px;
+
+    .topbar-action {
+        background: white;
+    }
 }
 
 .topbar-actions > div:not(:last-child){
-    margin-right: 0.5rem;
+    margin-right: 5px;
 }
