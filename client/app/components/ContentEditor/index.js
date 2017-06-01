@@ -274,7 +274,7 @@ class RichEditor extends React.Component {
 
         // editorState set globally
         // by default, force this state transition
-        if (this.props.globalEditorState !== nextProps.globalEditorState) {
+        if (!this.props.readOnly && this.props.globalEditorState !== nextProps.globalEditorState) {
             this.onChange(nextProps.globalEditorState, null, true)
         }
     }
@@ -454,54 +454,61 @@ class RichEditor extends React.Component {
 
         return (
             <div className={'ContentEditor-root ' + rootClass}>
-                <ConnectWindow
-                    id={this.props.id}
-                    open={this.props.uiState.connectWindowOpened}
-                    editorState={this.state.editorState}
-                    setEditorState={this.onChange}
-                    hideConnectWindow={this.props.hideConnectWindow}
-                    addEdge={this.props.addEdge}
-                />
-                <AddPictureWindow
-                    open={uiState.addPictureWindowOpened && uiState.addPictureWindowOpened.opened}
-                    getEditorState={this.getEditorState}  
-                    setEditorState={this.onChange}
-                    handleUpload={this.props.handleUpload}
-                    hideWindow={this.props.hideAddPictureWindow}
-                />
-                <AddVideoWindow
-                    open={uiState.addVideoWindowOpened && uiState.addVideoWindowOpened.opened}
-                    getEditorState={this.getEditorState}  
-                    setEditorState={this.onChange}
-                    handleUpload={this.props.handleUpload}
-                    hideWindow={this.props.hideAddVideoWindow}
-                />
-                <AddAudioWindow
-                    open={uiState.addAudioWindowOpened && uiState.addAudioWindowOpened.opened}
-                    getEditorState={this.getEditorState}  
-                    setEditorState={this.onChange}
-                    handleUpload={this.props.handleUpload}
-                    hideWindow={this.props.hideAddAudioWindow}
-                />
-                <ContentEditorToolbar 
-                    getEditorState={this.getEditorState}  
-                    setEditorState={this.onChange}
-                />
+                { !this.props.readOnly ?
+                    <div>
+                        <ConnectWindow
+                            id={this.props.id}
+                            open={this.props.uiState.connectWindowOpened}
+                            editorState={this.state.editorState}
+                            setEditorState={this.onChange}
+                            hideConnectWindow={this.props.hideConnectWindow}
+                            addEdge={this.props.addEdge}
+                        />
+                        <AddPictureWindow
+                            open={uiState.addPictureWindowOpened && uiState.addPictureWindowOpened.opened}
+                            getEditorState={this.getEditorState}  
+                            setEditorState={this.onChange}
+                            handleUpload={this.props.handleUpload}
+                            hideWindow={this.props.hideAddPictureWindow}
+                        />
+                        <AddVideoWindow
+                            open={uiState.addVideoWindowOpened && uiState.addVideoWindowOpened.opened}
+                            getEditorState={this.getEditorState}  
+                            setEditorState={this.onChange}
+                            handleUpload={this.props.handleUpload}
+                            hideWindow={this.props.hideAddVideoWindow}
+                        />
+                        <AddAudioWindow
+                            open={uiState.addAudioWindowOpened && uiState.addAudioWindowOpened.opened}
+                            getEditorState={this.getEditorState}  
+                            setEditorState={this.onChange}
+                            handleUpload={this.props.handleUpload}
+                            hideWindow={this.props.hideAddAudioWindow}
+                        />
+                        <ContentEditorToolbar 
+                            getEditorState={this.getEditorState}  
+                            setEditorState={this.onChange}
+                        />
+                    </div>
+                : null}
+
                 <div className={className} onClick={this.focus}>
                     <Editor
                         key={this.props.id}
-                        readOnly={false}
+                        readOnly={this.props.readOnly}
                         blockRenderMap={this.blockRenderMap}
                         blockStyleFn={myBlockStyleFn}
                         editorState={this.state.editorState}
                         onChange={this.onChange}
                         plugins={this.plugins}
-                        placeholder={this.props.placeholder || "Write here..."}
-                        spellCheck={false}
+                        placeholder={this.props.readOnly ? "" : "Write your story..."}
+                        spellCheck={true}
                         ref="editor"
                     />
                 </div>
-                <ContentEditorShortcuts />
+                {
+                    !this.props.readOnly ?  <ContentEditorShortcuts /> : null
+                }
             </div>
         );
     }

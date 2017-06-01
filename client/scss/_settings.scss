@@ -11,6 +11,9 @@ $primary-color: #1976D2;
 $primary-dark-color: #303f9f;
 $accent-color: #ff5722;
 $accent2-color: #FF9800;
+$secondary-text-color: #C6C6C6;
+
+$background-grey-light: #C6C6C6;
 
 //
 // FONTS
@@ -28,12 +31,19 @@ $font-family-code: source-code-pro, Consolas, "Andale Mono WT", "Andale Mono", "
 html {
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 body {
     margin: 0;
     font: 16px/1 sans-serif;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
+    line-height: 1.4;
+    height: 100%;
 }
 h1,
 h2,

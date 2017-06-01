@@ -60,10 +60,6 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
     }
 
     componentWillReceiveProps(nextProps) {
-        // if (!nextProps.id) {
-        //     this.props.hideGraphSideBar()
-        // }
-
         if (nextProps.id !== this.props.id) {
             loadData(nextProps)
         }

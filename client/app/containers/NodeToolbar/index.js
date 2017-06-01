@@ -15,15 +15,6 @@ import { EditButton, ExploreButton, CollectionGraphButton, TrashButton, Duplicat
 import SavedState from '../../containers/SavedState'
 import Spinner, { InlineSpinner } from '../../components/Spinner'
 
-// export const CollapseSideBarButton = (props) => (
-//     <div style={styles.collapseButton}>
-//         <CollapseButton 
-//             onTouchTap={props.hideGraphSideBar} 
-//         />
-//     </div>
-// )
-//
-
 import './styles.scss'
 
 import { accentColor } from '../../containers/App/muitheme'
@@ -98,11 +89,6 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
                         <SavedState />
                         { loadingStates.GET_NODE ? <InlineSpinner size={1} /> : null }
                     </div>
-                    {
-                        /*
-                           <CollapseSideBarButton hideGraphSideBar={this.props.hideGraphSideBar} />
-                           */
-                    }
                     <div className="nodeToolbar-title">
                         <NodeTitle 
                             title={this.props.node.properties.name}

@@ -373,11 +373,6 @@ class ForceGraph extends React.Component {
         //         break;
         // }
 
-        // TODO: this shouldn't be nescessary, only here because some queries give duplicate results - 2017-05-23
-        // NodeExplore (getL2), ...
-        // nodes = _.uniqBy(nodes, 'id')
-        // links = _.uniqBy(links, 'id')
-
         let nodeById = {}
 
         // TODO: this only applies to CollectionOverview

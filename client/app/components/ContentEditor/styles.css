@@ -1,6 +1,5 @@
 
 .ContentEditor-root {
-  font-family: 'Georgia', serif;
   font-size: 14px;
   /* min-height: 10rem; */
   border-top: 1px solid #ddd;
@@ -77,7 +76,6 @@
 }
 
 .ContentEditor-toolbar {
-  font-family: 'Helvetica', sans-serif;
   font-size: 14px;
   margin-top: 10px;
   padding: 0 16px;
@@ -165,7 +163,6 @@
 }
 
 .ContentEditor-controls {
-  font-family: 'Helvetica', sans-serif;
   font-size: 14px;
   margin-bottom: 5px;
   user-select: none;
@@ -232,7 +229,6 @@
   background-color: transparent;
   border: 0;
   color: white;
-  box-sizing: border-box;
   cursor: pointer;
   display: block;
   font-size: 20px;

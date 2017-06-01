@@ -64,7 +64,6 @@
   outline: none;
   padding: 14px;
   resize: none;
-  -webkit-box-sizing: border-box;
   /* width: 100%; */
   width: 500px;
 }
@@ -78,7 +77,6 @@
   background-color: #fff;
   border: 1px solid #0a0;
   cursor: pointer;
-  font-family: 'Helvetica', 'Arial', sans-serif;
   font-size: 1rem;
   font-weight: 200;
   margin: 10px auto;

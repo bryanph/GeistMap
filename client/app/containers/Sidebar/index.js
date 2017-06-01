@@ -47,7 +47,6 @@ class Sidebar extends React.Component {
     }
 
     toggleNav() {
-        // this.props.hideGraphSideBar()
         this.props.toggleNav()
     }
 

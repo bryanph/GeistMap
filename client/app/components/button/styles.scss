@@ -20,3 +20,31 @@
         background-color: rgba(153, 153, 153, 0.5);
     }
 }
+
+
+
+.flatButton {
+    color: white;
+    font-weight: 400;
+    font-size: 1.2rem;
+    padding: 10px 12px;
+    border-radius: .28571429rem;
+    font-family: Roboto, sans-serif;
+
+    i {
+        margin: 0
+    }
+
+    span {
+        @media only screen and (max-width: $max-screen-width) {
+            display: none;
+        }
+    }
+
+    &:hover {
+        background-color: rgba(153, 153, 153, 0.2);
+    }
+    &:active {
+        background-color: rgba(153, 153, 153, 0.5);
+    }
+}

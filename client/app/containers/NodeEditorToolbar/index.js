@@ -15,14 +15,6 @@ import { EditButton, GraphButton, ExploreButton, CollectionGraphButton, TrashBut
 import SavedState from '../../containers/SavedState'
 import Spinner, { InlineSpinner } from '../../components/Spinner'
 
-// export const CollapseSideBarButton = (props) => (
-//     <div style={styles.collapseButton}>
-//         <CollapseButton 
-//             onTouchTap={props.hideGraphSideBar} 
-//         />
-//     </div>
-// )
-
 import { accentColor } from '../../containers/App/muitheme'
 
 // TODO: share these styles between components - 2016-10-15
@@ -93,7 +85,6 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
         const result = window.confirm(`Are you sure you want to remove '${this.props.node.properties.name}'`)
         if (result) {
             this.props.removeNode(this.props.node.id)
-                .then(() => this.props.hideGraphSideBar())
         }
     }
 
@@ -135,11 +126,6 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
                         <SavedState />
                         { loadingStates.GET_NODE ? <InlineSpinner size={1} /> : null }
                     </div>
-                    {
-                        /*
-                           <CollapseSideBarButton hideGraphSideBar={this.props.hideGraphSideBar} />
-                           */
-                    }
                     <div className="nodeToolbar-title">
                         <NodeTitle 
                             title={this.props.node.properties.name} 

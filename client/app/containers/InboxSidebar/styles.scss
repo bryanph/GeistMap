@@ -1,0 +1,45 @@
+@import '~styles/settings';
+
+.inboxSidebar {
+    top: 56px;
+    bottom: 0;
+    position: absolute;
+    width: 400px;
+    z-index: 2000;
+    overflow-y: scroll;
+    overflow-x: hide;
+
+    background: $background-grey-light;
+}
+
+
+.inboxSidebar-item {
+    margin: 10px;
+    padding: 10px;
+    width: calc(100% - 20px);
+    height: 300px;
+
+    position: relative;
+    background: white;
+
+    .inboxSidebar-header {
+        span {
+            font-size: 1rem;
+            color: $secondary-text-color;
+        }
+    }
+
+    .inboxSidebar-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+
+        .inboxSidebar-delete {
+            color: $accent-color;
+        }
+        button {
+            color: $accent-color;
+        }
+    }
+}
+

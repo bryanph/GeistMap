@@ -64,7 +64,6 @@ export class Inbox extends React.Component { // eslint-disable-line react/prefer
                 const lastModifiedNode = nodeIds[0]
 
                 this.props.history.push(`/app/inbox/${lastModifiedNode}`)
-                // this.props.showGraphSideBar(lastModifiedNode)
             })
     }
 
@@ -79,7 +78,6 @@ export class Inbox extends React.Component { // eslint-disable-line react/prefer
         this.props.createBatchNode(node)
             .then((action) => {
                 this.props.history.push(`/app/inbox/${action.response.result}/`)
-                // this.props.showGraphSideBar(action.response.result)
             })
     }
 
@@ -139,13 +137,11 @@ function mapStateToProps(state, props) {
 }
 
 import {createBatchNode, getAllBatchNodes, loadNode } from '../../actions/async'
-import {setTitle, showGraphSideBar, hideGraphSideBar} from '../../actions/ui'
+import { setTitle } from '../../actions/ui'
 
 export default connect(mapStateToProps, {
     createBatchNode,
     getAllBatchNodes,
     loadNode,
     setTitle,
-    showGraphSideBar,
-    hideGraphSideBar,
 })(withRouter(Inbox));

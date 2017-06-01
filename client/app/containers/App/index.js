@@ -24,6 +24,7 @@ import CollectionDetail from '../CollectionDetail'
 import CollectionDetailEditor from '../CollectionDetailEditor'
 import NodeExplore from '../NodeExplore'
 import NodeExploreEditor from '../NodeExploreEditor'
+import InboxSidebar from '../InboxSidebar'
 
 const keyMapping = {
     'explore': 'ctrl+alt+e',
@@ -35,13 +36,10 @@ const keyMapping = {
 
 }
 
-import './styles.css'
-
 class App extends React.Component {
     constructor(props) {
         super(props)
 
-        this.renderError = this.renderError.bind(this)
     }
 
     componentWillMount() {
@@ -51,18 +49,6 @@ class App extends React.Component {
                 window.ga('send', 'pageview')
             })
         }
-    }
-
-    renderError() {
-        const { errorMessage } = this.props
-
-        if (!errorMessage) {
-            return null
-        }
-
-        return (
-            <h1>{errorMessage}</h1>
-        )
     }
 
     render() {
@@ -88,19 +74,19 @@ class App extends React.Component {
                         <Errors />
                         <Topbar />
 
-                        { this.renderError() }
+                        <InboxSidebar />
 
                         <Switch>
-                            <Route exact path={`${match.path}/inbox/:id?`} component={Inbox}/>
-                            <Route path={`${match.path}/inbox/:id/edit`} component={InboxEditor}/>
-                            <Route exact path={`${match.path}/nodes/:id?`} component={NodeExplore}/>
-                            <Route path={`${match.path}/nodes/:id/edit`} component={NodeExploreEditor}/>
-                            <Route exact path={`${match.path}/collections/:id?`} component={CollectionOverview}/>
-                            <Route path={`${match.path}/collections/:id/edit`} component={CollectionOverviewEditor}/>
+                            <Route exact path={'/app/inbox/:id?'} component={Inbox}/>
+                            <Route path={'/app/inbox/:id/edit'} component={InboxEditor}/>
+                            <Route exact path={'/app/nodes/:id?'} component={NodeExplore}/>
+                            <Route path={'/app/nodes/:id/edit'} component={NodeExploreEditor}/>
+                            <Route exact path={'/app/collections/:id?'} component={CollectionOverview}/>
+                            <Route path={'/app/collections/:id/edit'} component={CollectionOverviewEditor}/>
 
-                            <Route exact path={`${match.path}/collections/:id/nodes/:nodeId?`} component={CollectionDetail}/>
-                            <Route path={`${match.path}/collections/:id/nodes/:nodeId/edit`} component={CollectionDetailEditor}/>
-                            <Redirect from={`${match.path}/`} to={`${match.path}/inbox`}/>
+                            <Route exact path={'/app/collections/:id/nodes/:nodeId?'} component={CollectionDetail}/>
+                            <Route path={'/app/collections/:id/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
+                            <Redirect from={'/app/'} to={'/app/collections'}/>
                         </Switch>
                         {
                             /*
@@ -117,7 +103,6 @@ class App extends React.Component {
 
 function mapStateToProps(state, props) {
     return {
-        errorMessage: state.errorMessage,
         isLoggedIn: isLoggedIn(),
     }
 }

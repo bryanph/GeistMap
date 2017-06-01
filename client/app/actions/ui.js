@@ -84,44 +84,6 @@ export function setActiveCollections(collectionIds) {
     }
 }
 
-export const SHOW_GRAPH_SIDE_BAR = 'SHOW_GRAPH_SIDE_BAR'
-export function showGraphSideBar(payload={}) {
-    return {
-        type: SHOW_GRAPH_SIDE_BAR,
-        payload,
-    }
-}
-
-export const HIDE_GRAPH_SIDE_BAR = 'HIDE_GRAPH_SIDE_BAR'
-export function hideGraphSideBar() {
-    return {
-        type: HIDE_GRAPH_SIDE_BAR,
-    }
-}
-
-export const SHOW_COLLECTION_SIDE_BAR = 'SHOW_COLLECTION_SIDE_BAR'
-export function showCollectionSidebar(payload={}) {
-    return {
-        type: SHOW_COLLECTION_SIDE_BAR,
-        payload,
-    }
-}
-
-export const HIDE_COLLECTION_SIDE_BAR = 'HIDE_COLLECTION_SIDE_BAR'
-export function hideCollectionSideBar() {
-    return {
-        type: HIDE_GRAPH_SIDE_BAR,
-    }
-}
-
-
-export const TOGGLE_NAV = 'TOGGLE_NAV'
-export function toggleNav() {
-    return  {
-        type: TOGGLE_NAV,
-    }
-}
-
 export const SET_TITLE = 'SET_TITLE'
 export function setTitle(title) {
     return {
@@ -130,16 +92,9 @@ export function setTitle(title) {
     }
 }
 
+export const SHOW_INBOX_SIDEBAR = 'SHOW_INBOX_SIDEBAR'
+export const showInboxSidebar = createAction(SHOW_INBOX_SIDEBAR)
 
-/*
- * Change the orientation of the main screen to editor, split-screen or graph
-*/
-export const CHANGE_MAIN_FOCUS = 'CHANGE_MAIN_FOCUS'
-export const changeMainFocus = createAction(CHANGE_MAIN_FOCUS)
-
-/*
- * Change to graph view or list view
-*/
-export const CHANGE_NODE_VIEW = 'CHANGE_NODE_VIEW'
-export const changeNodeView = createAction(CHANGE_NODE_VIEW)
+export const HIDE_INBOX_SIDEBAR = 'HIDE_INBOX_SIDEBAR'
+export const hideInboxSidebar = createAction(HIDE_INBOX_SIDEBAR)
 

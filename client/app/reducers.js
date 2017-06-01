@@ -663,34 +663,13 @@ const initialUiState = {
 
     activeCollections: [],
 
-    showGraphSideBarOpened: false,
-    showGraphSideBarState: {},
-
-    showCollectionSidebarState: {
-            id: null,
-            opened: false,
-        },
-
-    navOpened: false,
-
-    /*
-     * can be split-screen, editor, or graph
-    */
-    mainFocus: 'right',
-
-    /*
-     * graph or list
-    */
-    nodeView: 'graph',
+    inboxSidebar: {
+        opened: false,
+    },
 }
 
 function uiState(state=initialUiState, action) {
     switch(action.type) {
-        case uiTypes.TOGGLE_NAV:
-            return {
-                ...state,
-                navOpened: !state.navOpened
-            }
         case uiTypes.SHOW_CONNECT_WINDOW:
             return {
                 ...state,
@@ -779,48 +758,21 @@ function uiState(state=initialUiState, action) {
                     opened: false,
                 }
             }
-        case uiTypes.SHOW_ADD_AUDIO_WINDOW:
+        case uiTypes.SHOW_INBOX_SIDEBAR:
             return {
                 ...state,
-                addAudioWindowOpened: {
+                inboxSidebar: {
                     ...action.payload,
                     opened: true,
                 }
             }
-        case uiTypes.HIDE_ADD_AUDIO_WINDOW:
+        case uiTypes.HIDE_INBOX_SIDEBAR:
             return {
                 ...state,
-                addAudioWindowOpened: {
-                    ...state.addAudioWindowOpened,
+                inboxSidebar: {
+                    ...state.inboxSidebar,
                     opened: false,
                 }
-            }
-        case uiTypes.SHOW_GRAPH_SIDE_BAR:
-            return {
-                ...state,
-                showGraphSideBarOpened: true,
-                showGraphSideBarState: action.payload,
-            }
-        case uiTypes.HIDE_GRAPH_SIDE_BAR:
-            return {
-                ...state,
-                showGraphSideBarOpened: false,
-            }
-        case uiTypes.SHOW_COLLECTION_SIDE_BAR:
-            return {
-                ...state,
-                showCollectionSidebarState: {
-                    ...action.payload,
-                    opened: true,
-                }
-            }
-        case uiTypes.HIDE_COLLECTION_SIDE_BAR:
-            return {
-                ...state,
-                showCollectionSidebarState: {
-                    ...state.showCollectionSidebarState,
-                    opened: false,
-                },
             }
         // used with CollectionExploreGraph
         case uiTypes.SET_ACTIVE_COLLECTIONS:
@@ -832,16 +784,6 @@ function uiState(state=initialUiState, action) {
             return {
                 ...state,
                 title: action.title,
-            }
-        case uiTypes.CHANGE_MAIN_FOCUS:
-            return {
-                ...state,
-                mainFocus: action.payload,
-            }
-        case uiTypes.CHANGE_NODE_VIEW:
-            return {
-                ...state,
-                nodeView: action.payload,
             }
         default:
             return state

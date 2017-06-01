@@ -7,28 +7,10 @@ import { connect } from 'react-redux'
 import classNames from 'classnames'
 import { Link, withRouter } from 'react-router-dom'
 
-import {
-    Toolbar,
-    ToolbarGroup,
-    ToolbarTitle,
-    Avatar
-} from 'material-ui'
-
-import IconMenu from 'material-ui/IconMenu';
-import MenuItem from 'material-ui/MenuItem';
-import IconButton from 'material-ui/IconButton/IconButton';
-import FontIcon from 'material-ui/FontIcon';
-import PersonIcon from 'material-ui/svg-icons/social/person';
-import ActionMenu from 'material-ui/svg-icons/navigation/menu';
-import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
-
 import Sidebar from '../../containers/Sidebar'
 import AllSearch from '../../containers/AllSearch'
 
 import './styles.scss'
-
-import { primaryColor, accentColor } from '../../containers/App/muitheme.js'
-
 
 export const Logo = (props) => (
     <Link to="/app" className="topbar-logo">
@@ -43,17 +25,6 @@ const InboxButton = (props) => (
         <Icon name="inbox" size="large" /> <span>Inbox</span>
     </button>
 )
-
-// import FloatingActionButton from 'material-ui/FloatingActionButton'
-// import ContentAdd from 'material-ui/svg-icons/content/add';
-// const AddButton = (props) => (
-//     <FloatingActionButton onTouchTap={props.onClick} mini={true}>
-//         <ContentAdd />
-//     </FloatingActionButton>
-// )
-// AddButton.propTypes = {
-//     onClick: PropTypes.func.isRequired,
-// }
 
 const AddButton = (props) => (
     <Button circular icon="plus" size="large" className="topbar-action" {...props} />
@@ -98,7 +69,7 @@ class Topbar extends React.Component {
     createNode() {
         return this.props.createBatchNode({ name: 'Untitled', content: '' })
             .then(action => action.response.result)
-            .then(id => this.props.history.push(`/app/inbox/${id}`))
+            .then(id => this.props.history.push(`/app/nodes/${id}/edit`))
     }
 
 
@@ -134,15 +105,19 @@ Topbar.propTypes = {
     
 }
 
-import { createNode, createBatchNode, updateUi } from '../../actions/async'
-import { toggleNav, showCreateCollectionWindow, hideGraphSideBar } from '../../actions/ui'
+import { createNode, createBatchNode } from '../../actions/async'
+import { showInboxSidebar, hideInboxSidebar } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
     return {
-        navOpened: state.uiState.navOpened,
-        title: state.uiState.title,
         user: state.user,
+        inboxSidebarOpened: state.uiState.inboxSidebar.opened
     }
 }
 
-export default connect(mapStateToProps, { toggleNav, createNode, createBatchNode, showCreateCollectionWindow, hideGraphSideBar, updateUi })(withRouter(Topbar));
+export default connect(mapStateToProps, {
+    createNode,
+    createBatchNode,
+    showInboxSidebar,
+    hideInboxSidebar,
+})(withRouter(Topbar));

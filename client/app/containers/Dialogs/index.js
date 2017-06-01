@@ -37,7 +37,6 @@ export class Dialogs extends React.Component { // eslint-disable-line react/pref
                     connectNodes={this.props.connectNodes}
                     addEdge={this.props.addEdge}
                     hideWindow={this.props.hideAddRelationWindow}
-                    showGraphSideBar={this.props.showGraphSideBar}
                     fromBatch={this.props.location.pathname.startsWith('/app/inbox')}
                     fromCollectionDetail={this.props.location.pathname.startsWith('/app/collection')}
                     collectionId={this.props.match.params.id}
@@ -62,7 +61,6 @@ export class Dialogs extends React.Component { // eslint-disable-line react/pref
                     addNodeToCollection={this.props.addNodeToCollection}
                     connectNodes={this.props.connectNodes}
                     hideWindow={this.props.hideAddNodeToCollectionWindow}
-                    showGraphSideBar={this.props.showGraphSideBar}
                 />
             </div>
         );
@@ -76,7 +74,7 @@ const mapStateToProps = function(state, props) {
 }
 
 import { createNode, createCollection, addEdge, connectNodes, createBatchNode, addNodeToCollection, connectCollections } from '../../actions/async'
-import { hideCreateCollectionWindow, hideAddRelationWindow, hideAddNodeToCollectionWindow, showGraphSideBar, setEditorState } from '../../actions/ui'
+import { hideCreateCollectionWindow, hideAddRelationWindow, hideAddNodeToCollectionWindow, setEditorState } from '../../actions/ui'
 
 
-export default connect(mapStateToProps, { createNode, createBatchNode, createCollection, connectNodes, addNodeToCollection, addEdge, connectCollections, hideCreateCollectionWindow, hideAddRelationWindow, hideAddNodeToCollectionWindow, showGraphSideBar, setEditorState })(withRouter(Dialogs));
+export default connect(mapStateToProps, { createNode, createBatchNode, createCollection, connectNodes, addNodeToCollection, addEdge, connectCollections, hideCreateCollectionWindow, hideAddRelationWindow, hideAddNodeToCollectionWindow, setEditorState })(withRouter(Dialogs));
