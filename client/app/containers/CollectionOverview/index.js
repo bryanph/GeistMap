@@ -60,7 +60,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
       }
 
     return (
-        <div className='graphView'>
+        <div className='appContainer'>
             {
                 this.props.id ? // TODO: check for is integer instead - 2016-10-07
                     <CollectionToolbar 

@@ -35,17 +35,19 @@ class NodeEditor extends React.Component {
         }
 
         return (
-            <div className='graphView'>
+            <div className='appContainer'>
                 <NodeEditorToolbar
                     id={this.props.id}
                     collectionId={this.props.collectionId}
                     page={this.props.page}
                 />
-                <ContentEditor
-                    id={this.props.id} 
-                    withToolbar={false}
-                    shortcutWindow={shortcutWindow}
-                />
+                <div className="contentContainer">
+                    <ContentEditor
+                        id={this.props.id} 
+                        withToolbar={false}
+                        shortcutWindow={shortcutWindow}
+                    />
+                </div>
             </div>
         )
     }

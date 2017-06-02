@@ -14,7 +14,6 @@ import SavedState from '../../containers/SavedState'
 import Spinner, { InlineSpinner } from '../../components/Spinner'
 
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
-import ContentEditor from '../../containers/CollectionContentEditor'
 import EditableTitle from '../../components/EditableTitle'
 
 import { GraphButton, CreateCollectionButton, AddButton, EditButton, CollectionButton, AddRelationButton } from '../../components/Buttons'

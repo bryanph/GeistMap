@@ -74,13 +74,16 @@ class Topbar extends React.Component {
 
 
     render() {
-        const { showInboxSidebar } = this.props
+        const { inboxSidebarOpened, showInboxSidebar, hideInboxSidebar } = this.props
 
         return (
             <div className="topbar">
                 <div className="topbar-left">
                     <div className="topbar-inbox">
-                        <InboxButton onClick={() => showInboxSidebar()} />
+                        <InboxButton onClick={() => 
+                                !inboxSidebarOpened ? showInboxSidebar() : hideInboxSidebar()
+                        }
+                            />
                     </div>
                     <div className="topbar-search">
                         <AllSearch 

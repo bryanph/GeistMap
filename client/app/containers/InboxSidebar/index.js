@@ -11,6 +11,7 @@ import moment from 'moment'
 
 import Spinner from '../../components/Spinner'
 
+import classNames from 'classnames'
 import './styles.scss'
 
 import NodeContentEditor from '../NodeContentEditor'
@@ -56,10 +57,6 @@ export class InboxSidebar extends React.Component { // eslint-disable-line react
     render() {
         const { nodes, links, inboxSidebarOpened, loadingStates } = this.props
 
-        if (!inboxSidebarOpened) {
-            return null
-        }
-
         if (loadingStates.GET_ALL_BATCH_NODES) {
             return <Spinner />
         }
@@ -72,9 +69,13 @@ export class InboxSidebar extends React.Component { // eslint-disable-line react
             />
         ))
 
+        const classes = classNames("inboxSidebar", {
+            "inboxSidebar-opened": inboxSidebarOpened
+        })
+
 
         return (
-            <div className="inboxSidebar">
+            <div className={ classes }>
                 { items }
             </div>
         );

@@ -75,7 +75,7 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
   render() {
       const { nodeView } = this.props
     return (
-        <div className="graphView">
+        <div className="appContainer">
                 {
                     this.props.id ? // TODO: check for is integer instead - 2016-10-07
                         <NodeToolbar page="nodes" />

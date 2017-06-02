@@ -78,7 +78,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
       }
 
     return (
-        <div className='graphView'>
+        <div className='appContainer'>
                 {
                     this.props.nodeId ? // TODO: check for is integer instead - 2016-10-07
                         <NodeToolbar

@@ -428,31 +428,23 @@ class RichEditor extends React.Component {
     }
 
     render() {
-        const { withToolbar, shortcutWindow, uiState } = this.props
+        const { withToolbar, uiState } = this.props
 
         // If the user changes block type before entering any text, we can
         // either style the placeholder or hide it. Let's just hide it now.
-        let className = 'ContentEditor-editor' 
+
         var contentState = this.state.editorState.getCurrentContent();
-        if (this.state.collapsed) {
-            className += ' ContentEditor-editor-collapsed'
-        }
+        const hidePlaceholder = !contentState.hasText() && contentState.getBlockMap().first().getType() !== 'unstyled'
 
-        if (shortcutWindow) {
-            className += ' ContentEditor-shortcutWindow'
-        }
-
-
-        if (!contentState.hasText()) {
-            if (contentState.getBlockMap().first().getType() !== 'unstyled') {
-                className += ' ContentEditor-hidePlaceholder';
-            }
-        }
-
-        const rootClass = this.props.withToolbar ? 'ContentEditor-root-large': 'ContentEditor-root-small' 
+        const rootClass = classNames('ContentEditor-root', {
+            'ContentEditor-withToolbar': this.props.withToolbar,
+        })
+        const editorClass = classNames('ContentEditor-editor', {
+            'ContentEditor-hidePlaceholder':  hidePlaceholder
+        })
 
         return (
-            <div className={'ContentEditor-root ' + rootClass}>
+            <div className={ rootClass }>
                 { !this.props.readOnly ?
                     <div>
                         <ConnectWindow
@@ -491,7 +483,7 @@ class RichEditor extends React.Component {
                     </div>
                 : null}
 
-                <div className={className} onClick={this.focus}>
+                <div className={ editorClass } onClick={this.focus}>
                     <Editor
                         key={this.props.id}
                         readOnly={this.props.readOnly}

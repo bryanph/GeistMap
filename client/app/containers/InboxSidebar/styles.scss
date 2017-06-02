@@ -4,34 +4,60 @@
     top: 56px;
     bottom: 0;
     position: fixed;
-    width: 450px;
+    width: $sidebar-width;
     z-index: 999;
     overflow-y: scroll;
     overflow-x: hide;
 
     background: $background-grey-light;
+
+    transition: all 0.4s;
+    visibility: hidden;
+    transform: translate3d(-100%, 0, 0);
+
 }
 
+.inboxSidebar-opened {
+    transform: translate3d(0, 0, 0);
+    visibility: visible;
+}
+
+// todo: fix at left side of screen when bigger than $total-screen-width
+@media only screen and (max-width: $total-screen-width) {
+
+}
 
 .inboxSidebar-item {
     margin: 10px;
-    padding: 10px 10px 0;
+    padding: 10px 20px 0;
     width: calc(100% - 20px);
-    height: 300px;
+    height: $sidebar-item-height;
     overflow: hidden;
 
     position: relative;
     background: white;
 
+    cursor: move;
+
     .inboxSidebar-header {
+        h2 {
+            font-size: 2rem;
+            color: $accent-color
+        }
         span {
-            font-size: 1rem;
+            margin-left: 0.2rem;
+            font-size: 0.8rem;
             color: $secondary-text-color;
         }
     }
 
     .inboxSidebar-content {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
+        opacity: 0.8;
+        margin-top: 5px;
+        * {
+            cursor: move !important;
+        }
     }
 
     .inboxSidebar-actions {

@@ -34,18 +34,20 @@ class CollectionEditor extends React.Component {
         }
 
         return (
-            <div className="graphView">
+            <div className="appContainer">
                 <CollectionEditorToolbar 
                     id={this.props.id}
                     page={this.props.page}
                 />
-                <ContentEditor 
-                    id={this.props.id} 
-                    collection={collection}
-                    withToolbar={false}
-                    shortcutWindow={this.props.shortcutWindow}
-                    withoutContentLink={true}
-                />
+                <div className="contentContainer">
+                    <ContentEditor 
+                        id={this.props.id} 
+                        collection={collection}
+                        withToolbar={false}
+                        shortcutWindow={this.props.shortcutWindow}
+                        withoutContentLink={true}
+                    />
+                </div>
             </div>
         )
     }

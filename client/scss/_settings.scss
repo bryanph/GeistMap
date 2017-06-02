@@ -5,6 +5,12 @@ $max-screen-width: 750px;
 $topbar-height: 56px;
 
 
+$sidebar-width: 500px;
+$sidebar-item-height: 400px;
+
+$total-screen-width: $sidebar-width + $max-screen-width;
+
+
 //
 // COLORS
 //
@@ -15,12 +21,41 @@ $accent2-color: #FF9800;
 $secondary-text-color: #C6C6C6;
 
 $background-grey-light: rgba(235, 235, 235, 1);
+$background-content: white;
+
+//
+// Main containers
+//
+.appContainer {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    align-items: stretch;
+    margin-top: $topbar-height;
+}
+
+.contentContainer {
+  border-top: 1px solid #ddd;
+  margin: 16px auto 0;
+  flex-grow: 1;
+  background-color: $background-content;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 80%;
+  max-width: 800px;
+}
 
 //
 // FONTS
 //
 
+// TODO: import locally
 @import url(http://fonts.googleapis.com/css?family=Roboto+Slab|Open+Sans:400italic,700italic,400,700);
+// @import url(https://fonts.googleapis.com/css?family=Lora);
 
 $font-family-text: source-sans-pro, "Helvetica Neue", Helvetica, Arial, sans-serif;
 $font-family-display: source-serif-pro, Georgia, "Times New Roman", Times, serif;
