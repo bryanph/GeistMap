@@ -24,7 +24,6 @@ const Signup  = React.createClass({
         oauthGitHub: PropTypes.bool.isRequired,
         oauthFacebook: PropTypes.bool.isRequired,
         oauthGoogle: PropTypes.bool.isRequired,
-        oauthTumblr: PropTypes.bool.isRequired,
     },
 
     handleResponse: function(json, response) {
@@ -55,7 +54,6 @@ const Signup  = React.createClass({
                 oauthGitHub,
                 oauthFacebook,
                 oauthGoogle,
-                oauthTumblr,
                 withBackButton,
             } = this.props
 

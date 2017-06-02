@@ -20,7 +20,6 @@ const EmailConfirmation  = React.createClass({
       oauthGitHub: PropTypes.bool.isRequired,
       oauthFacebook: PropTypes.bool.isRequired,
       oauthGoogle: PropTypes.bool.isRequired,
-      oauthTumblr: PropTypes.bool.isRequired,
   },
 
   handleResponse: function(json, response) {
@@ -51,7 +50,6 @@ const EmailConfirmation  = React.createClass({
       oauthGitHub,
       oauthFacebook,
       oauthGoogle,
-      oauthTumblr,
     } = this.props
 
     const {

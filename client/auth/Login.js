@@ -18,7 +18,6 @@ export const Login = React.createClass({
         oauthGitHub: PropTypes.bool.isRequired,
         oauthFacebook: PropTypes.bool.isRequired,
         oauthGoogle: PropTypes.bool.isRequired,
-        oauthTumblr: PropTypes.bool.isRequired,
     },
 
     getInitialState: function() {
@@ -49,7 +48,6 @@ export const Login = React.createClass({
                 oauthGitHub,
                 oauthFacebook,
                 oauthGoogle,
-                oauthTumblr,
             } = this.props
 
 

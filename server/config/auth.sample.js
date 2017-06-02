@@ -27,6 +27,7 @@ const auth = {
         forIpAndUser: 7,
         logExpiration: '20m'
     },
+    "sendWelcomeMail": true,
     "authTemplate": 'auth.jade',
     "appUrl": '/app',
     "mainRoute": "auth",

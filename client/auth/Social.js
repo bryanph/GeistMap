@@ -76,16 +76,6 @@ export const SocialAuth = (props) => (
                 />
                     : null 
         }
-        {
-            props.oauthTumblr ?
-                <SocialButton
-                    label="Tumblr"
-                    href="/auth/signup/tumblr"
-                    style={styles.tumblr}
-                    icon={<FontIcon className="fi-social-tumblr" color={styles.tumblr.color} />}
-                />
-                    : null 
-        }
     </div>
 )
 SocialAuth.propTypes = {
@@ -94,7 +84,6 @@ SocialAuth.propTypes = {
     oauthGitHub: PropTypes.bool.isRequired,
     oauthFacebook: PropTypes.bool.isRequired,
     oauthGoogle: PropTypes.bool.isRequired,
-    oauthTumblr: PropTypes.bool.isRequired,
 }
 
 export default SocialAuth
