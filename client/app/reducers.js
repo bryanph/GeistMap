@@ -847,22 +847,6 @@ function rootReducer(state={}, action) {
     }
 }
 
-// const rootReducer = combineReducers({
-//     entities,
-//     adjacencyMap,
-//     reverseAdjacencyMap,
-//     pathL1Cache,
-//     pathL2Cache,
-//     nodesAndEdgesByCollectionId,
-//     inboxNodes,
-//     // errorMessage,
-//     requestCount,
-//     synced,
-//     nodeSearch,
-//     collectionSearch,
-//     uiState,
-// })
-
 export default rootReducer
 
 
