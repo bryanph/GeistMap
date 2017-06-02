@@ -4,7 +4,7 @@
  *
  */
 
-import React from 'react';
+import React, { PropTypes } from 'react';
 import classNames from 'classnames'
 import enhanceWithClickOutside from 'react-onclickoutside'
 import { Map } from 'immutable';
@@ -29,7 +29,7 @@ import createImagePlugin from './customPlugins/image-plugin';
 
 import createAutoListPlugin from './customPlugins/list-plugin'
 
-import './styles.css';
+import './styles.scss';
 import 'draft-js/dist/Draft.css'
 
 import { BoldButton, ItalicButton, UnderlineButton, MonospaceButton } from './customPlugins/inline-plugin'
@@ -97,7 +97,6 @@ const toolbarTheme = {
 import { Provider, connect } from 'react-redux'
 import { removeEdge } from '../../actions/async'
 import { showAddRelationWindow } from '../../actions/ui'
-import store from '../../app'
 
 import ConnectWindow from '../../components/ConnectWindow'
 import AddPictureWindow from '../../components/AddPictureWindow'
@@ -186,7 +185,7 @@ class RichEditor extends React.Component {
 
         const ContentLinkButtonContainer = connect(null, { showAddRelationWindow, removeEdge })(ContentLinkButton)
         const ContentLinkButtonContainerProvider = (props) => (
-            <Provider store={store}>
+            <Provider store={this.context.store}>
                 <ContentLinkButtonContainer 
                     node={this.props.node}
                     nodeId={this.props.id}
@@ -515,6 +514,9 @@ class RichEditor extends React.Component {
 }
 RichEditor.defaultProps = {
     withToolbar: true,
+}
+RichEditor.contextTypes = {
+    store: PropTypes.object.isRequired
 }
 
 export default enhanceWithClickOutside(RichEditor)

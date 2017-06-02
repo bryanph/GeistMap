@@ -1,14 +1,14 @@
 @import '~styles/settings';
 
 .topbar {
-    /* background-color: #e9ebee; */
     background-color: $primary-color;
-    height: 56px;
+    height: $topbar-height;
     color: white;
 
-    position: relative;
-    // padding: 5px;
-    // overflow: hidden;
+    position: fixed;
+    width: 100%;
+
+    z-index: 1000;
 }
 
 .topbar-left {

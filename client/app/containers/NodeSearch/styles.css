@@ -4,7 +4,7 @@
 }
 
 .nodeSearch-list {
-    z-index: 1501; /* material-ui Dialog has 1500 */
+    z-index: 999; /* material-ui Dialog has 1500 */
     width: 100%;
     min-height: 10rem;
     position: absolute;

@@ -55,10 +55,10 @@
     bottom: 0;
     left: calc(50% - 200px);
     left: 0;
-    height: 150px;
+    /* height: 150px; */
     width: 400px;
 
-    z-index: 1000;
+    /* z-index: 1000; */
     padding: 1.5rem 0;
 }
 
@@ -67,7 +67,7 @@
 }
 .contentLinkDiv:hover {
     display: block;
-    z-index: 1000;
+    /* z-index: 1000; */
 }
 
 .contentLinkDiv-container {

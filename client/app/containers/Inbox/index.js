@@ -8,7 +8,7 @@ import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
 
-import './styles.css'
+import './styles.scss'
 
 import ForceGraph from '../../containers/ForceGraph'
 import NodeToolbar from '../../containers/NodeToolbar'

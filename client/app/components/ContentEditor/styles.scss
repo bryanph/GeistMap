@@ -1,6 +1,5 @@
 
 .ContentEditor-root {
-  font-size: 14px;
   /* min-height: 10rem; */
   border-top: 1px solid #ddd;
   margin-top: 16px;
@@ -10,7 +9,8 @@
 
   display: flex;
   flex-direction: column;
-  font-size: 1.3rem;
+  font-size: 1.3em;
+  line-height: 1.5em;
 
   min-height: 80%;
   /* height: 80%; */
@@ -37,26 +37,26 @@
 .ContentEditor-root h3 {
     color: #FF5722;
     color: black;
-    font-size: 2.5rem;
+    font-size: 2.2em;
     font-weight: 900;
-    margin-top: 2rem;
-    margin-bottom: 1rem;
+    margin-top: 1em;
+    margin-bottom: 0.2em;
 }
 .ContentEditor-root h4 {
     color: #FF5722;
     color: black;
-    font-size: 2rem;
+    font-size: 1.8em;
     font-weight: 700;
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
+    margin-top: 1em;
+    margin-bottom: 0.2em;
 }
 .ContentEditor-root h5 {
     color: #FF5722;
     color: black;
-    font-size: 1.5rem;
+    font-size: 1.4em;
     font-weight: 600;
-    margin-top: 1.2rem;
-    margin-bottom: 0.6rem;
+    margin-top: 1em;
+    margin-bottom: 0.2em;
 }
 
 .ContentEditor-orderedListItem {
@@ -124,18 +124,18 @@
 .ContentEditor-editor .public-DraftEditor-content {
   margin: 0 -15px -15px;
   padding: 20px;
-}
 
-.ContentEditor-editor .public-DraftEditor-content {
-  /* min-height: 150px; */
-  /* min-height: 75vh; */
-  /* overflow-y: auto; */
+  & > div > *:first-child {
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+  }
 }
 
 .ContentEditor-editor-collapsed .public-DraftEditor-content {
   /* min-height: 90px; */
   /* height: 90px; */
-  overflow-y: hidden;
+  // overflow-y: hidden;
+
 }
 
 .ContentEditor-shortcutWindow {

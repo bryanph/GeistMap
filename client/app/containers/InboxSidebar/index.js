@@ -124,6 +124,8 @@ class InboxItem extends React.Component {
 
                 <div className="inboxSidebar-expand">
                 </div>
+
+                <div className="inboxSidebar-fadeout"></div>
             </div>
         )
     }

@@ -2,7 +2,7 @@
   height: auto;
   position: relative;
   display: block;
-  z-index: 1;
+  /* z-index: 1; */
 }
 
 .imageButton {
@@ -17,7 +17,7 @@
   font-size: 0.62em;
   margin-left: -0.825em;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 100;
 }
 
 .imageButton:hover {

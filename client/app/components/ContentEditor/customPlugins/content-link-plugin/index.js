@@ -37,12 +37,12 @@ const linkPlugin = (config = {}) => {
     }
 
 
-    return ({ getEditorState, setEditorState, setReadOnly, getClipboard, focus }) => {
+    return ({ getEditorState, setEditorState, getReadOnly, setReadOnly, getClipboard, focus }) => {
 
         return {
             decorators: [{
                 strategy: linkStrategy,
-                component: (props) => <ContentLink {...props} theme={theme} getEditorState={getEditorState} setEditorState={setEditorState} />,
+                component: (props) => <ContentLink {...props} theme={theme} getEditorState={getEditorState} setEditorState={setEditorState} getReadOnly={getReadOnly}/>,
             }],
             keyBindingFn: keyBindingFn,
             handleKeyCommand: (command, editorState) => handleKeyCommand(command, editorState, { setEditorState }),

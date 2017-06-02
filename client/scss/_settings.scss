@@ -2,6 +2,7 @@
 // Screen sizes
 //
 $max-screen-width: 750px;
+$topbar-height: 56px;
 
 
 //
@@ -13,7 +14,7 @@ $accent-color: #ff5722;
 $accent2-color: #FF9800;
 $secondary-text-color: #C6C6C6;
 
-$background-grey-light: #C6C6C6;
+$background-grey-light: rgba(235, 235, 235, 1);
 
 //
 // FONTS
@@ -39,7 +40,7 @@ html {
 }
 body {
     margin: 0;
-    font: 16px/1 sans-serif;
+    // font: 16px/1 sans-serif;
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
     line-height: 1.4;

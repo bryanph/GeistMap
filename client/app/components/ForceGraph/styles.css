@@ -45,7 +45,7 @@ svg {
     stroke: none;
     font-size: 1em;
     pointer-events: none;
-    z-index: 99;
+    z-index: 100;
 }
 
 .node-hovered circle {
