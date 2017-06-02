@@ -7,6 +7,7 @@ import { createLogger } from 'redux-logger'
 import createSocketMiddleware from '../middleware/api'
 import restApiMiddleware from '../middleware/restApi'
 import { batchStoreEnhancer, batchMiddleware } from '../middleware/batch'
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 function getDebugSessionKey() {
   // You can write custom logic here!
@@ -32,7 +33,7 @@ export default function configureStore(initialState) {
     // Required! Enable Redux DevTools with the monitors you chose
     applyMiddleware(thunk, promise, socketMiddleware, restApiMiddleware, logger),
     // batchStoreEnhancer,
-    window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
+    composeWithDevTools,
   );
 
   const store = createStore(rootReducer, initialState, enhancer);
