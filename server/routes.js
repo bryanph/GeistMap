@@ -9,7 +9,9 @@ const { mobileUploadMiddleware, mobileUploadView } =  require('./api/private/mob
 const config = require('./config/config.js')
 const express = require('express')
 
-const stats = require('../stats.json')
+if (config.env === 'production') {
+    const stats = require('../stats.json')
+}
 
 module.exports = function(app, authRoutes, adminRoutes) {
 

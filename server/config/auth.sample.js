@@ -1,4 +1,8 @@
-const stats = require('../../stats.json')
+const env = process.env.NODE_ENV;
+
+if (env !== 'development') {
+    const stats = require('../../stats.json')
+}
 
 const auth = {
     oauth: {
