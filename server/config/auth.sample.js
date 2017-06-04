@@ -27,7 +27,7 @@ const auth = {
         forIpAndUser: 7,
         logExpiration: '20m'
     },
-    "sendWelcomeMail": true,
+    "sendWelcomeMail": false,
     "authTemplate": 'auth.jade',
     "appUrl": '/app',
     "mainRoute": "auth",
@@ -37,7 +37,7 @@ const auth = {
     "systemEmail": "noreply@geist.fyi",
     "supportEmail": "support@geist.fyi",
     "cryptoKey": "TODO change",
-    "requireAccountVerification": true,
+    "requireAccountVerification": false,
     "smtp": {
         from: {
             name: process.env.SMTP_FROM_NAME || 'Geist team',
