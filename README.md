@@ -15,3 +15,7 @@ Can be found [here](https://github.com/bryanph/Geist/blob/master/meta/roadmaps/2
 
 ## Installation instructions
 Will follow
+
+## Contact
+To get help or to have a chat you can reach me on [Twitter](https://twitter.com/bphaakman) or join the IRC `##geist` on Freenode
+
