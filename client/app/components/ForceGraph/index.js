@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom'
 import { scaleLinear } from 'd3-scale'
 import { drag as d3Drag } from 'd3-drag'
 import { select as d3Select } from 'd3-selection'
-import './styles.css'
+import './styles.scss'
 
 import { browserHistory } from 'react-router-dom'
 
@@ -75,7 +75,7 @@ const createEnterCollection = (actions: { click: Function }) => {
     */
     return (selection, click) => {
         selection
-            .attr("class", "node")
+            .attr("class", "node subject-node")
             // .classed('enter-selection', true) // for rxjs..
             // for later reference from data
             .attr('id', (d) => {
@@ -91,11 +91,13 @@ const createEnterCollection = (actions: { click: Function }) => {
             .attr("r", (d) => d.radius)
             .attr("x", -8)
             .attr("y", -8)
-            .style("fill", colorNode)
+            // .style("fill", colorNode)
 
         selection.append('text')
-            .attr("dx", (d) => d.radius)
-            .attr("dy", ".35em")
+            // .attr("dx", (d) => -d.radius)
+            // .attr("dy", (d) => -d.radius)
+            // .attr("width", (d) => d.radius)
+            // .attr("height", (d) => d.radius)
             .text((d) => getLabelText(d.properties.name));
 
         // remove enter-selection flag for rxjs...
@@ -114,8 +116,15 @@ const updateNode = (selection) => {
 }
 const updateCollection = (selection) => {
     selection.select('text')
-        .attr("dx", (d) => d.radius)
-        .attr("dy", ".35em")
+        // .attr("dx", (d) => d.radius)
+        .style("font-size", (d) => d.radius / 3)
+        // .style("font-size", (d) => {
+        //     const textWidth = this.getComputedTextLength()
+
+        //     if (textWidth > d.radius*2) {
+        //         return 
+        //     }
+        // }
         .text((d) => getLabelText(d.properties.name));
 
     selection.select('circle')
@@ -244,7 +253,7 @@ const createCollectionOverviewEvents = (simulation, actions) => {
      * Afterwards, can be called with node an link DOM nodes
      */
     const onCollectionClick = (d) => {
-        actions.history.push(`/app/collections/${d.id}`)
+        actions.history.push(`/app/collections/${d.id}/nodes`)
     }
 
     const onConnect = (from, to) => {
@@ -377,7 +386,7 @@ class ForceGraph extends React.Component {
 
         // TODO: this only applies to CollectionOverview
         const maxNodeCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
-        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([10, 20])
+        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([30, 80])
 
         // set extra properties here
         nodes.forEach(node => {

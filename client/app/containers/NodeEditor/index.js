@@ -42,11 +42,13 @@ class NodeEditor extends React.Component {
                     page={this.props.page}
                 />
                 <div className="contentContainer">
-                    <ContentEditor
-                        id={this.props.id} 
-                        withToolbar={false}
-                        shortcutWindow={shortcutWindow}
-                    />
+                    <div className="contentContainer-inner">
+                        <ContentEditor
+                            id={this.props.id} 
+                            withToolbar={false}
+                            shortcutWindow={shortcutWindow}
+                        />
+                    </div>
                 </div>
             </div>
         )

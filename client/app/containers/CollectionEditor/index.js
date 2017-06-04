@@ -40,13 +40,15 @@ class CollectionEditor extends React.Component {
                     page={this.props.page}
                 />
                 <div className="contentContainer">
-                    <ContentEditor 
-                        id={this.props.id} 
-                        collection={collection}
-                        withToolbar={false}
-                        shortcutWindow={this.props.shortcutWindow}
-                        withoutContentLink={true}
-                    />
+                    <div className="contentContainer-inner">
+                        <ContentEditor 
+                            id={this.props.id} 
+                            collection={collection}
+                            withToolbar={false}
+                            shortcutWindow={this.props.shortcutWindow}
+                            withoutContentLink={true}
+                        />
+                    </div>
                 </div>
             </div>
         )
