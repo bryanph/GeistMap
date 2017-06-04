@@ -49,48 +49,24 @@ module.exports = function(db, es) {
      * initialize with
      * db: Neo4j database instance
      * es: Elasticsearch database instance
-    */
+     */
 
     return {
-        // get: function(user, id, res) {
-        //     // TODO: patch db.cypher to use promises - 2016-05-29
-        //     db.run(
-        //         "MATCH (c:Collection) " +
-        //         "WHERE id(c) = {id} " +
-        //         "RETURN c as collection",
-        //         {
-        //             id: neo4j.int(id),
-        //         }
-        //     )
-        //     .then((results) => {
-        //         if (results.length === 0) {
-        //             return res(`Collection with id ${id} was not found`)
-        //         }
+        // TODO: this method is not in API - 2017-06-04
+        createRootCollection: async function(user) {
+            const results = await db.run(
+                "MERGE (u:User {id: {userId}}) " +
+                "CREATE (c:Collection:RootCollection { name: {name},  nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
+                "return c as collection",
+                {
+                    userId: user._id.toString(),
+                    name: "My Knowledge Base",
+                }
+            )
 
-        //         res(null, {
-        //             collection: {
-        //                 ...mapIdentity(results.records[0]._fields[0]),
-        //             },
-        //         })
-        //     })
-        //     .catch(handleError)
-        // },
+            const result = mapIdentity(results.records[0]._fields[0])
+        },
 
-
-
-            // db.run(
-            //     "MATCH (c:Collection)-[]-(n:Node)-[e:EDGE*0..1]-(n2:Node)" +
-            //     // "MATCH (c:Collection)-[]-(n:Node)-[r:EDGE*1..2]-(n2:Node)" +
-            //     // "OPTIONAL MATCH (n:Node)-[IN]->(c:Collection) " +
-            //     "WHERE id(c) = {id} " +
-            //     "RETURN collect(distinct n + n2) as nodes, collect(distinct e) as edges")
-            // .then((results) => {
-
-            //     return res(null, {
-            //         collection:
-            //         nodes: results.records[0]._fields[0].map(mapIdentity),
-            //         edges: results.records[0]._fields[1].map(mapEdges),
-            //     })
         get: function(user, rawId, res) {
             /*
              * Get node with id ${id} (including its neightbours)
@@ -142,34 +118,34 @@ module.exports = function(db, es) {
                     }
                 )
             ])
-            .then((results) => {
-                if (results[0].records.length === 0) {
-                    console.log("collection not found..");
-                    return res(new Error(`Collection with id ${id} was not found`))
-                }
+                .then((results) => {
+                    if (results[0].records.length === 0) {
+                        console.log("collection not found..");
+                        return res(new Error(`Collection with id ${id} was not found`))
+                    }
 
-                const collection = mapIdentity(results[0].records[0].get(0))
-                const edges = results[1].records[0].get(0).map(mapEdges)
-                const nodes = results[2].records[0].get(0) === null ?
-                    [] : 
-                    results[2].records.map(row => (
-                        Object.assign({},
-                            mapIdentity(row.get(0)),
-                            {
-                                collections: row.get(1).map(x => x.toString()), // ids for collections
-                            }
-                        )
-                    ))
+                    const collection = mapIdentity(results[0].records[0].get(0))
+                    const edges = results[1].records[0].get(0).map(mapEdges)
+                    const nodes = results[2].records[0].get(0) === null ?
+                        [] : 
+                        results[2].records.map(row => (
+                            Object.assign({},
+                                mapIdentity(row.get(0)),
+                                {
+                                    collections: row.get(1).map(x => x.toString()), // ids for collections
+                                }
+                            )
+                        ))
 
-                return res(null, {
-                    collection: Object.assign({},
-                        collection,
-                        { nodes }
-                    ),
-                    edges
+                    return res(null, {
+                        collection: Object.assign({},
+                            collection,
+                            { nodes }
+                        ),
+                        edges
+                    })
                 })
-            })
-            .catch(handleError)
+                .catch(handleError)
         },
 
         // getByIds: function(user, ids, res) {
@@ -227,18 +203,18 @@ module.exports = function(db, es) {
                     userId: user._id.toString()
                 }
             )
-            .then((results) => {
-                return res(null, results.records.map(row => (
-                    Object.assign({},
-                        mapIdentity(row.get(0)),
-                        {
-                            edges: _.flatten(row.get(1)).map(mapEdges),
-                            count: row.get(2).toNumber(),
-                        }
-                    )
-                )))
-            })
-            .catch(handleError)
+                .then((results) => {
+                    return res(null, results.records.map(row => (
+                        Object.assign({},
+                            mapIdentity(row.get(0)),
+                            {
+                                edges: _.flatten(row.get(1)).map(mapEdges),
+                                count: row.get(2).toNumber(),
+                            }
+                        )
+                    )))
+                })
+                .catch(handleError)
         },
 
         // getCollectionGraph: function(user, res) {
@@ -275,16 +251,16 @@ module.exports = function(db, es) {
                     name: data.name,
                 }
             )
-            .then((results) => {
-                const result = mapIdentity(results.records[0]._fields[0])
+                .then((results) => {
+                    const result = mapIdentity(results.records[0]._fields[0])
 
-                res(null, result)
+                    res(null, result)
 
-                // now update ES indexes
-                updateCollectionIndex(es, user, result)
-                    
-            })
-            .catch(handleError)
+                    // now update ES indexes
+                    updateCollectionIndex(es, user, result)
+
+                })
+                .catch(handleError)
         },
 
         update: function(user, id, data, res) {
@@ -308,15 +284,15 @@ module.exports = function(db, es) {
                     data: updatedData,
                 }
             )
-            .then((results) => {
-                const result = mapIdentity(results.records[0]._fields[0])
+                .then((results) => {
+                    const result = mapIdentity(results.records[0]._fields[0])
 
-                res(null, result)
+                    res(null, result)
 
-                // now update ES indexes...
-                updateCollectionIndex(es, user, result)
-            })
-            .catch(handleError)
+                    // now update ES indexes...
+                    updateCollectionIndex(es, user, result)
+                })
+                .catch(handleError)
         },
 
 
@@ -327,7 +303,7 @@ module.exports = function(db, es) {
 
             db.run(
                 "MATCH (u:User)--(c:Collection) " +
-                "WHERE u.id = {userId} " +
+                "WHERE NOT c:RootCollection AND u.id = {userId} " +
                 "AND id(c) = {id} " +
                 "DETACH DELETE c",
                 {
@@ -335,13 +311,13 @@ module.exports = function(db, es) {
                     id: neo4j.int(id),
                 }
             )
-            .then(results => {
-                res(null, true)
+                .then(results => {
+                    res(null, true)
 
-                // now remove document from ES
-                removeCollectionDocument(es, id)
-            })
-            .catch(handleError)
+                    // now remove document from ES
+                    removeCollectionDocument(es, id)
+                })
+                .catch(handleError)
         },
 
         addNode: function(user, collectionId, nodeId, res) {
@@ -379,38 +355,38 @@ module.exports = function(db, es) {
                     nodeId: neo4j.int(nodeId),
                 }
             )
-            .then(results => {
-                const edge = mapEdges(results.records[0]._fields[0])
-                const node = mapIdentity(results.records[0]._fields[1])
-                const collection = mapIdentity(results.records[0]._fields[2])
+                .then(results => {
+                    const edge = mapEdges(results.records[0]._fields[0])
+                    const node = mapIdentity(results.records[0]._fields[1])
+                    const collection = mapIdentity(results.records[0]._fields[2])
 
-                // res(null, result)
-                res(null, {
-                    collection,
-                    node,
+                    // res(null, result)
+                    res(null, {
+                        collection,
+                        node,
+                    })
                 })
-            })
-            .catch(handleError)
+                .catch(handleError)
 
-                // TODO: update collection edges (if we're doing this) - 2016-04-02
-                // db.cypher({
-                //     query: 
-                //         "MATCH (s:Edge)-[se]->(t:Edge)->(tc:Collection), " +
-                //         "(tc:Collection)->(t:Edge)-[te]->(s:Edge), " +
-                //         "(c:Collection)" +
-                //         "WHERE id(s) = {node_id} AND id(c) = {collection_id} " +
-                //         "CREATE (c)-[se]->(tc)" +
-                //         "CREATE (tc)-[te]->(c)",
-                //         // "RETURN collect(se, tc) as edges",
-                // }, function(error, results2) {
-                //     res(null, results[0].in)
-                // })
+            // TODO: update collection edges (if we're doing this) - 2016-04-02
+            // db.cypher({
+            //     query: 
+            //         "MATCH (s:Edge)-[se]->(t:Edge)->(tc:Collection), " +
+            //         "(tc:Collection)->(t:Edge)-[te]->(s:Edge), " +
+            //         "(c:Collection)" +
+            //         "WHERE id(s) = {node_id} AND id(c) = {collection_id} " +
+            //         "CREATE (c)-[se]->(tc)" +
+            //         "CREATE (tc)-[te]->(c)",
+            //         // "RETURN collect(se, tc) as edges",
+            // }, function(error, results2) {
+            //     res(null, results[0].in)
+            // })
         },
 
         removeNode: function(user, collectionId, nodeId, res) {
             /*
              * Remove node with id #{id} from collection
-            */
+             */
             if (typeof collectionId === 'string') {
                 collectionId = parseInt(collectionId)
             }
@@ -434,10 +410,10 @@ module.exports = function(db, es) {
                     nodeId: neo4j.int(nodeId),
                 }
             )
-            .then(results => {
-                res(null, true)
-            })
-            .catch(handleError)
+                .then(results => {
+                    res(null, true)
+                })
+                .catch(handleError)
         },
 
         connect: function(user, collection1, collection2, res) {
@@ -478,19 +454,19 @@ module.exports = function(db, es) {
                     userId: user._id.toString(),
                 }
             )
-            .then(results => {
-                // TODO: only return the edge that was changed 2016-06-08
-                const result = mapEdges(results.records[0]._fields[0])
+                .then(results => {
+                    // TODO: only return the edge that was changed 2016-06-08
+                    const result = mapEdges(results.records[0]._fields[0])
 
-                res(null, result)
-            })
-            .catch(handleError)
+                    res(null, result)
+                })
+                .catch(handleError)
         },
 
         getCollectionDetailGraph: function(user, id) {
             /*
              * Get the CollectionDetail graph for the collection with id ${id}
-            */
+             */
 
             db.run(
                 "MATCH (u:User)--(c:Collection)-[]-(n:Node)-[e:EDGE*0..1]-(n2:Node) " +
@@ -499,15 +475,15 @@ module.exports = function(db, es) {
                 "WHERE u.id = {userId} " +
                 "AND id(c) = {id} " +
                 "RETURN collect(distinct n + n2) as nodes, collect(distinct e) as edges")
-            .then((results) => {
+                .then((results) => {
 
-                return res(null, {
-                    userId: user._id.toString(),
-                    nodes: results.records[0]._fields[0].map(mapIdentity),
-                    edges: results.records[0]._fields[1].map(mapEdges),
+                    return res(null, {
+                        userId: user._id.toString(),
+                        nodes: results.records[0]._fields[0].map(mapIdentity),
+                        edges: results.records[0]._fields[1].map(mapEdges),
+                    })
                 })
-            })
-            .catch(handleError)
+                .catch(handleError)
         },
 
         removeEdge: function(user, id, res) {
@@ -525,26 +501,26 @@ module.exports = function(db, es) {
                     userId: user._id.toString(),
                 }
             )
-            .then(results => {
+                .then(results => {
 
-                res(null, true)
-            })
-            .catch(handleError)
+                    res(null, true)
+                })
+                .catch(handleError)
 
         },
 
         search: function(user, query, res) {
             /*
              * Full text search for a collection
-            */
+             */
 
             // es.search({
             //     index: 'collections',
             //     q: query
             // })
-           // .then(body => {
+            // .then(body => {
             //    res(null, body.hits.hits)
-           // })
+            // })
             es.search({
                 index: config.es.collectionIndex,
                 // explain: true,
@@ -558,35 +534,35 @@ module.exports = function(db, es) {
                                 }
                             ],
                             "should": [
-                            {
-                                // TODO: make this match exactly (needs a separate index) - 2016-07-26
-                                "match": {
-                                    "title": {
-                                        query,
-                                        "operator": "and",
-                                        "boost": 10,
-                                    }
-                                }
-                            },
-                            {
-                                "match": {
-                                    "title": {
-                                        query,
-                                        "fuzziness": "AUTO",
-                                        // "boost": 3,
-                                    }
-                                }
-                            },
-                            {
-                                "match": {
-                                    "description": {
-                                        query,
-                                        // TODO: should be AND? - 2016-07-26
-                                        // TODO: AND with minimum amount of words - 2016-07-26
-                                        "operator": "and",
+                                {
+                                    // TODO: make this match exactly (needs a separate index) - 2016-07-26
+                                    "match": {
+                                        "title": {
+                                            query,
+                                            "operator": "and",
+                                            "boost": 10,
+                                        }
                                     }
                                 },
-                            }
+                                {
+                                    "match": {
+                                        "title": {
+                                            query,
+                                            "fuzziness": "AUTO",
+                                            // "boost": 3,
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": {
+                                        "description": {
+                                            query,
+                                            // TODO: should be AND? - 2016-07-26
+                                            // TODO: AND with minimum amount of words - 2016-07-26
+                                            "operator": "and",
+                                        }
+                                    },
+                                }
                             ]
                         }
                     }
@@ -597,12 +573,12 @@ module.exports = function(db, es) {
                     // }
                 }
             })
-           .then(body => {
-               res(null, body.hits.hits)
-           })
-           .catch(error => {
-               console.error(error)
-           })
+                .then(body => {
+                    res(null, body.hits.hits)
+                })
+                .catch(error => {
+                    console.error(error)
+                })
         },
     }
 }

@@ -38,7 +38,7 @@ const ProfileButton = ({ user }) => {
         (user.username && user.username.charAt(0).toUpperCase())
 
     return (
-        <Dropdown icon='filter' pointing="top right" floating button className='topbar-action icon circular large'>
+        <Dropdown icon='user' pointing="top right" floating button className='topbar-action icon circular large'>
             <Dropdown.Menu>
                 <Dropdown.Item as={'a'} href="/auth/logout" icon="log out" text='Logout' />
             </Dropdown.Menu>

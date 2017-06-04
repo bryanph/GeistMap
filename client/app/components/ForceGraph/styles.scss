@@ -71,16 +71,54 @@ svg {
     }
 }
 
-.node-hovered circle {
-    fill: #000000;
+.addCollection-node {
+    circle {
+        fill: $accent-color;
+        // stroke: $node-subject-stroke;
+        // stroke-width: 2px;
+        opacity: 0.8;
+        transition: opacity ease-in 85ms;
+
+        &:hover {
+            opacity: 0.4;
+        }
+
+        &:active {
+            opacity: 0.6;
+        }
+    }
+
+    text {
+        fill: white;
+        font-family: Icons;
+        text-anchor: middle;
+        font-size: 0.8em;
+        pointer-events: none;
+        // dominant-baseline: central;
+    }
+
+    cursor: pointer;
+}
+
+.addCollection-link {
+    stroke: #999;
+    stroke-opacity: 0.6;
+    stroke-width: 2px;
+
+    &:hover {
+        cursor: pointer;
+    }
 }
 
 .node-link {
-    stroke: #FF7043;
+    stroke: $accent-color;
     stroke-width: 3px;
-    color: #D4D6D7;
+    // color: #D4D6D7;
     stroke-opacity: .6;
-    fill: none;
+
+    &:hover {
+        cursor: pointer;
+    }
 
     /* shaft-width: 1px; */
     /* stroke-width:1.5px */
@@ -89,23 +127,4 @@ svg {
     /* text-color-external: #000000; */
     /* text-color-internal: #FFFFFF; */
 }
-.node-link:hover {
-    cursor: pointer;
-}
 
-.node-tooltip {
-    position: absolute;
-    text-align: center;
-    width: 60px;
-    height: 12px;
-    padding: 8px;
-    margin-top: -20px;
-    font: 10px sans-serif;
-    background: #000;
-    pointer-events: none;
-}
-
-.nodeGraph-sideBar {
-    width: 100%;
-    height: 200px;
-}

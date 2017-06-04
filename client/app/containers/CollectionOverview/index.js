@@ -14,15 +14,23 @@ import { AddButton } from '../../components/Buttons'
 import Spinner from '../../components/Spinner'
 import CollectionToolbar from '../../containers/CollectionToolbar'
 
-import './styles.css'
+import './styles.scss'
 
-export const NoCollectionsYet = (props) => (
-    <div className="collectionOverview-noCollectionsYet">
-        <span className="collectionOverview-noCollectionsYet-text">
-            No Collections yet!<br/>Click <span  className="collectionOverview-noCollectionsYet-start" style={{color: accentColor}} onClick={() => props.createCollection()}>here</span> to create your first
-        </span>
-    </div>
-)
+import { 
+    updateCollection,
+    fetchCollections,
+    loadCollection,
+    connectCollections,
+    removeCollection,
+    removeCollectionEdge 
+} from '../../actions/async'
+
+import { 
+    showCreateCollectionWindow,
+    setTitle,
+    toggleEditMode,
+} from '../../actions/ui'
+
 
 export const AddCollectionShootButton = (props) => (
     <AddButton 
@@ -30,10 +38,24 @@ export const AddCollectionShootButton = (props) => (
     />
 )
 
+import { Button, Icon } from 'semantic-ui-react'
+let EditModeButton = ({ editMode, toggleEditMode }) => (
+    <Button 
+        circular icon={ editMode ? "checkmark" : "edit" } size="massive" className="editModeButton"
+        onClick={ toggleEditMode }
+    />
+)
+EditModeButton = connect((state) => ({
+    editMode: state.uiState.editMode.active 
+}),
+    { toggleEditMode }
+)(EditModeButton)
+
+
+
 function loadData(props) {
     if (props.id) {
         props.loadCollection(props.id)
-            // .then(() => props.showCollectionSidebar({ id: props.id }))
     }
 }
 
@@ -53,7 +75,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
     }
 
   render() {
-      const { loadingStates, collections, collectionLinks } = this.props
+      const { loadingStates, collections, collectionLinks, editMode } = this.props
 
       if (loadingStates.GET_COLLECTIONS) {
           return <Spinner />
@@ -61,31 +83,18 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
 
     return (
         <div className='appContainer'>
-            {
-                this.props.id ? // TODO: check for is integer instead - 2016-10-07
-                    <CollectionToolbar 
-                        id={this.props.id}
-                        page="collections"
-                    />
-                    : null
-            }
-        {
-            collections.length ?
-                    <ForceGraph
-                        selectedId={this.props.id}
-                        nodes={collections || []}
-                        links={collectionLinks || []} 
-                        connectCollections={this.props.connectCollections}
-                        removeCollectionEdge={this.props.removeCollectionEdge}
-                        graphType={'collectionOverview'}
+            <ForceGraph
+                selectedId={this.props.id}
+                nodes={collections || []}
+                links={collectionLinks || []} 
+                connectCollections={this.props.connectCollections}
+                removeCollectionEdge={this.props.removeCollectionEdge}
+                graphType={'collectionOverview'}
+                editMode={editMode}
 
-                    />
-                : <NoCollectionsYet createCollection={this.props.showCreateCollectionWindow}/>
-        }
+            />
             <div className="collectionOverview-buttons">
-                <AddCollectionShootButton
-                    showCreateCollectionWindow={this.props.showCreateCollectionWindow}
-                />
+                <EditModeButton />
             </div>
         </div>
     );
@@ -102,13 +111,11 @@ function mapStateToProps(state, props) {
         collections: getCollections(state),
         collectionLinks: getCollectionEdges(state), // links between collections
         loadingStates: state.loadingStates,
+        editMode: state.uiState.editMode.active,
         // sidebarState: state.uiState.showCollectionSidebarState,
         // activeCollection: getCollection(state, id),
     }
 }
-
-import { updateCollection, fetchCollections, loadCollection, connectCollections, removeCollection, removeCollectionEdge } from '../../actions/async'
-import { showCollectionSidebar, showCreateCollectionWindow, setTitle  } from '../../actions/ui'
 
 export default connect(mapStateToProps, {
     updateCollection,
@@ -116,7 +123,6 @@ export default connect(mapStateToProps, {
     fetchCollections,
     setTitle,
     loadCollection,
-    // showCollectionSidebar,
     connectCollections,
     removeCollection,
     removeCollectionEdge,

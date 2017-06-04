@@ -98,3 +98,6 @@ export const showInboxSidebar = createAction(SHOW_INBOX_SIDEBAR)
 export const HIDE_INBOX_SIDEBAR = 'HIDE_INBOX_SIDEBAR'
 export const hideInboxSidebar = createAction(HIDE_INBOX_SIDEBAR)
 
+export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE'
+export const toggleEditMode = createAction(TOGGLE_EDIT_MODE)
+

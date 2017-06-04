@@ -666,6 +666,10 @@ const initialUiState = {
     inboxSidebar: {
         opened: false,
     },
+
+    editMode: {
+        active: false
+    }
 }
 
 function uiState(state=initialUiState, action) {
@@ -772,6 +776,13 @@ function uiState(state=initialUiState, action) {
                 inboxSidebar: {
                     ...state.inboxSidebar,
                     opened: false,
+                }
+            }
+        case uiTypes.TOGGLE_EDIT_MODE:
+            return {
+                ...state,
+                editMode: {
+                    active: !state.editMode.active,
                 }
             }
         // used with CollectionExploreGraph

@@ -33,7 +33,7 @@ function getLabelText(text) {
 
 import { colorNode } from '../../graph/util'
 
-const createEnterNode = (actions: { click: Function }) => {
+const createEnterNode = function(actions: { click: Function }) {
     /*
      * HOF for enterNode
     */
@@ -69,7 +69,7 @@ const createEnterNode = (actions: { click: Function }) => {
     }
 }
 
-const createEnterCollection = (actions: { click: Function }) => {
+const createEnterCollection = function(actions: { click: Function }) {
     /*
      * HOF for enterNode
     */
@@ -107,14 +107,15 @@ const createEnterCollection = (actions: { click: Function }) => {
 
     }
 }
-const updateNode = (selection) => {
+
+const updateNode = function(selection) {
     selection.select('text').text(d => {
         return getLabelText(d.properties.name)
     })
 
     return selection
 }
-const updateCollection = (selection) => {
+const updateCollection = function(selection) {
     selection.select('text')
         // .attr("dx", (d) => d.radius)
         .style("font-size", (d) => d.radius / 3)
@@ -133,7 +134,7 @@ const updateCollection = (selection) => {
     return selection
 }
 
-const createEnterLink = (actions) => {
+const createEnterLink = function(actions) {
     return (selection) => {
         return selection
             .append("path")
@@ -150,7 +151,7 @@ const createEnterLink = (actions) => {
     }
 }
 
-const createInboxEvents = (simulation, actions) => {
+const createInboxEvents = function(simulation, actions) {
     /*
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
@@ -196,7 +197,7 @@ const createInboxEvents = (simulation, actions) => {
 }
 
 
-const createExploreEvents = (simulation, actions) => {
+const createExploreEvents = function(simulation, actions) {
     /*
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
@@ -247,7 +248,7 @@ const createExploreEvents = (simulation, actions) => {
 }
 
 
-const createCollectionOverviewEvents = (simulation, actions) => {
+const createCollectionOverviewEvents = function(simulation, actions) {
     /*
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
@@ -280,7 +281,101 @@ const createCollectionOverviewEvents = (simulation, actions) => {
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (node, link) => {
+
+    function createEnterAddCollection(actions) {
+        /*
+         * HOF for enterNode
+         */
+
+        const radius = 10
+
+        return (selection) => {
+            selection
+                .attr("class", "addCollection-node")
+
+            selection.on('click', actions.onClick)
+
+            selection
+                .append('circle')
+            // .attr("r", (d) => d.radius)
+                .attr("r", radius)
+                .attr("x", -8)
+                .attr("y", -8)
+
+            selection.append('text')
+                .attr("dy", ".35em")
+                .text((d) => '\uF067');
+
+            return selection
+        }
+    }
+
+    function createEnterAddCollectionLink(actions) {
+        return (selection) => {
+            return selection
+                .append("path")
+                .attr("class", "addCollection-link")
+                // .on('dblclick', actions.doubleClick)
+        }
+    }
+
+    const enterAddCollection = createEnterAddCollection({
+        onClick: (d) => {
+            console.log("transform this node into an actual editable node like all the others");
+        }
+    })
+    const enterAddCollectionLink = createEnterAddCollectionLink({
+
+    })
+
+    return (node, link, editMode, nodes, links) => {
+
+        let addCollectionNodes = []
+        let addCollectionLinks= []
+
+        if (editMode) {
+
+            // add an "add node" button node for every collection
+            nodes.forEach((node, index) => {
+                const id = `addCollection-${index}`
+                const addCollectionNode = {
+                    id,
+                    type: 'addCollection'
+                }
+
+                addCollectionNodes.push(addCollectionNode)
+                addCollectionLinks.push({
+                    type: 'addCollection',
+                    source: node.id,
+                    target: id
+                })
+            })
+
+        }
+
+
+        const addCollectionNode = this.d3Graph.selectAll('.addCollection-node')
+            .data(addCollectionNodes)
+
+        const addCollectionLink = this.d3Graph.selectAll('.addCollection-link')
+            .data(addCollectionLinks)
+
+        // EXIT selection
+        addCollectionNode.exit().remove()
+        // ENTER selection
+        addCollectionNode.enter().append('g').call(enterAddCollection)
+        // ENTER + UPDATE selection
+            // .merge(addCollectionNode).call(updateCollection)
+
+        // EXIT selection
+        addCollectionLink.exit().remove()
+        // ENTER selection
+        addCollectionLink.enter().insert('g', ":first-child").call(enterAddCollectionLink)
+        // ENTER + UPDATE selection
+        // .merge(addCollectionLink).call(updateLink)
+
+
+
         // EXIT selection
         node.exit().remove()
         // ENTER selection
@@ -294,10 +389,16 @@ const createCollectionOverviewEvents = (simulation, actions) => {
         link.enter().insert('g', ":first-child").call(enterLink)
         // ENTER + UPDATE selection
         // .merge(link).call(updateLink)
+
+
+        return {
+            addCollectionNodes,
+            addCollectionLinks
+        }
     }
 }
 
-const createCollectionDetailEvents = (simulation, collectionId, actions) => {
+const createCollectionDetailEvents = function(simulation, collectionId, actions) {
     /*
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
@@ -384,13 +485,23 @@ class ForceGraph extends React.Component {
 
         let nodeById = {}
 
+        const minRadius = 30
+        const maxRadius = 80
+
         // TODO: this only applies to CollectionOverview
         const maxNodeCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
-        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([30, 80])
+        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([minRadius, maxRadius])
 
         // set extra properties here
         nodes.forEach(node => {
             node.radius = radiusScale(node.count || 0)
+
+            if (node.labels.includes('RootCollection')) {
+                node.radius = maxRadius
+                node.fx = WIDTH / 2
+                node.fy = HEIGHT / 2
+            }
+
             nodeById[node.id] = node
         })
 
@@ -412,7 +523,16 @@ class ForceGraph extends React.Component {
         } else if (graphType === 'explore') {
             this.exploreEvents(node, link)
         } else if (graphType === 'collectionOverview') {
-            this.collectionOverviewEvents(node, link)
+            let { 
+                addCollectionNodes,
+                addCollectionLinks
+            } = this.collectionOverviewEvents(node, link, nextProps.editMode, nodes, links)
+
+            nodes.push(...addCollectionNodes)
+            links.push(...addCollectionLinks)
+
+            console.log(addCollectionNodes);
+            console.log(addCollectionLinks);
         } else if (graphType === 'collectionDetail') {
             this.collectionDetailEvents(node, link)
         } else {
@@ -424,6 +544,7 @@ class ForceGraph extends React.Component {
 
         // TODO: instead,, just compare the reference
         if (nodes.length !== this.props.nodes.length || links.length !== this.props.links.length) {
+            console.log('restarting simulation');
             this.restartSimulation()
         }
 
@@ -471,16 +592,21 @@ class ForceGraph extends React.Component {
         })
 
         //TODO: set to true on initial tick
-        let zoomed = false;
+        this.zoomed = false
         const ticked = (selection) => {
-            if (!zoomed && this.simulation.alpha() < 0.75) {
-                zoomed = true
+            if (!this.zoomed && this.simulation.alpha() < 0.75) {
+                this.zoomed = true
                 this.zoom(0.95, 1000)
             }
 
             selection.selectAll('.node')
                 .call(transformNode);
             selection.selectAll('.node-link')
+                .call(transformLink);
+
+            selection.selectAll('.addCollection-node')
+                .call(transformNode);
+            selection.selectAll('.addCollection-link')
                 .call(transformLink);
         }
 

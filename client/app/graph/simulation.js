@@ -13,16 +13,23 @@ export default (WIDTH, HEIGHT) => (
         // .alphaTarget(0.01)
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
-        .force("charge", forceManyBody().strength(-300))
+        .force("charge", forceManyBody().strength(-30))
         .force("link", 
             forceLink()
                 .id(d => d.id)
-                .distance(300)
-                .strength(0.1)
+                .distance((link) => {
+                    console.log(link);
+                    if (link.type === 'addCollection') {
+                        return 100;
+                    }
+
+                    return 250;
+                })
+                .strength(1)
         )
-        .force("x", forceX().strength(0.05))
-        .force("y", forceY().strength(0.05))
-        .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
+        // .force("x", forceX().strength(0.05))
+        // .force("y", forceY().strength(0.05))
+        // .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
 )
 
 export const transformNode = (selection) => {

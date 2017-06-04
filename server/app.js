@@ -14,10 +14,15 @@ const neo4j = require('neo4j-driver').v1
 const elasticsearch = require('elasticsearch')
 const mongoose = require("mongoose")
 mongoose.Promise = global.Promise; // use ES6 promises
+const { setupAuthMiddleware } = require('full-auth-middleware')
+require('isomorphic-fetch');
 
 const config = require("./config/config.js")
+const authConfig = require('./config/auth')
 
-require('isomorphic-fetch');
+const createCollectionAPI = require("./api/private/Collections")
+const createNodeAPI = require('./api/private/Node')
+const createUserAPI = require('./api/private/User')
 
 /*
  * setup handlebars with express
@@ -67,6 +72,7 @@ app.use(sessionMiddleware)
 
 app.use(function(req, res, next) {
     // useful to have on request object
+    // TODO: use hofs for this instead - 2017-06-04
     req.redisClient = redisClient
     req.app = app
     req.io = io
@@ -74,24 +80,15 @@ app.use(function(req, res, next) {
     next()
 })
 
-
 /*
- * DRYWALL SPECIFIC
+ * Setup connections
 */
+
 app.db = mongoose.createConnection(config.database.url);
 app.db.on('error', console.error.bind(console, 'mongoose connection error: '));
 app.db.once('open', function () {
       //and... we have a data store
     });
-
-const authConfig = require('./config/auth')
-const { setupAuthMiddleware } = require('full-auth-middleware')
-
-const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, authConfig)
-
-require('./routes')(app, authRoutes, adminRoutes);
-
-// app.use(express.cookieParser('your secret here'));
 
 const driver = neo4j.driver("bolt://localhost", neo4j.auth.basic(config.neo4j.user, config.neo4j.password))
 const db = driver.session();
@@ -104,13 +101,20 @@ const es = elasticsearch.Client({
   }]
 })
 
-const createCollectionAPI = require("./api/private/Collections")
-const createNodeAPI = require('./api/private/Node')
-const createUserAPI = require('./api/private/User')
-
 const NodeAPI = createNodeAPI(db, es)
 const CollectionAPI = createCollectionAPI(db, es)
 const UserAPI = createUserAPI(app, db, redisClient, es)
+
+const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, Object.assign(authConfig, {
+        onSignup: function(user, account) {
+            console.log('called onSignup');
+            CollectionAPI.createRootCollection(user)
+        }
+    })
+)
+
+require('./routes')(app, authRoutes, adminRoutes);
+
 
 io.use(function(socket, next) {
     // wrap with session (this mutates socket.request)
