@@ -1,3 +1,4 @@
+const stats = require('../../stats.json')
 
 const auth = {
     oauth: {
@@ -28,7 +29,9 @@ const auth = {
         logExpiration: '20m'
     },
     "sendWelcomeMail": false,
-    "authTemplate": 'auth.jade',
+    "bundleFileName": process.env.NODE_ENV === 'development' ? 'auth.bundle.js' : stats.assetsByChunkName.auth[0],
+    "sendWelcomeMail": false,
+    "authTemplate": 'auth.hbs',
     "appUrl": '/app',
     "mainRoute": "auth",
     "companyName": "Bryan Haakman",
