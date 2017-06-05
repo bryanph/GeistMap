@@ -34,7 +34,6 @@ export function arrowHead(selection) {
         .attr("markerHeight", 10)
         .attr("orient", 'auto')
         .append('path')
-        .style("fill", lightAccentColor)
         .attr("d", 'M0,0 L0,8 L9,4 z');
         // .append('marker')
         // .attr("id", 'Triangle')

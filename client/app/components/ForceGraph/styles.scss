@@ -45,8 +45,25 @@ svg {
     fill: #0F073B;
     stroke: none;
     font-size: 1em;
-    pointer-events: none;
+    // pointer-events: none;
     z-index: 100;
+}
+
+.node-link {
+    stroke: $accent-color;
+    stroke-width: 3px;
+    stroke-opacity: .6;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    /* shaft-width: 1px; */
+    /* stroke-width:1.5px */
+    /* font-size: 8px; */
+    /* padding: 3px; */
+    /* text-color-external: #000000; */
+    /* text-color-internal: #FFFFFF; */
 }
 
 .subject-node {
@@ -76,15 +93,15 @@ svg {
         fill: $accent-color;
         // stroke: $node-subject-stroke;
         // stroke-width: 2px;
-        opacity: 0.8;
+        opacity: 1;
         transition: opacity ease-in 85ms;
 
         &:hover {
-            opacity: 0.4;
+            opacity: 0.6;
         }
 
         &:active {
-            opacity: 0.6;
+            opacity: 0.8;
         }
     }
 
@@ -100,6 +117,51 @@ svg {
     cursor: pointer;
 }
 
+.editNodeButton {
+    color: white;
+    font-weight: 400;
+    // font-size: 1em;
+
+    rect {
+        opacity: 0.6;
+        padding: 10px;
+        fill: $node-subject-stroke;
+
+        &:hover {
+            opacity: 0.8;
+        }
+        &:active {
+            opacity: 1;
+        }
+    }
+
+    text {
+        fill: $accent-color;
+    }
+
+    .editNodeButton-icon {
+        font-family: Icons;
+        font-size: 0.8em;
+        // pointer-events: none;
+    }
+}
+
+.collection-link {
+    stroke: black;;
+    stroke-width: 3px;
+    stroke-opacity: .6;
+    opacity: .6;
+
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.collection-link .editMode {
+    stroke: $accent-color;
+}
+
 .addCollection-link {
     stroke: #999;
     stroke-opacity: 0.6;
@@ -108,23 +170,5 @@ svg {
     &:hover {
         cursor: pointer;
     }
-}
-
-.node-link {
-    stroke: $accent-color;
-    stroke-width: 3px;
-    // color: #D4D6D7;
-    stroke-opacity: .6;
-
-    &:hover {
-        cursor: pointer;
-    }
-
-    /* shaft-width: 1px; */
-    /* stroke-width:1.5px */
-    /* font-size: 8px; */
-    /* padding: 3px; */
-    /* text-color-external: #000000; */
-    /* text-color-internal: #FFFFFF; */
 }
 

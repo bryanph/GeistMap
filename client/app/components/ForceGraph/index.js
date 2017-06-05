@@ -6,6 +6,7 @@ import ReactDOM from 'react-dom'
 import { scaleLinear } from 'd3-scale'
 import { drag as d3Drag } from 'd3-drag'
 import { select as d3Select } from 'd3-selection'
+import { event as currentEvent } from 'd3-selection';
 import './styles.scss'
 
 import { browserHistory } from 'react-router-dom'
@@ -17,6 +18,8 @@ import { arrowHead } from '../../graph/svgdefs.js'
 import { NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
 import {colorActiveNode } from '../../graph/util'
 import { withRouter } from 'react-router-dom'
+
+import classNames from 'classnames'
 
 
 function getLabelText(text) {
@@ -69,67 +72,10 @@ const createEnterNode = function(actions: { click: Function }) {
     }
 }
 
-const createEnterCollection = function(actions: { click: Function }) {
-    /*
-     * HOF for enterNode
-    */
-    return (selection, click) => {
-        selection
-            .attr("class", "node subject-node")
-            // .classed('enter-selection', true) // for rxjs..
-            // for later reference from data
-            .attr('id', (d) => {
-                return `node-${d.id}`
-            }) 
-            // TODO: this is the only difference between createEnterNode and this function
-            // .attr('r', (d) => d.radius)
-
-        selection.on('click', actions.click)
-
-        selection
-            .append('circle')
-            .attr("r", (d) => d.radius)
-            .attr("x", -8)
-            .attr("y", -8)
-            // .style("fill", colorNode)
-
-        selection.append('text')
-            // .attr("dx", (d) => -d.radius)
-            // .attr("dy", (d) => -d.radius)
-            // .attr("width", (d) => d.radius)
-            // .attr("height", (d) => d.radius)
-            .text((d) => getLabelText(d.properties.name));
-
-        // remove enter-selection flag for rxjs...
-        // selection.classed('enter-selection', false)
-
-        return selection
-
-    }
-}
-
 const updateNode = function(selection) {
     selection.select('text').text(d => {
         return getLabelText(d.properties.name)
     })
-
-    return selection
-}
-const updateCollection = function(selection) {
-    selection.select('text')
-        // .attr("dx", (d) => d.radius)
-        .style("font-size", (d) => d.radius / 3)
-        // .style("font-size", (d) => {
-        //     const textWidth = this.getComputedTextLength()
-
-        //     if (textWidth > d.radius*2) {
-        //         return 
-        //     }
-        // }
-        .text((d) => getLabelText(d.properties.name));
-
-    selection.select('circle')
-        .attr("r", (d) => d.radius)
 
     return selection
 }
@@ -142,6 +88,135 @@ const createEnterLink = function(actions) {
             .attr("class", "node-link")
             .attr("marker-end", "url(#Triangle)")
             .on('dblclick', actions.doubleClick)
+        // .append("path")
+        // .attr('id', (d) => `link-${d.id}`) // for later reference from data
+        // .attr('fill', (d) => lightAccentColor)
+        // .attr("class", "node-link")
+        // .on('dblclick', events.linkDoubleClick)
+        // .attr("marker-mid", "url(#Triangle)")
+    }
+}
+
+
+const createEnterCollection = function(actions: { click: Function }) {
+    /*
+     * HOF for enterNode
+    */
+    return (selection, editMode) => {
+        selection
+            .attr("class", "node subject-node")
+            // for later reference from data
+            .attr('id', (d) => {
+                return `node-${d.id}`
+            }) 
+
+        selection.on('click', actions.click)
+
+        selection
+            .append('circle')
+            .attr("r", (d) => d.radius)
+            .attr("x", -8)
+            .attr("y", -8)
+            // .style("fill", colorNode)
+
+        selection.append('text')
+        // TODO: make it fit the circle with radius - 2017-06-05
+        // .attr("dx", (d) => -d.radius)
+        // .attr("dy", (d) => -d.radius)
+        // .attr("width", (d) => d.radius)
+        // .attr("height", (d) => d.radius)
+            .text((d) => getLabelText(d.properties.name))
+            .on('click', () => {
+                currentEvent.stopPropagation()
+                console.log('called textClick');
+            })
+            
+
+        return selection
+
+    }
+}
+
+const createUpdateCollection = function(actions) {
+
+    return (selection, editMode) => {
+        const nodeClasses = classNames("node", "subject-node", {
+            editMode
+        })
+
+        selection
+            .attr("class", "node subject-node")
+
+        if (editMode) {
+            selection.on('click', null)
+        } else {
+            selection.on('click', actions.click)
+        }
+
+
+        // TODO: fit text to circle- 2017-06-05
+        selection.select('text')
+            .style("font-size", (d) => d.radius / 3)
+        // .style("font-size", (d) => {
+        //     const textWidth = this.getComputedTextLength()
+
+        //     if (textWidth > d.radius*2) {
+        //         return 
+        //     }
+        // }
+            .text((d) => getLabelText(d.properties.name));
+
+        selection.select('circle')
+            .attr("r", (d) => d.radius)
+
+        if (editMode) {
+            // selection.append('foreignObject')
+            //     .attr('width', 100)
+            //     .attr('height', 150)
+            //     .append('xhtml:body')
+            //     .append('input')
+
+            const group = selection.append('g')
+                .attr('class', 'editNodeButton')
+            // place at bottom of circle with a little padding (an extra 0.05 here)
+                .attr('transform', (d) => `translate(0, ${d.radius * Math.sqrt(3)/2 - (d.radius * 0.45)})`)
+                .style('font-size', (d) => d.radius / 4.5)
+                .on('click', actions.editNode)
+
+            group.append('rect')
+                .attr('width', (d) => d.radius * 0.4)
+                .attr('height', (d) => d.radius * 0.4)
+                .attr('rx', 5)
+                .attr('ry', 5)
+                .attr('x', (d) => -(d.radius * 0.2)) // half of width
+            // .attr('y', (d) => -(d.radius * 0.2))
+
+            const text = group.append('text')
+                .attr("dy", "1em")
+
+            text.append('tspan')
+                .attr('class', 'editNodeButton-icon')
+                .text((d) => '\uF040')
+
+            // text.append('tspan')
+            //     .text('edit')
+            //     .attr('dx', '.3em')
+        } else {
+            selection.select('.editNodeButton').remove()
+        }
+        return selection
+    }
+}
+
+const createEnterCollectionLink = function(actions) {
+    return (selection, editMode) => {
+        return selection
+            .append("path")
+            .attr('id', (d) => `link-${d.id}`) // for later reference from data
+            .attr("class", "node-link collection-link")
+            .classed("editMode", editMode)
+            .attr("marker-end", "url(#Triangle)")
+            // .on('dblclick', actions.doubleClick)
         // .append("path")
         // .attr('id', (d) => `link-${d.id}`) // for later reference from data
         // .attr('fill', (d) => lightAccentColor)
@@ -277,9 +352,21 @@ const createCollectionOverviewEvents = function(simulation, actions) {
     const enterCollection = createEnterCollection({
         click: onCollectionClick
     })
-    const enterLink = createEnterLink({
-        doubleClick: (d) => actions.removeEdge(d.id)
+    const updateCollection = createUpdateCollection({
+        click: onCollectionClick,
+        editNode: (d) => {
+            console.log('called edit...');
+            currentEvent.stopPropagation()
+        }
     })
+
+    const enterCollectionLink = createEnterCollectionLink({
+        // doubleClick: (d) => actions.removeEdge(d.id)
+    })
+
+    // const updateLink = createUpdateCollectionLink({
+
+    // })
 
 
     function createEnterAddCollection(actions) {
@@ -331,10 +418,9 @@ const createCollectionOverviewEvents = function(simulation, actions) {
     return (node, link, editMode, nodes, links) => {
 
         let addCollectionNodes = []
-        let addCollectionLinks= []
+        let addCollectionLinks = []
 
         if (editMode) {
-
             // add an "add node" button node for every collection
             nodes.forEach((node, index) => {
                 const id = `addCollection-${index}`
@@ -379,14 +465,14 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         // EXIT selection
         node.exit().remove()
         // ENTER selection
-        node.enter().append('g').call(enterCollection).call(collectionDrag)
+        node.enter().append('g').call((s) => enterCollection(s, editMode)).call(collectionDrag)
         // ENTER + UPDATE selection
-            .merge(node).call(updateCollection)
+            .merge(node).call((s) => updateCollection(s, editMode))
         
         // EXIT selection
         link.exit().remove()
         // ENTER selection
-        link.enter().insert('g', ":first-child").call(enterLink)
+        link.enter().insert('g', ":first-child").call(enterCollectionLink)
         // ENTER + UPDATE selection
         // .merge(link).call(updateLink)
 
@@ -531,8 +617,6 @@ class ForceGraph extends React.Component {
             nodes.push(...addCollectionNodes)
             links.push(...addCollectionLinks)
 
-            console.log(addCollectionNodes);
-            console.log(addCollectionLinks);
         } else if (graphType === 'collectionDetail') {
             this.collectionDetailEvents(node, link)
         } else {
@@ -544,7 +628,6 @@ class ForceGraph extends React.Component {
 
         // TODO: instead,, just compare the reference
         if (nodes.length !== this.props.nodes.length || links.length !== this.props.links.length) {
-            console.log('restarting simulation');
             this.restartSimulation()
         }
 
