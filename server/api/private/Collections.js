@@ -12,35 +12,27 @@ const {
     removeCollectionDocument,
 } = require('../../fulltext')
 
+const uuidV4 = require('uuid/v4');
+
 function handleError(error) {
     console.log(error);
     console.error(error.stack)
 }
 
-// TODO: these functions are terrible... - 2016-07-13
-function mapIdentity(node) {
-    node.id = node.identity.toString();
-    if (node.properties.created) {
-        node.properties.created = node.properties.created.toNumber()
+function mapIntegers(node) {
+    if (node.created) {
+        node.created = node.created.toString()
     }
-    if (node.properties.modified) {
-        node.properties.modified = node.properties.modified.toNumber()
+    if (node.modified) {
+        node.modified = node.modified.toString()
     }
-    if (node.properties.collections) {
-        node.properties.collections = node.properties.collections.map(x => x.toString())
+    if (node.collections) {
+        node.collections = node.collections.map(x => x.toString())
     }
-    if (node.properties.nodes) {
-        node.properties.nodes = node.properties.nodes.map(x => x.toString())
+    if (node.nodes) {
+        node.nodes = node.nodes.map(x => x.toString())
     }
-    delete node.identity
-    return node
-}
 
-function mapEdges(node) {
-    node.id = node.identity.toString();
-    node.start = node.start.toString();
-    node.end = node.end.toString();
-    delete node.identity
     return node
 }
 
@@ -54,35 +46,38 @@ module.exports = function(db, es) {
     return {
         // TODO: this method is not in API - 2017-06-04
         createRootCollection: async function(user) {
+
+            const id = uuidV4();
+
             const results = await db.run(
                 "MERGE (u:User {id: {userId}}) " +
-                "CREATE (c:Collection:RootCollection { name: {name},  nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
-                "return c as collection",
+                "CREATE (c:Collection:RootCollection { id: {id} name: {name}, isRootCollection: true,  nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
+                "return properties(c) as collection",
                 {
+                    id,
                     userId: user._id.toString(),
                     name: "My Knowledge Base",
                 }
             )
 
-            const result = mapIdentity(results.records[0]._fields[0])
+            const result = mapIntegers(results.records[0]._fields[0])
         },
 
-        get: function(user, rawId, res) {
+        get: function(user, id, res) {
             /*
              * Get node with id ${id} (including its neightbours)
              * // TODO: give this call an explicit name - 2016-07-15
              * // TODO: Check this call's performance - 2016-07-11
              */
 
-            const id = neo4j.int(rawId)
             const userId = user._id.toString()
 
             Promise.all([
                 // get collection
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
-                    WHERE u.id = {userId} AND id(c) = {id}
-                    RETURN c;`,
+                    WHERE u.id = {userId} AND c.id = {id}
+                    RETURN properties(c)`,
                     {
                         id,
                         userId,
@@ -91,13 +86,13 @@ module.exports = function(db, es) {
                 // get all edges in the collection
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
-                    WHERE u.id = {userId} AND id(c) = {id}
+                    WHERE u.id = {userId} AND c.id = {id}
                     OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
                     WITH c, collect(distinct n) as ns
                     UNWIND ns as n1
                     UNWIND ns as n2
                     OPTIONAL MATCH (n1)-[e:EDGE]-(n2)
-                    RETURN collect(distinct e)`,
+                    RETURN collect(distinct properties(e))`,
                     {
                         id,
                         userId,
@@ -106,12 +101,12 @@ module.exports = function(db, es) {
                 // get all nodes in the collection, along with THEIR collections (ids)
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
-                    WHERE u.id = {userId} AND id(c) = {id}
+                    WHERE u.id = {userId} AND c.id = {id}
                     OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
                     WITH distinct n
                     OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    RETURN n, collect(distinct id(c2))
-                    ORDER BY id(n)`,
+                    RETURN properties(n), collect(distinct c2.id)
+                    ORDER BY n.id`,
                     {
                         id,
                         userId,
@@ -124,15 +119,16 @@ module.exports = function(db, es) {
                         return res(new Error(`Collection with id ${id} was not found`))
                     }
 
-                    const collection = mapIdentity(results[0].records[0].get(0))
-                    const edges = results[1].records[0].get(0).map(mapEdges)
+                    const collection = mapIntegers(results[0].records[0].get(0))
+                    const edges = results[1].records[0].get(0).map(mapIntegers)
+
                     const nodes = results[2].records[0].get(0) === null ?
                         [] : 
                         results[2].records.map(row => (
                             Object.assign({},
-                                mapIdentity(row.get(0)),
+                                mapIntegers(row.get(0)),
                                 {
-                                    collections: row.get(1).map(x => x.toString()), // ids for collections
+                                    collections: row.get(1).map(mapIntegers), // ids for collections
                                 }
                             )
                         ))
@@ -148,40 +144,6 @@ module.exports = function(db, es) {
                 .catch(handleError)
         },
 
-        // getByIds: function(user, ids, res) {
-        //     /*
-        //      * Get node with id ${id} (including its neightbours)
-        //      * // TODO: Check this call's performance - 2016-07-11
-        //      * // TODO: can this call work? - 2016-07-13
-        //      */
-
-        //     // TODO: don't get neighbours in this call? - 2016-07-13
-
-        //     db.run(
-        //         "MATCH (u:User)--(c:Collection)-[:IN*0..1]-(n:Node)-[e:EDGE*0..1]-() " +
-        //         "WHERE u.id = {userId} " +
-        //         "AND id(c) IN {ids} " +
-        //         "RETURN collect(c) as collections, collect(n) as nodes, collect(distinct e) as edges",
-        //         {
-        //             userId: user._id.toString(),
-        //             ids: ids.map(id => neo4j.int(id)),
-        //         }
-        //     )
-        //     .then((results) => {
-        //         if (results.records.length === 0) {
-        //             console.log("node not found..");
-        //             return res(new Error(`Node with id ${ids} was not found`))
-        //         }
-
-        //         res(null, {
-        //             collection: mapIdentity(results.records[0]._fields[0]),
-        //             nodes: results.records[0]._fields[1].map(mapIdentity),
-        //             edges: _.flatMap(results.records[0]._fields[2]).map(mapEdges),
-        //         })
-        //     })
-        //     .catch(handleError)
-        // },
-
         getAll: function(user, res) {
             /*
              * Get all collections and their relationships
@@ -193,27 +155,49 @@ module.exports = function(db, es) {
             // TODO: Separate explicit and implicit relations? - 2016-04-02
             // TODO: Separate explicit and implicit relations? - 2016-04-02
 
-            db.run(
-                "MATCH (u:User)--(c:Collection) " +
-                "WHERE u.id = {userId} " +
-                "OPTIONAL MATCH (c)<-[r:PARENT*0..5]-(c2:Collection) " +
-                "OPTIONAL MATCH (c2)--(n:Node) " +
-                "RETURN c, collect(distinct r), count(n)",
-                {
-                    userId: user._id.toString()
-                }
-            )
-                .then((results) => {
-                    return res(null, results.records.map(row => (
-                        Object.assign({},
-                            mapIdentity(row.get(0)),
-                            {
-                                edges: _.flatten(row.get(1)).map(mapEdges),
-                                count: row.get(2).toNumber(),
-                            }
-                        )
-                    )))
+            Promise.all([
+                // get all the edges between the collections
+                db.run(
+                    "MATCH (u:User)--(c:Collection) " +
+                    "WHERE u.id = {userId} " +
+                    "WITH collect(c) as c2 " +
+                    "UNWIND c2 as cu1 " +
+                    "UNWIND c2 as cu2 " +
+                    "MATCH (cu1)-[e:PARENT]->(cu2) " +
+                    "RETURN collect(properties(e))",
+                    {
+                        userId: user._id.toString()
+                    }
+                ),
+                db.run(
+                    "MATCH (u:User)--(c:Collection) " +
+                    "WHERE u.id = {userId} " +
+                    "OPTIONAL MATCH (c)<-[:PARENT*0..5]-(c2:Collection) " +
+                    "OPTIONAL MATCH (c2)--(n:Node) " +
+                    "RETURN properties(c), count(n)",
+                    {
+                        userId: user._id.toString()
+                    }
+                )
+            ]).then((results) => {
+                const edges = results[0].records[0]._fields[0]
+                const collections = results[1].records.map(row => (
+                    Object.assign({},
+                        mapIntegers(row.get(0)),
+                        {
+                            count: row.get(1).toNumber()
+                        }
+                    )
+                ))
+
+                console.log(edges);
+                console.log(collections);
+
+                return res(null, {
+                    collections,
+                    edges
                 })
+            })
                 .catch(handleError)
         },
 
@@ -233,7 +217,7 @@ module.exports = function(db, es) {
         //     })
         // },
 
-        create: function(user, data, res) {
+        create: function(user, id, data, res) {
             /*
              * Create a new collection
              */
@@ -244,15 +228,15 @@ module.exports = function(db, es) {
 
             db.run(
                 "MERGE (u:User {id: {userId}}) " +
-                "CREATE (c:Collection { name: {name},  nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
-                "return c as collection",
+                "CREATE (c:Collection { id: {id} name: {name},  nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
+                "return properties(c) as collection",
                 {
                     userId: user._id.toString(),
                     name: data.name,
                 }
             )
                 .then((results) => {
-                    const result = mapIdentity(results.records[0]._fields[0])
+                    const result = mapIntegers(results.records[0]._fields[0])
 
                     res(null, result)
 
@@ -274,18 +258,18 @@ module.exports = function(db, es) {
             db.run(
                 "MATCH (u:User)--(n:Collection) " +
                 "WHERE u.id = {userId} " +
-                "AND id(n) = {id} " +
+                "AND n.id = {id} " +
                 "SET n = { data } " +
                 "SET n.modified = timestamp() " +
-                "RETURN n as collection",
+                "RETURN properties(n) as collection",
                 {
                     userId: user._id.toString(),
-                    id: neo4j.int(id),
+                    id,
                     data: updatedData,
                 }
             )
                 .then((results) => {
-                    const result = mapIdentity(results.records[0]._fields[0])
+                    const result = mapIntegers(results.records[0]._fields[0])
 
                     res(null, result)
 
@@ -304,11 +288,11 @@ module.exports = function(db, es) {
             db.run(
                 "MATCH (u:User)--(c:Collection) " +
                 "WHERE NOT c:RootCollection AND u.id = {userId} " +
-                "AND id(c) = {id} " +
+                "AND c.id = {id} " +
                 "DETACH DELETE c",
                 {
                     userId: user._id.toString(),
-                    id: neo4j.int(id),
+                    id,
                 }
             )
                 .then(results => {
@@ -320,7 +304,7 @@ module.exports = function(db, es) {
                 .catch(handleError)
         },
 
-        addNode: function(user, collectionId, nodeId, res) {
+        addNode: function(user, collectionId, nodeId, id, res) {
             /*
              * Create the edge [collection]-[edge:CONTAINS]->[node], and
              * Create the edge [collection]<-[edge:IN]-[node], and
@@ -331,34 +315,27 @@ module.exports = function(db, es) {
             // TODO: assert edge type is defined - 2016-04-02
             // TODO: How will we manage this? 2016-04-02
 
-            if (typeof collectionId === 'string') {
-                collectionId = parseInt(collectionId)
-            }
-
-            if (typeof nodeId === 'string') {
-                nodeId = parseInt(nodeId)
-            }
-
-            if (!Number.isInteger(collectionId) || !Number.isInteger(nodeId)) {
-                return console.error("Set both node ids")
+            if (!collectionId || !nodeId) {
+                return res("Set both node ids")
             }
 
             db.run(
                 "MATCH (u:User)--(c:Collection), (u:User)--(n:Node) " + 
                 "WHERE u.id = {userId} " +  
-                "AND id(c) = {collectionId} AND id(n) = {nodeId} " +  
-                "MERGE (n)-[e:IN]->(c) " +
-                "RETURN e as edge, n as node, c as collection",
+                "AND c.id = {collectionId} AND n.id = {nodeId} " +  
+                "MERGE (n)-[e:IN { id: {id} }]->(c) " +
+                "RETURN properties(e) as edge, properties(n) as node, properties(c) as collection",
                 {
+                    id,
                     userId: user._id.toString(),
-                    collectionId: neo4j.int(collectionId),
-                    nodeId: neo4j.int(nodeId),
+                    collectionId,
+                    nodeId,
                 }
             )
                 .then(results => {
-                    const edge = mapEdges(results.records[0]._fields[0])
-                    const node = mapIdentity(results.records[0]._fields[1])
-                    const collection = mapIdentity(results.records[0]._fields[2])
+                    const edge = results.records[0]._fields[0]
+                    const node = mapIntegers(results.records[0]._fields[1])
+                    const collection = mapIntegers(results.records[0]._fields[2])
 
                     // res(null, result)
                     res(null, {
@@ -367,47 +344,26 @@ module.exports = function(db, es) {
                     })
                 })
                 .catch(handleError)
-
-            // TODO: update collection edges (if we're doing this) - 2016-04-02
-            // db.cypher({
-            //     query: 
-            //         "MATCH (s:Edge)-[se]->(t:Edge)->(tc:Collection), " +
-            //         "(tc:Collection)->(t:Edge)-[te]->(s:Edge), " +
-            //         "(c:Collection)" +
-            //         "WHERE id(s) = {node_id} AND id(c) = {collection_id} " +
-            //         "CREATE (c)-[se]->(tc)" +
-            //         "CREATE (tc)-[te]->(c)",
-            //         // "RETURN collect(se, tc) as edges",
-            // }, function(error, results2) {
-            //     res(null, results[0].in)
-            // })
         },
 
         removeNode: function(user, collectionId, nodeId, res) {
             /*
              * Remove node with id #{id} from collection
              */
-            if (typeof collectionId === 'string') {
-                collectionId = parseInt(collectionId)
-            }
-
-            if (typeof nodeId === 'string') {
-                nodeId = parseInt(nodeId)
-            }
 
             if (!collectionId || !nodeId) {
-                return console.error("Set both node ids")
+                return res("Set both node ids")
             }
 
             db.run(
                 "MATCH (u:User)--(c:Collection)-[e]-(n:Node)--(u:User) " + 
                 "WHERE u.id = {userId} " +  
-                "AND id(c) = {collectionId} AND id(n) = {nodeId} " +  
+                "AND c.id = {collectionId} AND n.id = {nodeId} " +  
                 "DELETE e",
                 {
                     userId: user._id.toString(),
-                    collectionId: neo4j.int(collectionId),
-                    nodeId: neo4j.int(nodeId),
+                    collectionId,
+                    nodeId,
                 }
             )
                 .then(results => {
@@ -416,7 +372,7 @@ module.exports = function(db, es) {
                 .catch(handleError)
         },
 
-        connect: function(user, collection1, collection2, res) {
+        connect: function(user, collection1, collection2, id, res) {
             /*
              * Create the edge [collection1]-[edge]->[collection2]
              * Additionally, update collection relations
@@ -426,15 +382,7 @@ module.exports = function(db, es) {
             // TODO: assert edge type is defined - 2016-04-02
             // TODO: How will we manage this? 2016-04-02
 
-            if (typeof collection1 === 'string') {
-                collection1 = parseInt(collection1)
-            }
-
-            if (typeof collection2 === 'string') {
-                collection2 = parseInt(collection2)
-            }
-
-            if (!typeof collection1 === 'number' || !typeof collection2 === 'number') {
+            if (!collection1 || !collection2) {
                 return res("Set both collection ids")
             }
 
@@ -445,43 +393,20 @@ module.exports = function(db, es) {
             db.run(
                 "MATCH (u:User)--(n1:Collection), (u:User)--(n2:Collection) " +
                 "WHERE u.id = {userId} " +
-                "AND id(n1) = {collection1} AND id(n2) = {collection2} " +
-                "MERGE (n1)-[e:PARENT]->(n2) " +
-                "RETURN e as edge",
+                "AND n1.id = {collection1} AND n2.id = {collection2} " +
+                "MERGE (n1)-[e:PARENT { id: {id} }]->(n2) " +
+                "RETURN properties(e) as edge",
                 {
-                    collection1: neo4j.int(collection1),
-                    collection2: neo4j.int(collection2),
+                    id,
+                    collection1,
+                    collection2,
                     userId: user._id.toString(),
                 }
             )
                 .then(results => {
-                    // TODO: only return the edge that was changed 2016-06-08
-                    const result = mapEdges(results.records[0]._fields[0])
+                    const result = results.records[0]._fields[0]
 
                     res(null, result)
-                })
-                .catch(handleError)
-        },
-
-        getCollectionDetailGraph: function(user, id) {
-            /*
-             * Get the CollectionDetail graph for the collection with id ${id}
-             */
-
-            db.run(
-                "MATCH (u:User)--(c:Collection)-[]-(n:Node)-[e:EDGE*0..1]-(n2:Node) " +
-                // "MATCH (c:Collection)-[]-(n:Node)-[r:EDGE*1..2]-(n2:Node)" +
-                // "OPTIONAL MATCH (n:Node)-[IN]->(c:Collection) " +
-                "WHERE u.id = {userId} " +
-                "AND id(c) = {id} " +
-                "RETURN collect(distinct n + n2) as nodes, collect(distinct e) as edges")
-                .then((results) => {
-
-                    return res(null, {
-                        userId: user._id.toString(),
-                        nodes: results.records[0]._fields[0].map(mapIdentity),
-                        edges: results.records[0]._fields[1].map(mapEdges),
-                    })
                 })
                 .catch(handleError)
         },
@@ -494,10 +419,10 @@ module.exports = function(db, es) {
             db.run(
                 "MATCH (u:User)--(:Collection)-[e]->(:Collection)--(u:User) " +
                 "WHERE u.id = {userId} " +
-                "AND id(e) = {id} " +
+                "AND e.id = {id} " +
                 "DELETE e",
                 {
-                    id: neo4j.int(id),
+                    id,
                     userId: user._id.toString(),
                 }
             )

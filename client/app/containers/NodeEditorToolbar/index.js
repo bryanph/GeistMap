@@ -82,7 +82,7 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
     }
 
     removeNode() {
-        const result = window.confirm(`Are you sure you want to remove '${this.props.node.properties.name}'`)
+        const result = window.confirm(`Are you sure you want to remove '${this.props.node.name}'`)
         if (result) {
             this.props.removeNode(this.props.node.id)
         }
@@ -128,7 +128,7 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
                     </div>
                     <div className="nodeToolbar-title">
                         <NodeTitle 
-                            title={this.props.node.properties.name} 
+                            title={this.props.node.name} 
                             updateNode={this.props.updateNode.bind(this, this.props.node.id)}
                         />
                         <NodeSubtitle

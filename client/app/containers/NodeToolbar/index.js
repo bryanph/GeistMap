@@ -43,7 +43,7 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
 
     removeNode() {
         const { history, page, id } = this.props
-        const result = window.confirm(`Are you sure you want to remove '${this.props.node.properties.name}'`)
+        const result = window.confirm(`Are you sure you want to remove '${this.props.node.name}'`)
         if (result) {
             this.props.removeNode(id)
             history.push(`/app/${page}/`)
@@ -91,7 +91,7 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
                     </div>
                     <div className="nodeToolbar-title">
                         <NodeTitle 
-                            title={this.props.node.properties.name}
+                            title={this.props.node.name}
                             updateNode={this.props.updateNode.bind(this, this.props.node.id)}
                         />
                         <NodeSubtitle

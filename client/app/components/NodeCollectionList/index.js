@@ -109,7 +109,7 @@ class NodeCollectionList extends React.Component {
                         key={col.id}
                         id={col.id}
                         nodeId={this.props.node.id}
-                        name={col.properties.name}
+                        name={col.name}
                         onDelete={this.removeNodeFromCollection}
                     />)
                 )}

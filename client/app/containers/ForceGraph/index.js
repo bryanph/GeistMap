@@ -13,7 +13,6 @@ import {
     removeNode,
     removeEdge,
     getAllBatchNodes,
-    clearBatchNodes 
 } from '../../actions/async'
 
 import { 
@@ -37,6 +36,5 @@ export default connect(mapStateToProps, {
     removeEdge,
     loadNode,
     getAllBatchNodes,
-    clearBatchNodes,
     setTitle,
 })(ForceGraph)

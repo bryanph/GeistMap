@@ -104,9 +104,9 @@ class InboxItem extends React.Component {
         return (
             <div className="inboxSidebar-item">
                 <div className="inboxSidebar-header">
-                    <h2>{ node.properties.name }</h2>
+                    <h2>{ node.name }</h2>
                     <span>
-                        { moment.unix(node.properties.modified / 1000).fromNow() } 
+                        { moment.unix(node.modified / 1000).fromNow() } 
                     </span>
                 </div>
 

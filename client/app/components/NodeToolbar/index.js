@@ -25,6 +25,6 @@ export const NodeTitle = ({ title, updateNode }) => (
 )
 export const NodeSubtitle = ({ node }) => (
     <span style={styles.nodeSubtitle}>
-        { moment.unix(node.properties.modified / 1000).fromNow() } 
+        { moment.unix(node.modified / 1000).fromNow() } 
     </span>   
 )

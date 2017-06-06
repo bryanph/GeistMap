@@ -165,7 +165,7 @@ io.on('connection', function(socket) {
     socket.on('Node.getInboxNodes', NodeAPI.getInboxNodes.bind(null, user));
     socket.on('Node.create', NodeAPI.create.bind(null, user));
     socket.on('Node.update', NodeAPI.update.bind(null, user));
-    socket.on('Node.duplicate', NodeAPI.duplicate.bind(null, user));
+    // socket.on('Node.duplicate', NodeAPI.duplicate.bind(null, user));
     socket.on('Node.remove', NodeAPI.remove.bind(null, user));
     socket.on('Node.connect', NodeAPI.connect.bind(null, user));
     socket.on('Node.addEdge', NodeAPI.addEdge.bind(null, user));

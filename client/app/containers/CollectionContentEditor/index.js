@@ -32,9 +32,9 @@ class RichEditorContainer extends React.Component {
     }
 
     persistState(contentState) {
-        const { id, collection: { properties } } = this.props
+        const { id, collection } = this.props
 
-        const newProperties = Object.assign({}, properties, {
+        const newProperties = Object.assign({}, collection, {
             editorPlainText: contentState.getPlainText(),
             editorState: JSON.stringify(convertToRaw(contentState))
         })
@@ -52,7 +52,7 @@ class RichEditorContainer extends React.Component {
                 handleUpload={this.upload}
                 handleDefaultData={this.defaultData}
                 persistState={this.persistState}
-                editorState={this.props.collection.properties.editorState}
+                editorState={this.props.collection.editorState}
                 globalEditorState={this.props.globalEditorState}
                 {...this.props}
             />

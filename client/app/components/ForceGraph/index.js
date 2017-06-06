@@ -62,7 +62,7 @@ const createEnterNode = function(actions: { click: Function }) {
         selection.append('text')
             .attr("dx", NODE_RADIUS + 1)
             .attr("dy", ".35em")
-            .text((d) => getLabelText(d.properties.name));
+            .text((d) => getLabelText(d.name));
 
         // remove enter-selection flag for rxjs...
         // selection.classed('enter-selection', false)
@@ -74,7 +74,7 @@ const createEnterNode = function(actions: { click: Function }) {
 
 const updateNode = function(selection) {
     selection.select('text').text(d => {
-        return getLabelText(d.properties.name)
+        return getLabelText(d.name)
     })
 
     return selection
@@ -125,7 +125,7 @@ const createEnterCollection = function(actions: { click: Function }) {
         // .attr("dy", (d) => -d.radius)
         // .attr("width", (d) => d.radius)
         // .attr("height", (d) => d.radius)
-            .text((d) => getLabelText(d.properties.name))
+            .text((d) => getLabelText(d.name))
             .on('click', () => {
                 currentEvent.stopPropagation()
                 console.log('called textClick');
@@ -164,7 +164,7 @@ const createUpdateCollection = function(actions) {
         //         return 
         //     }
         // }
-            .text((d) => getLabelText(d.properties.name));
+            .text((d) => getLabelText(d.name));
 
         selection.select('circle')
             .attr("r", (d) => d.radius)
@@ -582,7 +582,7 @@ class ForceGraph extends React.Component {
         nodes.forEach(node => {
             node.radius = radiusScale(node.count || 0)
 
-            if (node.labels.includes('RootCollection')) {
+            if (node.isRootCollection) {
                 node.radius = maxRadius
                 node.fx = WIDTH / 2
                 node.fy = HEIGHT / 2

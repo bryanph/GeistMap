@@ -42,7 +42,7 @@ class ContentLink extends React.Component {
                     readOnly ? null :
                     <div className="contentLinkDiv" contenteditable="false">
                         <div className="contentLinkDiv-container">
-                            { node && node.properties && node.properties.name }
+                            { node && node.name }
                             <div className="contentLinkDiv-buttons">
                                 <EditButton
                                     onTouchTap={() => history.push(href)}

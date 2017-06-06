@@ -55,7 +55,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
 
         const { nodeId, showGraphSideBar } = this.props
         loadData(this.props)
-            .then((action) => this.props.setTitle(`Collection - ${action.response.entities.collections[action.response.result.collection].properties.name}`))
+            .then((action) => this.props.setTitle(`Collection - ${action.response.entities.collections[action.response.result.collection].name}`))
 
     }
 

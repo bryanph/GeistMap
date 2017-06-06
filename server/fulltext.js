@@ -13,8 +13,8 @@ exports.updateIndex = function updateIndex(es, userid, node) {
         id: node.id,
         body: {
             user: userid,
-            title: node.properties.name,
-            content: node.properties.editorPlainText,
+            title: node.name,
+            content: node.editorPlainText,
             // collections: node.collections
         }
     })
@@ -39,8 +39,8 @@ exports.updateCollectionIndex = function updateCollectionIndex(es, user, collect
         id: collection.id,
         body: {
             user: user._id.toString(),
-            title: collection.properties.name,
-            description: collection.properties.description,
+            title: collection.name,
+            description: collection.description,
             // TODO: index node content for collection index? (with smaller weight) - 2016-07-26
             // collections: collection.collections
         }

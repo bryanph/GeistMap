@@ -34,7 +34,7 @@ export default (simulation) => (actions) => {
              * Set a graphical indicator for when hovering over another node
              * O(n): we must check distance to all other nodes
              */
-            if (d.labels.includes('RootCollection')) {
+            if (d.isRootCollection) {
                 return;
             }
 
@@ -81,7 +81,7 @@ export default (simulation) => (actions) => {
             const dy = Math.abs(startY - currentEvent.y)
             if (dx < 8 && dy < 8) {
                 nodeSelection.each(node => {
-                    if (node.labels.includes('RootCollection')) {
+                    if (node.isRootCollection) {
                         return;
                     }
                     node.fx = null
@@ -104,7 +104,7 @@ export default (simulation) => (actions) => {
 
             nodeSelection.each(node => {
                 // undo fixed state as set in dragstart
-                if (node.labels.includes('RootCollection')) {
+                if (node.isRootCollection) {
                     return;
                 }
 

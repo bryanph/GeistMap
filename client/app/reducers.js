@@ -47,7 +47,6 @@ function nodes(state={}, action, collections) {
                     ...state[action.nodeId],
                     collections: [ 
                         ...state[action.nodeId].collections || [],
-                        // ...state[action.nodeId].properties.collections,
                         action.collectionId,
                     ],
                 }
@@ -973,7 +972,6 @@ export const getCollectionsByNodeId = (state, id) => {
     }
 
     return (node.collections || []).map(id => getCollection(state, id)).filter(x => x !== undefined)
-    // return (node.properties.collections || []).map(id => getCollection(state, id))
 }
 
 

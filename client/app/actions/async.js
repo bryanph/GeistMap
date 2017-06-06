@@ -15,6 +15,8 @@ import { getEdge, getCollectionEdge } from '../reducers'
 
 import { batchActions } from '../middleware/batch'
 
+const uuidV4 = require('uuid/v4');
+
 export const GET_ALL_REQUEST = 'GET_ALL_REQUEST'
 export const GET_ALL_SUCCESS = 'GET_ALL_SUCCESS'
 export const GET_ALL_FAILURE = 'GET_ALL_FAILURE'
@@ -64,19 +66,19 @@ export const CREATE_BATCH_NODE_SUCCESS = 'CREATE_BATCH_NODE_SUCCESS'
 export const CREATE_BATCH_NODE_FAILURE = 'CREATE_BATCH_NODE_FAILURE'
 
 export function createBatchNode(node) {
+    const id = uuidV4()
+
     return {
+        id,
         [CALL_API]: {
             types: [ CREATE_BATCH_NODE_REQUEST, CREATE_BATCH_NODE_SUCCESS, CREATE_BATCH_NODE_FAILURE ],
             endpoint: 'Node.createBatchNode',
-            payload: [ node || defaultNode ],
+            payload: [ id, node || defaultNode ],
             schema: Schemas.NODE
         }
     }
 }
 
-/*
- * Create a node
-*/
 export const CLEAR_BATCH_NODES_REQUEST = 'CLEAR_BATCH_NODES_REQUEST'
 export const CLEAR_BATCH_NODES_SUCCESS = 'CLEAR_BATCH_NODES_SUCCESS'
 export const CLEAR_BATCH_NODES_FAILURE = 'CLEAR_BATCH_NODES_FAILURE'
@@ -231,11 +233,14 @@ const defaultNode = {
     content: '',
 }
 export function createNode(node) {
+    const id = uuidV4()
+
     return {
+        id,
         [CALL_API]: {
             types: [ CREATE_NODE_REQUEST, CREATE_NODE_SUCCESS, CREATE_NODE_FAILURE ],
             endpoint: 'Node.create',
-            payload: [ node || defaultNode ],
+            payload: [ id, node || defaultNode ],
             schema: Schemas.NODE
         }
     }
@@ -251,6 +256,7 @@ export const UPDATE_NODE_FAILURE = 'UPDATE_NODE_FAILURE'
 
 export function updateNode(id, properties) {
     return {
+        id,
         [CALL_API]: {
             types: [ UPDATE_NODE_REQUEST, UPDATE_NODE_SUCCESS, UPDATE_NODE_FAILURE ],
             endpoint: 'Node.update',
@@ -307,6 +313,8 @@ export const CONNECT_NODES_SUCCESS = 'CONNECT_NODES_SUCCESS'
 export const CONNECT_NODES_FAILURE = 'CONNECT_NODES_FAILURE'
 
 export function fetchConnectNodes(start, end, isBatch) {
+    const id = uuidV4();
+
     return {
         start,
         end,
@@ -314,7 +322,7 @@ export function fetchConnectNodes(start, end, isBatch) {
         [CALL_API]: {
             types: [ CONNECT_NODES_REQUEST, CONNECT_NODES_SUCCESS, CONNECT_NODES_FAILURE ],
             endpoint: 'Node.connect',
-            payload: [ start, end, isBatch ],
+            payload: [ start, end, id, isBatch ],
             schema: Schemas.EDGE,
         }
     }
@@ -338,13 +346,15 @@ export const CONNECT_COLLECTIONS_REQUEST = 'CONNECT_COLLECTIONS_REQUEST'
 export const CONNECT_COLLECTIONS_SUCCESS = 'CONNECT_COLLECTIONS_SUCCESS'
 export const CONNECT_COLLECTIONS_FAILURE = 'CONNECT_COLLECTIONS_FAILURE'
 export function fetchConnectCollections(start, end) {
+    const id = uuidV4();
+
     return {
         start,
         end,
         [CALL_API]: {
             types: [ CONNECT_COLLECTIONS_REQUEST, CONNECT_COLLECTIONS_SUCCESS, CONNECT_COLLECTIONS_FAILURE ],
             endpoint: 'Collection.connect',
-            payload: [ start, end ],
+            payload: [ start, end, id ],
             schema: Schemas.COLLECTION_EDGE,
         }
     }
@@ -369,6 +379,8 @@ export const ADD_EDGE_SUCCESS = 'ADD_EDGE_SUCCESS'
 export const ADD_EDGE_FAILURE = 'ADD_EDGE_FAILURE'
 
 export function fetchAddEdge(start, end, content, inGraphView=false) {
+    const id = uuidV4();
+
     return {
         start,
         end,
@@ -377,7 +389,7 @@ export function fetchAddEdge(start, end, content, inGraphView=false) {
         [CALL_API]: {
             types: [ ADD_EDGE_REQUEST, ADD_EDGE_SUCCESS, ADD_EDGE_FAILURE ],
             endpoint: 'Node.addEdge',
-            payload: [ start, end, content ],
+            payload: [ start, end, id, content ],
             schema: Schemas.EDGE,
         }
     }
@@ -472,45 +484,11 @@ export function fetchCollections() {
         [CALL_API]: {
             types: [ GET_COLLECTIONS_REQUEST, GET_COLLECTIONS_SUCCESS, GET_COLLECTIONS_FAILURE ],
             endpoint: 'Collection.getAll',
-            schema: Schemas.COLLECTION_ARRAY,
+            schema: {
+                collections: Schemas.COLLECTION_ARRAY,
+                edges: arrayOf(Schemas.COLLECTION_EDGE)
+            }
         }
-    }
-}
-
-/*
- * Get all collections
-*/
-// export function fetchCollectionsByIds(ids=[]) {
-//     return {
-//         [CALL_API]: {
-//             types: [ GET_COLLECTIONS_REQUEST, GET_COLLECTIONS_SUCCESS, GET_COLLECTIONS_FAILURE ],
-//             endpoint: 'Collection.getByIds',
-//             payload: [ ids ],
-//             schema: {
-//                 collections: Schemas.COLLECTION_ARRAY,
-                    // nodes: arrayOf(Schemas.NODE),
-//                 edges: arrayOf(Schemas.EDGE),
-//             }
-//         }
-//     }
-// }
-export function loadCollectionsByIds(ids=[]) {
-    return (dispatch, getState) => {
-        // TODO: keep track in reducer of collections that have been fetched with nodes - 2016-07-13
-        const nonCachedIds = _.intersection(
-            ids, 
-            _(getState().entities.collections) // not exactly right, but close enough
-                .filter(c => !c.properties.hasOwnProperty('nodes'))
-                .map(c => c.id)
-                .value()
-        )
-
-        // TODO: implement a good caching method for this - 2016-07-14
-        // const actions = nonCachedIds.map(fetchCollection)
-        const actions = ids.map(fetchCollection)
-
-        // return dispatch(fetchCollectionsByIds(nonCachedIds))
-        return Promise.all(dispatch(batchActions(actions)))
     }
 }
 
@@ -560,11 +538,14 @@ export const CREATE_COLLECTION_REQUEST = 'CREATE_COLLECTION_REQUEST'
 export const CREATE_COLLECTION_SUCCESS = 'CREATE_COLLECTION_SUCCESS'
 export const CREATE_COLLECTION_FAILURE = 'CREATE_COLLECTION_FAILURE'
 export function createCollection(collection) {
+    const id = uuidV4();
+
     return {
+        id,
         [CALL_API]: {
             types: [ CREATE_COLLECTION_REQUEST, CREATE_COLLECTION_SUCCESS, CREATE_COLLECTION_FAILURE ],
             endpoint: 'Collection.create',
-            payload: [ collection ],
+            payload: [ id, collection ],
             schema: Schemas.COLLECTION
         }
     }
@@ -614,13 +595,15 @@ export const ADD_NODE_TO_COLLECTION_REQUEST = 'ADD_NODE_TO_COLLECTION_REQUEST'
 export const ADD_NODE_TO_COLLECTION_SUCCESS = 'ADD_NODE_TO_COLLECTION_SUCCESS'
 export const ADD_NODE_TO_COLLECTION_FAILURE = 'ADD_NODE_TO_COLLECTION_FAILURE'
 export function fetchAddNodeToCollection(collectionId, nodeId) {
+    const id = uuidV4();
+
     return {
         collectionId,
         nodeId,
         [CALL_API]: {
             types: [ ADD_NODE_TO_COLLECTION_REQUEST, ADD_NODE_TO_COLLECTION_SUCCESS, ADD_NODE_TO_COLLECTION_FAILURE ],
             endpoint: 'Collection.addNode',
-            payload: [ collectionId, nodeId ],
+            payload: [ collectionId, nodeId, id ],
             schema: {
                 collection: Schemas.COLLECTION,
                 node: Schemas.NODE, // update collection array

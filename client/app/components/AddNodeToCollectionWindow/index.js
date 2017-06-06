@@ -93,7 +93,7 @@ class AddNodeToCollectionWindow extends React.Component {
 
         return (
             <Dialog
-                title={`Add a node to "${collection.properties.name}"`}
+                title={`Add a node to "${collection.name}"`}
                 actions={actions}
                 modal={false}
                 open={this.props.open}

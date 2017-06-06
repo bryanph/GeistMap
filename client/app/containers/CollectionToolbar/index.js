@@ -84,7 +84,7 @@ export class CollectionToolbar extends React.Component { // eslint-disable-line 
     removeCollection() {
         const { history, page, id } = this.props
 
-        const result = window.confirm(`Are you sure you want to remove '${this.props.collection.properties.name}'`)
+        const result = window.confirm(`Are you sure you want to remove '${this.props.collection.name}'`)
         if (result) {
             this.props.removeCollection(this.props.collection.id)
                 .then(() => history.push(`/app/${page}/`))
@@ -114,7 +114,7 @@ export class CollectionToolbar extends React.Component { // eslint-disable-line 
                     </div>
                     <div className="nodeToolbar-title">
                         <NodeTitle 
-                            title={collection.properties.name} 
+                            title={collection.name} 
                             updateNode={this.props.updateCollection.bind(this, collection.id)}
                         />
                         <NodeSubtitle

@@ -36,7 +36,7 @@ class NodeContentEditor extends React.Component {
     persistState(contentState) {
         const { id, node } = this.props
 
-        const newProperties = Object.assign({}, node.properties, {
+        const newProperties = Object.assign({}, node, {
             editorPlainText: contentState.getPlainText(),
             editorState: JSON.stringify(convertToRaw(contentState))
         })
@@ -52,7 +52,7 @@ class NodeContentEditor extends React.Component {
                 handleUpload={this.upload}
                 handleDefaultData={this.defaultData}
                 persistState={this.persistState}
-                editorState={this.props.node.properties.editorState}
+                editorState={this.props.node.editorState}
                 globalEditorState={this.props.globalEditorState}
                 {...this.props}
             />
