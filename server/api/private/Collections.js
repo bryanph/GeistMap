@@ -105,8 +105,7 @@ module.exports = function(db, es) {
                     OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
                     WITH distinct n
                     OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    RETURN properties(n), collect(distinct c2.id)
-                    ORDER BY n.id`,
+                    RETURN properties(n), collect(distinct c2.id)`,
                     {
                         id,
                         userId,

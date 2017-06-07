@@ -13,19 +13,19 @@ export default (WIDTH, HEIGHT) => (
         // .alphaTarget(0.01)
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
-        .force("charge", forceManyBody().strength(-30))
+        .force("charge", forceManyBody().strength(-100))
         .force("link", 
             forceLink()
                 .id(d => d.id)
                 .distance((link) => {
-                    console.log(link);
+                    // TODO: based on node radius - 2017-06-06
                     if (link.type === 'addCollection') {
-                        return 100;
+                        return 50;
                     }
 
-                    return 250;
+                    return 200;
                 })
-                .strength(1)
+                .strength(0.6)
         )
         // .force("x", forceX().strength(0.05))
         // .force("y", forceY().strength(0.05))

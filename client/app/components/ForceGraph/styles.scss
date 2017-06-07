@@ -147,11 +147,11 @@ svg {
 }
 
 .collection-link {
-    stroke: black;;
-    stroke-width: 3px;
+    // stroke: black;;
+    stroke: #999;
+    stroke-width: 2px;
     stroke-opacity: .6;
     opacity: .6;
-
 
     &:hover {
         cursor: pointer;

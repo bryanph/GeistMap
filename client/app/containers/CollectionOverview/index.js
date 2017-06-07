@@ -27,8 +27,9 @@ import {
 
 import { 
     showCreateCollectionWindow,
-    setTitle,
     toggleEditMode,
+    setActiveCollection,
+    addCollection,
 } from '../../actions/ui'
 
 
@@ -63,8 +64,6 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
 
     componentWillMount() {
         this.props.fetchCollections()
-        this.props.setTitle('Collections')
-
         loadData(this.props)
     }
 
@@ -89,6 +88,8 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                 links={collectionLinks || []} 
                 connectCollections={this.props.connectCollections}
                 removeCollectionEdge={this.props.removeCollectionEdge}
+                setActiveCollection={this.props.setActiveCollection}
+                addCollection={this.props.addCollection}
                 graphType={'collectionOverview'}
                 editMode={editMode}
 
@@ -121,9 +122,10 @@ export default connect(mapStateToProps, {
     updateCollection,
     showCreateCollectionWindow,
     fetchCollections,
-    setTitle,
     loadCollection,
     connectCollections,
     removeCollection,
     removeCollectionEdge,
+    setActiveCollection,
+    addCollection
 })(CollectionOverview);

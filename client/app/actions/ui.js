@@ -98,6 +98,82 @@ export const showInboxSidebar = createAction(SHOW_INBOX_SIDEBAR)
 export const HIDE_INBOX_SIDEBAR = 'HIDE_INBOX_SIDEBAR'
 export const hideInboxSidebar = createAction(HIDE_INBOX_SIDEBAR)
 
+
+/*
+ * Collection graph ui manipulation
+*/
+import { getCollection, getCollections, getCollectionEdges } from '../reducers'
+import { MIN_NODE_RADIUS } from '../graph/constants'
+
 export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE'
-export const toggleEditMode = createAction(TOGGLE_EDIT_MODE)
+export function toggleEditMode(id, refresh=true) {
+    return (dispatch, getState) => {
+        const state = getState()
+        const collections = getCollections(state)
+        const editMode = !state.uiState.editMode.active
+
+        // for every collection, create a "addCollectionNode" and a "addCollectionEdge
+        // when clicked on, these nodes will expand to an actual node and put in "edit mode"
+        let addCollectionNodes = {}
+        let addCollectionEdges = {}
+        if (editMode) {
+            collections.forEach((node, index) => {
+                const nodeId = uuidV4()
+                const edgeId = uuidV4()
+
+                const addCollectionNode = {
+                    id: nodeId,
+                    type: 'addCollection',
+                    radius: 10,
+
+                    // for later reference in ADD_COLLECTION
+                    start: node.id,
+                    edgeId,
+                }
+                const addCollectionEdge = {
+                    id: edgeId,
+                    type: 'addCollection',
+                    start: node.id,
+                    end: nodeId,
+                }
+
+                addCollectionNodes[nodeId] = addCollectionNode
+                addCollectionEdges[edgeId] = addCollectionEdge
+            })
+        }
+        return dispatch({
+            type: TOGGLE_EDIT_MODE,
+            editMode,
+            addCollectionNodes,
+            addCollectionEdges,
+        })
+    }
+}
+
+
+
+
+// set this collection in edit mode
+export const SET_ACTIVE_COLLECTION = 'SET_ACTIVE_COLLECTION'
+export function setActiveCollection(id) {
+    return {
+        type: SET_ACTIVE_COLLECTION,
+        id,
+    }
+}
+
+const uuidV4 = require('uuid/v4');
+
+// add a new collection to the graph and put it in edit mode
+export const ADD_COLLECTION = 'ADD_COLLECTION'
+export function addCollection(addCollectionNode) {
+
+    return {
+        type: ADD_COLLECTION,
+        id: addCollectionNode.id,
+        start: addCollectionNode.start,
+        edgeId: addCollectionNode.edgeId,
+    }
+}
+
 

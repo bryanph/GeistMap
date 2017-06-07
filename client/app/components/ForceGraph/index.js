@@ -15,18 +15,19 @@ import createZoom from '../../graph/zoom'
 import createSimulation, { transformNode, transformLink } from '../../graph/simulation'
 import createDrag from '../../graph/drag'
 import { arrowHead } from '../../graph/svgdefs.js'
-import { NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
+import { MIN_NODE_RADIUS, MAX_NODE_RADIUS, NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
 import {colorActiveNode } from '../../graph/util'
 import { withRouter } from 'react-router-dom'
 
 import classNames from 'classnames'
+const uuidV4 = require('uuid/v4');
 
 
 function getLabelText(text) {
     /*
      * Max length for label text
      */
-    if (text.length < 15) {
+    if ( text && text.length < 15) {
         return text
     }
 
@@ -126,8 +127,9 @@ const createEnterCollection = function(actions: { click: Function }) {
         // .attr("width", (d) => d.radius)
         // .attr("height", (d) => d.radius)
             .text((d) => getLabelText(d.name))
-            .on('click', () => {
+            .on('click', (d) => {
                 currentEvent.stopPropagation()
+                actions.setActiveCollection(d.id)
                 console.log('called textClick');
             })
             
@@ -139,7 +141,7 @@ const createEnterCollection = function(actions: { click: Function }) {
 
 const createUpdateCollection = function(actions) {
 
-    return (selection, editMode) => {
+    return (selection, data, editMode) => {
         const nodeClasses = classNames("node", "subject-node", {
             editMode
         })
@@ -150,7 +152,7 @@ const createUpdateCollection = function(actions) {
         if (editMode) {
             selection.on('click', null)
         } else {
-            selection.on('click', actions.click)
+            // selection.on('click', actions.click)
         }
 
 
@@ -169,13 +171,19 @@ const createUpdateCollection = function(actions) {
         selection.select('circle')
             .attr("r", (d) => d.radius)
 
-        if (editMode) {
-            // selection.append('foreignObject')
-            //     .attr('width', 100)
-            //     .attr('height', 150)
-            //     .append('xhtml:body')
-            //     .append('input')
+        // TODO: is there a way to avoid calling this? - 2017-06-07
+        // with react this would be a lot simpler.
+        selection.select('.editNodeButton').remove()
 
+        selection.append('foreignObject')
+            .attr('width', (d) => d.radius)
+            .attr('height', (d) => d.radius)
+            .append('xhtml:body')
+            .append('input')
+        if (editMode) {
+            if (data.editFocus) {
+            }
+            
             const group = selection.append('g')
                 .attr('class', 'editNodeButton')
             // place at bottom of circle with a little padding (an extra 0.05 here)
@@ -201,9 +209,8 @@ const createUpdateCollection = function(actions) {
             // text.append('tspan')
             //     .text('edit')
             //     .attr('dx', '.3em')
-        } else {
-            selection.select('.editNodeButton').remove()
         }
+
         return selection
     }
 }
@@ -215,7 +222,7 @@ const createEnterCollectionLink = function(actions) {
             .attr('id', (d) => `link-${d.id}`) // for later reference from data
             .attr("class", "node-link collection-link")
             .classed("editMode", editMode)
-            .attr("marker-end", "url(#Triangle)")
+            // .attr("marker-end", "url(#Triangle)")
             // .on('dblclick', actions.doubleClick)
         // .append("path")
         // .attr('id', (d) => `link-${d.id}`) // for later reference from data
@@ -356,6 +363,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         click: onCollectionClick,
         editNode: (d) => {
             console.log('called edit...');
+            actions.setActiveCollection(d.id)
             currentEvent.stopPropagation()
         }
     })
@@ -378,7 +386,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
 
         return (selection) => {
             selection
-                .attr("class", "addCollection-node")
+                .attr("class", "node addCollection-node")
 
             selection.on('click', actions.onClick)
 
@@ -401,14 +409,14 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         return (selection) => {
             return selection
                 .append("path")
-                .attr("class", "addCollection-link")
+                .attr("class", "node-link addCollection-link")
                 // .on('dblclick', actions.doubleClick)
         }
     }
 
     const enterAddCollection = createEnterAddCollection({
         onClick: (d) => {
-            console.log("transform this node into an actual editable node like all the others");
+            actions.addCollection(d)
         }
     })
     const enterAddCollectionLink = createEnterAddCollectionLink({
@@ -416,71 +424,66 @@ const createCollectionOverviewEvents = function(simulation, actions) {
     })
 
     return (node, link, editMode, nodes, links) => {
+        // TODO: join all nodes on the same class to allow for enter-update-exit animations - 2017-06-07
+        
+        // // EXIT selection
+        // addCollectionNode.exit().remove()
+        // // ENTER selection
+        // addCollectionNode.enter().append('g').call(enterAddCollection)
+        // // ENTER + UPDATE selection
+        //     // .merge(addCollectionNode).call(updateCollection)
 
-        let addCollectionNodes = []
-        let addCollectionLinks = []
-
-        if (editMode) {
-            // add an "add node" button node for every collection
-            nodes.forEach((node, index) => {
-                const id = `addCollection-${index}`
-                const addCollectionNode = {
-                    id,
-                    type: 'addCollection'
-                }
-
-                addCollectionNodes.push(addCollectionNode)
-                addCollectionLinks.push({
-                    type: 'addCollection',
-                    source: node.id,
-                    target: id
-                })
-            })
-
-        }
-
-
-        const addCollectionNode = this.d3Graph.selectAll('.addCollection-node')
-            .data(addCollectionNodes)
-
-        const addCollectionLink = this.d3Graph.selectAll('.addCollection-link')
-            .data(addCollectionLinks)
-
-        // EXIT selection
-        addCollectionNode.exit().remove()
-        // ENTER selection
-        addCollectionNode.enter().append('g').call(enterAddCollection)
-        // ENTER + UPDATE selection
-            // .merge(addCollectionNode).call(updateCollection)
-
-        // EXIT selection
-        addCollectionLink.exit().remove()
-        // ENTER selection
-        addCollectionLink.enter().insert('g', ":first-child").call(enterAddCollectionLink)
-        // ENTER + UPDATE selection
-        // .merge(addCollectionLink).call(updateLink)
-
-
+        // // EXIT selection
+        // addCollectionLink.exit().remove()
+        // // ENTER selection
+        // addCollectionLink.enter().insert('g', ":first-child").call(enterAddCollectionLink)
+        // // ENTER + UPDATE selection
+        // // .merge(addCollectionLink).call(updateLink)
 
         // EXIT selection
         node.exit().remove()
         // ENTER selection
-        node.enter().append('g').call((s) => enterCollection(s, editMode)).call(collectionDrag)
+        node.enter().append('g').each(function(d) {
+            const s = d3Select(this)
+
+            if (d.type === 'addCollection') {
+                return enterAddCollection(s)
+            }
+            else {
+                return enterCollection(s, editMode).call(collectionDrag)
+            }
+        })
+        // node.enter().append('g').call((s) => enterCollection(s, editMode)).call(collectionDrag)
         // ENTER + UPDATE selection
-            .merge(node).call((s) => updateCollection(s, editMode))
+            .merge(node).each(function(d) {
+                const s = d3Select(this)
+
+                if (d.type === 'addCollection') {
+                    // return updateCollection(s)
+                }
+                else {
+                    // TODO: only set collectionDrag if hasn't been set before - 2017-06-07
+                    return updateCollection(s, d, editMode).call(collectionDrag) 
+                }
+            })
+            // .merge(node).call((s) => updateCollection(s, editMode))
         
         // EXIT selection
         link.exit().remove()
         // ENTER selection
-        link.enter().insert('g', ":first-child").call(enterCollectionLink)
+        link.enter().insert('g', ":first-child").each(function(d) {
+            const s = d3Select(this)
+
+            if (d.type === 'addCollection') {
+                return enterAddCollectionLink(s)
+            }
+            else {
+                return enterCollectionLink(s, editMode)
+            }
+        })
+        // link.enter().insert('g', ":first-child").call(enterCollectionLink)
         // ENTER + UPDATE selection
         // .merge(link).call(updateLink)
-
-
-        return {
-            addCollectionNodes,
-            addCollectionLinks
-        }
     }
 }
 
@@ -571,21 +574,20 @@ class ForceGraph extends React.Component {
 
         let nodeById = {}
 
-        const minRadius = 30
-        const maxRadius = 80
-
         // TODO: this only applies to CollectionOverview
         const maxNodeCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
-        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([minRadius, maxRadius])
+        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
 
         // set extra properties here
         nodes.forEach(node => {
-            node.radius = radiusScale(node.count || 0)
+            if (node.type !== 'addCollection') {
+                node.radius = radiusScale(node.count || 0)
 
-            if (node.isRootCollection) {
-                node.radius = maxRadius
-                node.fx = WIDTH / 2
-                node.fy = HEIGHT / 2
+                if (node.isRootCollection) {
+                    node.radius = MAX_NODE_RADIUS
+                    node.fx = WIDTH / 2
+                    node.fy = HEIGHT / 2
+                }
             }
 
             nodeById[node.id] = node
@@ -609,14 +611,7 @@ class ForceGraph extends React.Component {
         } else if (graphType === 'explore') {
             this.exploreEvents(node, link)
         } else if (graphType === 'collectionOverview') {
-            let { 
-                addCollectionNodes,
-                addCollectionLinks
-            } = this.collectionOverviewEvents(node, link, nextProps.editMode, nodes, links)
-
-            nodes.push(...addCollectionNodes)
-            links.push(...addCollectionLinks)
-
+            this.collectionOverviewEvents(node, link, nextProps.editMode, nodes, links)
         } else if (graphType === 'collectionDetail') {
             this.collectionDetailEvents(node, link)
         } else {
@@ -627,16 +622,19 @@ class ForceGraph extends React.Component {
         this.simulation.force("link").links(links)
 
         // TODO: instead,, just compare the reference
-        if (nodes.length !== this.props.nodes.length || links.length !== this.props.links.length) {
-            this.restartSimulation()
-        }
+        this.restartSimulation()
 
-        if (nextProps.selectedId) {
-            colorActiveNode(d3Select(`#node-${nextProps.selectedId}`))
-        }
+        // if (nodes.length !== this.props.nodes.length || links.length !== this.props.links.length) {
+        //     this.restartSimulation()
+        // }
+
+        // if (nextProps.selectedId) {
+        //     colorActiveNode(d3Select(`#node-${nextProps.selectedId}`))
+        // }
     }
 
     restartSimulation() {
+        // TODO: do two zooms, an initial "guess" zoom and another for accuracy - 2017-06-07
         this.zoomed = false;
         this.simulation.alpha(0.8).restart()
     }
@@ -666,6 +664,8 @@ class ForceGraph extends React.Component {
             history: this.props.history,
             removeEdge: removeCollectionEdge,
             connect: connectCollections,
+            setActiveCollection: this.props.setActiveCollection,
+            addCollection: this.props.addCollection,
         })
         // TODO: collectionId should be not be static like this - 2017-05-21
         this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collectionId, {
@@ -677,7 +677,7 @@ class ForceGraph extends React.Component {
         //TODO: set to true on initial tick
         this.zoomed = false
         const ticked = (selection) => {
-            if (!this.zoomed && this.simulation.alpha() < 0.75) {
+            if (!this.zoomed && this.simulation.alpha() < 0.6) {
                 this.zoomed = true
                 this.zoom(0.95, 1000)
             }
@@ -685,11 +685,6 @@ class ForceGraph extends React.Component {
             selection.selectAll('.node')
                 .call(transformNode);
             selection.selectAll('.node-link')
-                .call(transformLink);
-
-            selection.selectAll('.addCollection-node')
-                .call(transformNode);
-            selection.selectAll('.addCollection-link')
                 .call(transformLink);
         }
 

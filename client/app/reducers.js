@@ -148,6 +148,31 @@ function collectionEdges(state={}, action) {
         case actionTypes.REMOVE_COLLECTION_EDGE_SUCCESS:
             return _.omit(state, action.id)
 
+        case uiTypes.ADD_COLLECTION:
+            // temporarily add a collection and defer synching with the server
+            return {
+                ...state,
+                [action.edgeId]: {
+                    ...state[action.edgeId],
+                    start: action.start,
+                    end: action.id,
+                    type: 'node',
+                    editMode: true,
+                }
+            }
+
+        case uiTypes.TOGGLE_EDIT_MODE:
+            if (action.editMode) {
+                // add the addCollectionEdges
+                return {
+                    ...state,
+                    ...action.addCollectionEdges
+                }
+            } else {
+                // remove the addCollectionEdges
+                return _.omitBy(state, (e) => e.type === 'addCollection')
+            }
+
         default:
             if (action.response && action.response.entities && action.response.entities.collectionEdges) {
                 return _.merge({}, state, action.response.entities.collectionEdges)
@@ -202,6 +227,41 @@ function collections(state={}, action) {
                     count: state[action.end].count - state[action.start].count
                 }
             }
+
+        case uiTypes.TOGGLE_EDIT_MODE:
+            if (action.editMode) {
+                // add the addCollectionNodes
+                return {
+                    ...state,
+                    ...action.addCollectionNodes
+                }
+            } else {
+                // remove the addCollectionNodes
+                return _.omitBy(state, (e) => e.type === 'addCollection')
+            }
+
+        case uiTypes.ADD_COLLECTION:
+            // temporarily add a collection and defer synching with the server
+            return {
+                ...state,
+                [action.id]: {
+                    ...state[action.id],
+                    type: 'node',
+                    count: 0,
+                    // TODO: created should also be set here - 2017-06-07
+                }
+            }
+
+        case uiTypes.SET_ACTIVE_COLLECTION:
+            // focus edit on this node, this causes d3 to react
+            return {
+                ...state,
+                [action.id]: {
+                    ...state[action.id],
+                    editFocus: true,
+                }
+            }
+
 
         default:
             if (action.response && action.response.entities && action.response.entities.collections) {
@@ -670,6 +730,37 @@ const initialUiState = {
         active: false
     }
 }
+
+const initialGraphUIState = {
+    editMode: false,
+    editFocus: {
+        id: null
+    }
+
+}
+
+function graphUiState(state=initialGraphUIState, action) {
+    switch(action.type) {
+        case uiTypes.TOGGLE_EDIT_MODE:
+            return {
+                ...state,
+                editMode: !state.editMode.active,
+            }
+
+        case uiTypes.SET_ACTIVE_COLLECTION:
+        case uiTypes.ADD_COLLECTION:
+            return {
+                ...state,
+                editFocus: {
+                    id: action.id,
+                }
+            }
+
+        default:
+            return state;
+    }
+}
+
 
 function uiState(state=initialUiState, action) {
     switch(action.type) {
