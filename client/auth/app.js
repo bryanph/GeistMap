@@ -57,6 +57,6 @@ const Router = (props) => {
 document.addEventListener('DOMContentLoaded', function () {
     ReactDom.render(
         <App {...(window.INITIAL_STATE || {})}/>,
-        document.getElementById('app')
+        document.getElementById('root')
     );
 });

@@ -100,6 +100,6 @@ function createElement(Component, props) {
 document.addEventListener('DOMContentLoaded', function () {
      ReactDom.render(
          <App />,
-         document.getElementById('app')
+         document.getElementById('root')
      );
 });

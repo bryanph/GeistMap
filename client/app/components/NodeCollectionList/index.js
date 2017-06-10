@@ -94,7 +94,7 @@ class NodeCollectionList extends React.Component {
         }
 
         return (
-            <HotKeys focused={true} attach={document.getElementById('app')} handlers={handlers}>
+            <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers}>
                 <CollectionCreateWindow
                     defaultValues={this.state.defaultValues}
                     open={this.state.open}

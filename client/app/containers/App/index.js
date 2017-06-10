@@ -26,6 +26,8 @@ import NodeExplore from '../NodeExplore'
 import NodeExploreEditor from '../NodeExploreEditor'
 import InboxSidebar from '../InboxSidebar'
 
+import EditCollectionModal from '../EditCollectionModal'
+
 const keyMapping = {
     'explore': 'ctrl+alt+e',
     'addRelation': 'ctrl+alt+r',
@@ -58,19 +60,11 @@ class App extends React.Component {
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
                     <div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-                        <Switch>
-                            <Route exact path={"/app/collections/:id/nodes/:nodeId?"} render={() => (
-                                <Dialogs 
-                                    params={match.params} 
-                                    location={location} 
-                                />
-                            )}/>
-                        <Route exact render={() => (
-                            <Dialogs 
-                                location={location} 
-                            />
-                        )}/>
-                        </Switch>
+                        <Dialogs 
+                            params={match.params} 
+                            location={location} 
+                        />
+                        <EditCollectionModal />
                         <Errors />
                         <Topbar />
 

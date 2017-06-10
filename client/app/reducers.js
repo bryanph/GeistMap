@@ -736,9 +736,7 @@ const initialGraphUIState = {
     editFocus: {
         id: null
     }
-
 }
-
 function graphUiState(state=initialGraphUIState, action) {
     switch(action.type) {
         case uiTypes.TOGGLE_EDIT_MODE:
@@ -941,6 +939,7 @@ function rootReducer(state={}, action) {
         nodeSearch: nodeSearch(state.nodeSearch, action),
         collectionSearch: collectionSearch(state.collectionSearch, action),
         uiState: uiState(state.uiState, action),
+        graphUiState: graphUiState(state.graphUiState, action),
         serverUiState: serverUiState(state.serverUiState, action),
         user: user(state.user, action),
         editorState: editorState(state.editorState, action),

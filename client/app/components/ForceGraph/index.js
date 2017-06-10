@@ -150,8 +150,13 @@ const createUpdateCollection = function(actions) {
             .attr("class", "node subject-node")
 
         if (editMode) {
-            selection.on('click', null)
+            selection.on('click', function(d) {
+                actions.zoomToNode(d3Select(this), d)
+            })
         } else {
+            selection.on('click', function(d) {
+                actions.zoomToNode(d3Select(this), d)
+            })
             // selection.on('click', actions.click)
         }
 
@@ -175,13 +180,13 @@ const createUpdateCollection = function(actions) {
         // with react this would be a lot simpler.
         selection.select('.editNodeButton').remove()
 
-        selection.append('foreignObject')
-            .attr('width', (d) => d.radius)
-            .attr('height', (d) => d.radius)
-            .append('xhtml:body')
-            .append('input')
         if (editMode) {
             if (data.editFocus) {
+                // selection.append('foreignObject')
+                //     .attr('width', (d) => d.radius)
+                //     .attr('height', (d) => d.radius)
+                //     .append('xhtml:body')
+                //     .append('input')
             }
             
             const group = selection.append('g')
@@ -361,6 +366,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
     })
     const updateCollection = createUpdateCollection({
         click: onCollectionClick,
+        zoomToNode: actions.zoomToNode,
         editNode: (d) => {
             console.log('called edit...');
             actions.setActiveCollection(d.id)
@@ -599,10 +605,10 @@ class ForceGraph extends React.Component {
         })
 
         // set data
-        var node = this.d3Graph.selectAll('.node')
+        var node = this.container.selectAll('.node')
             .data(nodes, node => node.id)
 
-        var link = this.d3Graph.selectAll('.node-link')
+        var link = this.container.selectAll('.node-link')
             .data(links, link => link.id)
 
         // enter-update-exit cycle depending on type of graph
@@ -642,11 +648,12 @@ class ForceGraph extends React.Component {
     componentDidMount() {
         const { loadNode, removeEdge, connectNodes, connectCollections, removeCollectionEdge, collectionId } = this.props
 
-        this.d3Graph = d3Select(ReactDOM.findDOMNode(this.refs.graph));
-        this.d3Graph.append('defs').call(arrowHead)
+        this.graph = d3Select(ReactDOM.findDOMNode(this.refs.graph));
+        this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
+        this.container.append('defs').call(arrowHead)
 
         this.simulation = createSimulation(WIDTH, HEIGHT)
-        this.zoom = createZoom(this.d3Graph, WIDTH, HEIGHT)
+        this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
 
         this.inboxEvents = createInboxEvents.call(this, this.simulation, {
             history: this.props.history,
@@ -666,6 +673,7 @@ class ForceGraph extends React.Component {
             connect: connectCollections,
             setActiveCollection: this.props.setActiveCollection,
             addCollection: this.props.addCollection,
+            zoomToNode: this.zoom.zoomToNode,
         })
         // TODO: collectionId should be not be static like this - 2017-05-21
         this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collectionId, {
@@ -679,7 +687,7 @@ class ForceGraph extends React.Component {
         const ticked = (selection) => {
             if (!this.zoomed && this.simulation.alpha() < 0.6) {
                 this.zoomed = true
-                this.zoom(0.95, 1000)
+                this.zoom.zoomFit(0.95, 1000)
             }
 
             selection.selectAll('.node')
@@ -692,7 +700,7 @@ class ForceGraph extends React.Component {
             // after force calculation starts, call updateGraph
             // which uses d3 to manipulate the attributes,
             // and React doesn't have to go through lifecycle on each tick
-            this.d3Graph.call(ticked);
+            this.container.call(ticked);
         });
 
         this.update(this.props)
@@ -711,8 +719,9 @@ class ForceGraph extends React.Component {
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                     preserveAspectRatio="xMidYMid meet"
                     className="svg-content"
+                    ref='graph'
                 >
-                    <g ref='graph' />
+                    <g ref='container' />
                 </svg>
         </div>
 

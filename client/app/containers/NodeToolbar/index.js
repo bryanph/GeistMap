@@ -83,7 +83,7 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
         }
 
         return (
-            <HotKeys focused={true} attach={document.getElementById('app')} handlers={handlers} style={{ width: '100%' }}>
+            <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} style={{ width: '100%' }}>
                 <div className="nodeToolbar">
                     <div className="nodeToolbar-loadingState">
                         <SavedState />

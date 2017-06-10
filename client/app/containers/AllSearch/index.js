@@ -123,7 +123,7 @@ class AllSearch extends React.Component {
         )
 
         return (
-            <HotKeys focused={true} attach={document.getElementById('app')} handlers={handlers} className='allSearch'>
+            <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} className='allSearch'>
                 <SearchInputButton />
                 <Portal closeOnEsc closeOnOutsideClick openByClickOn={input}>
                     <AllSearchList

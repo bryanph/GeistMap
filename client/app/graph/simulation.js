@@ -18,9 +18,10 @@ export default (WIDTH, HEIGHT) => (
             forceLink()
                 .id(d => d.id)
                 .distance((link) => {
+                    console.log(link.source.radius);
                     // TODO: based on node radius - 2017-06-06
                     if (link.type === 'addCollection') {
-                        return 50;
+                        return link.source.radius + 20;
                     }
 
                     return 200;
