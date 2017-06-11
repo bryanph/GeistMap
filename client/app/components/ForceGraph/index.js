@@ -154,10 +154,7 @@ const createUpdateCollection = function(actions) {
                 actions.zoomToNode(d3Select(this), d)
             })
         } else {
-            selection.on('click', function(d) {
-                actions.zoomToNode(d3Select(this), d)
-            })
-            // selection.on('click', actions.click)
+            selection.on('click', actions.click)
         }
 
 
@@ -194,7 +191,7 @@ const createUpdateCollection = function(actions) {
             // place at bottom of circle with a little padding (an extra 0.05 here)
                 .attr('transform', (d) => `translate(0, ${d.radius * Math.sqrt(3)/2 - (d.radius * 0.45)})`)
                 .style('font-size', (d) => d.radius / 4.5)
-                .on('click', actions.editNode)
+                .on('click', (d) => actions.editNode(d, selection))
 
             group.append('rect')
                 .attr('width', (d) => d.radius * 0.4)
@@ -367,8 +364,8 @@ const createCollectionOverviewEvents = function(simulation, actions) {
     const updateCollection = createUpdateCollection({
         click: onCollectionClick,
         zoomToNode: actions.zoomToNode,
-        editNode: (d) => {
-            console.log('called edit...');
+        editNode: function(d, selection) {
+            actions.zoomToNode(selection, d)
             actions.setActiveCollection(d.id)
             currentEvent.stopPropagation()
         }

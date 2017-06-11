@@ -26,7 +26,7 @@ import NodeExplore from '../NodeExplore'
 import NodeExploreEditor from '../NodeExploreEditor'
 import InboxSidebar from '../InboxSidebar'
 
-import EditCollectionModal from '../EditCollectionModal'
+import EditCollectionOverlay from '../EditCollectionOverlay'
 
 const keyMapping = {
     'explore': 'ctrl+alt+e',
@@ -64,7 +64,7 @@ class App extends React.Component {
                             params={match.params} 
                             location={location} 
                         />
-                        <EditCollectionModal />
+                        <EditCollectionOverlay />
                         <Errors />
                         <Topbar />
 

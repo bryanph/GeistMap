@@ -8,13 +8,14 @@ export default (root, container, fullWidth, fullHeight) => {
 
     const center = [ fullWidth / 2, fullHeight / 2 ]
 
+    let zoomInProgress = false
+
     const zoom = d3Zoom()
         // .scaleExtent([1/4, 2])
+        .on('start', () => zoomInProgress = true)
+        .on('end', () => zoomInProgress = false)
         .on('zoom', function () {
             container.attr("transform", currentEvent.transform)
-            // container.attr('transform',
-            //     'translate(' + currentEvent.translate + ')'
-            //         +   'scale(' + currentEvent.scale     + ')');
         })
 
     // to allow for free zooming
@@ -25,10 +26,13 @@ export default (root, container, fullWidth, fullHeight) => {
 
 
 
-    function zoomFit(paddingPercent=0.9, transitionDuration=1000) {
+    function zoomFit(paddingPercent=0.7, transitionDuration=1000) {
         /*
          * Zoom to fit to the root node
         */
+        if (zoomInProgress) {
+            return;
+        }
 
         const bbox = container.node().getBBox();
 
@@ -44,6 +48,8 @@ export default (root, container, fullWidth, fullHeight) => {
 
         const scale = paddingPercent * Math.min(fullWidth / width, fullHeight / height)
         const translate = [ -(midX*scale - fullWidth/2), -(midY*scale - fullHeight/2)];
+
+        if (scale > 1) return;
 
         function transform() {
             return zoomIdentity
@@ -62,6 +68,9 @@ export default (root, container, fullWidth, fullHeight) => {
          * zoom to fit a particular node
          * this is different from scaling the container, because getBBox() does not account for translate() and scale()
         */
+        if (zoomInProgress) {
+            return;
+        }
 
         // get the root svg offset
         // const offset = root.node().getBoundingClientRect()

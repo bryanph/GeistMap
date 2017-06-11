@@ -30,7 +30,7 @@ $node-subject-stroke: #D6DADC;
 // Main containers
 //
 .appContainer {
-    height: 100%;
+    height: calc(100% - 56px);
     display: flex;
     flex-direction: column;
     flex-grow: 1;
