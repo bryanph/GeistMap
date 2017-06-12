@@ -121,17 +121,12 @@ const createEnterCollection = function(actions: { click: Function }) {
             // .style("fill", colorNode)
 
         selection.append('text')
-        // TODO: make it fit the circle with radius - 2017-06-05
-        // .attr("dx", (d) => -d.radius)
-        // .attr("dy", (d) => -d.radius)
-        // .attr("width", (d) => d.radius)
-        // .attr("height", (d) => d.radius)
             .text((d) => getLabelText(d.name))
-            .on('click', (d) => {
-                currentEvent.stopPropagation()
-                actions.setActiveCollection(d.id)
-                console.log('called textClick');
-            })
+            // .on('click', (d) => {
+            //     currentEvent.stopPropagation()
+            //     actions.setActiveCollection(d.id)
+            //     console.log('called textClick');
+            // })
             
 
         return selection
@@ -163,10 +158,9 @@ const createUpdateCollection = function(actions) {
         const sqDist = data.radius * (Math.sqrt(2) / 2)
         const sqLen = data.radius * Math.sqrt(2)
 
-        const fontSize = 20 // in px
+        const fontSize = data.radius / 3 // in px
         const minLineHeight = 20 // in px (this takes viewBox in account)
-        // const lineHeight = Math.max(minLineHeight, 2*data.radius / 3)
-        const lineHeight = 20
+        const lineHeight = fontSize
 
         // the number of lines to render
         const numLines = Math.floor(sqLen / lineHeight)
@@ -216,14 +210,10 @@ const createUpdateCollection = function(actions) {
         // now center text vertically
         console.log(text.node().getBBox());
         const computedTextHeight = text.node().getBBox().height
-        const adjustedHeight = computedTextHeight/2
+        const adjustedHeight = computedTextHeight/2 - lineHeight/2
         // const adjustedHeight = (lineNumber + 1) * lineHeight
         console.log('text height', adjustedHeight);
         text.attr('transform', `translate(0, ${-adjustedHeight})`)
-        // text.selectAll('tspan')
-        //     .attr('y', function(d) {
-        //         return -adjustedHeight
-        //     })
 
 
         selection.select('circle')

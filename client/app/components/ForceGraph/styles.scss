@@ -28,7 +28,7 @@
     fill: #0F073B;
     stroke: none;
     font-size: 1em;
-    // pointer-events: none;
+    pointer-events: none;
     z-index: 100;
 }
 
@@ -66,7 +66,7 @@
     text {
         // fill: white;
         font-family: $font-family-display;
-        // text-anchor: middle;
+        text-anchor: middle;
         // dominant-baseline: central;
     }
 }
