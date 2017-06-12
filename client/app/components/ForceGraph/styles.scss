@@ -14,11 +14,11 @@
     right: 0;
 }
 
-.node circle {
-    fill: #888888;
-    stroke: #fff;
-    stroke-width: 2px;
-}
+// .node circle {
+//     fill: #888888;
+//     stroke: #fff;
+//     stroke-width: 2px;
+// }
 .node:hover {
     cursor: pointer;
     fill: #000000;
@@ -50,7 +50,7 @@
 }
 
 .subject-node {
-    circle {
+    .subject-node-circle {
         fill: $node-subject-color;
         // fill: $primary-color;
         stroke: $node-subject-stroke;
@@ -100,32 +100,40 @@
     cursor: pointer;
 }
 
+.editMode {
+    textarea {
+        resize: none;
+    }
+}
+
 .editNodeButton {
     color: white;
     font-weight: 400;
-    // font-size: 1em;
+    transition: opacity ease-in 85ms;
+    stroke: none;
+    stroke-width: 0;
 
-    rect {
-        opacity: 0.6;
-        padding: 10px;
-        fill: $node-subject-stroke;
+    circle {
+        opacity: 1;
+        fill: $accent-color;
 
         &:hover {
-            opacity: 0.8;
+            opacity: 0.6;
         }
         &:active {
-            opacity: 1;
+            opacity: 0.8;
         }
     }
 
     text {
-        fill: $accent-color;
+        fill: white;
     }
 
     .editNodeButton-icon {
         font-family: Icons;
         font-size: 0.8em;
-        // pointer-events: none;
+        dominant-baseline: central;
+        pointer-events: none;
     }
 }
 

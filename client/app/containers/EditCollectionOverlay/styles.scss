@@ -1,0 +1,32 @@
+@import '~styles/settings';
+
+.editCollectionOverlay {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    background: rgba(0,0,0, 0.6);
+    color: white;
+    z-index: 1000;
+
+    .editCollectionOverlay-container {
+        position: relative;
+        top: $topbar-height;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+}
+
+.editCollectionOverlay-text {
+    position: absolute;
+    top: 30%;
+    bottom: 30%;
+    left: 30%;
+    right: 30%;
+
+    background: red;
+}

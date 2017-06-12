@@ -115,6 +115,7 @@ const createEnterCollection = function(actions: { click: Function }) {
 
         selection
             .append('circle')
+            .attr("class", "subject-node-circle")
             .attr("r", (d) => d.radius)
             .attr("x", -8)
             .attr("y", -8)
@@ -192,7 +193,6 @@ const createUpdateCollection = function(actions) {
         while (word = words.pop()) {
             line.push(word)
             curTspan.text(line.join(" "))
-            console.log(curTspan.node().getComputedTextLength(), sqLen)
             if (curTspan.node().getComputedTextLength() > sqLen) {
                 // move to a new line
                 line.pop()
@@ -221,37 +221,44 @@ const createUpdateCollection = function(actions) {
 
         // TODO: is there a way to avoid calling this? - 2017-06-07
         // with react this would be a lot simpler.
-        selection.select('.editNodeButton').remove()
+        selection.select('.editMode').remove()
 
         if (editMode) {
+            const editMode = selection.append('g')
+                .attr('class', 'editMode')
+
             // this node is currently being edited
-            if (editFocus.id === data.id) {
-                selection.append('foreignObject')
-                    .attr('x', -sqDist)
-                    .attr('y', -sqDist)
-                    .attr('width', sqLen)
-                    .attr('height', sqLen)
-                    .append('xhtml:body')
-                    .append('input')
-            }
+            // if (editFocus.id === data.id) {
+            //     editMode.append('foreignObject')
+            //         .attr('x', -sqDist)
+            //         .attr('y', -sqDist)
+            //         .attr('width', sqLen)
+            //         .attr('height', sqLen)
+            //         .append('xhtml:body')
+            //         .style({
+            //             "width": sqLen,
+            //             "height": sqLen,
+            //         })
+            //         .append('textarea')
+            // }
+
+            const buttonHeight = data.radius * 0.3
             
-            const group = selection.append('g')
+            const group = editMode.append('g')
                 .attr('class', 'editNodeButton')
-            // place at bottom of circle with a little padding (an extra 0.05 here)
-                .attr('transform', (d) => `translate(0, ${d.radius * Math.sqrt(3)/2 - (d.radius * 0.45)})`)
-                .style('font-size', (d) => d.radius / 4.5)
+                .attr('transform', (d) => `translate(0, ${d.radius - buttonHeight / 1.4})`)
+                // .style('font-size', (d) => d.radius / 4.5)
                 .on('click', (d) => actions.editNode(d, selection))
 
-            group.append('rect')
-                .attr('width', (d) => d.radius * 0.4)
-                .attr('height', (d) => d.radius * 0.4)
-                .attr('rx', 5)
-                .attr('ry', 5)
-                .attr('x', (d) => -(d.radius * 0.2)) // half of width
+            group.append('circle')
+                .attr('r', buttonHeight / 2)
+                // .attr('x', (d) => -(buttonHeight / 2)) // half of width
+                // .attr('y', -buttonHeight/4)
+                
             // .attr('y', (d) => -(d.radius * 0.2))
 
             const text = group.append('text')
-                .attr("dy", "1em")
+                // .attr("dy", "1em")
 
             text.append('tspan')
                 .attr('class', 'editNodeButton-icon')
