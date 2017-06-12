@@ -92,6 +92,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                 addCollection={this.props.addCollection}
                 graphType={'collectionOverview'}
                 editMode={editMode}
+                editFocus={this.props.editFocus}
 
             />
             <div className="collectionOverview-buttons">
@@ -113,6 +114,7 @@ function mapStateToProps(state, props) {
         collectionLinks: getCollectionEdges(state), // links between collections
         loadingStates: state.loadingStates,
         editMode: state.uiState.editMode.active,
+        editFocus: state.graphUiState.editFocus,
         // sidebarState: state.uiState.showCollectionSidebarState,
         // activeCollection: getCollection(state, id),
     }

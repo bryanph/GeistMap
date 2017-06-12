@@ -252,15 +252,15 @@ function collections(state={}, action) {
                 }
             }
 
-        case uiTypes.SET_ACTIVE_COLLECTION:
-            // focus edit on this node, this causes d3 to react
-            return {
-                ...state,
-                [action.id]: {
-                    ...state[action.id],
-                    editFocus: true,
-                }
-            }
+        // case uiTypes.SET_ACTIVE_COLLECTION:
+        //     // focus edit on this node, this causes d3 to react
+        //     return {
+        //         ...state,
+        //         [action.id]: {
+        //             ...state[action.id],
+        //             editFocus: true,
+        //         }
+        //     }
 
 
         default:

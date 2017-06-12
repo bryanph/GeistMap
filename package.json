@@ -8,6 +8,7 @@
     "body-parser": "1.17.2",
     "connect-redis": "3.3.0",
     "cookie-parser": "1.4.3",
+    "d3plus-text": "0.9.18",
     "elasticsearch": "11.0.1",
     "emailjs": "1.0.8",
     "express": "4.15.3",

@@ -141,7 +141,7 @@ const createEnterCollection = function(actions: { click: Function }) {
 
 const createUpdateCollection = function(actions) {
 
-    return (selection, data, editMode) => {
+    return (selection, data, editMode, editFocus) => {
         const nodeClasses = classNames("node", "subject-node", {
             editMode
         })
@@ -158,17 +158,73 @@ const createUpdateCollection = function(actions) {
         }
 
 
-        // TODO: fit text to circle- 2017-06-05
-        selection.select('text')
-            .style("font-size", (d) => d.radius / 3)
-        // .style("font-size", (d) => {
-        //     const textWidth = this.getComputedTextLength()
+        // dist from center to the inscribed square
+        console.log(data.radius);
+        const sqDist = data.radius * (Math.sqrt(2) / 2)
+        const sqLen = data.radius * Math.sqrt(2)
 
-        //     if (textWidth > d.radius*2) {
-        //         return 
-        //     }
-        // }
-            .text((d) => getLabelText(d.name));
+        const fontSize = 20 // in px
+        const minLineHeight = 20 // in px (this takes viewBox in account)
+        // const lineHeight = Math.max(minLineHeight, 2*data.radius / 3)
+        const lineHeight = 20
+
+        // the number of lines to render
+        const numLines = Math.floor(sqLen / lineHeight)
+
+        let text = selection.select('text')
+            .attr('x', -sqDist)
+            .attr('y', -sqDist)
+            .attr('width', sqLen)
+            .attr('height', sqLen)
+            .style('font-size', function (d) {
+                // console.log('text length', this.getComputedTextLength());
+                return fontSize
+            })
+            // .attr('dy', '1em')
+            // .style("font-size", (d) => d.radius / 3)
+            // .text((d) => getLabelText(d.name));
+
+        const words = data.name.split(/\s+/).reverse()
+        let line = []
+        let lineNumber = 0
+        let word = null
+
+        let curTspan = text.text(null)
+            .append('tspan')
+            .attr('x', 0)
+            .attr('y', 0)
+            .attr("dy", lineHeight / 2)
+
+        while (word = words.pop()) {
+            line.push(word)
+            curTspan.text(line.join(" "))
+            console.log(curTspan.node().getComputedTextLength(), sqLen)
+            if (curTspan.node().getComputedTextLength() > sqLen) {
+                // move to a new line
+                line.pop()
+                curTspan.text(line.join(" "))
+                line = [ word ]
+                curTspan = text
+                    .append('tspan')
+                    .attr('x', 0)
+                    .attr('y', 0)
+                    .attr("dy", lineHeight/2 + ++lineNumber * lineHeight)
+                    .text(word)
+            }
+        }
+
+        // now center text vertically
+        console.log(text.node().getBBox());
+        const computedTextHeight = text.node().getBBox().height
+        const adjustedHeight = computedTextHeight/2
+        // const adjustedHeight = (lineNumber + 1) * lineHeight
+        console.log('text height', adjustedHeight);
+        text.attr('transform', `translate(0, ${-adjustedHeight})`)
+        // text.selectAll('tspan')
+        //     .attr('y', function(d) {
+        //         return -adjustedHeight
+        //     })
+
 
         selection.select('circle')
             .attr("r", (d) => d.radius)
@@ -178,12 +234,15 @@ const createUpdateCollection = function(actions) {
         selection.select('.editNodeButton').remove()
 
         if (editMode) {
-            if (data.editFocus) {
-                // selection.append('foreignObject')
-                //     .attr('width', (d) => d.radius)
-                //     .attr('height', (d) => d.radius)
-                //     .append('xhtml:body')
-                //     .append('input')
+            // this node is currently being edited
+            if (editFocus.id === data.id) {
+                selection.append('foreignObject')
+                    .attr('x', -sqDist)
+                    .attr('y', -sqDist)
+                    .attr('width', sqLen)
+                    .attr('height', sqLen)
+                    .append('xhtml:body')
+                    .append('input')
             }
             
             const group = selection.append('g')
@@ -365,9 +424,12 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         click: onCollectionClick,
         zoomToNode: actions.zoomToNode,
         editNode: function(d, selection) {
+            currentEvent.stopPropagation()
+
+            // stop the simulation to fix the node positions
+            actions.stopSimulation()
             actions.zoomToNode(selection, d)
             actions.setActiveCollection(d.id)
-            currentEvent.stopPropagation()
         }
     })
 
@@ -426,7 +488,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
 
     })
 
-    return (node, link, editMode, nodes, links) => {
+    return (node, link, editMode, editFocus) => {
         // TODO: join all nodes on the same class to allow for enter-update-exit animations - 2017-06-07
         
         // // EXIT selection
@@ -466,7 +528,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
                 }
                 else {
                     // TODO: only set collectionDrag if hasn't been set before - 2017-06-07
-                    return updateCollection(s, d, editMode).call(collectionDrag) 
+                    return updateCollection(s, d, editMode, editFocus).call(collectionDrag) 
                 }
             })
             // .merge(node).call((s) => updateCollection(s, editMode))
@@ -546,14 +608,21 @@ class ForceGraph extends React.Component {
         super(props)
 
         this.update = this.update.bind(this)
-        this.restartSimulation = this.restartSimulation
+        this.restartSimulation = this.restartSimulation.bind(this)
+        this.stopSimulation = this.stopSimulation.bind(this)
     }
 
     update(nextProps) {
         /*
          * Go through the enter,update,exit cycle based on the route
         */
-        let { nodes, links, graphType } = nextProps
+        let { 
+            nodes,
+            links,
+            graphType,
+            editMode, // is this graph in edit mode?
+            editFocus, // is a single node being edited?
+        } = nextProps
 
         // TODO: I actually need previous graph-type events as well in order to do a proper exit() call
         // let events;
@@ -614,7 +683,7 @@ class ForceGraph extends React.Component {
         } else if (graphType === 'explore') {
             this.exploreEvents(node, link)
         } else if (graphType === 'collectionOverview') {
-            this.collectionOverviewEvents(node, link, nextProps.editMode, nodes, links)
+            this.collectionOverviewEvents(node, link, editMode, editFocus)
         } else if (graphType === 'collectionDetail') {
             this.collectionDetailEvents(node, link)
         } else {
@@ -638,8 +707,14 @@ class ForceGraph extends React.Component {
 
     restartSimulation() {
         // TODO: do two zooms, an initial "guess" zoom and another for accuracy - 2017-06-07
+        console.log('restarting simulation...');
         this.zoomed = false;
         this.simulation.alpha(0.8).restart()
+    }
+
+    stopSimulation() {
+        console.log('stopping simulation...');
+        this.simulation.stop()
     }
 
     componentDidMount() {
@@ -671,6 +746,8 @@ class ForceGraph extends React.Component {
             setActiveCollection: this.props.setActiveCollection,
             addCollection: this.props.addCollection,
             zoomToNode: this.zoom.zoomToNode,
+            restartSimulation: this.restartSimulation,
+            stopSimulation: this.stopSimulation,
         })
         // TODO: collectionId should be not be static like this - 2017-05-21
         this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collectionId, {
