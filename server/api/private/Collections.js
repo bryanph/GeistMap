@@ -189,9 +189,6 @@ module.exports = function(db, es) {
                     )
                 ))
 
-                console.log(edges);
-                console.log(collections);
-
                 return res(null, {
                     collections,
                     edges
@@ -221,16 +218,13 @@ module.exports = function(db, es) {
              * Create a new collection
              */
 
-            data.author = user;
-
-            // TODO: collections should be unique by name? - 2016-07-19
-
             db.run(
                 "MERGE (u:User {id: {userId}}) " +
-                "CREATE (c:Collection { id: {id} name: {name},  nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
+                "CREATE (c:Collection { id: {id}, name: {name}, nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
                 "return properties(c) as collection",
                 {
                     userId: user._id.toString(),
+                    id,
                     name: data.name,
                 }
             )
@@ -253,18 +247,22 @@ module.exports = function(db, es) {
 
             const updatedData = _.pick(data, ['name', 'editorState', 'editorPlainText'])
 
+            if (!updatedData.name) {
+                return res("set at least a name")
+            }
+
             // TODO: enforce a structure on ${data} - 2016-07-14
             db.run(
                 "MATCH (u:User)--(n:Collection) " +
                 "WHERE u.id = {userId} " +
                 "AND n.id = {id} " +
-                "SET n = { data } " +
+                "SET n.name = { name } " +
                 "SET n.modified = timestamp() " +
                 "RETURN properties(n) as collection",
                 {
                     userId: user._id.toString(),
                     id,
-                    data: updatedData,
+                    name: updatedData.name,
                 }
             )
                 .then((results) => {
@@ -381,6 +379,9 @@ module.exports = function(db, es) {
             // TODO: assert edge type is defined - 2016-04-02
             // TODO: How will we manage this? 2016-04-02
 
+
+            console.log(collection1, collection2, id);
+
             if (!collection1 || !collection2) {
                 return res("Set both collection ids")
             }
@@ -393,7 +394,7 @@ module.exports = function(db, es) {
                 "MATCH (u:User)--(n1:Collection), (u:User)--(n2:Collection) " +
                 "WHERE u.id = {userId} " +
                 "AND n1.id = {collection1} AND n2.id = {collection2} " +
-                "MERGE (n1)-[e:PARENT { id: {id} }]->(n2) " +
+                "MERGE (n1)-[e:PARENT { id: {id}, start: {collection1}, end: {collection2} }]->(n2) " +
                 "RETURN properties(e) as edge",
                 {
                     id,

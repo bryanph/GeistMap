@@ -345,10 +345,11 @@ export function connectNodes(start, end, direction="to", isBatch=false) {
 export const CONNECT_COLLECTIONS_REQUEST = 'CONNECT_COLLECTIONS_REQUEST'
 export const CONNECT_COLLECTIONS_SUCCESS = 'CONNECT_COLLECTIONS_SUCCESS'
 export const CONNECT_COLLECTIONS_FAILURE = 'CONNECT_COLLECTIONS_FAILURE'
-export function fetchConnectCollections(start, end) {
-    const id = uuidV4();
+export function fetchConnectCollections(start, end, id) {
+    // const id = uuidV4();
 
     return {
+        id,
         start,
         end,
         [CALL_API]: {
@@ -359,14 +360,15 @@ export function fetchConnectCollections(start, end) {
         }
     }
 }
-export function connectCollections(start, end, direction="to") {
+export function connectCollections(start, end, id) {
     /*
      * we must first fetch the collection, so we get its properties and show name and description
     */
     // TODO: check if end/start is already cached - 2016-07-18
     return (dispatch) => {
-        return dispatch(direction === "to" ? fetchCollection(end) : fetchCollection(start))
-            .then(() => dispatch(fetchConnectCollections(start, end)))
+        return dispatch(fetchConnectCollections(start, end, id))
+        // return dispatch(direction === "to" ? fetchCollection(end) : fetchCollection(start))
+        //     .then(() => dispatch(fetchConnectCollections(start, end)))
     }
 }
 
@@ -537,8 +539,8 @@ export function loadCollection(id, refresh=true) {
 export const CREATE_COLLECTION_REQUEST = 'CREATE_COLLECTION_REQUEST'
 export const CREATE_COLLECTION_SUCCESS = 'CREATE_COLLECTION_SUCCESS'
 export const CREATE_COLLECTION_FAILURE = 'CREATE_COLLECTION_FAILURE'
-export function createCollection(collection) {
-    const id = uuidV4();
+export function createCollection(id, collection) {
+    // const id = uuidV4();
 
     return {
         id,
@@ -712,29 +714,6 @@ export function searchAll(query) {
         }
     }
 }
-
-
-/*
- * Search a node
-*/
-export const UPDATE_UI_REQUEST = 'UPDATE_UI_REQUEST'
-export const UPDATE_UI_SUCCESS = 'UPDATE_UI_SUCCESS'
-export const UPDATE_UI_FAILURE = 'UPDATE_UI_FAILURE'
-
-export function updateUi(uiState={}) {
-    return {
-        payload: uiState,
-        [CALL_API]: {
-            types: [ UPDATE_UI_REQUEST, UPDATE_UI_SUCCESS, UPDATE_UI_FAILURE ],
-            endpoint: 'User.updateUi',
-            payload: [ uiState ],
-            // schema: Schemas.NODE
-        }
-    }
-}
-
-
-
 
 /*
  * upload a file

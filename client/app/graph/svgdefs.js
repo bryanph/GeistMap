@@ -3,24 +3,6 @@
  * SVG definitions
 */
 
-import { lightAccentColor } from '../containers/App/muitheme.js'
-
-export function arrowHeadMiddle(selection) {
-    selection
-        .append('marker')
-        .attr("id", "Triangle")
-        .attr('viewBox', "0 0 8 8")
-        .attr("refX", 0)
-        .attr("refY", 4)
-        .attr("markerUnits", 'userSpaceOnUse')
-        .attr("markerWidth", 10)
-        .attr("markerHeight", 10)
-        .attr("orient", 'auto')
-        .append('path')
-        .style("fill", lightAccentColor)
-        .attr("d", 'M0,0 L0,8 L9,4 z');
-}
-
 // curved
 export function arrowHead(selection) {
     selection

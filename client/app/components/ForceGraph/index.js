@@ -12,7 +12,7 @@ import './styles.scss'
 import { browserHistory } from 'react-router-dom'
 
 import createZoom from '../../graph/zoom'
-import createSimulation, { transformNode, transformLink } from '../../graph/simulation'
+import { createNodeSimulation, createCollectionSimulation, transformNode, transformLink } from '../../graph/simulation'
 import createDrag from '../../graph/drag'
 import { arrowHead } from '../../graph/svgdefs.js'
 import { MIN_NODE_RADIUS, MAX_NODE_RADIUS, NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
@@ -147,6 +147,7 @@ const createUpdateCollection = function(actions) {
 
         if (editMode) {
             selection.on('click', function(d) {
+                actions.stopSimulation()
                 actions.zoomToNode(d3Select(this), d)
             })
         } else {
@@ -155,7 +156,6 @@ const createUpdateCollection = function(actions) {
 
 
         // dist from center to the inscribed square
-        console.log(data.radius);
         const sqDist = data.radius * (Math.sqrt(2) / 2)
         const sqLen = data.radius * Math.sqrt(2)
 
@@ -171,14 +171,14 @@ const createUpdateCollection = function(actions) {
             .attr('y', -sqDist)
             .attr('width', sqLen)
             .attr('height', sqLen)
-            .style('font-size', function (d) {
-                // console.log('text length', this.getComputedTextLength());
-                return fontSize
-            })
+            .style('font-size', fontSize)
             // .attr('dy', '1em')
             // .style("font-size", (d) => d.radius / 3)
             // .text((d) => getLabelText(d.name));
 
+        if (!data.name) {
+            data.name = ""
+        }
         const words = data.name.split(/\s+/).reverse()
         let line = []
         let lineNumber = 0
@@ -208,16 +208,15 @@ const createUpdateCollection = function(actions) {
         }
 
         // now center text vertically
-        console.log(text.node().getBBox());
-        const computedTextHeight = text.node().getBBox().height
+        const textBBox = text.node().getBBox()
+        const computedTextHeight = textBBox.height
         const adjustedHeight = computedTextHeight/2 - lineHeight/2
-        // const adjustedHeight = (lineNumber + 1) * lineHeight
-        console.log('text height', adjustedHeight);
         text.attr('transform', `translate(0, ${-adjustedHeight})`)
 
 
         selection.select('circle')
             .attr("r", (d) => d.radius)
+            .attr("class", "subject-node-circle")
 
         // TODO: is there a way to avoid calling this? - 2017-06-07
         // with react this would be a lot simpler.
@@ -226,29 +225,53 @@ const createUpdateCollection = function(actions) {
         if (editMode) {
             const editMode = selection.append('g')
                 .attr('class', 'editMode')
+                .style('font-size', (d) => d.radius / 6)
 
-            // this node is currently being edited
-            // if (editFocus.id === data.id) {
-            //     editMode.append('foreignObject')
-            //         .attr('x', -sqDist)
-            //         .attr('y', -sqDist)
-            //         .attr('width', sqLen)
-            //         .attr('height', sqLen)
-            //         .append('xhtml:body')
-            //         .style({
-            //             "width": sqLen,
-            //             "height": sqLen,
-            //         })
-            //         .append('textarea')
-            // }
+            if (editFocus.id === data.id) {
+                editMode.append('circle')
+                    .attr('r', data.radius)
+                    
+
+                const div = editMode.append('foreignObject')
+                    .attr('x', -sqDist)
+                    .attr('y', -sqDist)
+                    .attr('width', sqLen)
+                    .attr('height', sqLen)
+                    .append('xhtml:div')
+
+                div.attr("style", `width: ${sqLen}px; height: ${sqLen}px;`)
+
+                const textarea = div.append('textarea')
+                    .attr('maxLength', 50)
+                    .attr('autofocus', true)
+                    .text(data.name)
+                    // .style("height", sqLen)
+            }
 
             const buttonHeight = data.radius * 0.3
             
             const group = editMode.append('g')
                 .attr('class', 'editNodeButton')
+                .classed('editNodeButton-active', editFocus.id === data.id)
                 .attr('transform', (d) => `translate(0, ${d.radius - buttonHeight / 1.4})`)
                 // .style('font-size', (d) => d.radius / 4.5)
-                .on('click', (d) => actions.editNode(d, selection))
+                .on('click', (d) => {
+                    if (editFocus.id === data.id) {
+                        const value = editMode.select('textarea').node().value
+
+                        if (data.isNew) {
+                            actions.createCollection(data.id, { name: value })
+                                .then(() => actions.connectCollections(data.id, data.parentId, data.edgeId))
+                            actions.setActiveCollection(null)
+                        }
+                        // save the node, we changed it
+                        return actions.updateCollection(data.id, { name: value })
+                            .then(() => actions.setActiveCollection(null))
+
+                    }
+                    // set node in edit mode
+                    actions.editNode(d, selection)
+                })
 
             group.append('circle')
                 .attr('r', buttonHeight / 2)
@@ -262,11 +285,12 @@ const createUpdateCollection = function(actions) {
 
             text.append('tspan')
                 .attr('class', 'editNodeButton-icon')
-                .text((d) => '\uF040')
-
-            // text.append('tspan')
-            //     .text('edit')
-            //     .attr('dx', '.3em')
+                .text((d) => {
+                    if (editFocus.id === data.id) {
+                        return '\uF00C'
+                    }
+                    return '\uF040'
+                })
         }
 
         return selection
@@ -420,6 +444,10 @@ const createCollectionOverviewEvents = function(simulation, actions) {
     const updateCollection = createUpdateCollection({
         click: onCollectionClick,
         zoomToNode: actions.zoomToNode,
+        createCollection: actions.createCollection,
+        updateCollection: actions.updateCollection,
+        setActiveCollection: actions.setActiveCollection,
+        connectCollections: actions.connectCollections,
         editNode: function(d, selection) {
             currentEvent.stopPropagation()
 
@@ -477,8 +505,12 @@ const createCollectionOverviewEvents = function(simulation, actions) {
     }
 
     const enterAddCollection = createEnterAddCollection({
-        onClick: (d) => {
+        onClick: function(d) {
             actions.addCollection(d)
+            setTimeout(() => {
+                actions.stopSimulation()
+                actions.zoomToNode(d3Select(this), d)
+            }, 100)
         }
     })
     const enterAddCollectionLink = createEnterAddCollectionLink({
@@ -687,19 +719,23 @@ class ForceGraph extends React.Component {
             console.error('this should not happen!')
         }
 
+        console.log(graphType);
+        if (graphType !== this.props.graphType) {
+                console.log('recreating simulation...');
+            if (graphType === 'collectionOverview') {
+                this.simulation = createCollectionSimulation(WIDTH, HEIGHT, this.simulation)
+            }
+            else {
+                this.simulation = createNodeSimulation(WIDTH, HEIGHT, this.simulation)
+            }
+        }
+
         this.simulation.nodes(nodes)
         this.simulation.force("link").links(links)
 
-        // TODO: instead,, just compare the reference
-        this.restartSimulation()
-
-        // if (nodes.length !== this.props.nodes.length || links.length !== this.props.links.length) {
-        //     this.restartSimulation()
-        // }
-
-        // if (nextProps.selectedId) {
-        //     colorActiveNode(d3Select(`#node-${nextProps.selectedId}`))
-        // }
+        if (nodes !== this.props.nodes || links !== this.props.links) {
+            this.restartSimulation()
+        }
     }
 
     restartSimulation() {
@@ -715,13 +751,19 @@ class ForceGraph extends React.Component {
     }
 
     componentDidMount() {
-        const { loadNode, removeEdge, connectNodes, connectCollections, removeCollectionEdge, collectionId } = this.props
+        const { graphType, loadNode, removeEdge, connectNodes, connectCollections, removeCollectionEdge, collectionId } = this.props
 
         this.graph = d3Select(ReactDOM.findDOMNode(this.refs.graph));
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
         this.container.append('defs').call(arrowHead)
 
-        this.simulation = createSimulation(WIDTH, HEIGHT)
+        if (graphType === 'collectionOverview') {
+            this.simulation = createCollectionSimulation(WIDTH, HEIGHT)
+        }
+        else {
+            this.simulation = createNodeSimulation(WIDTH, HEIGHT)
+        }
+
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
 
         this.inboxEvents = createInboxEvents.call(this, this.simulation, {
@@ -739,8 +781,10 @@ class ForceGraph extends React.Component {
         this.collectionOverviewEvents = createCollectionOverviewEvents.call(this, this.simulation, {
             history: this.props.history,
             removeEdge: removeCollectionEdge,
-            connect: connectCollections,
+            connectCollections: this.props.connectCollections,
             setActiveCollection: this.props.setActiveCollection,
+            createCollection: this.props.createCollection,
+            updateCollection: this.props.updateCollection,
             addCollection: this.props.addCollection,
             zoomToNode: this.zoom.zoomToNode,
             restartSimulation: this.restartSimulation,
@@ -755,10 +799,11 @@ class ForceGraph extends React.Component {
 
         //TODO: set to true on initial tick
         this.zoomed = false
+
         const ticked = (selection) => {
             if (!this.zoomed && this.simulation.alpha() < 0.6) {
                 this.zoomed = true
-                this.zoom.zoomFit(0.95, 1000)
+                this.zoom.zoomFit()
             }
 
             selection.selectAll('.node')

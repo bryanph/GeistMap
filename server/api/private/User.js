@@ -34,20 +34,9 @@ module.exports = function(app, db, redisClient, es) {
     */
     const User = app.db.models.User
 
-    return {
-        updateUi: function(user, uiState, res) {
-            return User
-                .findOneAndUpdate({_id: user._id}, {$set: { uiState: uiState }}, { new: true })
-                .exec()
-                .then(acc => {
-                    res(null, acc)
-                })
-                .catch((error) => {
-                    console.error(error.stack);
-                    res(error)
-                })
-        },
+    console.log(app.db.models);
 
+    return {
         generateMobileUploadToken: function(socket, user, val, res) {
             crypto.randomBytes(48, (err, buffer) => {
                 const token = buffer.toString('hex')

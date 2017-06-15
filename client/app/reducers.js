@@ -158,6 +158,7 @@ function collectionEdges(state={}, action) {
                     end: action.id,
                     type: 'node',
                     editMode: true,
+                    isSynced: false,
                 }
             }
 
@@ -241,6 +242,7 @@ function collections(state={}, action) {
             }
 
         case uiTypes.ADD_COLLECTION:
+            // TODO: should this be done with more of a "sync" behaviour? - 2017-06-14
             // temporarily add a collection and defer synching with the server
             return {
                 ...state,
@@ -248,6 +250,9 @@ function collections(state={}, action) {
                     ...state[action.id],
                     type: 'node',
                     count: 0,
+                    isNew: true,
+                    parentId: action.start, // parent node
+                    edgeId: action.edgeId, // id of edge to the parent node
                     // TODO: created should also be set here - 2017-06-07
                 }
             }
@@ -889,18 +894,6 @@ function uiState(state=initialUiState, action) {
     }
 }
 
-function serverUiState(state, action) {
-    switch(action.type) {
-        case actionTypes.UPDATE_UI_SUCCESS:
-            return {
-                ...state,
-                ...action.payload,
-            }
-        default:
-            return state
-    }
-}
-
 function user(state={}, action) {
     switch(action.type) {
         // case ActionTypes.UPDATE_USER_UI_SUCCESS:
@@ -940,7 +933,6 @@ function rootReducer(state={}, action) {
         collectionSearch: collectionSearch(state.collectionSearch, action),
         uiState: uiState(state.uiState, action),
         graphUiState: graphUiState(state.graphUiState, action),
-        serverUiState: serverUiState(state.serverUiState, action),
         user: user(state.user, action),
         editorState: editorState(state.editorState, action),
         errors: errors(state.errors, action),

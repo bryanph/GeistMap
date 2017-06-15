@@ -8,30 +8,55 @@ import {
 } from 'd3-force'
 import { NODE_RADIUS, WIDTH, HEIGHT } from './constants'
 
-export default (WIDTH, HEIGHT) => (
-    forceSimulation()
+export const createCollectionSimulation = function(WIDTH, HEIGHT, simulation) {
+
+    return (simulation ? simulation : forceSimulation())
         // .alphaTarget(0.01)
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
-        .force("charge", forceManyBody().strength(-100))
+        .force("charge", forceManyBody().strength(-300))
         .force("link", 
             forceLink()
                 .id(d => d.id)
                 .distance((link) => {
-                    console.log(link.source.radius);
                     // TODO: based on node radius - 2017-06-06
                     if (link.type === 'addCollection') {
-                        return link.source.radius + 20;
+                        return link.source.radius + 15;
                     }
 
-                    return 200;
+                    return link.source.radius + link.target.radius + 40;
                 })
-                .strength(0.6)
+            .strength((link) => {
+                if (link.type === 'addCollection') {
+                    return 1;
+                }
+
+                // TODO: based on number of links of source or target - 2017-06-14
+                // see https://github.com/d3/d3-force#link_strength
+                return 0.6;
+            })
         )
         // .force("x", forceX().strength(0.05))
         // .force("y", forceY().strength(0.05))
         // .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
-)
+}
+
+export const createNodeSimulation = function(WIDTH, HEIGHT, simulation) {
+    return (simulation ? simulation : forceSimulation())
+        // .alphaTarget(0.01)
+        .alphaDecay(1 - Math.pow(0.001, 1/400))
+        .velocityDecay(0.2)
+        .force("charge", forceManyBody().strength(-300))
+        .force("link", 
+            forceLink()
+                .id(d => d.id)
+                .distance(100)
+                .strength(0.1)
+        )
+        .force("x", forceX().strength(0.05))
+        .force("y", forceY().strength(0.05))
+        .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
+}
 
 export const transformNode = (selection) => {
     return selection

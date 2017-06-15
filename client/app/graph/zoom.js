@@ -11,7 +11,7 @@ export default (root, container, fullWidth, fullHeight) => {
     let zoomInProgress = false
 
     const zoom = d3Zoom()
-        // .scaleExtent([1/4, 2])
+        .scaleExtent([1/2, 8])
         .on('start', () => zoomInProgress = true)
         .on('end', () => zoomInProgress = false)
         .on('zoom', function () {
@@ -21,12 +21,7 @@ export default (root, container, fullWidth, fullHeight) => {
     // to allow for free zooming
     root.call(zoom)
 
-    const zoomToSelection = (node, d, paddingPercent, transitionDuration) => {
-    }
-
-
-
-    function zoomFit(paddingPercent=0.7, transitionDuration=1000) {
+    function zoomFit(paddingPercent=0.8, transitionDuration=1000) {
         /*
          * Zoom to fit to the root node
         */

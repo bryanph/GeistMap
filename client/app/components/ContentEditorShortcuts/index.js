@@ -37,39 +37,39 @@ const styles = {
         margin: 'auto'
     },
     header: {
-            textAlign: 'center',
-        },
-        headerH3: {
-                fontSize: '1.4rem',
-                marginTop: '8px',
-            },
-            highlight: {
-                border: '1px solid grey',
-                borderRadius: '3px',
-                padding: '5px 10px',
-                backgroundColor: 'white'
-            },
-            shortcutText: {
-                marginLeft: '10px',
-            },
-            shortcutContainer: {
-                    display: 'flex',
-                    maxWidth: '800px',
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                    justifyContent: 'space-around',
-                    alignItems: 'center',
-                    flexWrap: 'wrap',
-                    height: '200px',
-                    marginTop: '10px',
-                    lineHeight: '3rem',
-                },
-                collapseButton: {
-                        zIndex: 99,
-                        position: 'absolute',
-                        right: 0,
-                        top: 0,
-                    },
+        textAlign: 'center',
+    },
+    headerH3: {
+        fontSize: '1.4rem',
+        marginTop: '8px',
+    },
+    highlight: {
+        border: '1px solid grey',
+        borderRadius: '3px',
+        padding: '5px 10px',
+        backgroundColor: 'white'
+    },
+    shortcutText: {
+        marginLeft: '10px',
+    },
+    shortcutContainer: {
+        display: 'flex',
+        maxWidth: '800px',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        height: '200px',
+        marginTop: '10px',
+        lineHeight: '3rem',
+    },
+    collapseButton: {
+        zIndex: 99,
+        position: 'absolute',
+        right: 0,
+        top: 0,
+    },
 }
 
 const CollapseShortcuts = (props) => (
@@ -88,9 +88,7 @@ class ContentEditorShortcuts extends React.Component {
     }
 
     hideShortcutWindow() {
-        this.props.updateUi({
-            shortcutWindow: false,
-        })       
+
     }
 
     render() {
@@ -98,19 +96,21 @@ class ContentEditorShortcuts extends React.Component {
             return null
         }
 
+        return null;
+
         return (
             <div style={styles.div}>
                 <div style={styles.innerDiv}>
-                <CollapseShortcuts 
-                    hideShortcutWindow={this.hideShortcutWindow}
-                />
-                <span style={styles.header}>
-                    <h3 style={styles.headerH3}>Keyboard Shortcuts</h3>
-                </span>
-                <div className="contentEditorShortcuts-shortcuts">
-                    <Tabs 
-                        tabItemContainerStyle={{color: 'black', backgroundColor: 'transparent'}}
-                    >
+                    <CollapseShortcuts 
+                        hideShortcutWindow={this.hideShortcutWindow}
+                    />
+                    <span style={styles.header}>
+                        <h3 style={styles.headerH3}>Keyboard Shortcuts</h3>
+                    </span>
+                    <div className="contentEditorShortcuts-shortcuts">
+                        <Tabs 
+                            tabItemContainerStyle={{color: 'black', backgroundColor: 'transparent'}}
+                        >
 
                         <Tab label="Editor" style={{color: 'black'}}>
                             <div style={styles.shortcutContainer}>
@@ -217,12 +217,9 @@ class ContentEditorShortcuts extends React.Component {
                     </Tabs>
                 </div>
             </div>
-            </div>
+        </div>
         );
     }
 }
 
-import { connect } from 'react-redux'
-import { updateUi } from '../../actions/async'
-
-export default connect(state => state.serverUiState, { updateUi })(ContentEditorShortcuts);
+export default ContentEditorShortcuts;

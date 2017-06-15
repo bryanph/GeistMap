@@ -23,10 +23,11 @@
 
 .editCollectionOverlay-text {
     position: absolute;
+    opacity: 0.6;
     top: 30%;
     bottom: 30%;
-    left: 30%;
-    right: 30%;
+    left: 15%;
+    right: 15%;
 
     background: red;
 }

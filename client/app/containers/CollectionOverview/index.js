@@ -17,6 +17,7 @@ import CollectionToolbar from '../../containers/CollectionToolbar'
 import './styles.scss'
 
 import { 
+    createCollection,
     updateCollection,
     fetchCollections,
     loadCollection,
@@ -90,6 +91,8 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                 removeCollectionEdge={this.props.removeCollectionEdge}
                 setActiveCollection={this.props.setActiveCollection}
                 addCollection={this.props.addCollection}
+                createCollection={this.props.createCollection}
+                updateCollection={this.props.updateCollection}
                 graphType={'collectionOverview'}
                 editMode={editMode}
                 editFocus={this.props.editFocus}
@@ -122,6 +125,7 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
     updateCollection,
+    createCollection,
     showCreateCollectionWindow,
     fetchCollections,
     loadCollection,

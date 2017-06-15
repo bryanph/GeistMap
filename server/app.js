@@ -154,7 +154,6 @@ io.on('connection', function(socket) {
 
     const user = socket.request.user;
 
-    socket.on('User.updateUi', UserAPI.updateUi.bind(null, user));
     socket.on('User.generateMobileUploadToken', UserAPI.generateMobileUploadToken.bind(null, socket, user));
 
     socket.on('Node.get', NodeAPI.get.bind(null, user));

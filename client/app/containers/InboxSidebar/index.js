@@ -63,6 +63,7 @@ export class InboxSidebar extends React.Component { // eslint-disable-line react
 
         const items = nodes.map(node => (
             <InboxItem 
+                key={node.id}
                 node={node} 
                 deleteNode={this.deleteNode}
                 editNode={this.editNode}
