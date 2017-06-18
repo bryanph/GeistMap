@@ -28,7 +28,7 @@ class NodeEditor extends React.Component {
     }
 
     render() {
-        const { loadingStates, shortcutWindow } = this.props
+        const { loadingStates } = this.props
 
         if (!this.props.node) {
             return <Spinner />
@@ -46,7 +46,6 @@ class NodeEditor extends React.Component {
                         <ContentEditor
                             id={this.props.id} 
                             withToolbar={false}
-                            shortcutWindow={shortcutWindow}
                         />
                     </div>
                 </div>
@@ -64,7 +63,6 @@ function mapStateToProps(state, props) {
         id,
         node: getNode(state, id),
         loadingStates: state.loadingStates,
-        shortcutWindow: state.serverUiState.shortcutWindow,
     }
 }
 

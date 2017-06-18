@@ -83,7 +83,7 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
         }
 
         return (
-            <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} style={{ width: '100%' }}>
+            <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} style={{ width: '100%', zIndex: 100 }}>
                 <div className="nodeToolbar">
                     <div className="nodeToolbar-loadingState">
                         <SavedState />
@@ -109,13 +109,6 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
                             onTouchTap={this.editNode}
                         />
                         {
-                            this.props.page.startsWith('collections') ?
-                                <CollectionGraphButton
-                                    onTouchTap={this.editCollection}
-                                />
-                                : null
-                        }
-                        {
                             this.props.page !== "nodes" ?
                                 <ExploreButton
                                     onTouchTap={this.exploreNode}
@@ -124,9 +117,6 @@ export class NodeToolbar extends React.Component { // eslint-disable-line react/
                         }
                         <AddRelationButton
                             onTouchTap={this.addRelation}
-                        />
-                        <DuplicateButton
-                            onTouchTap={this.duplicateNode}
                         />
                         <TrashButton
                             onTouchTap={this.removeNode}

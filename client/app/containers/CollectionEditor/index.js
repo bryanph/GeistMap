@@ -45,7 +45,6 @@ class CollectionEditor extends React.Component {
                             id={this.props.id} 
                             collection={collection}
                             withToolbar={false}
-                            shortcutWindow={this.props.shortcutWindow}
                             withoutContentLink={true}
                         />
                     </div>
@@ -62,7 +61,6 @@ function mapStateToProps(state, props) {
         id: props.match.params.id,
         collection: getCollection(state, props.match.params.id),
         loadingStates: state.loadingStates,
-        shortcutWindow: state.serverUiState.shortcutWindow,
     }
 }
 

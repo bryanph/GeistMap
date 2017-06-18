@@ -74,36 +74,40 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
         }
     }
 
-  render() {
-      const { loadingStates, collections, collectionLinks, editMode } = this.props
+    componentWillUnmount() {
+        // TODO: get out of edit mode - 2017-06-18
+    }
 
-      if (loadingStates.GET_COLLECTIONS) {
-          return <Spinner />
-      }
+    render() {
+        const { loadingStates, collections, collectionLinks, editMode } = this.props
 
-    return (
-        <div className='appContainer'>
-            <ForceGraph
-                selectedId={this.props.id}
-                nodes={collections || []}
-                links={collectionLinks || []} 
-                connectCollections={this.props.connectCollections}
-                removeCollectionEdge={this.props.removeCollectionEdge}
-                setActiveCollection={this.props.setActiveCollection}
-                addCollection={this.props.addCollection}
-                createCollection={this.props.createCollection}
-                updateCollection={this.props.updateCollection}
-                graphType={'collectionOverview'}
-                editMode={editMode}
-                editFocus={this.props.editFocus}
+        if (loadingStates.GET_COLLECTIONS) {
+            return <Spinner />
+        }
 
-            />
-            <div className="collectionOverview-buttons">
-                <EditModeButton />
+        return (
+            <div className='appContainer'>
+                <ForceGraph
+                    selectedId={this.props.id}
+                    nodes={collections || []}
+                    links={collectionLinks || []} 
+                    connectCollections={this.props.connectCollections}
+                    removeCollectionEdge={this.props.removeCollectionEdge}
+                    setActiveCollection={this.props.setActiveCollection}
+                    addCollection={this.props.addCollection}
+                    createCollection={this.props.createCollection}
+                    updateCollection={this.props.updateCollection}
+                    graphType={'collectionOverview'}
+                    editMode={editMode}
+                    editFocus={this.props.editFocus}
+
+                />
+                <div className="editModeButton-container">
+                    <EditModeButton />
+                </div>
             </div>
-        </div>
-    );
-  }
+        );
+    }
 }
 
 import { getCollection, getCollections, getCollectionEdges } from '../../reducers'

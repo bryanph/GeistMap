@@ -12,7 +12,17 @@ import AddButton from '../../components/AddButton'
 import NodeToolbar from '../../containers/NodeToolbar'
 import Spinner from '../../components/Spinner'
 
-import './styles.css'
+import './styles.scss'
+
+import {
+    loadNode,
+    loadCollection,
+} from '../../actions/async'
+
+import { 
+    showAddNodeToCollectionWindow,
+    toggleEditMode,
+} from '../../actions/ui'
 
 const AddNodeToCollectionButton = (props) => (
     <AddButton 
@@ -20,16 +30,29 @@ const AddNodeToCollectionButton = (props) => (
     />
 )
 
+import { Button, Icon } from 'semantic-ui-react'
+let EditModeButton = ({ editMode, toggleEditMode }) => (
+    <Button 
+        circular icon={ editMode ? "checkmark" : "edit" } size="massive" className="editModeButton"
+        onClick={ toggleEditMode }
+    />
+)
+EditModeButton = connect((state) => ({
+    editMode: state.uiState.editMode.active 
+}),
+    { toggleEditMode }
+)(EditModeButton)
+
+
 
 const defaultNode = {
     name: "Untitled"
 }
 
-import { accentColor, darkAccentColor } from '../App/muitheme.js'
 export const NoNodesYet = (props) => (
-    <div className="nodeBatchCreate-noNodesYet">
-        <span className="nodeBatchCreate-noNodesYet-text">
-            This collection has no nodes yet<br/>Click <span  className="nodeBatchCreate-noNodesYet-start" style={{color: darkAccentColor}} onClick={() => props.createNode(defaultNode)}>here</span> to add a node.
+    <div className="collectionDetail-noNodesYet">
+        <span className="collectionDetail-noNodesYet-text">
+            This collection has no nodes yet<br/>Click <span className="collectionDetail-noNodesYet-start" onClick={() => props.createNode(defaultNode)}>here</span> to add a node.
         </span>
     </div>
 )
@@ -51,12 +74,7 @@ function loadData(props) {
 export class CollectionDetail extends React.Component { // eslint-disable-line react/prefer-stateless-function
 
     componentWillMount() {
-
-
-        const { nodeId, showGraphSideBar } = this.props
         loadData(this.props)
-            .then((action) => this.props.setTitle(`Collection - ${action.response.entities.collections[action.response.result.collection].name}`))
-
     }
 
     componentWillReceiveProps(nextProps) {
@@ -99,10 +117,8 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
                         />
                         : <NoNodesYet createNode={() => this.props.showAddNodeToCollectionWindow({ collection })}/>
                 }
-            <div className="collectionDetail-buttons">
-                <AddNodeToCollectionButton
-                    showAddNodeToCollectionWindow={() => this.props.showAddNodeToCollectionWindow({ collection })}
-                />
+            <div className="editModeButton-container">
+                <EditModeButton />
             </div>
         </div>
 
@@ -127,12 +143,8 @@ function mapStateToProps(state, props) {
     }
 }
 
-import { loadNode, loadCollection } from '../../actions/async'
-import { showAddNodeToCollectionWindow, setTitle } from '../../actions/ui'
-
 export default connect(mapStateToProps, {
     loadCollection,
     loadNode,
     showAddNodeToCollectionWindow,
-    setTitle,
 })(CollectionDetail);

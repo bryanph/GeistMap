@@ -92,6 +92,7 @@ class ContentEditorShortcuts extends React.Component {
     }
 
     render() {
+        // TODO: just manage this state locally - 2017-06-18
         if (!this.props.shortcutWindow) {
             return null
         }

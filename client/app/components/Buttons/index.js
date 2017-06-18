@@ -22,7 +22,7 @@ const styles = {
 
 export const TrashButton = (props) => (
     <FlatButton
-        label="Trash"
+        label="Delete"
         icon={<Delete />}
         primary={true}
         labelStyle={styles.labelStyle}

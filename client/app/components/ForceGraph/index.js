@@ -448,6 +448,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         updateCollection: actions.updateCollection,
         setActiveCollection: actions.setActiveCollection,
         connectCollections: actions.connectCollections,
+        stopSimulation: actions.stopSimulation,
         editNode: function(d, selection) {
             currentEvent.stopPropagation()
 
