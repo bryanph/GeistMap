@@ -1,0 +1,44 @@
+@import '~styles/settings';
+
+.svg-content {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: $topbar-height;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.node:hover {
+    cursor: pointer;
+    fill: #000000;
+}
+
+.node text {
+    fill: #0F073B;
+    stroke: none;
+    font-size: 1em;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.node-link {
+    stroke: $accent-color;
+    stroke-width: 3px;
+    stroke-opacity: .6;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    /* shaft-width: 1px; */
+    /* stroke-width:1.5px */
+    /* font-size: 8px; */
+    /* padding: 3px; */
+    /* text-color-external: #000000; */
+    /* text-color-internal: #FFFFFF; */
+}
+
+
+

@@ -7,7 +7,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import ForceGraph from '../../components/ForceGraph'
+import NodeGraph from '../../components/NodeGraph'
 import AddButton from '../../components/AddButton'
 import NodeToolbar from '../../containers/NodeToolbar'
 import Spinner from '../../components/Spinner'
@@ -108,7 +108,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
                 }
                 {
                     nodes.length ?
-                        <ForceGraph 
+                        <NodeGraph 
                             nodes={nodes || []}
                             links={links || []}
                             collectionId={this.props.collectionId} 

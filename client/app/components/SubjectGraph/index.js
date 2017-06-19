@@ -1,4 +1,5 @@
 
+
 import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import ReactDOM from 'react-dom'
@@ -302,7 +303,7 @@ const createEnterCollectionLink = function(actions) {
         return selection
             .append("path")
             .attr('id', (d) => `link-${d.id}`) // for later reference from data
-            .attr("class", "node-link collection-link")
+            .attr("class", "node-link subject-link")
             .classed("editMode", editMode)
             // .attr("marker-end", "url(#Triangle)")
             // .on('dblclick', actions.doubleClick)
@@ -312,102 +313,6 @@ const createEnterCollectionLink = function(actions) {
         // .attr("class", "node-link")
         // .on('dblclick', events.linkDoubleClick)
         // .attr("marker-mid", "url(#Triangle)")
-    }
-}
-
-const createInboxEvents = function(simulation, actions) {
-    /*
-     * in first call creates the drag() object
-     * Afterwards, can be called with node an link DOM nodes
-     */
-    const onNodeClick = (d) => {
-        actions.history.push(`/app/inbox/${d.id}`)
-    }
-
-    const drag = createDrag(simulation)({ 
-        connect: actions.connectNodes,
-        click: onNodeClick,
-    })
-
-    // TODO: find a way to not have to bind with this here
-    // problem is that in the drag event require the actual 'nodes'
-    const nodeDrag = d3Drag()
-        .on('drag', drag.drag.bind(this))
-        .on('start', drag.dragstart.bind(this))
-        .on('end', drag.dragend.bind(this))
-
-    const enterNode = createEnterNode({
-        click: onNodeClick
-    })
-    const enterLink = createEnterLink({
-        doubleClick: (d) => actions.removeEdge(d.id)
-    })
-
-    return (node, link) => {
-        // EXIT selection
-        node.exit().remove()
-        // ENTER selection
-        node.enter().append('g').call(enterNode).call(nodeDrag)
-        // ENTER + UPDATE selection
-            .merge(node).call(updateNode)
-        
-        // EXIT selection
-        link.exit().remove()
-        // ENTER selection
-        link.enter().insert('g', ":first-child").call(enterLink)
-        // ENTER + UPDATE selection
-        // .merge(link).call(updateLink)
-    }
-}
-
-
-const createExploreEvents = function(simulation, actions) {
-    /*
-     * in first call creates the drag() object
-     * Afterwards, can be called with node an link DOM nodes
-     */
-    const onNodeClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}`)
-    }
-
-    const onConnect = (from, to) => {
-        // TODO: make sure this change is represented in the graph
-        return actions.connectNodes(from, to)
-    }
-
-    const drag = createDrag(simulation)({ 
-        connect: onConnect,
-        click: onNodeClick,
-    })
-
-    // TODO: find a way to not have to bind with this here
-    // problem is that in the drag event require the actual 'nodes'
-    const nodeDrag = d3Drag()
-        .on('drag', drag.drag.bind(this))
-        .on('start', drag.dragstart.bind(this))
-        .on('end', drag.dragend.bind(this))
-
-    const enterNode = createEnterNode({
-        click: onNodeClick
-    })
-    const enterLink = createEnterLink({
-        doubleClick: (d) => actions.removeEdge(d.id)
-    })
-
-    return (node, link) => {
-        // EXIT selection
-        node.exit().remove()
-        // ENTER selection
-        node.enter().append('g').call(enterNode).call(nodeDrag)
-        // ENTER + UPDATE selection
-            .merge(node).call(updateNode)
-        
-        // EXIT selection
-        link.exit().remove()
-        // ENTER selection
-        link.enter().insert('g', ":first-child").call(enterLink)
-        // ENTER + UPDATE selection
-        // .merge(link).call(updateLink)
     }
 }
 
@@ -477,7 +382,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
 
         return (selection) => {
             selection
-                .attr("class", "node addCollection-node")
+                .attr("class", "node addSubject-node")
 
             selection.on('click', actions.onClick)
 
@@ -500,7 +405,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         return (selection) => {
             return selection
                 .append("path")
-                .attr("class", "node-link addCollection-link")
+                .attr("class", "node-link addSubject-link")
                 // .on('dblclick', actions.doubleClick)
         }
     }
@@ -582,58 +487,8 @@ const createCollectionOverviewEvents = function(simulation, actions) {
     }
 }
 
-const createCollectionDetailEvents = function(simulation, collectionId, actions) {
-    /*
-     * in first call creates the drag() object
-     * Afterwards, can be called with node an link DOM nodes
-     */
-    const onNodeClick = (d) => {
-        actions.history.push(`/app/collections/${collectionId}/nodes/${d.id}`)
-    }
 
-    const onConnect = (from, to) => {
-        // TODO: make sure this change is represented in the graph
-        return actions.connectNodes(from, to)
-    }
-
-    const drag = createDrag(simulation)({ 
-        connect: onConnect,
-        click: onNodeClick,
-    })
-
-    // TODO: find a way to not have to bind with this here
-    // problem is that in the drag event require the actual 'nodes'
-    const nodeDrag = d3Drag()
-        .on('drag', drag.drag.bind(this))
-        .on('start', drag.dragstart.bind(this))
-        .on('end', drag.dragend.bind(this))
-
-    const enterNode = createEnterNode({
-        click: onNodeClick
-    })
-    const enterLink = createEnterLink({
-        doubleClick: (d) => actions.removeEdge(d.id)
-    })
-
-    return (node, link) => {
-        // EXIT selection
-        node.exit().remove()
-        // ENTER selection
-        node.enter().append('g').call(enterNode).call(nodeDrag)
-        // ENTER + UPDATE selection
-            .merge(node).call(updateNode)
-        
-        // EXIT selection
-        link.exit().remove()
-        // ENTER selection
-        link.enter().insert('g', ":first-child").call(enterLink)
-        // ENTER + UPDATE selection
-        // .merge(link).call(updateLink)
-    }
-}
-
-
-class ForceGraph extends React.Component {
+class SubjectGraph extends React.Component {
     constructor(props) {
         super(props)
 
@@ -654,26 +509,6 @@ class ForceGraph extends React.Component {
             editFocus, // is a single node being edited?
         } = nextProps
 
-        // TODO: I actually need previous graph-type events as well in order to do a proper exit() call
-        // let events;
-        // switch(graphType) {
-        //     case 'inbox':
-        //         events = inboxEvents;
-        //         break;
-        //     case 'explore':
-        //         events = exploreEvents;
-        //         break;
-        //     case 'collectionDetail':
-        //         events = collectionDetailEvents;
-        //         break;
-        //     case 'collectionOverview':
-        //         events = collectionOverviewEvents;
-        //         break;
-        //     default:
-        //         console.error('This should not happen!')
-        //         break;
-        // }
-
         let nodeById = {}
 
         // TODO: this only applies to CollectionOverview
@@ -682,14 +517,12 @@ class ForceGraph extends React.Component {
 
         // set extra properties here
         nodes.forEach(node => {
-            if (node.type !== 'addCollection') {
-                node.radius = radiusScale(node.count || 0)
+            node.radius = radiusScale(node.count || 0)
 
-                if (node.isRootCollection) {
-                    node.radius = MAX_NODE_RADIUS
-                    node.fx = WIDTH / 2
-                    node.fy = HEIGHT / 2
-                }
+            if (node.isRootCollection) {
+                node.radius = MAX_NODE_RADIUS
+                node.fx = WIDTH / 2
+                node.fy = HEIGHT / 2
             }
 
             nodeById[node.id] = node
@@ -708,28 +541,7 @@ class ForceGraph extends React.Component {
             .data(links, link => link.id)
 
         // enter-update-exit cycle depending on type of graph
-        if (graphType === 'inbox') {
-            this.inboxEvents(node, link)
-        } else if (graphType === 'explore') {
-            this.exploreEvents(node, link)
-        } else if (graphType === 'collectionOverview') {
-            this.collectionOverviewEvents(node, link, editMode, editFocus)
-        } else if (graphType === 'collectionDetail') {
-            this.collectionDetailEvents(node, link)
-        } else {
-            console.error('this should not happen!')
-        }
-
-        console.log(graphType);
-        if (graphType !== this.props.graphType) {
-                console.log('recreating simulation...');
-            if (graphType === 'collectionOverview') {
-                this.simulation = createCollectionSimulation(WIDTH, HEIGHT, this.simulation)
-            }
-            else {
-                this.simulation = createNodeSimulation(WIDTH, HEIGHT, this.simulation)
-            }
-        }
+        this.collectionOverviewEvents(node, link, editMode, editFocus)
 
         this.simulation.nodes(nodes)
         this.simulation.force("link").links(links)
@@ -758,27 +570,10 @@ class ForceGraph extends React.Component {
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
         this.container.append('defs').call(arrowHead)
 
-        if (graphType === 'collectionOverview') {
-            this.simulation = createCollectionSimulation(WIDTH, HEIGHT)
-        }
-        else {
-            this.simulation = createNodeSimulation(WIDTH, HEIGHT)
-        }
+        this.simulation = createCollectionSimulation(WIDTH, HEIGHT)
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
 
-        this.inboxEvents = createInboxEvents.call(this, this.simulation, {
-            history: this.props.history,
-            removeEdge,
-            connectNodes,
-        })
-        // TODO: connectNodes requires a re-fetch at the moment
-        this.exploreEvents = createExploreEvents.call(this, this.simulation, {
-            history: this.props.history,
-            removeEdge,
-            connectNodes,
-        })
-        // TODO: where to do the data fetching required for the different graphs?
         this.collectionOverviewEvents = createCollectionOverviewEvents.call(this, this.simulation, {
             history: this.props.history,
             removeEdge: removeCollectionEdge,
@@ -790,12 +585,6 @@ class ForceGraph extends React.Component {
             zoomToNode: this.zoom.zoomToNode,
             restartSimulation: this.restartSimulation,
             stopSimulation: this.stopSimulation,
-        })
-        // TODO: collectionId should be not be static like this - 2017-05-21
-        this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collectionId, {
-            history: this.props.history,
-            removeEdge,
-            connectNodes,
         })
 
         //TODO: set to true on initial tick
@@ -845,7 +634,7 @@ class ForceGraph extends React.Component {
         )
     }
 }
-ForceGraph.propTypes = {
+SubjectGraph.propTypes = {
     nodes: PropTypes.arrayOf(PropTypes.object).isRequired,
     links: PropTypes.arrayOf(PropTypes.object).isRequired,
 
@@ -853,4 +642,4 @@ ForceGraph.propTypes = {
     removeEdge: PropTypes.func.isRequired,
 }
 
-export default withRouter(ForceGraph)
+export default withRouter(SubjectGraph)

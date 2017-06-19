@@ -10,8 +10,8 @@ import { withRouter } from 'react-router-dom'
 
 import './styles.scss'
 
-import ForceGraph from '../../containers/ForceGraph'
-import NodeToolbar from '../../containers/NodeToolbar'
+import NodeGraph from '../../components/NodeGraph'
+import NodeToolbar from '../../components/NodeToolbar'
 import { AddButton } from '../../components/Buttons'
 import Spinner from '../../components/Spinner'
 
@@ -100,7 +100,7 @@ export class Inbox extends React.Component { // eslint-disable-line react/prefer
                 }
                 {
                     nodes.length ?
-                        <ForceGraph 
+                        <NodeGraph 
                             nodes={nodes}
                             links={links}
                             selectedId={selectedNode && selectedNode.id}

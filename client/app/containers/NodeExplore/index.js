@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 
 import NodeSearch from '../../containers/NodeSearch'
 import Spinner from '../../components/Spinner'
-import ForceGraph from '../../containers/ForceGraph'
+import NodeGraph from '../../components/NodeGraph'
 import NodeToolbar from '../../containers/NodeToolbar'
 import SwitchGraphView from '../../components/SwitchGraphView'
 
@@ -86,7 +86,7 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
                 }
             {
                 this.props.id ? // instead check for loading state here...
-                    <ForceGraph 
+                    <NodeGraph 
                         id={this.props.id}
                         nodes={this.props.nodes || []}
                         links={this.props.edges || []}

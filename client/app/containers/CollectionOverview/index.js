@@ -7,7 +7,7 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
 
-import ForceGraph from '../../components/ForceGraph'
+import SubjectGraph from '../../components/SubjectGraph'
 import { accentColor } from '../App/muitheme.js'
 
 import { AddButton } from '../../components/Buttons'
@@ -87,7 +87,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
 
         return (
             <div className='appContainer'>
-                <ForceGraph
+                <SubjectGraph
                     selectedId={this.props.id}
                     nodes={collections || []}
                     links={collectionLinks || []} 

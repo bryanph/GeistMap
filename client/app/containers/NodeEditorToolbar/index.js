@@ -17,43 +17,7 @@ import Spinner, { InlineSpinner } from '../../components/Spinner'
 
 import { accentColor } from '../../containers/App/muitheme'
 
-// TODO: share these styles between components - 2016-10-15
-const styles = {
-    cardTitle: {
-        textAlign: 'center'
-    },
-    cardActions: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-        maxWidth: '1000px',
-        marginTop: '10px',
-        marginRight: '10px'
-    },
-    collapseButton: {
-        zIndex: 99,
-        position: 'absolute',
-        right: 0,
-        top: 0
-    },
-    nodeTitle: {
-        textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: '16px 0',
-        color: accentColor
-    },
-    nodeCollectionList: {
-        textAlign: 'center'
-    },
-    leftBottom: {
-        display: 'inline',
-        position: 'absolute',
-        bottom: '0px',
-        left: '30px',
-    },
-}
-
-export class NodeEditorToolbar extends React.Component { // eslint-disable-line react/prefer-stateless-function
+export class NodeEditorToolbar extends React.Component {
     constructor(props) {
         super(props)
 
@@ -127,7 +91,7 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
                         { loadingStates.GET_NODE ? <InlineSpinner size={1} /> : null }
                     </div>
                     <div className="nodeToolbar-title">
-                        <NodeTitle 
+                        <NodeTitle
                             title={this.props.node.name} 
                             updateNode={this.props.updateNode.bind(this, this.props.node.id)}
                         />
@@ -142,16 +106,6 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
                         />
                     </div>
                     <div className="nodeToolbar-cardActions">
-                        <GraphButton
-                            onTouchTap={this.toGraphView}
-                        />
-                        {
-                            this.props.page.startsWith('collections') ?
-                                <CollectionGraphButton
-                                    onTouchTap={this.editCollection}
-                                />
-                                : null
-                        }
                         {
                             this.props.page !== "nodes" ?
                                 <ExploreButton
@@ -161,9 +115,6 @@ export class NodeEditorToolbar extends React.Component { // eslint-disable-line 
                         }
                         <AddRelationButton
                             onTouchTap={this.addRelation}
-                        />
-                        <DuplicateButton
-                            onTouchTap={this.duplicateNode}
                         />
                         <TrashButton
                             onTouchTap={this.removeNode}
