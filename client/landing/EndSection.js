@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import Signup from '../auth/Signup'
 
 export default class EndSection extends React.Component {

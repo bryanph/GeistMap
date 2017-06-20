@@ -1,6 +1,6 @@
 
 import _ from 'lodash'
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import './styles.css'
 
 import { accentColor, secondaryTextColor } from '../../containers/App/muitheme.js'

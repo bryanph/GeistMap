@@ -4,7 +4,7 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import { withRouter } from 'react-router-dom'
 import { FlatButton, Dialog } from 'material-ui'
@@ -38,6 +38,10 @@ export const OrDivider = (props) => (
 
 // TODO: this redux pattern for modals can be generalized into a HOC - 2016-07-12
 class AddCollectionRelationWindow extends React.Component {
+
+    static defaultProps = {
+        open: false
+    }
 
     constructor(props) {
         super(props);
@@ -144,12 +148,5 @@ class AddCollectionRelationWindow extends React.Component {
         );
     }
 }
-AddCollectionRelationWindow.propTypes = {
-    id: PropTypes.string.isRequired,
-    hideAddRelationWindow: PropTypes.func.isRequired,
-    addEdge: PropTypes.func.isRequired,
-    editorState: PropTypes.object.isRequired,
-    setEditorState: PropTypes.func.isRequired,
-};
 
 export default withRouter(AddCollectionRelationWindow);

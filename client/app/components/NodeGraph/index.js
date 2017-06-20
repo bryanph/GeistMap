@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, { PropTypes } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
 
 import { scaleLinear } from 'd3-scale'
@@ -428,13 +428,6 @@ class NodeGraph extends React.Component {
 
         )
     }
-}
-NodeGraph.propTypes = {
-    nodes: PropTypes.arrayOf(PropTypes.object).isRequired,
-    links: PropTypes.arrayOf(PropTypes.object).isRequired,
-
-    // connectNodes: PropTypes.func.isRequired,
-    // removeEdge: PropTypes.func.isRequired,
 }
 
 export default withRouter(NodeGraph)

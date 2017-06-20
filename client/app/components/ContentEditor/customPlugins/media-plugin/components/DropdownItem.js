@@ -4,37 +4,33 @@
  * License: MIT
  */
 
-import React, {Component, PropTypes} from "react";
+import React, { Component } from "react";
 import classNames from "classnames";
 
 
 export default class DropdownItem extends Component {
+    props: {
+        item: {},
+        selected: string,
+        onChange: func,
+    }
 
-  static propTypes = {
-    item: PropTypes.object.isRequired,
-    style: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.array
-    ]),
-    onClick: PropTypes.func
-  }
+    render() {
+        const Icon = this.props.item.icon;
+        const className = classNames("dropdown__item ", this.props.className);
 
-  render() {
-    const Icon = this.props.item.icon;
-    const className = classNames("dropdown__item ", this.props.className);
+        return(
+            <div
+                className={className}
+                onClick={this.props.onClick}
+                onMouseDown={this.props.onMouseDown}
+                onMouseUp={this.props.onMouseDown}>
 
-    return(
-      <div
-        className={className}
-        onClick={this.props.onClick}
-        onMouseDown={this.props.onMouseDown}
-        onMouseUp={this.props.onMouseDown}>
+                <Icon className="dropdown__item__icon" />
+                <span className="dropdown__item__text">{this.props.item.label}</span>
 
-        <Icon className="dropdown__item__icon" />
-        <span className="dropdown__item__text">{this.props.item.label}</span>
-
-        {this.props.children}
-      </div>
-    );
-  }
+                {this.props.children}
+            </div>
+        );
+    }
 }

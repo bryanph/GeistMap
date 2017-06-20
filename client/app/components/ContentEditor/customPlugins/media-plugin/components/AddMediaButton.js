@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 // import InsertAtomicBlockCustomType from '../../../utils/insertAtomicBlockCustomType'
 import { insertDataBlock } from '../../../utils/block'
 import { Entity } from 'draft-js'
@@ -74,9 +74,6 @@ export class AddMediaInput extends React.Component {
         )
     }
 }
-AddMediaInput.propTypes = {
-    
-}
 
 class AddMediaButton extends React.Component {
     constructor(props) {
@@ -104,10 +101,6 @@ AddMediaButton.defaultProps = {
     theme: {
         button: 'add-media-button'
     }
-}
-AddMediaButton.propTypes = {
-    editorState: PropTypes.object.isRequired,
-    setEditorState: PropTypes.func.isRequired,
 }
 
 export default AddMediaButton

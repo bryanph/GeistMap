@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import BlockContent from "./BlockContent"
 import BlockData from "./BlockData"
@@ -50,9 +50,6 @@ class VideoBlock extends React.Component {
             </CommonBlock>           
         )
     }
-}
-VideoBlock.propTypes = {
-
 }
 
 

@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import _ from 'lodash'
 
 import { EditorState, RichUtils, Entity, KeyBindingUtil, AtomicBlockUtils, SelectionState, Modifier, BlockMapBuilder, ContentBlock } from 'draft-js'

@@ -4,7 +4,7 @@
  * License: MIT
  */
 
-import React, {Component, PropTypes} from "react";
+import React, { Component } from "react";
 import ReactDOM from "react-dom";
 import classNames from "classnames";
 
@@ -14,110 +14,104 @@ import DropdownArrow from 'material-ui/svg-icons/hardware/keyboard-arrow-down';
 
 export default class Dropdown extends Component {
 
-  static propTypes = {
-    items: React.PropTypes.arrayOf(
-      React.PropTypes.shape({
-        key: PropTypes.string.isRequired,
-        icon: PropTypes.func.isRequired,
-        label: PropTypes.string.isRequired
-      })
-    ),
-    selected: PropTypes.string,
-    onChange: PropTypes.func.isRequired
-  }
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      isOpen: false
-    };
-    this.handleDocumentClick = this.handleDocumentClick.bind(this);
-    this.toggleDropDown = this.toggleDropDown.bind(this);
-    this.preventSelection = this.preventSelection.bind(this);
-    this.renderItem = this.renderItem.bind(this);
-  }
-
-  isEmpty() {
-    const items = this.props.items || [];
-    return (items.length == 0) ? true : false;
-  }
-
-  onChange(selected) {
-    this.props.onChange(selected);
-  }
-
-  renderItem(item) {
-    return(
-      <li key={item.key}>
-        <DropdownItem item={item}
-          className="dropdown__option"
-          onClick={() => this.onChange(item.key)} />
-      </li>
-    );
-  }
-
-  preventSelection(event) {
-    event.preventDefault();
-  }
-
-  toggleDropDown(event) {
-    this.setState({isOpen: !this.state.isOpen});
-  }
-
-  handleDocumentClick(event) {
-    if (this.isEmpty()) {
-      return null;
-    }
-    if (!ReactDOM.findDOMNode(this).contains(event.target)) {
-      this.setState({isOpen: false});
-    }
-  }
-
-  componentDidMount () {
-    document.addEventListener("click", this.handleDocumentClick, false);
-  }
-
-  componentWillUnmount () {
-    document.removeEventListener("click", this.handleDocumentClick, false);
-  }
-
-  render() {
-    if (this.isEmpty()) {
-      return null;
+    props: {
+        items: Array<{ key: string, icon: func, label: string }>,
+        selected: string,
+        onChange: func,
     }
 
-    const selectedItem = this.props.items.filter(
-      (obj) => {return obj.key === this.props.selected;}
-    )[0];
+    constructor(props) {
+        super(props);
+        this.state = {
+            isOpen: false
+        };
+        this.handleDocumentClick = this.handleDocumentClick.bind(this);
+        this.toggleDropDown = this.toggleDropDown.bind(this);
+        this.preventSelection = this.preventSelection.bind(this);
+        this.renderItem = this.renderItem.bind(this);
+    }
 
-    const {isOpen} = this.state;
+    isEmpty() {
+        const items = this.props.items || [];
+        return (items.length == 0) ? true : false;
+    }
 
-    const wrapperClassName = classNames("dropdown__wrapper", {
-      "dropdown__wrapper--open": isOpen
-    });
+    onChange(selected) {
+        this.props.onChange(selected);
+    }
 
-    const dropdownClassName = classNames("dropdown", {
-      "dropdown--open": isOpen
-    });
+    renderItem(item) {
+        return(
+            <li key={item.key}>
+                <DropdownItem item={item}
+                    className="dropdown__option"
+                    onClick={() => this.onChange(item.key)} />
+            </li>
+        );
+    }
 
-    const arrowClassName = classNames("dropdown__arrow", {
-      "dropdown__arrow--open": isOpen
-    });
+    preventSelection(event) {
+        event.preventDefault();
+    }
 
-    return(
-      <div className={wrapperClassName} onClick={this.toggleDropDown}>
-        <DropdownItem
-          item={selectedItem}
-          className="dropdown__item--selected"
-          onMouseDown={this.preventSelection}>
+    toggleDropDown(event) {
+        this.setState({isOpen: !this.state.isOpen});
+    }
 
-          <DropdownArrow className={arrowClassName} />
-        </DropdownItem>
+    handleDocumentClick(event) {
+        if (this.isEmpty()) {
+            return null;
+        }
+        if (!ReactDOM.findDOMNode(this).contains(event.target)) {
+            this.setState({isOpen: false});
+        }
+    }
 
-        <ul className={dropdownClassName}>
-          {this.props.items.map(this.renderItem)}
-        </ul>
-      </div>
-    );
-  }
+    componentDidMount () {
+        document.addEventListener("click", this.handleDocumentClick, false);
+    }
+
+    componentWillUnmount () {
+        document.removeEventListener("click", this.handleDocumentClick, false);
+    }
+
+    render() {
+        if (this.isEmpty()) {
+            return null;
+        }
+
+        const selectedItem = this.props.items.filter(
+            (obj) => {return obj.key === this.props.selected;}
+        )[0];
+
+        const {isOpen} = this.state;
+
+        const wrapperClassName = classNames("dropdown__wrapper", {
+            "dropdown__wrapper--open": isOpen
+        });
+
+        const dropdownClassName = classNames("dropdown", {
+            "dropdown--open": isOpen
+        });
+
+        const arrowClassName = classNames("dropdown__arrow", {
+            "dropdown__arrow--open": isOpen
+        });
+
+        return(
+            <div className={wrapperClassName} onClick={this.toggleDropDown}>
+                <DropdownItem
+                    item={selectedItem}
+                    className="dropdown__item--selected"
+                    onMouseDown={this.preventSelection}>
+
+                    <DropdownArrow className={arrowClassName} />
+                </DropdownItem>
+
+                <ul className={dropdownClassName}>
+                    {this.props.items.map(this.renderItem)}
+                </ul>
+            </div>
+        );
+    }
 }

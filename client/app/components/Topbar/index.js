@@ -2,7 +2,6 @@
 
 import _ from 'lodash'
 import React from 'react'
-import { PropTypes } from 'react'
 import { connect } from 'react-redux'
 import classNames from 'classnames'
 import { Link, withRouter } from 'react-router-dom'
@@ -103,9 +102,6 @@ class Topbar extends React.Component {
         )
 
     }
-}
-Topbar.propTypes = {
-    
 }
 
 import { createNode, createBatchNode } from '../../actions/async'

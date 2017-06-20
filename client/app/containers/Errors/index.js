@@ -35,6 +35,10 @@ class Errors extends React.Component {
     render() {
         const { error } = this.props
 
+        if (!error || !error.message) {
+            return null
+        }
+
         return (
             <div>
                 <Snackbar

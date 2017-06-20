@@ -1,10 +1,10 @@
 /**
-*
-* ConnectWindow
-*
-*/
+ *
+ * ConnectWindow
+ *
+ */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import styles from './styles.css';
 
@@ -78,42 +78,35 @@ class ConnectWindow extends React.Component {
         // TODO: focus on editor after close - 2016-07-08
         // this.props.focusEditor()
     }
-  render() {
+    render() {
 
-      const actions = [
-          <FlatButton
-              label="Cancel"
-              primary={true}
-              onTouchTap={this.handleCancel}
-          />,
-      ];
+        const actions = [
+            <FlatButton
+                label="Cancel"
+                primary={true}
+                onTouchTap={this.handleCancel}
+            />,
+        ];
 
-    return (
-      <div>
-          <Dialog
-              title="Search for a Node"
-              actions={actions}
-              modal={false}
-              open={this.props.open}
-              onRequestClose={this.handleClose}
-          >
-              <NodeSearch
-                  id={this.props.id}
-                  onSearchClick={this.connectNodes}
-                  className={"connectWindow-nodeSearch"}
-                  nodeSearchListClass={"connectWindow-nodeSearch-list"}
-              />
-          </Dialog>
-      </div>
-    );
-  }
+        return (
+            <div>
+                <Dialog
+                    title="Search for a Node"
+                    actions={actions}
+                    modal={false}
+                    open={this.props.open}
+                    onRequestClose={this.handleClose}
+                >
+                    <NodeSearch
+                        id={this.props.id}
+                        onSearchClick={this.connectNodes}
+                        className={"connectWindow-nodeSearch"}
+                        nodeSearchListClass={"connectWindow-nodeSearch-list"}
+                    />
+                </Dialog>
+            </div>
+        );
+    }
 }
-ConnectWindow.propTypes = {
-    id: PropTypes.string.isRequired,
-    hideConnectWindow: PropTypes.func.isRequired,
-    addEdge: PropTypes.func.isRequired,
-    editorState: PropTypes.object.isRequired,
-    setEditorState: PropTypes.func.isRequired,
-};
 
 export default ConnectWindow;

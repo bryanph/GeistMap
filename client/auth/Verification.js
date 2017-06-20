@@ -1,6 +1,6 @@
 
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { withRouter } from "react-router-dom"
 import { Link } from "react-router-dom"
 import fetchJSON from './utils/fetch'
@@ -16,127 +16,114 @@ import FlatButton from 'material-ui/FlatButton';
 
 const AccountVerification  = React.createClass({
 
-  propTypes: {
-      oauthMessage: PropTypes.string,
-      oauthTwitter: PropTypes.bool.isRequired,
-      oauthGitHub: PropTypes.bool.isRequired,
-      oauthFacebook: PropTypes.bool.isRequired,
-      oauthGoogle: PropTypes.bool.isRequired,
-  },
+    handleResponse: function(json, response) {
+        if (Object.keys(json.errfor).length) {
+            return this.setState({validationErrors: json.errfor})
+        }
+        if (json.errors.length) {
+            return this.setState({errors: json.errors})
+        }
 
-  handleResponse: function(json, response) {
-      if (Object.keys(json.errfor).length) {
-          return this.setState({validationErrors: json.errfor})
-      }
-      if (json.errors.length) {
-          return this.setState({errors: json.errors})
-      }
+        // // TODO: account verification - 2016-05-10
+        // window.location = '/'
 
-      // // TODO: account verification - 2016-05-10
-      // window.location = '/'
+        this.props.history.push('/auth/account/verification/success')
 
-      this.props.history.push('/auth/account/verification/success')
+        // this.props.history.push('/auth/login/forgot/success')
+        // this.props.history.push('/auth/login/forgot/success')
+    },
 
-      // this.props.history.push('/auth/login/forgot/success')
-      // this.props.history.push('/auth/login/forgot/success')
-  },
+    handleError: function(error) {
+        console.error(error.stack);
+    },
 
-  handleError: function(error) {
-      console.error(error.stack);
-  },
+    getInitialState: function() {
+        return {
+            errors: [],
+            validationErrors: {},
+        }
+    },
 
-  getInitialState: function() {
-      return {
-          errors: [],
-          validationErrors: {},
-      }
-  },
+    render: function() {
+        const {
+            oauthTwitter,
+            oauthGitHub,
+            oauthFacebook,
+            oauthGoogle,
+        } = this.props
 
-  render: function() {
-    const {
-      oauthTwitter,
-      oauthGitHub,
-      oauthFacebook,
-      oauthGoogle,
-    } = this.props
+        const {
+            errors,
+            validationErrors,
+        } = this.state
 
-    const {
-        errors,
-        validationErrors,
-    } = this.state
+        return (
 
-    return (
+            <div className="interact panel with-logo">
+                <h3>Email confirmation</h3>
+                <p>An email has been sent to your email adress, follow the instructions in the mail to complete your sign-up</p>
+                <VerificationForm 
+                    handleError={this.handleError}
+                    handleResponse={this.handleResponse}
+                />
 
-    <div className="interact panel with-logo">
-        <h3>Email confirmation</h3>
-        <p>An email has been sent to your email adress, follow the instructions in the mail to complete your sign-up</p>
-        <VerificationForm 
-          handleError={this.handleError}
-          handleResponse={this.handleResponse}
-        />
+            { validationErrors ? <ValidationErrors errors={validationErrors} /> : null }
+            { errors ? <RenderErrors errors={errors} /> : null }
+        </div>
 
-        { validationErrors ? <ValidationErrors errors={validationErrors} /> : null }
-        { errors ? <RenderErrors errors={errors} /> : null }
-      </div>
-
-    )
-  }
+        )
+    }
 })
 
 export default withRouter(AccountVerification)
 
 export const VerificationForm = React.createClass({
 
-  propTypes: {
-        handleError: PropTypes.func.isRequired,
-        handleResponse: PropTypes.func.isRequired,
-  },
+    getInitialState: function() {
+        return {
+            email: '',
+        }
+    },
 
-  getInitialState: function() {
-    return {
-      email: '',
+    handleSubmit: function(e) {
+        e.preventDefault()
+
+        fetchJSON('/auth/account/verification', {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                email: this._email.getValue(),
+            })
+        })
+            .then(this.props.handleResponse)
+            .catch(this.props.handleError)
+    },
+
+    render: function() {
+
+        return (
+            <form id="verification-form" ref={c => this._form = c}>
+                <TextField
+                    hintText="email"
+                    ref={c => this._email = c}
+                    type="email"
+                />
+                <FlatButton
+                    onClick={this.handleSubmit}   
+                    label="Resend email"
+                    primary={true}
+                    style={{marginTop: '20px'}}
+                />
+            </form>
+
+        )
     }
-  },
-
-  handleSubmit: function(e) {
-      e.preventDefault()
-
-      fetchJSON('/auth/account/verification', {
-          method: 'POST',
-          headers: getHeaders(),
-          body: JSON.stringify({
-              email: this._email.getValue(),
-          })
-      })
-      .then(this.props.handleResponse)
-      .catch(this.props.handleError)
-  },
-
-  render: function() {
-    
-    return (
-        <form id="verification-form" ref={c => this._form = c}>
-            <TextField
-                hintText="email"
-                ref={c => this._email = c}
-                type="email"
-            />
-          <FlatButton
-            onClick={this.handleSubmit}   
-            label="Resend email"
-            primary={true}
-            style={{marginTop: '20px'}}
-          />
-        </form>
-
-    )
-  }
 })
 
 export const VerificationResendSuccess = (props) => (
-      <div className="interact panel with-logo">
+    <div className="interact panel with-logo">
         <div className="logo"></div>
         <h3>Email confirmation</h3>
         <p>Another verification email has been sent to your email address, click on the link in the email to activate your account</p>
-      </div>
+    </div>
 )

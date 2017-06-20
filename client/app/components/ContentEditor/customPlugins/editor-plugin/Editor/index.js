@@ -15,13 +15,13 @@ import { List } from 'immutable';
  */
 class PluginEditor extends Component {
 
-    static propTypes = {
-        editorState: React.PropTypes.object.isRequired,
-        onChange: React.PropTypes.func.isRequired,
-        plugins: React.PropTypes.array,
-        defaultKeyBindings: React.PropTypes.bool,
-        customStyleMap: React.PropTypes.object,
-        decorators: React.PropTypes.array,
+    props: {
+        editorState: {},
+        onChange: func,
+        plugins: [],
+        defaultKeyBindings: boolean,
+        customStyleMap: {},
+        decorators: [],
     };
 
     static defaultProps = {

@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import React, { PropTypes } from 'react'
+import React from 'react'
 
 import './styles.css'
 
@@ -42,9 +42,6 @@ export function controlled(InputComponent) {
             )
         }
     }
-    ControlledInput.propTypes = {
-        
-    }
 
     return ControlledInput
 }
@@ -84,10 +81,6 @@ export function debounced(Component, timeout=1000) {
                 <Component {...this.props} onChange={this.onChange} />
             )
         }
-    }
-    DebouncedComponent.propTypes = {
-        debouncedOnChange: PropTypes.func.isRequired,
-        onChange: PropTypes.func,
     }
 
     return DebouncedComponent

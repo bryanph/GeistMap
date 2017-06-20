@@ -4,7 +4,7 @@
 *
 */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import enhanceWithClickOutside from 'react-onclickoutside'
 import { DebouncedTextField } from '../../components/Input'
 
@@ -46,10 +46,6 @@ class InputText extends React.Component {
         )
     }
 }
-InputText.propTypes = {
-    
-}
-
 
 const DebouncedInput = debounced(controlled(InputText))
 
@@ -136,13 +132,8 @@ class EditableTitle extends React.Component {
                 }
 
             </div>
-            
         )
     }
-}
-EditableTitle.propTypes = {
-    title: PropTypes.string.isRequired,
-    updateNode: PropTypes.func.isRequired,
 }
 
 export default enhanceWithClickOutside(EditableTitle);

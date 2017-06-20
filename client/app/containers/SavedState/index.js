@@ -4,7 +4,7 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import classNames from 'classnames'
 
@@ -52,9 +52,6 @@ class SavedState extends React.Component {
             </div>
         )
     }
-}
-SavedState.propTypes = {
-    saved: PropTypes.bool.isRequired
 }
 
 import { isSynced } from '../../reducers'

@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import classNames from 'classnames'
 
 import RaisedButton from 'material-ui/RaisedButton';
@@ -78,12 +78,5 @@ export const SocialAuth = (props) => (
         }
     </div>
 )
-SocialAuth.propTypes = {
-    oauthMessage: PropTypes.string,
-    oauthTwitter: PropTypes.bool.isRequired,
-    oauthGitHub: PropTypes.bool.isRequired,
-    oauthFacebook: PropTypes.bool.isRequired,
-    oauthGoogle: PropTypes.bool.isRequired,
-}
 
 export default SocialAuth

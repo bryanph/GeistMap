@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 
 export const FeatureRowText = (props) => (
     <div className="featureRow-text">

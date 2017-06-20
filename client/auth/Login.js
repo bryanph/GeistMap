@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { browserHistory, Link } from "react-router-dom"
 
 import Social from './Social'
@@ -11,14 +11,6 @@ import Divider from './Divider'
 import LoginForm from './LoginForm'
 
 export const Login = React.createClass({
-
-    propTypes: {
-        oauthMessage: PropTypes.string,
-        oauthTwitter: PropTypes.bool.isRequired,
-        oauthGitHub: PropTypes.bool.isRequired,
-        oauthFacebook: PropTypes.bool.isRequired,
-        oauthGoogle: PropTypes.bool.isRequired,
-    },
 
     getInitialState: function() {
             return {

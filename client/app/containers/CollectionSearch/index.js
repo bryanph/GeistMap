@@ -1,6 +1,6 @@
 
 import _ from 'lodash'
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { TextField } from '../../components/Input'
@@ -92,14 +92,9 @@ class extends React.Component {
                             { listItems }
                         </List>
             </div>
-            
         )
     }
 }))
-CollectionSearchList.propTypes = {
-    searchResults: PropTypes.array.isRequired,
-    searchValue: PropTypes.string.isRequired,
-}
 
 class CollectionSearch extends React.Component {
     constructor(props) {
@@ -148,10 +143,6 @@ class CollectionSearch extends React.Component {
             </div>
         )
     }
-}
-CollectionSearch.propTypes = {
-    searchResults: PropTypes.array.isRequired,
-    onSearchClick: PropTypes.func.isRequired,
 }
 
 function mapStateToProps(state, props) {

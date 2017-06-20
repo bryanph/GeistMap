@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import { RichUtils } from 'draft-js'
 import { EditorState, Entity, AtomicBlockUtils } from 'draft-js'
@@ -206,10 +206,6 @@ export const UploadQRButton = withSocket(class extends React.Component {
 UploadQRButton.defaultProps = {
     theme: {}
 }
-UploadQRButton.propTypes = {
-    editorState: PropTypes.object.isRequired,
-    setEditorState: PropTypes.func.isRequired,
-}
 
 export class UploadButton extends React.Component {
     constructor(props) {
@@ -248,9 +244,5 @@ export class UploadButton extends React.Component {
             </div>
         )
     }
-}
-UploadButton.propTypes = {
-    editorState: PropTypes.object.isRequired,
-    setEditorState: PropTypes.func.isRequired,
 }
 

@@ -4,7 +4,7 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
 import moment from 'moment'
@@ -131,9 +131,6 @@ class InboxItem extends React.Component {
             </div>
         )
     }
-}
-InboxItem.propTypes = {
-    
 }
 
 import { getNode, getBatchNodes, getEdgesForNodes } from '../../reducers.js'

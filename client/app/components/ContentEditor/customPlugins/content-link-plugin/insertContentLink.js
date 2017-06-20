@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { Entity, RichUtils } from 'draft-js';
 
 import { getSelectionEntity } from '../../utils/inline.js'

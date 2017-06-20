@@ -4,7 +4,7 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { withRouter } from 'react-router-dom'
 
 import styles from './styles.css';
@@ -98,13 +98,6 @@ class CollectionCreateWindow extends React.Component {
             </div>
         );
     }
-}
-CollectionCreateWindow.PropTypes = {
-    id: PropTypes.string.isRequired,
-    hideWindow: PropTypes.func.isRequired,
-    createCollection: PropTypes.func.isRequired,
-    defaultValues: PropTypes.object,
-
 }
 
 export default withRouter(CollectionCreateWindow);

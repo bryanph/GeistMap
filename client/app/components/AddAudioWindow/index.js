@@ -5,7 +5,7 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import './styles.css';
 
@@ -111,8 +111,6 @@ class AddAudioWindow extends React.Component {
         );
     }
 }
-AddAudioWindow.propTypes = {
-};
 
 export default withRouter(AddAudioWindow);
 

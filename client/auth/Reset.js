@@ -1,6 +1,6 @@
 
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import fetchJSON from './utils/fetch'
 import { withRouter, Link } from "react-router-dom"
 
@@ -8,10 +8,6 @@ import { RenderErrors, ValidationErrors } from './Error'
 import getHeaders from './headers'
 
 const Reset = React.createClass({
-
-  PropTypes: {
-    
-  },
 
   handleResponse: function(json, response) {
       if (Object.keys(json.errfor).length) {
@@ -69,13 +65,6 @@ const Reset = React.createClass({
 export default withRouter(Reset)
 
 export const ResetForm = React.createClass({
-
-    propTypes: {
-        email: PropTypes.string.isRequired,
-        token: PropTypes.string.isRequired,
-        handleError: PropTypes.func.isRequired,
-        handleResponse: PropTypes.func.isRequired
-    },
 
   handleSubmit: function(e) {
       e.preventDefault()

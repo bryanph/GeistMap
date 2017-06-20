@@ -4,7 +4,7 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
 
@@ -23,9 +23,6 @@ export const AddNodeShootButton = (props) => (
         onTouchTap={() => props.createNode(defaultNode)}
     />
 )
-AddNodeShootButton.propTypes = {
-    createNode: PropTypes.func.isRequired
-}
 
 import { accentColor, darkAccentColor } from '../App/muitheme.js'
 

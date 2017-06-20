@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 
 export default class FollowOnTwitter extends React.Component {
     constructor(props) {
@@ -12,7 +12,4 @@ export default class FollowOnTwitter extends React.Component {
             
         )
     }
-}
-FollowOnTwitter.propTypes = {
-    
 }

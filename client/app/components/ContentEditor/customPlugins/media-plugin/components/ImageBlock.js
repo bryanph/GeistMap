@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import BlockContent from "./BlockContent"
 import BlockData from "./BlockData"
@@ -65,9 +65,6 @@ class ImageBlock extends React.Component {
             </CommonBlock>           
         )
     }
-}
-ImageBlock.propTypes = {
-
 }
 
 

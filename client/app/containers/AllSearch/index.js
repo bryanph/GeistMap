@@ -1,6 +1,6 @@
 
 import _ from 'lodash'
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 
 import { List, ListItem } from 'material-ui/List'
@@ -57,9 +57,6 @@ class AllSearchList extends React.Component {
             
         )
     }
-}
-AllSearchList.propTypes = {
-    searchResults: PropTypes.array.isRequired,
 }
 
 import { Input } from 'semantic-ui-react'
@@ -135,10 +132,6 @@ class AllSearch extends React.Component {
             </HotKeys>
         )
     }
-}
-AllSearch.propTypes = {
-    searchResults: PropTypes.array.isRequired,
-    onSearchClick: PropTypes.func,
 }
 
 function mapStateToProps(state, props) {

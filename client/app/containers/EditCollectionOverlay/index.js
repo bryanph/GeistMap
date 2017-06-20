@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react'
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from "react-router-dom"
 import Portal from 'react-portal';
@@ -27,9 +27,6 @@ class EditCollectionOverlay extends React.Component {
             </Portal>
         )
     }
-}
-EditCollectionOverlay.propTypes = {
-    
 }
 
 function mapStateToProps(state) {

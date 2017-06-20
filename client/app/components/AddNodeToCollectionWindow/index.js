@@ -4,7 +4,7 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import './styles.css';
 
@@ -120,12 +120,5 @@ class AddNodeToCollectionWindow extends React.Component {
         );
     }
 }
-AddNodeToCollectionWindow.propTypes = {
-    id: PropTypes.string.isRequired,
-    hideAddRelationWindow: PropTypes.func.isRequired,
-    addEdge: PropTypes.func.isRequired,
-    editorState: PropTypes.object.isRequired,
-    setEditorState: PropTypes.func.isRequired,
-};
 
 export default withRouter(AddNodeToCollectionWindow);

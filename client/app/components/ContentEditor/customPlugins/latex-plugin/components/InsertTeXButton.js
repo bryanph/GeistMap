@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import {insertTeXBlock} from '../modifiers/insertTeXBlock';
 
@@ -28,10 +28,6 @@ InsertTeXButton.defaultProps = {
         button: 'add-media-button'
     }
 }
-InsertTeXButton.propTypes = {
-    editorState: PropTypes.object.isRequired,
-    setEditorState: PropTypes.func.isRequired,
-}
 
 export class InsertInlineTeXButton extends React.Component {
     constructor(props) {
@@ -58,8 +54,4 @@ InsertInlineTeXButton.defaultProps = {
     theme: {
         button: 'add-media-button'
     }
-}
-InsertInlineTeXButton.propTypes = {
-    editorState: PropTypes.object.isRequired,
-    setEditorState: PropTypes.func.isRequired,
 }

@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { Entity } from 'draft-js'
 
 const styles = {

@@ -4,7 +4,7 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import Drawer from 'material-ui/Drawer';
@@ -82,9 +82,6 @@ class Sidebar extends React.Component {
             
         )
     }
-}
-Sidebar.propTypes = {
-    
 }
 
 export default Sidebar

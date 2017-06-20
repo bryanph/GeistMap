@@ -1,6 +1,6 @@
 
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { browserHistory, withRouter, Link } from "react-router-dom"
 import fetchJSON from './utils/fetch'
 
@@ -13,67 +13,58 @@ import FlatButton from 'material-ui/FlatButton';
 
 const EmailConfirmation  = React.createClass({
 
-  propTypes: {
-      router: PropTypes.object.isRequired, // react-router
-      oauthMessage: PropTypes.string,
-      oauthTwitter: PropTypes.bool.isRequired,
-      oauthGitHub: PropTypes.bool.isRequired,
-      oauthFacebook: PropTypes.bool.isRequired,
-      oauthGoogle: PropTypes.bool.isRequired,
-  },
+    handleResponse: function(json, response) {
+        if (Object.keys(json.errfor).length) {
+            return this.setState({validationErrors: json.errfor})
+        }
+        if (json.errors.length) {
+            return this.setState({errors: json.errors})
+        }
 
-  handleResponse: function(json, response) {
-      if (Object.keys(json.errfor).length) {
-        return this.setState({validationErrors: json.errfor})
-      }
-      if (json.errors.length) {
-        return this.setState({errors: json.errors})
-      }
+        this.props.history.push('/auth/login/forgot/success')
+    },
 
-      this.props.history.push('/auth/login/forgot/success')
-  },
+    handleError: function(error) {
+        console.error(error);
+    },
 
-  handleError: function(error) {
-      console.error(error);
-  },
+    getInitialState: function() {
+        return {
+            errors: [],
+            validationErrors: {},
+        }
+    },
 
-  getInitialState: function() {
-      return {
-          errors: [],
-          validationErrors: {},
-      }
-  },
+    render: function() {
+        const {
+            oauthTwitter,
+            oauthGitHub,
+            oauthFacebook,
+            oauthGoogle,
+        } = this.props
 
-  render: function() {
-    const {
-      oauthTwitter,
-      oauthGitHub,
-      oauthFacebook,
-      oauthGoogle,
-    } = this.props
+        const {
+            errors,
+            validationErrors,
+        } = this.state
 
-    const {
-        errors,
-        validationErrors,
-    } = this.state
+        return (
 
-    return (
+            <div className="interact panel with-logo">
+                <div className="logo"></div>
+                <h3>Email confirmation</h3>
+                <p>Enter your email address in the form below to get started</p>
+                <EmailConfirmationForm 
+                    email={this.props.match.params && this.props.match.params.email || ''}
+                    handleError={this.handleError}
+                    handleResponse={this.handleResponse}
+                />
+                { validationErrors ? <ValidationErrors errors={validationErrors} /> : null }
+                { errors ? <RenderErrors errors={errors} /> : null }
+            </div>
 
-        <div className="interact panel with-logo">
-            <div className="logo"></div>
-            <h3>Email confirmation</h3>
-            <p>Enter your email address in the form below to get started</p>
-            <EmailConfirmationForm 
-                email={this.props.match.params && this.props.match.params.email || ''}
-                handleError={this.handleError}
-                handleResponse={this.handleResponse}
-            />
-            { validationErrors ? <ValidationErrors errors={validationErrors} /> : null }
-            { errors ? <RenderErrors errors={errors} /> : null }
-        </div>
-
-    )
-  }
+        )
+    }
 })
 
 export default withRouter(EmailConfirmation)
@@ -84,50 +75,45 @@ export const ForgotPassword = (props) => (
 
 export const EmailConfirmationForm = React.createClass({
 
-  propTypes: {
-        handleError: PropTypes.func.isRequired,
-        handleResponse: PropTypes.func.isRequired,
-  },
+    handleSubmit: function(e) {
+        e.preventDefault()
 
-  handleSubmit: function(e) {
-      e.preventDefault()
+        fetchJSON('/auth/signup/social', {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                email: this._email.getValue(),
+            })
+        })
+            .then(this.props.handleResponse)
+            .catch(this.props.handleError)
+    },
 
-      fetchJSON('/auth/signup/social', {
-          method: 'POST',
-          headers: getHeaders(),
-          body: JSON.stringify({
-              email: this._email.getValue(),
-          })
-      })
-      .then(this.props.handleResponse)
-      .catch(this.props.handleError)
-  },
+    render: function() {
+        return (
+            <form id="email_confirmation-form" ref={c => this._form = c}>
+                <TextField
+                    defaultValue={this.props.email}
+                    hintText="email"
+                    ref={c => this._email = c}
+                    type="email"
+                />
+                <FlatButton
+                    onClick={this.handleSubmit}   
+                    label="Confirm your email"
+                    primary={true}
+                    style={{marginTop: '20px'}}
+                />
+            </form>
 
-  render: function() {
-    return (
-        <form id="email_confirmation-form" ref={c => this._form = c}>
-            <TextField
-                defaultValue={this.props.email}
-                hintText="email"
-                ref={c => this._email = c}
-                type="email"
-            />
-          <FlatButton
-            onClick={this.handleSubmit}   
-            label="Confirm your email"
-            primary={true}
-            style={{marginTop: '20px'}}
-          />
-        </form>
-
-    )
-  }
+        )
+    }
 })
 
 export const EmailConfirmationSuccess = (props) => (
-  <div>
-    <h2>Succesfully registered</h2>
-    <Link to="/">Click here to go to the app</Link>
-  </div>
+    <div>
+        <h2>Succesfully registered</h2>
+        <Link to="/">Click here to go to the app</Link>
+    </div>
 )
 

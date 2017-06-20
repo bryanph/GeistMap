@@ -93,9 +93,6 @@ class ContentLink extends React.Component {
         );
     }
 }
-ContentLink.propTypes = {
-
-}
 
 import { removeEdge } from '../.././../../actions/async'
 import { hideInboxSidebar } from '../.././../../actions/ui'

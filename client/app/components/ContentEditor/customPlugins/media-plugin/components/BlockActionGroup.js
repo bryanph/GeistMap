@@ -4,22 +4,12 @@
  * License: MIT
  */
 
-import React, {Component, PropTypes} from "react";
+import React, { Component } from "react";
 
 import BlockAction from "./BlockAction";
 
 
 export default class BlockActionGroup extends Component {
-
-  static propTypes = {
-    items: React.PropTypes.arrayOf(
-      React.PropTypes.shape({
-        key: PropTypes.string.isRequired,
-        icon: PropTypes.func.isRequired,
-        action: PropTypes.func.isRequired
-      })
-    )
-  }
 
   renderItem(item) {
     return(<BlockAction item={item} key={item.key} />);

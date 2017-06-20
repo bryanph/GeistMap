@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { Link } from "react-router-dom"
 import fetchJSON from './utils/fetch'
 
@@ -17,14 +17,6 @@ import TextField from 'material-ui/TextField';
 import Divider from './Divider'
 
 const Signup  = React.createClass({
-
-    propTypes: {
-        oauthMessage: PropTypes.string,
-        oauthTwitter: PropTypes.bool.isRequired,
-        oauthGitHub: PropTypes.bool.isRequired,
-        oauthFacebook: PropTypes.bool.isRequired,
-        oauthGoogle: PropTypes.bool.isRequired,
-    },
 
     handleResponse: function(json, response) {
             if (Object.keys(json.errfor).length) {
@@ -104,11 +96,6 @@ const styles = {
 }
 
 export const SignupForm = React.createClass({
-
-    propTypes: {
-        handleError: PropTypes.func.isRequired,
-        handleResponse: PropTypes.func.isRequired,
-    },
 
     getInitialState: function() {
             return {

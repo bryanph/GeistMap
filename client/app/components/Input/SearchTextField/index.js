@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { debounced, InputText } from '../'
 import './styles.css'
 

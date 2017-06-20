@@ -4,7 +4,7 @@
  *
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import './styles.css';
 import CollectionSearch from '../../containers/CollectionSearch'
@@ -154,8 +154,5 @@ export const NodeCollectionItem = withRouter(({ id, nodeId, name, onDelete, hist
     )
 
 })
-NodeCollectionItem.propTypes = {
-    id: PropTypes.string.isRequired,
-}
 
 export default enhanceWithClickOutside(NodeCollectionList);

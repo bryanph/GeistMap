@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import Signup from '../auth/Signup'
 
 export const MainText = (props) => (
@@ -14,9 +14,6 @@ export const MainSignup = (props) => (
     </div>
     
 )
-MainSignup.propTypes = {
-    
-}
 
 export default class MainSection extends React.Component {
     constructor(props) {

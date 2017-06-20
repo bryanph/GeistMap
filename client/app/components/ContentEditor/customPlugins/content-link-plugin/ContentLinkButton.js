@@ -1,63 +1,56 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { EditorState, Entity, KeyBindingUtil, AtomicBlockUtils, SelectionState, Modifier } from 'draft-js'
 import styles from './styles.css';
 
 import { insertContentLink, isActive } from './insertContentLink.js'
 
 class ContentLinkButton extends React.Component {
-  constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.isActive = this.isActive.bind(this)
-    this.confirmContentLink = this._confirmContentLink.bind(this);
+        this.isActive = this.isActive.bind(this)
+        this.confirmContentLink = this._confirmContentLink.bind(this);
 
-    this.state = {
-        active: false,
-    }
-  }
-
-  componentWillMount() {
-      this.isActive(this.props)
-  }
-
-  _confirmContentLink() {
-      this.props.setEditorState(insertContentLink(this.props.getEditorState(), {
-              nodeId: this.props.nodeId,
-              node: this.props.node,
-              showAddRelationWindow: this.props.showAddRelationWindow,
-              removeEdge: this.props.removeEdge,
-      }))
-  }
-
-  isActive(props, cb) {
-      this.setState({
-          active: isActive(props.getEditorState())
-      })
-  }
-
-  componentWillUpdate(nextProps) {
-      this.isActive(nextProps)
-  }
-
-  render() {
-    const className = [this.props.theme.button];
-    if (this.state.active) {
-      className.push(this.props.theme['button-active']);
+        this.state = {
+            active: false,
+        }
     }
 
-    return (
-      <button className={className.join(' ')} onClick={this.confirmContentLink}>
-        {this.props.label || "ContentLink"}
-      </button>
-    );
-  }
-}
-ContentLinkButton.PropTypes = {
-    style: PropTypes.string.isRequired, // internally assigned
-    getEditorState: PropTypes.func.isRequired,
-    setEditorState: PropTypes.func.isRequired,
-    theme: PropTypes.object,
-    onToggle: PropTypes.func,
+    componentWillMount() {
+        this.isActive(this.props)
+    }
+
+    _confirmContentLink() {
+        this.props.setEditorState(insertContentLink(this.props.getEditorState(), {
+            nodeId: this.props.nodeId,
+            node: this.props.node,
+            showAddRelationWindow: this.props.showAddRelationWindow,
+            removeEdge: this.props.removeEdge,
+        }))
+    }
+
+    isActive(props, cb) {
+        this.setState({
+            active: isActive(props.getEditorState())
+        })
+    }
+
+    componentWillUpdate(nextProps) {
+        this.isActive(nextProps)
+    }
+
+    render() {
+        const className = [this.props.theme.button];
+        if (this.state.active) {
+            className.push(this.props.theme['button-active']);
+        }
+
+        return (
+            <button className={className.join(' ')} onClick={this.confirmContentLink}>
+                {this.props.label || "ContentLink"}
+            </button>
+        );
+    }
 }
 
 export default ContentLinkButton;

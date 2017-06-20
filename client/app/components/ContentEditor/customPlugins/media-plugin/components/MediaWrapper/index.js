@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import { connect } from 'react-redux'
 import {EditorState, SelectionState, Modifier} from "draft-js";
 import classNames from 'classnames'
@@ -156,9 +156,6 @@ export function wrapMedia(Component) {
                 </div>
             );
         }
-    }
-    MediaWrapper.propTypes = {
-
     }
 
     return connect(null, { removeFile })(MediaWrapper)

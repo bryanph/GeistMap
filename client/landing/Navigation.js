@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react'
+import React from 'react'
 import FlatButton from 'material-ui/FlatButton';
 
 export const Title = (props) => (
@@ -34,7 +34,4 @@ export default class Navigation extends React.Component {
             </div>
         )
     }
-}
-Navigation.propTypes = {
-    
 }

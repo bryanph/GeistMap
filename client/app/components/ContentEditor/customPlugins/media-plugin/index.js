@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 
 import { RichUtils } from 'draft-js'
 import { EditorState, Entity, AtomicBlockUtils } from 'draft-js'

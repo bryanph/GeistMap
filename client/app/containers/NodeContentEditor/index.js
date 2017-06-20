@@ -1,5 +1,5 @@
 
-import React, { PropTypes } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import ContentEditor from '../../components/ContentEditor'
 import { convertToRaw } from 'draft-js';
