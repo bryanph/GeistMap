@@ -9,8 +9,8 @@ import { connect } from 'react-redux';
 
 import NodeGraph from '../../components/NodeGraph'
 import AddButton from '../../components/AddButton'
-import NodeToolbar from '../../containers/NodeToolbar'
 import Spinner from '../../components/Spinner'
+import AddNodeWindow from '../../components/AddNodeWindow'
 
 import './styles.scss'
 
@@ -19,7 +19,8 @@ import {
     loadCollection,
 } from '../../actions/async'
 
-import { 
+import {
+    addNode,
     showAddNodeToCollectionWindow,
     toggleEditMode,
 } from '../../actions/ui'
@@ -88,24 +89,16 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
 
     }
 
-  render() {
-      const {nodeId, collection, nodes, links, loadingStates } = this.props
+    render() {
+        const {nodeId, collection, nodes, links, loadingStates, editMode } = this.props
 
-      if (loadingStates.GET_COLLECTION || loadingStates.GET_NODE) {
-          return <Spinner />
-      }
+        if (loadingStates.GET_COLLECTION || loadingStates.GET_NODE) {
+            return <Spinner />
+        }
 
-    return (
-        <div className='appContainer'>
-                {
-                    this.props.nodeId ? // TODO: check for is integer instead - 2016-10-07
-                        <NodeToolbar
-                            id={nodeId}
-                            collectionId={this.props.collectionId}
-                            page={`collections/${this.props.collectionId}/nodes`}
-                        />
-                        : null
-                }
+        return (
+            <div className='appContainer'>
+                <AddNodeWindow opened={true} />
                 {
                     nodes.length ?
                         <NodeGraph 
@@ -114,19 +107,26 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
                             collectionId={this.props.collectionId} 
                             selectedId={this.props.nodeId}
                             graphType="collectionDetail"
+                            editMode={editMode}
+                            addNode={this.props.addNode}
                         />
                         : <NoNodesYet createNode={() => this.props.showAddNodeToCollectionWindow({ collection })}/>
                 }
-            <div className="editModeButton-container">
-                <EditModeButton />
+                <div className="editModeButton-container">
+                    <EditModeButton />
+                </div>
             </div>
-        </div>
 
-    );
-  }
+        );
+    }
 }
 
-import { getCollection, isSynced, getNodesByCollectionId, getEdgesByCollectionId } from '../../reducers'
+import {
+    getCollection,
+    isSynced,
+    getNodesByCollectionId,
+    getEdgesByCollectionId,
+} from '../../reducers'
 
 function mapStateToProps(state, props) {
     const collectionId = props.match.params && props.match.params.id
@@ -135,6 +135,7 @@ function mapStateToProps(state, props) {
     return {
         collectionId,
         nodeId,
+        editMode: state.uiState.editMode.active,
         nodes: getNodesByCollectionId(state, collectionId),
         collection: getCollection(state, collectionId),
         links: getEdgesByCollectionId(state, collectionId),
@@ -147,4 +148,5 @@ export default connect(mapStateToProps, {
     loadCollection,
     loadNode,
     showAddNodeToCollectionWindow,
+    addNode,
 })(CollectionDetail);

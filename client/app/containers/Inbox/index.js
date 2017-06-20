@@ -11,7 +11,6 @@ import { withRouter } from 'react-router-dom'
 import './styles.scss'
 
 import NodeGraph from '../../components/NodeGraph'
-import NodeToolbar from '../../components/NodeToolbar'
 import { AddButton } from '../../components/Buttons'
 import Spinner from '../../components/Spinner'
 
@@ -90,14 +89,6 @@ export class Inbox extends React.Component { // eslint-disable-line react/prefer
 
         return (
             <div className="appContainer">
-                {
-                    this.props.id ? // TODO: check for is integer instead - 2016-10-07
-                        <NodeToolbar 
-                            id={this.props.id}
-                            page="inbox"
-                        />
-                        : null
-                }
                 {
                     nodes.length ?
                         <NodeGraph 

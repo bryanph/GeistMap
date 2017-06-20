@@ -8,6 +8,13 @@
     bottom: 0;
     left: 0;
     right: 0;
+    cursor: auto;
+}
+
+.svg-content.editMode {
+    &:hover {
+        cursor: cell;
+    }
 }
 
 .node:hover {

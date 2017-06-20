@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom'
 import { scaleLinear } from 'd3-scale'
 import { drag as d3Drag } from 'd3-drag'
 import { select as d3Select } from 'd3-selection'
-import { event as currentEvent } from 'd3-selection';
+import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
 import './styles.scss'
 
 import { browserHistory } from 'react-router-dom'
@@ -311,24 +311,12 @@ class NodeGraph extends React.Component {
             this.inboxEvents(node, link)
         } else if (graphType === 'explore') {
             this.exploreEvents(node, link)
-        } else if (graphType === 'collectionOverview') {
-            this.collectionOverviewEvents(node, link, editMode, editFocus)
         } else if (graphType === 'collectionDetail') {
             this.collectionDetailEvents(node, link)
         } else {
             console.error('this should not happen!')
         }
 
-        console.log(graphType);
-        if (graphType !== this.props.graphType) {
-                console.log('recreating simulation...');
-            if (graphType === 'collectionOverview') {
-                this.simulation = createCollectionSimulation(WIDTH, HEIGHT, this.simulation)
-            }
-            else {
-                this.simulation = createNodeSimulation(WIDTH, HEIGHT, this.simulation)
-            }
-        }
 
         this.simulation.nodes(nodes)
         this.simulation.force("link").links(links)
@@ -353,16 +341,23 @@ class NodeGraph extends React.Component {
     componentDidMount() {
         const { graphType, loadNode, removeEdge, connectNodes, connectCollections, collectionId } = this.props
 
-        this.graph = d3Select(ReactDOM.findDOMNode(this.refs.graph));
+        const domNode = ReactDOM.findDOMNode(this.refs.graph)
+        this.graph = d3Select(domNode);
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
         this.container.append('defs').call(arrowHead)
 
-        if (graphType === 'collectionOverview') {
-            this.simulation = createCollectionSimulation(WIDTH, HEIGHT)
-        }
-        else {
-            this.simulation = createNodeSimulation(WIDTH, HEIGHT)
-        }
+        this.simulation = createNodeSimulation(WIDTH, HEIGHT)
+
+        // this must be before zoom
+        this.graph.on('mousedown', () => {
+            const [ x, y ] = currentMouse(domNode)
+
+            if (this.props.editMode && graphType === 'collectionDetail') {
+                // prompt for a node name
+                this.props.addNode({ x, y })
+                
+            }
+        })
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
 
@@ -412,16 +407,19 @@ class NodeGraph extends React.Component {
     shouldComponentUpdate(nextProps) {
         this.update(nextProps)
 
-        return false
+        // return false
+        return true
     }
 
     render() {
+        const className = 'svg-content' + (this.props.editMode ? ' editMode' : '')
+
         return (
             <div id="nodeGraph" className="svg-container">
                 <svg 
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                     preserveAspectRatio="xMidYMid meet"
-                    className="svg-content"
+                    className={ className }
                     ref='graph'
                 >
                     <g ref='container' />
@@ -435,8 +433,8 @@ NodeGraph.propTypes = {
     nodes: PropTypes.arrayOf(PropTypes.object).isRequired,
     links: PropTypes.arrayOf(PropTypes.object).isRequired,
 
-    connectNodes: PropTypes.func.isRequired,
-    removeEdge: PropTypes.func.isRequired,
+    // connectNodes: PropTypes.func.isRequired,
+    // removeEdge: PropTypes.func.isRequired,
 }
 
 export default withRouter(NodeGraph)

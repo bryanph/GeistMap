@@ -116,6 +116,7 @@ export function toggleEditMode(id, refresh=true) {
         // when clicked on, these nodes will expand to an actual node and put in "edit mode"
         let addCollectionNodes = {}
         let addCollectionEdges = {}
+        // TODO: these should be created only once on initial fetch and hidden with a flag - 2017-06-19
         if (editMode) {
             collections.forEach((node, index) => {
                 const nodeId = uuidV4()
@@ -176,4 +177,17 @@ export function addCollection(addCollectionNode) {
     }
 }
 
+
+// add a new node to the graph and put it in edit mode
+export const ADD_NODE = 'ADD_NODE'
+export function addNode(pos) {
+    const id = uuidV4()
+
+    return {
+        type: ADD_NODE,
+        id: id,
+        pos,
+    }
+
+}
 

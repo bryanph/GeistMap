@@ -260,6 +260,10 @@ const createUpdateCollection = function(actions) {
                     if (editFocus.id === data.id) {
                         const value = editMode.select('textarea').node().value
 
+                        console.log('calling zoomfit!');
+                        console.log(actions.zoomFit);
+                        actions.zoomFit()
+
                         if (data.isNew) {
                             actions.createCollection(data.id, { name: value })
                                 .then(() => actions.connectCollections(data.id, data.parentId, data.edgeId))
@@ -349,6 +353,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
     const updateCollection = createUpdateCollection({
         click: onCollectionClick,
         zoomToNode: actions.zoomToNode,
+        zoomFit: actions.zoomFit,
         createCollection: actions.createCollection,
         updateCollection: actions.updateCollection,
         setActiveCollection: actions.setActiveCollection,
@@ -583,6 +588,7 @@ class SubjectGraph extends React.Component {
             updateCollection: this.props.updateCollection,
             addCollection: this.props.addCollection,
             zoomToNode: this.zoom.zoomToNode,
+            zoomFit: this.zoom.zoomFit,
             restartSimulation: this.restartSimulation,
             stopSimulation: this.stopSimulation,
         })

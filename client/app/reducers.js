@@ -76,6 +76,20 @@ function nodes(state={}, action, collections) {
                 }
             }
 
+
+        case uiTypes.ADD_NODE:
+            // TODO: should this be done with more of a "sync" behaviour? - 2017-06-14
+            // temporarily add a node and defer synching with the server
+            return {
+                ...state,
+                [action.id]: {
+                    ...state[action.id],
+                    isNew: true,
+                    x: action.pos.x,
+                    y: action.pos.y,
+                }
+            }
+
 //         case actionTypes.GET_COLLECTION_SUCCESS:
 //             /*
 //              * for all nodes, check if they are in the GET_COLLECTION response

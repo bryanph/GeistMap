@@ -2,27 +2,22 @@ import _ from 'lodash'
 import React, { PropTypes } from 'react'
 import { connect } from 'react-redux'
 
-import { SearchTextField500 } from '../../components/Input/SearchTextField'
-import { DebouncedTextField500 } from '../../components/Input'
 import { List, ListItem } from 'material-ui/List'
 import { searchNode } from '../../actions/async'
 
-import enhanceWithClickOutside from 'react-onclickoutside'
+import {HotKeys} from 'react-hotkeys';
+import Portal from 'react-portal'
 
-import './styles.css'
+import './styles.scss'
 
-const NodeSearchList = enhanceWithClickOutside(
-class extends React.Component {
+import compose from 'recompose/compose'
+
+// TODO: this can be factored out or the different Search components... - 2016-08-01
+class NodeSearchList extends React.Component {
     constructor(props) {
         super(props)
 
-        this.handleClickOutside = this.handleClickOutside.bind(this)
         this.onClick = this.onClick.bind(this)
-
-    }
-
-    handleClickOutside() {
-        this.props.close()
     }
 
     onClick(result) {
@@ -32,58 +27,66 @@ class extends React.Component {
     render() {
         const { searchResults, searchValue } = this.props
 
-        const listItems = _(searchResults)
-            .filter(res => res._id !== this.props.id)
-            .map(result => (
-                <ListItem 
-                    onTouchTap={() => this.onClick(result)}
-                    primaryText={result._source.title}
-                />
-            ))
-            .value()
+        const listItems = _.map(searchResults, result => (
+            <ListItem 
+                onTouchTap={() => this.onClick(result)}
+                primaryText={result._source.title || result._source.name}
+                secondaryText={result._index.startsWith('collections') ? "Collection" : "Node"}
+            />
+        ))
+
+        if (searchValue.length === 0 || searchResults.length === 0){
+            return null
+        }
 
         return (
-            <div className={this.props.className || 'nodeSearch-list'}>
-                {
-                    searchResults.length === 0 ?
-                        <span className="nodeSearch-no-result">No results. Try another search term</span>
-                    :
-                        <List>
-                            { listItems }
-                        </List>
-                }
+            <div className='nodeSearch-list'>
+                <List>
+                    {listItems}
+                </List>
             </div>
-            
         )
     }
-})
+}
 NodeSearchList.propTypes = {
     searchResults: PropTypes.array.isRequired,
 }
+
+import { Input } from 'semantic-ui-react'
+import { Button, Icon } from 'semantic-ui-react'
+
+// only rendered on desktop
+const SearchInput = (props) => (
+    <Input size='large' action="Add" placeholder="Label" className="nodeSearch-input" {...props} />
+)
+
+import { ResponsiveButton } from '../../components/button'
+// only rendered on mobile
+const SearchInputButton = (props) => (
+    <ResponsiveButton iconName="search" name="search" className="nodeSearch-inputButton" />
+)
+
 
 class NodeSearch extends React.Component {
     constructor(props) {
         super(props)
 
         this.onChange = this.onChange.bind(this)
+        this.onKeyPress = this.onKeyPress.bind(this)
         this.onSearchClick = this.onSearchClick.bind(this)
 
         this.searchNode = _.debounce(this.props.searchNode, 100).bind(this)
 
         this.state = {
-            searchValue: this.props.initialValue || "",
+            searchValue: "",
             opened: false,
-        }
-
-        if (this.props.initialValue) {
-            this.props.searchNode(this.props.initialValue)
         }
     }
 
-    onSearchClick(value) {
-        this.props.onSearchClick(value)
-        this.refs.searchTextField.setState({ value: "" })
-        this.setState({ opened: false })
+    componentDidMount() {
+        console.log('MOUNTED');
+        console.log(this.searchInput);
+        this.searchInput.focus()
     }
 
     onChange(e) {
@@ -92,45 +95,51 @@ class NodeSearch extends React.Component {
         this.searchNode(e.target.value)
     }
 
+    onKeyPress(e) {
+        const { onEnter } = this.props
+        if (e.key === 'Enter') {
+            if (onEnter) {
+                const value = this.searchInput.value
+                onEnter(value)
+            }
+        }
+    }
+
+    onSearchClick(value) {
+        this.props.onSearchClick(value)
+        this.setState({ searchValue: "", opened: false })
+    }
+
     render() {
         const { searchResults } = this.props
         const { searchValue } = this.state
 
+        const handlers = {
+            'focusSearch': () => {
+                this.searchInput.focus()
+            }
+        }
+
         return (
-            <div className={this.props.className || "nodeSearch"}>
-                    { /* autoFocus */ }
-                <SearchTextField500
-                    className={this.props.inputClass || "searchTextField-input" }
-                    placeholder={ this.props.placeholder || "Search for a node..."}
+            <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} className='nodeSearch'>
+                <SearchInput 
                     onChange={this.onChange}
+                    onKeyPress={this.onKeyPress}
                     onFocus={ (e) => { this.setState({opened: true}) }}
-                    autoFocus
-                    ref="searchTextField"
                     value={this.state.searchValue}
                 />
-            {
-                this.state.opened && searchValue.length !== 0 ?
-                    <NodeSearchList
-                        id={this.props.id}
-                        searchValue={this.state.searchValue}
-                        searchResults={searchResults}
-                        onClick={this.onSearchClick}
-                        className={this.props.nodeSearchListClass}
-                        outsideClickIgnoreClass={this.props.className || "nodeSearch"}
-                        close={() => { this.setState({ opened: false })}}
-                    />
-                : null
-            }
-            </div>
+                <NodeSearchList
+                    searchValue={searchValue}
+                    searchResults={searchResults}
+                    onClick={this.onSearchClick}
+                />
+            </HotKeys>
         )
     }
 }
 NodeSearch.propTypes = {
     searchResults: PropTypes.array.isRequired,
     onSearchClick: PropTypes.func,
-
-    className: PropTypes.object,
-    nodeSearchListClass: PropTypes.string,
 }
 
 function mapStateToProps(state, props) {
@@ -140,3 +149,4 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, { searchNode })(NodeSearch)
+
