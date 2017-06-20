@@ -10,17 +10,3 @@
     flex-direction: column;
 }
 
-.editModeButton {
-    color: white !important;
-    background: $accent-color !important;
-    opacity: 0.8;
-
-    &:hover {
-        opacity: 0.4;
-    }
-
-    &:active {
-        opacity: 0.6;
-    }
-}
-

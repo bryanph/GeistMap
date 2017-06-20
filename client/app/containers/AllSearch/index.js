@@ -106,7 +106,7 @@ class AllSearch extends React.Component {
 
         const handlers = {
             'focusSearch': () => {
-                this.refs.searchTextField.focus()
+                // this.refs.searchTextField.focus()
             }
         }
 
@@ -114,7 +114,6 @@ class AllSearch extends React.Component {
                 <SearchInput 
                     onChange={this.onChange}
                     onFocus={ (e) => { this.setState({opened: true}) }}
-                    ref="searchTextField"
                     value={this.state.searchValue}
                 />
         )

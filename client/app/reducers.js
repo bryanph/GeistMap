@@ -76,20 +76,6 @@ function nodes(state={}, action, collections) {
                 }
             }
 
-
-        case uiTypes.ADD_NODE:
-            // TODO: should this be done with more of a "sync" behaviour? - 2017-06-14
-            // temporarily add a node and defer synching with the server
-            return {
-                ...state,
-                [action.id]: {
-                    ...state[action.id],
-                    isNew: true,
-                    x: action.pos.x,
-                    y: action.pos.y,
-                }
-            }
-
 //         case actionTypes.GET_COLLECTION_SUCCESS:
 //             /*
 //              * for all nodes, check if they are in the GET_COLLECTION response
@@ -754,6 +740,9 @@ const initialGraphUIState = {
     editMode: false,
     editFocus: {
         id: null
+    },
+    addNode: {
+        open: false
     }
 }
 function graphUiState(state=initialGraphUIState, action) {
@@ -772,6 +761,20 @@ function graphUiState(state=initialGraphUIState, action) {
                     id: action.id,
                 }
             }
+
+        case uiTypes.ADD_NODE:
+            // TODO: should this be done with more of a "sync" behaviour? - 2017-06-14
+            // temporarily add a node and defer synching with the server
+            return {
+                ...state,
+                addNode: {
+                    open: true,
+                    id: action.id,
+                    x: action.pos.x,
+                    y: action.pos.y,
+                }
+            }
+
 
         default:
             return state;

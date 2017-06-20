@@ -13,6 +13,7 @@ import { accentColor } from '../App/muitheme.js'
 import { AddButton } from '../../components/Buttons'
 import Spinner from '../../components/Spinner'
 import CollectionToolbar from '../../containers/CollectionToolbar'
+import EditModeButton from '../../components/EditModeButton'
 
 import './styles.scss'
 
@@ -28,7 +29,6 @@ import {
 
 import { 
     showCreateCollectionWindow,
-    toggleEditMode,
     setActiveCollection,
     addCollection,
 } from '../../actions/ui'
@@ -39,19 +39,6 @@ export const AddCollectionShootButton = (props) => (
         onTouchTap={() => props.showCreateCollectionWindow()}
     />
 )
-
-import { Button, Icon } from 'semantic-ui-react'
-let EditModeButton = ({ editMode, toggleEditMode }) => (
-    <Button 
-        circular icon={ editMode ? "checkmark" : "edit" } size="massive" className="editModeButton"
-        onClick={ toggleEditMode }
-    />
-)
-EditModeButton = connect((state) => ({
-    editMode: state.uiState.editMode.active 
-}),
-    { toggleEditMode }
-)(EditModeButton)
 
 
 

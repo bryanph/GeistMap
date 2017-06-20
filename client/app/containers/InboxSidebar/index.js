@@ -28,7 +28,7 @@ export class InboxSidebar extends React.Component { // eslint-disable-line react
 
     componentDidMount() {
         const { id } = this.props
-        this.props.getAllBatchNodes()
+        // this.props.getAllBatchNodes()
     }
 
     // createBatchNode(node) {

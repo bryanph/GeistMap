@@ -197,7 +197,7 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
      * Afterwards, can be called with node an link DOM nodes
      */
     const onNodeClick = (d) => {
-        actions.history.push(`/app/collections/${collectionId}/nodes/${d.id}`)
+        actions.history.push(`/app/collections/${collectionId}/nodes/${d.id}/edit`)
     }
 
     const onConnect = (from, to) => {
@@ -412,6 +412,7 @@ class NodeGraph extends React.Component {
     }
 
     render() {
+        // TODO: should be set somewhere up high so shouldComponentUpdate can return false - 2017-06-21
         const className = 'svg-content' + (this.props.editMode ? ' editMode' : '')
 
         return (

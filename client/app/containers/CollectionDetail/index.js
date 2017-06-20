@@ -11,6 +11,7 @@ import NodeGraph from '../../components/NodeGraph'
 import AddButton from '../../components/AddButton'
 import Spinner from '../../components/Spinner'
 import AddNodeWindow from '../../components/AddNodeWindow'
+import EditModeButton from '../../components/EditModeButton'
 
 import './styles.scss'
 
@@ -30,21 +31,6 @@ const AddNodeToCollectionButton = (props) => (
         onTouchTap={() => props.showAddNodeToCollectionWindow()}
     />
 )
-
-import { Button, Icon } from 'semantic-ui-react'
-let EditModeButton = ({ editMode, toggleEditMode }) => (
-    <Button 
-        circular icon={ editMode ? "checkmark" : "edit" } size="massive" className="editModeButton"
-        onClick={ toggleEditMode }
-    />
-)
-EditModeButton = connect((state) => ({
-    editMode: state.uiState.editMode.active 
-}),
-    { toggleEditMode }
-)(EditModeButton)
-
-
 
 const defaultNode = {
     name: "Untitled"
@@ -90,7 +76,16 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
     }
 
     render() {
-        const {nodeId, collection, nodes, links, loadingStates, editMode } = this.props
+        const {
+            nodeId,
+            collectionId,
+            collection,
+            nodes,
+            links,
+            loadingStates,
+            editMode,
+            nodeWindow 
+        } = this.props
 
         if (loadingStates.GET_COLLECTION || loadingStates.GET_NODE) {
             return <Spinner />
@@ -98,7 +93,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
 
         return (
             <div className='appContainer'>
-                <AddNodeWindow opened={true} />
+                <AddNodeWindow opened={editMode && nodeWindow.open} collectionId={collectionId} />
                 {
                     nodes.length ?
                         <NodeGraph 
@@ -136,6 +131,7 @@ function mapStateToProps(state, props) {
         collectionId,
         nodeId,
         editMode: state.uiState.editMode.active,
+        nodeWindow: state.graphUiState.addNode,
         nodes: getNodesByCollectionId(state, collectionId),
         collection: getCollection(state, collectionId),
         links: getEdgesByCollectionId(state, collectionId),

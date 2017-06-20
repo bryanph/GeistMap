@@ -6,7 +6,6 @@ import { List, ListItem } from 'material-ui/List'
 import { searchNode } from '../../actions/async'
 
 import {HotKeys} from 'react-hotkeys';
-import Portal from 'react-portal'
 
 import './styles.scss'
 
@@ -31,7 +30,7 @@ class NodeSearchList extends React.Component {
             <ListItem 
                 onTouchTap={() => this.onClick(result)}
                 primaryText={result._source.title || result._source.name}
-                secondaryText={result._index.startsWith('collections') ? "Collection" : "Node"}
+                secondaryText={"Node"}
             />
         ))
 
@@ -52,10 +51,33 @@ class NodeSearchList extends React.Component {
 import { Input } from 'semantic-ui-react'
 import { Button, Icon } from 'semantic-ui-react'
 
-// only rendered on desktop
-const SearchInput = (props) => (
-    <Input size='large' action="Add" placeholder="Label" className="nodeSearch-input" {...props} />
-)
+class SearchInput extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    componentDidMount() {
+        setTimeout(this.input.focus, 0)
+    }
+
+    render() {
+        const {
+            onClick,
+            ...restProps
+        } = this.props
+
+        return (
+            <Input 
+                size='large'
+                action={<Button content="Add" onClick={this.props.onClick} />}
+                placeholder="Label"
+                className="nodeSearch-input"
+                ref={(input) => this.input = input}
+                {...restProps} 
+            />
+        )
+    }
+}
 
 import { ResponsiveButton } from '../../components/button'
 // only rendered on mobile
@@ -80,12 +102,6 @@ class NodeSearch extends React.Component {
         }
     }
 
-    componentDidMount() {
-        console.log('MOUNTED');
-        console.log(this.searchInput);
-        this.searchInput.focus()
-    }
-
     onChange(e) {
         this.setState({ searchValue: e.target.value })
 
@@ -96,8 +112,7 @@ class NodeSearch extends React.Component {
         const { onEnter } = this.props
         if (e.key === 'Enter') {
             if (onEnter) {
-                const value = this.searchInput.value
-                onEnter(value)
+                onEnter(this.state.searchValue)
             }
         }
     }
@@ -111,17 +126,12 @@ class NodeSearch extends React.Component {
         const { searchResults } = this.props
         const { searchValue } = this.state
 
-        const handlers = {
-            'focusSearch': () => {
-                this.searchInput.focus()
-            }
-        }
-
         return (
-            <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} className='nodeSearch'>
+            <div className="nodeSearch">
                 <SearchInput 
                     onChange={this.onChange}
                     onKeyPress={this.onKeyPress}
+                    onClick={() => this.props.onClick(this.state.searchValue)}
                     onFocus={ (e) => { this.setState({opened: true}) }}
                     value={this.state.searchValue}
                 />
@@ -130,7 +140,7 @@ class NodeSearch extends React.Component {
                     searchResults={searchResults}
                     onClick={this.onSearchClick}
                 />
-            </HotKeys>
+            </div>
         )
     }
 }

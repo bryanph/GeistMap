@@ -243,7 +243,9 @@ module.exports = function(db, es) {
              * Create a new node
              */
 
-            data.author = user;
+            if (!data.name) {
+                return res("Set a title")
+            }
 
             db.run(
                 "MERGE (u:User {id: {userId}}) " +

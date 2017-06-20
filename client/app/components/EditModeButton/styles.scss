@@ -1,0 +1,21 @@
+@import '~styles/settings';
+
+.editModeButton {
+    color: white !important;
+    background: $accent-color !important;
+    opacity: 0.8;
+
+    &:hover {
+        opacity: 0.4;
+    }
+
+    &:active {
+        opacity: 0.6;
+    }
+
+
+    &.editMode {
+        background: $success-color !important;
+    }
+}
+
