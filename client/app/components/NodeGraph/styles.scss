@@ -25,9 +25,12 @@
 .node text {
     fill: #0F073B;
     stroke: none;
-    font-size: 1em;
+    font-size: 1.2em;
     pointer-events: none;
     z-index: 100;
+
+    text-anchor: middle;
+    font-weight: bold;
 }
 
 .node-link {

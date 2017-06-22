@@ -754,6 +754,7 @@ function graphUiState(state=initialGraphUIState, action) {
             }
 
         case uiTypes.SET_ACTIVE_COLLECTION:
+        case uiTypes.SET_ACTIVE_NODE:
         case uiTypes.ADD_COLLECTION:
             return {
                 ...state,

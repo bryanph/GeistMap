@@ -163,6 +163,16 @@ export function setActiveCollection(id) {
     }
 }
 
+// set this node in edit mode
+export const SET_ACTIVE_NODE = 'SET_ACTIVE_NODE'
+export function setActiveNode(id) {
+    return {
+        type: SET_ACTIVE_NODE,
+        id,
+    }
+}
+
+
 const uuidV4 = require('uuid/v4');
 
 // add a new collection to the graph and put it in edit mode

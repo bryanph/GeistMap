@@ -41,8 +41,6 @@ const createEnterNode = function(actions: { click: Function }) {
     return (selection, click) => {
         selection
             .attr("class", "node")
-            // .classed('enter-selection', true) // for rxjs..
-            // for later reference from data
             .attr('id', (d) => {
                 return `node-${d.id}`
             }) 
@@ -57,23 +55,45 @@ const createEnterNode = function(actions: { click: Function }) {
             .attr("y", -8)
             .style("fill", colorNode)
 
+        // TODO: split into lines when text gets too big - 2017-06-22
         selection.append('text')
-            .attr("dx", NODE_RADIUS + 1)
-            .attr("dy", ".35em")
+            .attr("dy", NODE_RADIUS*2 + 1)
             .text((d) => getLabelText(d.name));
-
-        // remove enter-selection flag for rxjs...
-        // selection.classed('enter-selection', false)
 
         return selection
 
     }
 }
 
-const updateNode = function(selection) {
+const updateNode = function(selection, editMode, editFocus) {
     selection.select('text').text(d => {
         return getLabelText(d.name)
     })
+
+    // insert an editable text field at the bottom
+    if (editMode) {
+
+        if (editFocus.id) {
+            const nodeSelection = d3Select(`#node-${editFocus.id}`)
+
+            const editMode = nodeSelection.append('g')
+                .attr('class', 'editMode')
+
+            const div = editMode.append('foreignObject')
+                .attr('y', (d) => NODE_RADIUS*2 + 1)
+                .attr('width', 200)
+                .attr('height', 100)
+                .append('xhtml:div')
+
+            // div.attr("style", `width: ${sqLen}px; height: ${sqLen}px;`)
+
+            const textarea = div.append('textarea')
+                .attr('maxLength', 50)
+                .attr('autofocus', true)
+                .text(data.name)
+            // .style("height", sqLen)
+        }
+    }
 
     return selection
 }
@@ -92,51 +112,6 @@ const createEnterLink = function(actions) {
         // .attr("class", "link node-link")
         // .on('dblclick', events.linkDoubleClick)
         // .attr("marker-mid", "url(#Triangle)")
-    }
-}
-
-const createInboxEvents = function(simulation, actions) {
-    /*
-     * in first call creates the drag() object
-     * Afterwards, can be called with node an link DOM nodes
-     */
-    const onNodeClick = (d) => {
-        actions.history.push(`/app/inbox/${d.id}`)
-    }
-
-    const drag = createDrag(simulation)({ 
-        connect: actions.connectNodes,
-        click: onNodeClick,
-    })
-
-    // TODO: find a way to not have to bind with this here
-    // problem is that in the drag event require the actual 'nodes'
-    const nodeDrag = d3Drag()
-        .on('drag', drag.drag.bind(this))
-        .on('start', drag.dragstart.bind(this))
-        .on('end', drag.dragend.bind(this))
-
-    const enterNode = createEnterNode({
-        click: onNodeClick
-    })
-    const enterLink = createEnterLink({
-        doubleClick: (d) => actions.removeEdge(d.id)
-    })
-
-    return (node, link) => {
-        // EXIT selection
-        node.exit().remove()
-        // ENTER selection
-        node.enter().append('g').call(enterNode).call(nodeDrag)
-        // ENTER + UPDATE selection
-            .merge(node).call(updateNode)
-        
-        // EXIT selection
-        link.exit().remove()
-        // ENTER selection
-        link.enter().insert('g', ":first-child").call(enterLink)
-        // ENTER + UPDATE selection
-        // .merge(link).call(updateLink)
     }
 }
 
@@ -174,13 +149,13 @@ const createExploreEvents = function(simulation, actions) {
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (node, link) => {
+    return (node, link, editMode, editFocus) => {
         // EXIT selection
         node.exit().remove()
         // ENTER selection
         node.enter().append('g').call(enterNode).call(nodeDrag)
         // ENTER + UPDATE selection
-            .merge(node).call(updateNode)
+            .merge(node).call((selection) => updateNode(selection, editMode, editFocus))
         
         // EXIT selection
         link.exit().remove()
@@ -224,13 +199,13 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (node, link) => {
+    return (node, link, editMode, editFocus) => {
         // EXIT selection
         node.exit().remove()
         // ENTER selection
         node.enter().append('g').call(enterNode).call(nodeDrag)
         // ENTER + UPDATE selection
-            .merge(node).call(updateNode)
+            .merge(node).call((selection) => updateNode(selection, editMode, editFocus))
         
         // EXIT selection
         link.exit().remove()
@@ -262,26 +237,6 @@ class NodeGraph extends React.Component {
             editMode, // is this graph in edit mode?
             editFocus, // is a single node being edited?
         } = nextProps
-
-        // TODO: I actually need previous graph-type events as well in order to do a proper exit() call
-        // let events;
-        // switch(graphType) {
-        //     case 'inbox':
-        //         events = inboxEvents;
-        //         break;
-        //     case 'explore':
-        //         events = exploreEvents;
-        //         break;
-        //     case 'collectionDetail':
-        //         events = collectionDetailEvents;
-        //         break;
-        //     case 'collectionOverview':
-        //         events = collectionOverviewEvents;
-        //         break;
-        //     default:
-        //         console.error('This should not happen!')
-        //         break;
-        // }
 
         let nodeById = {}
 
@@ -315,12 +270,10 @@ class NodeGraph extends React.Component {
         console.log(node.enter().size(), node.enter().data(), link.enter().size())
 
         // enter-update-exit cycle depending on type of graph
-        if (graphType === 'inbox') {
-            this.inboxEvents(node, link)
-        } else if (graphType === 'explore') {
-            this.exploreEvents(node, link)
+        if (graphType === 'explore') {
+            this.exploreEvents(node, link, editMode, editFocus)
         } else if (graphType === 'collectionDetail') {
-            this.collectionDetailEvents(node, link)
+            this.collectionDetailEvents(node, link, editMode, editFocus)
         } else {
             console.error('this should not happen!')
         }
@@ -334,7 +287,7 @@ class NodeGraph extends React.Component {
 
     restartSimulation() {
         // TODO: do two zooms, an initial "guess" zoom and another for accuracy - 2017-06-07
-        this.zoomed = false;
+        // this.zoomed = false;
         this.simulation.alpha(0.8).restart()
     }
 
@@ -365,29 +318,26 @@ class NodeGraph extends React.Component {
 
             if (this.props.editMode && graphType === 'collectionDetail') {
                 // prompt for a node name
-                this.props.addNode({ x, y })
+                // this.props.addNode({ x, y })
                 
             }
         })
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
 
-        this.inboxEvents = createInboxEvents.call(this, this.simulation, {
-            history: this.props.history,
-            removeEdge,
-            connectNodes,
-        })
         // TODO: connectNodes requires a re-fetch at the moment
         this.exploreEvents = createExploreEvents.call(this, this.simulation, {
             history: this.props.history,
             removeEdge,
             connectNodes,
+            setActiveNode: this.props.setActiveNode,
         })
         // TODO: collectionId should be not be static like this - 2017-05-21
         this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collectionId, {
             history: this.props.history,
             removeEdge,
             connectNodes,
+            setActiveNode: this.props.setActiveNode,
         })
 
         //TODO: set to true on initial tick

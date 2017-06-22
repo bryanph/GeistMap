@@ -25,6 +25,7 @@ import {
     addNode,
     showAddNodeToCollectionWindow,
     toggleEditMode,
+    setActiveNode,
 } from '../../actions/ui'
 
 const AddNodeToCollectionButton = (props) => (
@@ -85,6 +86,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
             links,
             loadingStates,
             editMode,
+            editFocus,
             nodeWindow 
         } = this.props
 
@@ -104,8 +106,10 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
                             selectedId={this.props.nodeId}
                             graphType="collectionDetail"
                             editMode={editMode}
+                            editFocus={editFocus}
                             addNode={this.props.addNode}
                             connectNodes={this.props.connectNodes}
+                            setActiveNode={this.props.setActiveNode}
                         />
                         : <NoNodesYet createNode={() => this.props.showAddNodeToCollectionWindow({ collection })}/>
                 }
@@ -133,6 +137,7 @@ function mapStateToProps(state, props) {
         collectionId,
         nodeId,
         editMode: state.uiState.editMode.active,
+        editFocus: state.graphUiState.editFocus,
         nodeWindow: state.graphUiState.addNode,
         nodes: getNodesByCollectionId(state, collectionId),
         collection: getCollection(state, collectionId),
@@ -148,4 +153,5 @@ export default connect(mapStateToProps, {
     showAddNodeToCollectionWindow,
     addNode,
     connectNodes,
+    setActiveNode,
 })(CollectionDetail);
