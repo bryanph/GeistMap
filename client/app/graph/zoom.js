@@ -1,4 +1,4 @@
-import { zoom as d3Zoom, zoomIdentity } from 'd3-zoom'
+import { zoom as d3Zoom, zoomIdentity, interpolate } from 'd3-zoom'
 import { event as currentEvent, } from 'd3-selection'
 
 
@@ -20,6 +20,63 @@ export default (root, container, fullWidth, fullHeight) => {
 
     // to allow for free zooming
     root.call(zoom)
+
+    function getTranslate(node) {
+        const transs = node.attr("transform").split(' ');
+
+        const translate = transs[0].substring(transs[0].indexOf("(")+1, transs[0].indexOf(")")).split(",").map(parseFloat);
+        const scale = parseFloat(transs[1].substring(transs[1].indexOf("(")+1, transs[1].indexOf(")")));
+
+        return [
+            ...translate,
+            scale
+        ]
+    }
+
+    function zoomClick(dir) {
+        const direction = dir
+        const factor = 0.3
+        const center = [fullWidth / 2, fullHeight / 2]
+        const extent = zoom.scaleExtent()
+        const currentTranslate = getTranslate(container)
+        const scale = currentTranslate[2]
+        const view = { x: currentTranslate[0], y: currentTranslate[1], k: scale }
+
+        const targetZoom = scale * (1 + factor * direction)
+
+        if (targetZoom < extent[0] || targetZoom > extent[1]) {
+            return false;
+        }
+
+        // calculate actual position with translate
+        const translate = [ (center[0] - view.x) / view.k, (center[1] - view.y) / view.k ]
+
+        // calculate offsets
+        const l = [ translate[0] * targetZoom + view.x, translate[1] * view.k + view.y ]
+
+        // new center coordinates
+        const newX = view.x + center[0] - l[0]
+        const newY = view.y + center[1] - l[1]
+
+        function transform() {
+            return zoomIdentity
+                .translate(newX, newY)
+                .scale(targetZoom)
+        }
+
+        root
+            .transition()
+            .duration(300) // milliseconds
+            .call(zoom.transform, transform)
+    }
+
+    function zoomIn() {
+        zoomClick(1)
+    }
+
+    function zoomOut() {
+        zoomClick(-1)
+    }
 
     function zoomFit(paddingPercent=0.8, transitionDuration=1000) {
         /*
@@ -70,8 +127,7 @@ export default (root, container, fullWidth, fullHeight) => {
         // get the root svg offset
         // const offset = root.node().getBoundingClientRect()
 
-        const transs = node.attr("transform");
-        const trans = transs.substring(transs.indexOf("(")+1, transs.indexOf(")")).split(",");
+        const trans = getTranslate(node)
 
         const domNode = node.node()
         // the bbox of the node (does not account for translate())
@@ -107,6 +163,8 @@ export default (root, container, fullWidth, fullHeight) => {
     return {
         zoomFit,
         zoomToNode,
+        zoomIn,
+        zoomOut,
     }
 }
 

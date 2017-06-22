@@ -3,7 +3,8 @@
 import _ from 'lodash'
 import React from 'react'
 import ReactDOM from 'react-dom'
-
+import { withRouter } from 'react-router-dom'
+import classNames from 'classnames'
 import { scaleLinear } from 'd3-scale'
 import { drag as d3Drag } from 'd3-drag'
 import { select as d3Select } from 'd3-selection'
@@ -18,10 +19,9 @@ import createDrag from '../../graph/drag'
 import { arrowHead } from '../../graph/svgdefs.js'
 import { MIN_NODE_RADIUS, MAX_NODE_RADIUS, NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
 import {colorActiveNode } from '../../graph/util'
-import { withRouter } from 'react-router-dom'
 
-import classNames from 'classnames'
-const uuidV4 = require('uuid/v4');
+import ZoomButtons from '../ZoomButtons'
+
 
 
 function getLabelText(text) {
@@ -261,7 +261,6 @@ const createUpdateCollection = function(actions) {
                         const value = editMode.select('textarea').node().value
 
                         console.log('calling zoomfit!');
-                        console.log(actions.zoomFit);
                         actions.zoomFit()
 
                         if (data.isNew) {
@@ -626,6 +625,12 @@ class SubjectGraph extends React.Component {
 
     render() {
         return (
+            <div>
+                <ZoomButtons
+                    zoomIn={() => this.zoom.zoomIn()}
+                    zoomOut={() => his.zoom.zoomOut()}
+                    zoomFit={() => this.zoom.zoomFit()}
+                />
                 <svg 
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                     preserveAspectRatio="xMidYMid meet"
@@ -634,6 +639,7 @@ class SubjectGraph extends React.Component {
                 >
                     <g ref='container' />
                 </svg>
+            </div>
 
         )
     }

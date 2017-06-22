@@ -53,7 +53,7 @@ class AddNodeWindow extends React.Component {
         const containerClass = classNames('addNodeWindow', { visible: opened })
 
         return (
-            <Portal isOpened={opened}>
+            <Portal isOpened={true}>
                 <div className={ containerClass }>
                     <div className="addNodeWindow-container">
                         <div className="addNodeWindow-input">

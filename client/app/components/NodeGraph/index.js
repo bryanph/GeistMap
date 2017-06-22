@@ -1,12 +1,12 @@
 import _ from 'lodash'
 import React from 'react'
+import { withRouter } from 'react-router-dom'
 import ReactDOM from 'react-dom'
-
+import classNames from 'classnames'
 import { scaleLinear } from 'd3-scale'
 import { drag as d3Drag } from 'd3-drag'
 import { select as d3Select } from 'd3-selection'
 import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
-import './styles.scss'
 
 import { browserHistory } from 'react-router-dom'
 
@@ -16,9 +16,10 @@ import createDrag from './drag'
 import { arrowHead } from '../../graph/svgdefs.js'
 import { MIN_NODE_RADIUS, MAX_NODE_RADIUS, NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
 import {colorActiveNode } from '../../graph/util'
-import { withRouter } from 'react-router-dom'
 
-import classNames from 'classnames'
+import ZoomButtons from '../ZoomButtons'
+
+import './styles.scss'
 
 function getLabelText(text) {
     /*
@@ -65,22 +66,26 @@ const createEnterNode = function(actions: { click: Function }) {
     }
 }
 
-const updateNode = function(selection, editMode, editFocus) {
+const updateNode = function(selection, editMode, editFocus, actions) {
     selection.select('text').text(d => {
         return getLabelText(d.name)
     })
 
+    selection.select('.editMode').remove()
+
     // insert an editable text field at the bottom
     if (editMode) {
-
         if (editFocus.id) {
+            selection.on('click', null)
+
             const nodeSelection = d3Select(`#node-${editFocus.id}`)
 
             const editMode = nodeSelection.append('g')
                 .attr('class', 'editMode')
 
             const div = editMode.append('foreignObject')
-                .attr('y', (d) => NODE_RADIUS*2 + 1)
+                .attr('x', -100)
+                .attr('y', (d) => NODE_RADIUS + 1)
                 .attr('width', 200)
                 .attr('height', 100)
                 .append('xhtml:div')
@@ -90,9 +95,33 @@ const updateNode = function(selection, editMode, editFocus) {
             const textarea = div.append('textarea')
                 .attr('maxLength', 50)
                 .attr('autofocus', true)
-                .text(data.name)
+                .text((d) => d.name)
+                .on("keydown", function(d) {
+                    const e = currentEvent;
+
+                    if (e.which === 13) {
+                        e.stopPropagation()
+                        // on enter, update node
+                        const value = editMode.select('textarea').node().value
+                        actions.updateNode(d.id, { name: value })
+                        actions.setActiveNode(null)
+                    }
+                })
             // .style("height", sqLen)
+            console.log('selecting...');
+            setTimeout(() => textarea.node().select(), 0)
         }
+        else {
+            // change click to edit node
+            selection.on('click', (d) => {
+                actions.setActiveNode(d.id)
+            })
+        }
+
+    }
+    else {
+        // make click bind to editor
+        selection.on('click', actions.onNodeClick)
     }
 
     return selection
@@ -195,6 +224,7 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
     const enterNode = createEnterNode({
         click: onNodeClick
     })
+
     const enterLink = createEnterLink({
         doubleClick: (d) => actions.removeEdge(d.id)
     })
@@ -205,7 +235,7 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
         // ENTER selection
         node.enter().append('g').call(enterNode).call(nodeDrag)
         // ENTER + UPDATE selection
-            .merge(node).call((selection) => updateNode(selection, editMode, editFocus))
+            .merge(node).call((selection) => updateNode(selection, editMode, editFocus, actions))
         
         // EXIT selection
         link.exit().remove()
@@ -282,7 +312,9 @@ class NodeGraph extends React.Component {
         this.simulation.nodes(nodes)
         this.simulation.force("link").links(links)
 
-        this.restartSimulation()
+        if (nodes.length !== this.props.nodes.length || links.length !== this.props.links.length) {
+            this.restartSimulation()
+        }
     }
 
     restartSimulation() {
@@ -325,12 +357,12 @@ class NodeGraph extends React.Component {
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
 
-        // TODO: connectNodes requires a re-fetch at the moment
         this.exploreEvents = createExploreEvents.call(this, this.simulation, {
             history: this.props.history,
             removeEdge,
             connectNodes,
             setActiveNode: this.props.setActiveNode,
+            updateNode: this.props.updateNode,
         })
         // TODO: collectionId should be not be static like this - 2017-05-21
         this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collectionId, {
@@ -338,6 +370,7 @@ class NodeGraph extends React.Component {
             removeEdge,
             connectNodes,
             setActiveNode: this.props.setActiveNode,
+            updateNode: this.props.updateNode,
         })
 
         //TODO: set to true on initial tick
@@ -379,14 +412,21 @@ class NodeGraph extends React.Component {
         // const className = 'svg-content' + (this.props.editMode ? ' editMode' : '')
 
         return (
-            <svg 
-                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-                preserveAspectRatio="xMidYMid meet"
-                className="svg-content"
-                ref="graph"
-            >
-                <g ref="container" />
-            </svg>
+            <div>
+                <ZoomButtons
+                    zoomIn={() => this.zoom.zoomIn()}
+                    zoomOut={() => this.zoom.zoomOut()}
+                    zoomFit={() => this.zoom.zoomFit()}
+                />
+                <svg
+                    viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                    preserveAspectRatio="xMidYMid meet"
+                    className="svg-content"
+                    ref="graph"
+                >
+                    <g ref="container" />
+                </svg>
+            </div>
         )
     }
 }

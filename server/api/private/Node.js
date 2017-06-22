@@ -375,7 +375,7 @@ module.exports = function(db, es) {
                 "MATCH (u:User)--(n:Node) " +
                 "WHERE u.id = {userId} " +
                 "AND n.id = {id} " +
-                "SET n = { data } " +
+                "SET n += { data } " +
                 "SET n.modified = timestamp() " +
                 "RETURN properties(n) as node",
                 {

@@ -19,6 +19,7 @@ import {
     loadNode,
     loadCollection,
     connectNodes,
+    updateNode
 } from '../../actions/async'
 
 import {
@@ -109,6 +110,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
                             editFocus={editFocus}
                             addNode={this.props.addNode}
                             connectNodes={this.props.connectNodes}
+                            updateNode={this.props.updateNode}
                             setActiveNode={this.props.setActiveNode}
                         />
                         : <NoNodesYet createNode={() => this.props.showAddNodeToCollectionWindow({ collection })}/>
@@ -153,5 +155,6 @@ export default connect(mapStateToProps, {
     showAddNodeToCollectionWindow,
     addNode,
     connectNodes,
+    updateNode,
     setActiveNode,
 })(CollectionDetail);
