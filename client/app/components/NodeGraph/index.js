@@ -11,8 +11,8 @@ import './styles.scss'
 import { browserHistory } from 'react-router-dom'
 
 import createZoom from '../../graph/zoom'
-import { createNodeSimulation, createCollectionSimulation, transformNode, transformLink } from '../../graph/simulation'
-import createDrag from '../../graph/drag'
+import { createNodeSimulation, transformNode, transformLink } from './simulation'
+import createDrag from './drag'
 import { arrowHead } from '../../graph/svgdefs.js'
 import { MIN_NODE_RADIUS, MAX_NODE_RADIUS, NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
 import {colorActiveNode } from '../../graph/util'
@@ -83,13 +83,13 @@ const createEnterLink = function(actions) {
         return selection
             .append("path")
             .attr('id', (d) => `link-${d.id}`) // for later reference from data
-            .attr("class", "node-link")
+            .attr("class", "link node-link")
             .attr("marker-end", "url(#Triangle)")
             .on('dblclick', actions.doubleClick)
         // .append("path")
         // .attr('id', (d) => `link-${d.id}`) // for later reference from data
         // .attr('fill', (d) => lightAccentColor)
-        // .attr("class", "node-link")
+        // .attr("class", "link node-link")
         // .on('dblclick', events.linkDoubleClick)
         // .attr("marker-mid", "url(#Triangle)")
     }
@@ -286,8 +286,13 @@ class NodeGraph extends React.Component {
         let nodeById = {}
 
         // TODO: this only applies to CollectionOverview
-        const maxNodeCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
-        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
+        // const maxNodeCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
+        // const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
+
+        // make sure there are no duplicates in nodes, edges
+        // TODO: shouldn't be nescessary - 2017-06-21
+        nodes = _.uniqBy(nodes, (node) => node.id)
+        links = _.uniqBy(links, (link) => link.id)
 
         // set extra properties here
         nodes.forEach(node => {
@@ -299,12 +304,15 @@ class NodeGraph extends React.Component {
             link.target = nodeById[link.end]
         })
 
+
         // set data
         var node = this.container.selectAll('.node')
             .data(nodes, node => node.id)
 
-        var link = this.container.selectAll('.node-link')
+        var link = this.container.selectAll('.link')
             .data(links, link => link.id)
+
+        console.log(node.enter().size(), node.enter().data(), link.enter().size())
 
         // enter-update-exit cycle depending on type of graph
         if (graphType === 'inbox') {
@@ -321,14 +329,11 @@ class NodeGraph extends React.Component {
         this.simulation.nodes(nodes)
         this.simulation.force("link").links(links)
 
-        if (nodes !== this.props.nodes || links !== this.props.links) {
-            this.restartSimulation()
-        }
+        this.restartSimulation()
     }
 
     restartSimulation() {
         // TODO: do two zooms, an initial "guess" zoom and another for accuracy - 2017-06-07
-        console.log('restarting simulation...');
         this.zoomed = false;
         this.simulation.alpha(0.8).restart()
     }
@@ -346,6 +351,12 @@ class NodeGraph extends React.Component {
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
         this.container.append('defs').call(arrowHead)
 
+        this.graph.dragLine = this.container
+            .append("path")
+            .attr("class", "node-link")
+            .attr("marker-end", "url(#Triangle)")
+
+        console.log('called componentDidMount');
         this.simulation = createNodeSimulation(WIDTH, HEIGHT)
 
         // this must be before zoom
@@ -390,7 +401,7 @@ class NodeGraph extends React.Component {
 
             selection.selectAll('.node')
                 .call(transformNode);
-            selection.selectAll('.node-link')
+            selection.selectAll('.link')
                 .call(transformLink);
         }
 
@@ -401,32 +412,31 @@ class NodeGraph extends React.Component {
             this.container.call(ticked);
         });
 
+
         this.update(this.props)
     }
 
     shouldComponentUpdate(nextProps) {
-        this.update(nextProps)
+        if (nextProps.nodes !== this.props.nodes || nextProps.links !== this.props.links) {
+            this.update(nextProps)
+        }
 
-        // return false
-        return true
+        return false
     }
 
     render() {
         // TODO: should be set somewhere up high so shouldComponentUpdate can return false - 2017-06-21
-        const className = 'svg-content' + (this.props.editMode ? ' editMode' : '')
+        // const className = 'svg-content' + (this.props.editMode ? ' editMode' : '')
 
         return (
-            <div id="nodeGraph" className="svg-container">
-                <svg 
-                    viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-                    preserveAspectRatio="xMidYMid meet"
-                    className={ className }
-                    ref='graph'
-                >
-                    <g ref='container' />
-                </svg>
-        </div>
-
+            <svg 
+                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                preserveAspectRatio="xMidYMid meet"
+                className="svg-content"
+                ref="graph"
+            >
+                <g ref="container" />
+            </svg>
         )
     }
 }

@@ -91,6 +91,7 @@ class NodeSearch extends React.Component {
         super(props)
 
         this.onChange = this.onChange.bind(this)
+        this.onSubmit = this.onSubmit.bind(this)
         this.onKeyPress = this.onKeyPress.bind(this)
         this.onSearchClick = this.onSearchClick.bind(this)
 
@@ -113,8 +114,14 @@ class NodeSearch extends React.Component {
         if (e.key === 'Enter') {
             if (onEnter) {
                 onEnter(this.state.searchValue)
+                this.setState({ searchValue: "" })
             }
         }
+    }
+
+    onSubmit() {
+        this.props.onClick(this.state.searchValue)
+        this.setState({ searchValue: "" })
     }
 
     onSearchClick(value) {
@@ -131,7 +138,7 @@ class NodeSearch extends React.Component {
                 <SearchInput 
                     onChange={this.onChange}
                     onKeyPress={this.onKeyPress}
-                    onClick={() => this.props.onClick(this.state.searchValue)}
+                    onClick={this.onSubmit}
                     onFocus={ (e) => { this.setState({opened: true}) }}
                     value={this.state.searchValue}
                 />

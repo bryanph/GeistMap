@@ -5,7 +5,7 @@
 
 // curved
 export function arrowHead(selection) {
-    selection
+    return selection
         .append('marker')
         .attr("id", "Triangle")
         .attr('viewBox', "0 0 8 8")
@@ -32,7 +32,7 @@ export function arrowHead(selection) {
 
 // straight
 export function straightArrowHead(selection) {
-    selection
+    return selection
         .append('marker')
         .attr("id", 'Triangle')
         .attr("viewBox", "0 -5 10 10")
@@ -45,4 +45,3 @@ export function straightArrowHead(selection) {
         .style("fill", lightAccentColor)
         .attr("d", "M0,-5 L10,0 L0,5");
 }
-

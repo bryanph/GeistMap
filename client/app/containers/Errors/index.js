@@ -15,7 +15,7 @@ class Errors extends React.Component {
 
     componentWillReceiveProps = () => {
         if (this.props.error) {
-            console.error("An error occurred", error)
+            console.error("An error occurred", this.props.error)
             this.setState({ open: true })
         }
     }

@@ -41,12 +41,12 @@ import { colorNode } from '../../graph/util'
 const createEnterNode = function(actions: { click: Function }) {
     /*
      * HOF for enterNode
-    */
+     */
     return (selection, click) => {
         selection
             .attr("class", "node")
-            // .classed('enter-selection', true) // for rxjs..
-            // for later reference from data
+        // .classed('enter-selection', true) // for rxjs..
+        // for later reference from data
             .attr('id', (d) => {
                 return `node-${d.id}`
             }) 
@@ -103,11 +103,11 @@ const createEnterLink = function(actions) {
 const createEnterCollection = function(actions: { click: Function }) {
     /*
      * HOF for enterNode
-    */
+     */
     return (selection, editMode) => {
         selection
             .attr("class", "node subject-node")
-            // for later reference from data
+        // for later reference from data
             .attr('id', (d) => {
                 return `node-${d.id}`
             }) 
@@ -120,16 +120,16 @@ const createEnterCollection = function(actions: { click: Function }) {
             .attr("r", (d) => d.radius)
             .attr("x", -8)
             .attr("y", -8)
-            // .style("fill", colorNode)
+        // .style("fill", colorNode)
 
         selection.append('text')
             .text((d) => getLabelText(d.name))
-            // .on('click', (d) => {
-            //     currentEvent.stopPropagation()
-            //     actions.setActiveCollection(d.id)
-            //     console.log('called textClick');
-            // })
-            
+        // .on('click', (d) => {
+        //     currentEvent.stopPropagation()
+        //     actions.setActiveCollection(d.id)
+        //     console.log('called textClick');
+        // })
+
 
         return selection
 
@@ -173,9 +173,9 @@ const createUpdateCollection = function(actions) {
             .attr('width', sqLen)
             .attr('height', sqLen)
             .style('font-size', fontSize)
-            // .attr('dy', '1em')
-            // .style("font-size", (d) => d.radius / 3)
-            // .text((d) => getLabelText(d.name));
+        // .attr('dy', '1em')
+        // .style("font-size", (d) => d.radius / 3)
+        // .text((d) => getLabelText(d.name));
 
         if (!data.name) {
             data.name = ""
@@ -231,7 +231,7 @@ const createUpdateCollection = function(actions) {
             if (editFocus.id === data.id) {
                 editMode.append('circle')
                     .attr('r', data.radius)
-                    
+
 
                 const div = editMode.append('foreignObject')
                     .attr('x', -sqDist)
@@ -246,16 +246,16 @@ const createUpdateCollection = function(actions) {
                     .attr('maxLength', 50)
                     .attr('autofocus', true)
                     .text(data.name)
-                    // .style("height", sqLen)
+                // .style("height", sqLen)
             }
 
             const buttonHeight = data.radius * 0.3
-            
+
             const group = editMode.append('g')
                 .attr('class', 'editNodeButton')
                 .classed('editNodeButton-active', editFocus.id === data.id)
                 .attr('transform', (d) => `translate(0, ${d.radius - buttonHeight / 1.4})`)
-                // .style('font-size', (d) => d.radius / 4.5)
+            // .style('font-size', (d) => d.radius / 4.5)
                 .on('click', (d) => {
                     if (editFocus.id === data.id) {
                         const value = editMode.select('textarea').node().value
@@ -280,13 +280,13 @@ const createUpdateCollection = function(actions) {
 
             group.append('circle')
                 .attr('r', buttonHeight / 2)
-                // .attr('x', (d) => -(buttonHeight / 2)) // half of width
-                // .attr('y', -buttonHeight/4)
-                
+            // .attr('x', (d) => -(buttonHeight / 2)) // half of width
+            // .attr('y', -buttonHeight/4)
+
             // .attr('y', (d) => -(d.radius * 0.2))
 
             const text = group.append('text')
-                // .attr("dy", "1em")
+            // .attr("dy", "1em")
 
             text.append('tspan')
                 .attr('class', 'editNodeButton-icon')
@@ -309,8 +309,8 @@ const createEnterCollectionLink = function(actions) {
             .attr('id', (d) => `link-${d.id}`) // for later reference from data
             .attr("class", "node-link subject-link")
             .classed("editMode", editMode)
-            // .attr("marker-end", "url(#Triangle)")
-            // .on('dblclick', actions.doubleClick)
+        // .attr("marker-end", "url(#Triangle)")
+        // .on('dblclick', actions.doubleClick)
         // .append("path")
         // .attr('id', (d) => `link-${d.id}`) // for later reference from data
         // .attr('fill', (d) => lightAccentColor)
@@ -411,7 +411,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
             return selection
                 .append("path")
                 .attr("class", "node-link addSubject-link")
-                // .on('dblclick', actions.doubleClick)
+            // .on('dblclick', actions.doubleClick)
         }
     }
 
@@ -430,7 +430,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
 
     return (node, link, editMode, editFocus) => {
         // TODO: join all nodes on the same class to allow for enter-update-exit animations - 2017-06-07
-        
+
         // // EXIT selection
         // addCollectionNode.exit().remove()
         // // ENTER selection
@@ -626,7 +626,6 @@ class SubjectGraph extends React.Component {
 
     render() {
         return (
-            <div id="nodeGraph" className="svg-container">
                 <svg 
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                     preserveAspectRatio="xMidYMid meet"
@@ -635,7 +634,6 @@ class SubjectGraph extends React.Component {
                 >
                     <g ref='container' />
                 </svg>
-        </div>
 
         )
     }

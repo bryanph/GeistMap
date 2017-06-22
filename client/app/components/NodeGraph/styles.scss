@@ -11,11 +11,11 @@
     cursor: auto;
 }
 
-.svg-content.editMode {
-    &:hover {
-        cursor: cell;
-    }
-}
+// .svg-content.editMode {
+//     &:hover {
+//         cursor: cell;
+//     }
+// }
 
 .node:hover {
     cursor: pointer;
@@ -47,5 +47,8 @@
     /* text-color-internal: #FFFFFF; */
 }
 
+.node-link.hidden {
+    visibility: hidden;
+}
 
 

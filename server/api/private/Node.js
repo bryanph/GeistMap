@@ -457,11 +457,10 @@ module.exports = function(db, es) {
         //     .catch(handleError)
         // },
 
-        connect: function(user, node1, node2, id, isBatch=false, res) {
+        connect: function(user, node1, node2, id, res) {
             /*
              * Create the edge [node1]-[edge]->[node2]
              * Additionally, update collection relations
-             * if isBatch=true, make nodes a Batch node as well
              */
 
             // TODO: Add an edge type argument - 2016-06-06
@@ -480,8 +479,7 @@ module.exports = function(db, es) {
                 "MATCH (u:User)--(n1:Node), (u:User)--(n2:Node) " +
                 "WHERE u.id = {userId} " +
                 "AND n1.id = {node1} AND n2.id = {node2} " +
-                (isBatch ? "SET n1:BatchNode, n2:BatchNode " : "") +
-                "MERGE (n1)-[e:EDGE { id: {id}, start: n2.id, end: n2.id }]->(n2) " +
+                "MERGE (n1)-[e:EDGE { id: {id}, start: n1.id, end: n2.id }]->(n2) " +
                 "RETURN properties(e) as edge",
                 {
                     node1,

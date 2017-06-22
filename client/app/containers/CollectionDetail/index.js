@@ -18,6 +18,7 @@ import './styles.scss'
 import {
     loadNode,
     loadCollection,
+    connectNodes,
 } from '../../actions/async'
 
 import {
@@ -93,7 +94,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
 
         return (
             <div className='appContainer'>
-                <AddNodeWindow opened={editMode && nodeWindow.open} collectionId={collectionId} />
+                <AddNodeWindow opened={editMode} collectionId={collectionId} />
                 {
                     nodes.length ?
                         <NodeGraph 
@@ -104,6 +105,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
                             graphType="collectionDetail"
                             editMode={editMode}
                             addNode={this.props.addNode}
+                            connectNodes={this.props.connectNodes}
                         />
                         : <NoNodesYet createNode={() => this.props.showAddNodeToCollectionWindow({ collection })}/>
                 }
@@ -145,4 +147,5 @@ export default connect(mapStateToProps, {
     loadNode,
     showAddNodeToCollectionWindow,
     addNode,
+    connectNodes,
 })(CollectionDetail);

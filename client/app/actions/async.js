@@ -312,29 +312,29 @@ export const CONNECT_NODES_REQUEST = 'CONNECT_NODES_REQUEST'
 export const CONNECT_NODES_SUCCESS = 'CONNECT_NODES_SUCCESS'
 export const CONNECT_NODES_FAILURE = 'CONNECT_NODES_FAILURE'
 
-export function fetchConnectNodes(start, end, isBatch) {
+export function fetchConnectNodes(start, end) {
     const id = uuidV4();
 
     return {
         start,
         end,
-        isBatch,
         [CALL_API]: {
             types: [ CONNECT_NODES_REQUEST, CONNECT_NODES_SUCCESS, CONNECT_NODES_FAILURE ],
             endpoint: 'Node.connect',
-            payload: [ start, end, id, isBatch ],
+            payload: [ start, end, id ],
             schema: Schemas.EDGE,
         }
     }
 }
-export function connectNodes(start, end, direction="to", isBatch=false) {
+export function connectNodes(start, end) {
     /*
      * we must first fetch the node, so we get its properties and show name and description
     */
-    // TODO: check if end/start is already cached - 2016-07-18
+    // TODO: check if end/start is already fetched - 2016-07-18
     return (dispatch) => {
-        return dispatch(direction === "to" ? fetchNode(end) : fetchNode(start))
-            .then(() => dispatch(fetchConnectNodes(start, end, isBatch)))
+        return dispatch(fetchConnectNodes(start, end))
+        // return dispatch(fetchNode(end))
+        //     .then(() => dispatch(fetchConnectNodes(start, end)))
     }
 }
 
