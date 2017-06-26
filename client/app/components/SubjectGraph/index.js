@@ -104,7 +104,7 @@ const createEnterCollection = function(actions: { click: Function }) {
     /*
      * HOF for enterNode
      */
-    return (selection, editMode) => {
+    return (selection) => {
         selection
             .attr("class", "node subject-node")
         // for later reference from data
@@ -138,15 +138,15 @@ const createEnterCollection = function(actions: { click: Function }) {
 
 const createUpdateCollection = function(actions) {
 
-    return (selection, data, editMode, editFocus) => {
+    return (selection, data, mode, focus) => {
         const nodeClasses = classNames("node", "subject-node", {
-            editMode
+            editMode: mode === 'edit'
         })
 
         selection
             .attr("class", "node subject-node")
 
-        if (editMode) {
+        if (mode === 'edit') {
             selection.on('click', function(d) {
                 actions.stopSimulation()
                 actions.zoomToNode(d3Select(this), d)
@@ -223,12 +223,12 @@ const createUpdateCollection = function(actions) {
         // with react this would be a lot simpler.
         selection.select('.editMode').remove()
 
-        if (editMode) {
+        if (mode === 'edit') {
             const editMode = selection.append('g')
                 .attr('class', 'editMode')
                 .style('font-size', (d) => d.radius / 6)
 
-            if (editFocus.id === data.id) {
+            if (focus.id === data.id) {
                 editMode.append('circle')
                     .attr('r', data.radius)
 
@@ -253,11 +253,11 @@ const createUpdateCollection = function(actions) {
 
             const group = editMode.append('g')
                 .attr('class', 'editNodeButton')
-                .classed('editNodeButton-active', editFocus.id === data.id)
+                .classed('editNodeButton-active', focus.id === data.id)
                 .attr('transform', (d) => `translate(0, ${d.radius - buttonHeight / 1.4})`)
             // .style('font-size', (d) => d.radius / 4.5)
                 .on('click', (d) => {
-                    if (editFocus.id === data.id) {
+                    if (focus.id === data.id) {
                         const value = editMode.select('textarea').node().value
 
                         console.log('calling zoomfit!');
@@ -290,7 +290,7 @@ const createUpdateCollection = function(actions) {
             text.append('tspan')
                 .attr('class', 'editNodeButton-icon')
                 .text((d) => {
-                    if (editFocus.id === data.id) {
+                    if (focus.id === data.id) {
                         return '\uF00C'
                     }
                     return '\uF040'
@@ -302,12 +302,12 @@ const createUpdateCollection = function(actions) {
 }
 
 const createEnterCollectionLink = function(actions) {
-    return (selection, editMode) => {
+    return (selection, mode) => {
         return selection
             .append("path")
             .attr('id', (d) => `link-${d.id}`) // for later reference from data
             .attr("class", "node-link subject-link")
-            .classed("editMode", editMode)
+            .classed("editMode", mode === 'edit')
         // .attr("marker-end", "url(#Triangle)")
         // .on('dblclick', actions.doubleClick)
         // .append("path")
@@ -427,7 +427,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
 
     })
 
-    return (node, link, editMode, editFocus) => {
+    return (node, link, mode, focus) => {
         // TODO: join all nodes on the same class to allow for enter-update-exit animations - 2017-06-07
 
         // // EXIT selection
@@ -454,10 +454,10 @@ const createCollectionOverviewEvents = function(simulation, actions) {
                 return enterAddCollection(s)
             }
             else {
-                return enterCollection(s, editMode).call(collectionDrag)
+                return enterCollection(s, mode).call(collectionDrag)
             }
         })
-        // node.enter().append('g').call((s) => enterCollection(s, editMode)).call(collectionDrag)
+        // node.enter().append('g').call((s) => enterCollection(s, mode)).call(collectionDrag)
         // ENTER + UPDATE selection
             .merge(node).each(function(d) {
                 const s = d3Select(this)
@@ -467,10 +467,10 @@ const createCollectionOverviewEvents = function(simulation, actions) {
                 }
                 else {
                     // TODO: only set collectionDrag if hasn't been set before - 2017-06-07
-                    return updateCollection(s, d, editMode, editFocus).call(collectionDrag) 
+                    return updateCollection(s, d, mode, focus).call(collectionDrag) 
                 }
             })
-            // .merge(node).call((s) => updateCollection(s, editMode))
+            // .merge(node).call((s) => updateCollection(s, mode))
         
         // EXIT selection
         link.exit().remove()
@@ -482,7 +482,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
                 return enterAddCollectionLink(s)
             }
             else {
-                return enterCollectionLink(s, editMode)
+                return enterCollectionLink(s, mode)
             }
         })
         // link.enter().insert('g', ":first-child").call(enterCollectionLink)
@@ -509,8 +509,8 @@ class SubjectGraph extends React.Component {
             nodes,
             links,
             graphType,
-            editMode, // is this graph in edit mode?
-            editFocus, // is a single node being edited?
+            mode, // is this graph in edit mode?
+            focus, // is a single node being edited?
         } = nextProps
 
         let nodeById = {}
@@ -545,7 +545,7 @@ class SubjectGraph extends React.Component {
             .data(links, link => link.id)
 
         // enter-update-exit cycle depending on type of graph
-        this.collectionOverviewEvents(node, link, editMode, editFocus)
+        this.collectionOverviewEvents(node, link, mode, focus)
 
         this.simulation.nodes(nodes)
         this.simulation.force("link").links(links)

@@ -1,3 +1,4 @@
+/* @flow */
 import { createAction } from 'redux-actions'
 
 export const SET_EDITOR_STATE = 'SET_EDITOR_STATE'
@@ -84,14 +85,6 @@ export function setActiveCollections(collectionIds) {
     }
 }
 
-export const SET_TITLE = 'SET_TITLE'
-export function setTitle(title) {
-    return {
-        type: SET_TITLE,
-        title,
-    }
-}
-
 export const SHOW_INBOX_SIDEBAR = 'SHOW_INBOX_SIDEBAR'
 export const showInboxSidebar = createAction(SHOW_INBOX_SIDEBAR)
 
@@ -105,18 +98,23 @@ export const hideInboxSidebar = createAction(HIDE_INBOX_SIDEBAR)
 import { getCollection, getCollections, getCollectionEdges } from '../reducers'
 import { MIN_NODE_RADIUS } from '../graph/constants'
 
+
+
 export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE'
-export function toggleEditMode(id, refresh=true) {
+// export const toggleEditMode = createAction(TOGGLE_EDIT_MODE)
+export function toggleEditMode(id) {
     return (dispatch, getState) => {
         const state = getState()
         const collections = getCollections(state)
-        const editMode = !state.uiState.editMode.active
+        const editMode = !(state.graphUiState.mode === 'edit')
 
         // for every collection, create a "addCollectionNode" and a "addCollectionEdge
         // when clicked on, these nodes will expand to an actual node and put in "edit mode"
         let addCollectionNodes = {}
         let addCollectionEdges = {}
         // TODO: these should be created only once on initial fetch and hidden with a flag - 2017-06-19
+        // and then updated on action changes
+
         if (editMode) {
             collections.forEach((node, index) => {
                 const nodeId = uuidV4()
@@ -141,6 +139,7 @@ export function toggleEditMode(id, refresh=true) {
                 addCollectionNodes[nodeId] = addCollectionNode
                 addCollectionEdges[edgeId] = addCollectionEdge
             })
+
         }
         return dispatch({
             type: TOGGLE_EDIT_MODE,
@@ -172,6 +171,15 @@ export function setActiveNode(id) {
     }
 }
 
+// set this node in edit mode
+export const SET_GRAPH_MODE = 'SET_GRAPH_MODE'
+export function setGraphMode(mode: "view" | "edit" | "focus" | "fetch") {
+    return {
+        type: SET_GRAPH_MODE,
+        payload: mode,
+    }
+}
+
 
 const uuidV4 = require('uuid/v4');
 
@@ -198,9 +206,4 @@ export function addNode(pos) {
         id: id,
         pos,
     }
-
 }
-
-// make graph go in a "select node" mode
-export const TOGGLE_SELECT_NODE = 'TOGGLE_SELECT_NODE'
-export const toggleSelectNode = createAction(TOGGLE_SELECT_NODE)

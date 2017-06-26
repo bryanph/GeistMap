@@ -1,4 +1,4 @@
-"use strict"
+/* @flow */
 
 /*
  * Visualization reducers
@@ -257,17 +257,6 @@ function collections(state={}, action) {
                     // TODO: created should also be set here - 2017-06-07
                 }
             }
-
-        // case uiTypes.SET_ACTIVE_COLLECTION:
-        //     // focus edit on this node, this causes d3 to react
-        //     return {
-        //         ...state,
-        //         [action.id]: {
-        //             ...state[action.id],
-        //             editFocus: true,
-        //         }
-        //     }
-
 
         default:
             if (action.response && action.response.entities && action.response.entities.collections) {
@@ -730,65 +719,43 @@ const initialUiState = {
     inboxSidebar: {
         opened: false,
     },
-
-    editMode: {
-        active: false
-    }
 }
 
 const initialGraphUIState = {
-    editMode: false,
-    editFocus: {
-        id: null
+    // can be "view", "edit", "focus" or "fetch"
+    mode: "view",
+    focus: {
+        id: null,
     },
-    addNode: {
-        open: false
-    },
-
-    selectMode: false,
 }
 function graphUiState(state=initialGraphUIState, action) {
     /*
      * UI state related to the graph
     */
     switch(action.type) {
-        case uiTypes.TOGGLE_EDIT_MODE:
-            return {
-                ...state,
-                editMode: !state.editMode.active,
-            }
-
         case uiTypes.SET_ACTIVE_COLLECTION:
         case uiTypes.SET_ACTIVE_NODE:
         case uiTypes.ADD_COLLECTION:
             return {
                 ...state,
-                editFocus: {
+                focus: {
                     id: action.id,
                 }
             }
 
-        case uiTypes.ADD_NODE:
-            // TODO: should this be done with more of a "sync" behaviour? - 2017-06-14
-            // temporarily add a node and defer synching with the server
+        case uiTypes.SET_GRAPH_MODE:
             return {
                 ...state,
-                addNode: {
-                    open: true,
-                    id: action.id,
-                    x: action.pos.x,
-                    y: action.pos.y,
-                }
+                mode: action.payload,
             }
 
-        case uiTypes.TOGGLE_SELECT_NODE:
+        case uiTypes.TOGGLE_EDIT_MODE:
             return {
                 ...state,
-                selectMode: {
-                    active: !state.selectMode.active,
-                    mode: !state.selectMode.active ? action.payload : null,
-                }
+                mode: state.mode === "edit" ? "view" : "edit",
             }
+
+
 
         default:
             return state;
@@ -902,23 +869,11 @@ function uiState(state=initialUiState, action) {
                     opened: false,
                 }
             }
-        case uiTypes.TOGGLE_EDIT_MODE:
-            return {
-                ...state,
-                editMode: {
-                    active: !state.editMode.active,
-                }
-            }
         // used with CollectionExploreGraph
         case uiTypes.SET_ACTIVE_COLLECTIONS:
             return {
                 ...state,
                 activeCollections: action.collectionIds,
-            }
-        case uiTypes.SET_TITLE:
-            return {
-                ...state,
-                title: action.title,
             }
         default:
             return state

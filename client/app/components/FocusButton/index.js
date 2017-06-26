@@ -14,27 +14,25 @@ class FocusButton extends React.Component {
     }
 
     render() {
-        const { selectMode } = this.props
+        const { mode } = this.props
 
         const buttonClass = classNames("focusButton-button", {
-            "active": selectMode && selectMode.mode === 'focus'
+            "active": mode === 'focus'
         })
-
-        console.log('called', selectMode);
 
         return (
             <Button 
                 circular icon={ "crosshairs" } size="big" className={ buttonClass }
-                onClick={ () => this.props.toggleSelectNode('focus') }
+                onClick={ () => this.props.setGraphMode('focus') }
             />
         )
     }
 }
 
-import { toggleSelectNode } from '../../actions/ui'
+import { setGraphMode } from '../../actions/ui'
 
-export default connect((state) => ({ selectMode: state.graphUiState.selectMode }), {
-    toggleSelectNode
+export default connect((state) => ({ mode: state.graphUiState.mode }), {
+    setGraphMode,
 })(FocusButton)
 
 

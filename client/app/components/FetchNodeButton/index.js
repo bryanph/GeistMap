@@ -14,27 +14,25 @@ class FetchNodeButton extends React.Component {
     }
 
     render() {
-        const { selectMode } = this.props
+        const { mode } = this.props
 
         const buttonClass = classNames("fetchNodeButton-button", {
-            "active": selectMode && selectMode.mode === 'fetch'
+            "active": mode === 'fetch'
         })
-
-        console.log(selectMode);
 
         return (
             <Button 
                 circular icon={ "expand" } size="big" className={ buttonClass }
-                onClick={ () => this.props.toggleSelectNode('fetch') }
+                onClick={ () => this.props.setGraphMode('fetch') }
             />
         )
     }
 }
 
-import { toggleSelectNode } from '../../actions/ui'
+import { setGraphMode } from '../../actions/ui'
 
-export default connect((state) => ({ selectMode: state.graphUiState.selectMode }), {
-    toggleSelectNode
+export default connect((state) => ({ mode: state.graphUiState.mode }), {
+    setGraphMode
 })(FetchNodeButton)
 
 

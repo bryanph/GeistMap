@@ -66,7 +66,7 @@ const createEnterNode = function(actions: { click: Function }) {
     }
 }
 
-const createUpdateNode = (actions) => (selection, editMode, editFocus, selectMode) => {
+const createUpdateNode = (actions) => (selection, mode, focus) => {
     selection.select('text').text(d => {
         return getLabelText(d.name)
     })
@@ -74,17 +74,17 @@ const createUpdateNode = (actions) => (selection, editMode, editFocus, selectMod
     selection.select('.editMode').remove()
 
     // insert an editable text field at the bottom
-    if (selectMode) {
+    if (mode === 'focus') {
         selection.on('click', (d) => {
             // go to NodeExplore, which will transition node to center and perform the fetching and filtering
             actions.history.push(`/app/nodes/${d.id}`)
         })
     }
-    else if (editMode) {
-        if (editFocus.id) {
+    else if (mode === 'edit') {
+        if (focus.id) {
             selection.on('click', null)
 
-            const nodeSelection = d3Select(`#node-${editFocus.id}`)
+            const nodeSelection = d3Select(`#node-${focus.id}`)
 
             const editMode = nodeSelection.append('g')
                 .attr('class', 'editMode')
@@ -124,9 +124,8 @@ const createUpdateNode = (actions) => (selection, editMode, editFocus, selectMod
         }
 
     }
-    else {
-        // make click bind to editor
-        console.log('binding onClick...');
+    else if (mode === 'view') {
+        // make click go to editor
         selection.on('click', actions.onNodeClick)
     }
 
@@ -183,21 +182,23 @@ const createExploreEvents = function(simulation, actions) {
 
     const updateNode = createUpdateNode({
         onNodeClick,
+        updateNode: actions.updateNode,
         history: actions.history,
         setActiveNode: actions.setActiveNode,
+
     })
 
     const enterLink = createEnterLink({
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (node, link, editMode, editFocus, selectMode) => {
+    return (node, link, mode, focus) => {
         // EXIT selection
         node.exit().remove()
         // ENTER selection
         node.enter().append('g').call(enterNode).call(nodeDrag)
         // ENTER + UPDATE selection
-            .merge(node).call((selection) => updateNode(selection, editMode, selectMode, editFocus))
+            .merge(node).call((selection) => updateNode(selection, mode, focus))
         
         // EXIT selection
         link.exit().remove()
@@ -241,6 +242,7 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
 
     const updateNode = createUpdateNode({
         onNodeClick,
+        updateNode: actions.updateNode,
         history: actions.history,
         setActiveNode: actions.setActiveNode,
     })
@@ -250,14 +252,14 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (node, link, editMode, editFocus, selectMode) => {
+    return (node, link, mode, focus) => {
 
         // EXIT selection
         node.exit().remove()
         // ENTER selection
         node.enter().append('g').call(enterNode).call(nodeDrag)
         // ENTER + UPDATE selection
-            .merge(node).call((selection) => updateNode(selection, editMode, editFocus, selectMode))
+            .merge(node).call((selection) => updateNode(selection, mode, focus))
 
         // EXIT selection
         link.exit().remove()
@@ -286,9 +288,8 @@ class NodeGraph extends React.Component {
             nodes,
             links,
             graphType,
-            editMode, // is this graph in edit mode?
-            editFocus, // is a single node being edited?
-            selectMode, // clicking a node should result in an action?
+            mode, // mode of the graph
+            focus, // is a single node being edited?
         } = nextProps
 
         let nodeById = {}
@@ -320,17 +321,13 @@ class NodeGraph extends React.Component {
         var link = this.container.selectAll('.link')
             .data(links, link => link.id)
 
-        if (selectMode) {
-
-        }
-
         console.log(node.enter().size(), node.enter().data(), link.enter().size())
 
         // enter-update-exit cycle depending on type of graph
         if (graphType === 'explore') {
-            this.exploreEvents(node, link, editMode, editFocus, selectMode.mode)
+            this.exploreEvents(node, link, mode, focus)
         } else if (graphType === 'collectionDetail') {
-            this.collectionDetailEvents(node, link, editMode, editFocus, selectMode.mode)
+            this.collectionDetailEvents(node, link, mode, focus)
         } else {
             console.error('this should not happen!')
         }
@@ -383,7 +380,6 @@ class NodeGraph extends React.Component {
             if (this.props.editMode && graphType === 'collectionDetail') {
                 // prompt for a node name
                 // this.props.addNode({ x, y })
-                
             }
         })
 

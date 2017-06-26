@@ -7,19 +7,19 @@ import { toggleEditMode } from '../../actions/ui'
 
 import './styles.scss'
 
-let EditModeButton = ({ editMode, toggleEditMode }) => {
-    const buttonClass = classNames("editModeButton", { editMode: editMode })
+let EditModeButton = ({ mode, toggleEditMode }) => {
+    const buttonClass = classNames("editModeButton", { editMode: mode === 'edit' })
 
     return (
         <Button 
-            circular icon={ editMode ? "checkmark" : "edit" } size="massive" className={ buttonClass }
+            circular icon={ mode === 'edit' ? "checkmark" : "edit" } size="massive" className={ buttonClass }
             onClick={ toggleEditMode }
         />
     )
 }
 
 const mapStateToProps = (state) => ({
-    editMode: state.uiState.editMode.active 
+    mode: state.graphUiState.mode
 })
 
 export default connect(mapStateToProps, { toggleEditMode })(EditModeButton)

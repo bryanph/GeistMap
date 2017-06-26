@@ -88,9 +88,8 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
             nodes,
             links,
             loadingStates,
-            editMode,
-            editFocus,
-            selectMode,
+            focus,
+            mode,
             nodeWindow 
         } = this.props
 
@@ -100,7 +99,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
 
         return (
             <div className='appContainer'>
-                <AddNodeWindow opened={editMode} collectionId={collectionId} />
+                <AddNodeWindow opened={mode === 'edit'} collectionId={collectionId} />
                 {
                     nodes.length ?
                         <NodeGraph 
@@ -109,9 +108,8 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
                             collectionId={this.props.collectionId} 
                             selectedId={this.props.nodeId}
                             graphType="collectionDetail"
-                            editMode={editMode}
-                            editFocus={editFocus}
-                            selectMode={selectMode}
+                            mode={mode}
+                            focus={focus}
                             addNode={this.props.addNode}
                             connectNodes={this.props.connectNodes}
                             updateNode={this.props.updateNode}
@@ -146,9 +144,8 @@ function mapStateToProps(state, props) {
     return {
         collectionId,
         nodeId,
-        editMode: state.uiState.editMode.active,
-        editFocus: state.graphUiState.editFocus,
-        selectMode: state.graphUiState.selectMode,
+        mode: state.graphUiState.mode,
+        focus: state.graphUiState.focus,
         nodeWindow: state.graphUiState.addNode,
         nodes: getNodesByCollectionId(state, collectionId),
         collection: getCollection(state, collectionId),

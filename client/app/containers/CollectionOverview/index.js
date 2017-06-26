@@ -66,7 +66,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
     }
 
     render() {
-        const { loadingStates, collections, collectionLinks, editMode } = this.props
+        const { loadingStates, collections, collectionLinks, mode } = this.props
 
         if (loadingStates.GET_COLLECTIONS) {
             return <Spinner />
@@ -85,8 +85,8 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                     createCollection={this.props.createCollection}
                     updateCollection={this.props.updateCollection}
                     graphType={'collectionOverview'}
-                    editMode={editMode}
-                    editFocus={this.props.editFocus}
+                    mode={mode}
+                    focus={this.props.focus}
 
                 />
                 <div className="editModeButton-container">
@@ -107,8 +107,8 @@ function mapStateToProps(state, props) {
         collections: getCollections(state),
         collectionLinks: getCollectionEdges(state), // links between collections
         loadingStates: state.loadingStates,
-        editMode: state.uiState.editMode.active,
-        editFocus: state.graphUiState.editFocus,
+        mode: state.graphUiState.mode,
+        focus: state.graphUiState.focus,
         // sidebarState: state.uiState.showCollectionSidebarState,
         // activeCollection: getCollection(state, id),
     }
