@@ -66,7 +66,7 @@ const createEnterNode = function(actions: { click: Function }) {
     }
 }
 
-const updateNode = function(selection, editMode, editFocus, actions) {
+const createUpdateNode = (actions) => (selection, editMode, editFocus, selectMode) => {
     selection.select('text').text(d => {
         return getLabelText(d.name)
     })
@@ -74,7 +74,13 @@ const updateNode = function(selection, editMode, editFocus, actions) {
     selection.select('.editMode').remove()
 
     // insert an editable text field at the bottom
-    if (editMode) {
+    if (selectMode) {
+        selection.on('click', (d) => {
+            // go to NodeExplore, which will transition node to center and perform the fetching and filtering
+            actions.history.push(`/app/nodes/${d.id}`)
+        })
+    }
+    else if (editMode) {
         if (editFocus.id) {
             selection.on('click', null)
 
@@ -108,7 +114,6 @@ const updateNode = function(selection, editMode, editFocus, actions) {
                     }
                 })
             // .style("height", sqLen)
-            console.log('selecting...');
             setTimeout(() => textarea.node().select(), 0)
         }
         else {
@@ -121,6 +126,7 @@ const updateNode = function(selection, editMode, editFocus, actions) {
     }
     else {
         // make click bind to editor
+        console.log('binding onClick...');
         selection.on('click', actions.onNodeClick)
     }
 
@@ -172,19 +178,26 @@ const createExploreEvents = function(simulation, actions) {
         .on('end', drag.dragend.bind(this))
 
     const enterNode = createEnterNode({
-        click: onNodeClick
+        onNodeClick
     })
+
+    const updateNode = createUpdateNode({
+        onNodeClick,
+        history: actions.history,
+        setActiveNode: actions.setActiveNode,
+    })
+
     const enterLink = createEnterLink({
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (node, link, editMode, editFocus) => {
+    return (node, link, editMode, editFocus, selectMode) => {
         // EXIT selection
         node.exit().remove()
         // ENTER selection
         node.enter().append('g').call(enterNode).call(nodeDrag)
         // ENTER + UPDATE selection
-            .merge(node).call((selection) => updateNode(selection, editMode, editFocus))
+            .merge(node).call((selection) => updateNode(selection, editMode, selectMode, editFocus))
         
         // EXIT selection
         link.exit().remove()
@@ -200,7 +213,9 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
      */
-    const onNodeClick = (d) => {
+    const onNodeClick = function(d) {
+        currentEvent.preventDefault()
+
         actions.history.push(`/app/collections/${collectionId}/nodes/${d.id}/edit`)
     }
 
@@ -211,7 +226,6 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
 
     const drag = createDrag(simulation)({ 
         connect: onConnect,
-        click: onNodeClick,
     })
 
     // TODO: find a way to not have to bind with this here
@@ -222,21 +236,29 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
         .on('end', drag.dragend.bind(this))
 
     const enterNode = createEnterNode({
-        click: onNodeClick
+        onNodeClick
     })
+
+    const updateNode = createUpdateNode({
+        onNodeClick,
+        history: actions.history,
+        setActiveNode: actions.setActiveNode,
+    })
+
 
     const enterLink = createEnterLink({
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (node, link, editMode, editFocus) => {
+    return (node, link, editMode, editFocus, selectMode) => {
+
         // EXIT selection
         node.exit().remove()
         // ENTER selection
         node.enter().append('g').call(enterNode).call(nodeDrag)
         // ENTER + UPDATE selection
-            .merge(node).call((selection) => updateNode(selection, editMode, editFocus, actions))
-        
+            .merge(node).call((selection) => updateNode(selection, editMode, editFocus, selectMode))
+
         // EXIT selection
         link.exit().remove()
         // ENTER selection
@@ -266,6 +288,7 @@ class NodeGraph extends React.Component {
             graphType,
             editMode, // is this graph in edit mode?
             editFocus, // is a single node being edited?
+            selectMode, // clicking a node should result in an action?
         } = nextProps
 
         let nodeById = {}
@@ -297,13 +320,17 @@ class NodeGraph extends React.Component {
         var link = this.container.selectAll('.link')
             .data(links, link => link.id)
 
+        if (selectMode) {
+
+        }
+
         console.log(node.enter().size(), node.enter().data(), link.enter().size())
 
         // enter-update-exit cycle depending on type of graph
         if (graphType === 'explore') {
-            this.exploreEvents(node, link, editMode, editFocus)
+            this.exploreEvents(node, link, editMode, editFocus, selectMode.mode)
         } else if (graphType === 'collectionDetail') {
-            this.collectionDetailEvents(node, link, editMode, editFocus)
+            this.collectionDetailEvents(node, link, editMode, editFocus, selectMode.mode)
         } else {
             console.error('this should not happen!')
         }
@@ -312,14 +339,20 @@ class NodeGraph extends React.Component {
         this.simulation.nodes(nodes)
         this.simulation.force("link").links(links)
 
-        if (nodes.length !== this.props.nodes.length || links.length !== this.props.links.length) {
+        if (nodes.length !== (this.prevProps && this.prevProps.nodes.length) || links.length !== (this.prevProps && this.prevProps.links.length)) {
+            console.log('calling !!');
+            console.log(nodes, links, this.prevProps);
             this.restartSimulation()
         }
+
+        // nescessary because not using react here
+        this.prevProps = { nodes, links }
     }
 
     restartSimulation() {
         // TODO: do two zooms, an initial "guess" zoom and another for accuracy - 2017-06-07
         // this.zoomed = false;
+        console.log('calling restartSimulation...');
         this.simulation.alpha(0.8).restart()
     }
 
@@ -341,7 +374,6 @@ class NodeGraph extends React.Component {
             .attr("class", "node-link")
             .attr("marker-end", "url(#Triangle)")
 
-        console.log('called componentDidMount');
         this.simulation = createNodeSimulation(WIDTH, HEIGHT)
 
         // this must be before zoom
@@ -379,7 +411,7 @@ class NodeGraph extends React.Component {
         const ticked = (selection) => {
             if (!this.zoomed && this.simulation.alpha() < 0.6) {
                 this.zoomed = true
-                this.zoom.zoomFit()
+                this.zoom.zoomFit(true)
             }
 
             selection.selectAll('.node')
@@ -391,7 +423,7 @@ class NodeGraph extends React.Component {
         this.simulation.on('tick', () => {
             // after force calculation starts, call updateGraph
             // which uses d3 to manipulate the attributes,
-            // and React doesn't have to go through lifecycle on each tick
+            // and Reac.6t doesn't have to go through lifecycle on each tick
             this.container.call(ticked);
         });
 

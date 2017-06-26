@@ -1,19 +1,13 @@
 @import '~styles/settings';
 
-.editModeButton-container {
-    position: absolute;
-    right: 30px;
-    bottom: 30px;
-    z-index: 100;
-
-    display: flex;
-    flex-direction: column;
-}
-
-.editModeButton {
+.fetchNodeButton-button {
     color: white !important;
     background: $accent-color !important;
     opacity: 0.8;
+
+    &:nth-child(n+2) {
+        margin-top: 10px;
+    }
 
     &:hover {
         opacity: 0.4;
@@ -23,9 +17,11 @@
         opacity: 0.6;
     }
 
-
-    &.editMode {
+    &.active {
         background: $success-color !important;
     }
 }
+
+
+
 

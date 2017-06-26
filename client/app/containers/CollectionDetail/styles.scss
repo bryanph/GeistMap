@@ -1,21 +1,3 @@
-.collectionDetail-actions {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
-    margin-right: 10px;
-}
-
-.collectionDetail-topcontrols {
-    /* max-width: 75rem; */
-    width: 80%;
-    margin: 20px auto;
-    /* margin: 0 1rem; */
-}
-
-.collectionDetail-description {
-    margin: 0 20px;
-    font-size: 1.4rem;
-}
 
 .collectionDetail-noNodesYet {
     display: flex;
@@ -34,5 +16,17 @@
 .collectionDetail-noNodesYet-start {
     cursor: pointer;
     background-color: white;
+}
+
+
+.graphActions {
+    position: absolute;
+    right: 20px;
+    top: 80px;
+    z-index: 100;
+
+    display: flex;
+    flex-direction: column;
+
 }
 

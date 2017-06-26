@@ -201,3 +201,6 @@ export function addNode(pos) {
 
 }
 
+// make graph go in a "select node" mode
+export const TOGGLE_SELECT_NODE = 'TOGGLE_SELECT_NODE'
+export const toggleSelectNode = createAction(TOGGLE_SELECT_NODE)

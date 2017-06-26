@@ -3,8 +3,6 @@ import { connect } from 'react-redux';
 import { Button, Icon } from 'semantic-ui-react'
 import classNames from 'classnames'
 
-import { toggleEditMode } from '../../actions/ui'
-
 import './styles.scss'
 
 class ZoomButtons extends React.Component {
@@ -28,7 +26,7 @@ class ZoomButtons extends React.Component {
                 />
                 */}
                 <Button 
-                    circular icon={ "maximize" } size="big" className={ "zoomButtons-button" }
+                    circular icon={ "crop" } size="big" className={ "zoomButtons-button" }
                     onClick={ zoomFit }
                 />
             </div>

@@ -30,7 +30,7 @@ class AllSearchList extends React.Component {
             <ListItem 
                 onTouchTap={() => this.onClick(result)}
                 primaryText={result._source.title || result._source.name}
-                secondaryText={result._index.startsWith('collections') ? "Collection" : "Node"}
+                secondaryText={"Node"}
             />
         ))
 

@@ -78,13 +78,16 @@ export default (root, container, fullWidth, fullHeight) => {
         zoomClick(-1)
     }
 
-    function zoomFit(paddingPercent=0.8, transitionDuration=1000) {
+    function zoomFit(onlyZoomOut=false) {
         /*
          * Zoom to fit to the root node
         */
         if (zoomInProgress) {
             return;
         }
+
+        const paddingPercent = 0.8
+        const transitionDuration = 1000
 
         const bbox = container.node().getBBox();
 
@@ -101,7 +104,9 @@ export default (root, container, fullWidth, fullHeight) => {
         const scale = paddingPercent * Math.min(fullWidth / width, fullHeight / height)
         const translate = [ -(midX*scale - fullWidth/2), -(midY*scale - fullHeight/2)];
 
-        if (scale > 1) return;
+        if (onlyZoomOut && scale > 1) {
+            return;
+        }
 
         function transform() {
             return zoomIdentity

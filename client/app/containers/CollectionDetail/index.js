@@ -12,6 +12,8 @@ import AddButton from '../../components/AddButton'
 import Spinner from '../../components/Spinner'
 import AddNodeWindow from '../../components/AddNodeWindow'
 import EditModeButton from '../../components/EditModeButton'
+import FocusButton from '../../components/FocusButton'
+import FetchNodeButton from '../../components/FetchNodeButton'
 
 import './styles.scss'
 
@@ -88,6 +90,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
             loadingStates,
             editMode,
             editFocus,
+            selectMode,
             nodeWindow 
         } = this.props
 
@@ -108,6 +111,7 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
                             graphType="collectionDetail"
                             editMode={editMode}
                             editFocus={editFocus}
+                            selectMode={selectMode}
                             addNode={this.props.addNode}
                             connectNodes={this.props.connectNodes}
                             updateNode={this.props.updateNode}
@@ -115,6 +119,10 @@ export class CollectionDetail extends React.Component { // eslint-disable-line r
                         />
                         : <NoNodesYet createNode={() => this.props.showAddNodeToCollectionWindow({ collection })}/>
                 }
+                <div className="graphActions">
+                    <FocusButton />
+                    <FetchNodeButton />
+                </div>
                 <div className="editModeButton-container">
                     <EditModeButton />
                 </div>
@@ -140,6 +148,7 @@ function mapStateToProps(state, props) {
         nodeId,
         editMode: state.uiState.editMode.active,
         editFocus: state.graphUiState.editFocus,
+        selectMode: state.graphUiState.selectMode,
         nodeWindow: state.graphUiState.addNode,
         nodes: getNodesByCollectionId(state, collectionId),
         collection: getCollection(state, collectionId),
