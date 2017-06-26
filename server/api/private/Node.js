@@ -176,7 +176,7 @@ module.exports = function(db, es) {
                     `MATCH (u:User)--(n:Node) 
                     WHERE u.id = {userId} AND n.id = {id}
                     OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    return properties(n), collect(distinct properties(c2))`,
+                    RETURN properties(n), collect(distinct properties(c2))`,
                     {
                         id,
                         userId: user._id.toString(),
@@ -189,8 +189,8 @@ module.exports = function(db, es) {
                     OPTIONAL MATCH (n)-[:EDGE*0..2]-(n2:Node)
                     WITH distinct n2
                     OPTIONAL MATCH (n2)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    return properties(n2), collect(distinct c2.id)
-                    ORDER BY n2.id`,
+                    RETURN properties(n2), collect(distinct c2.id)`,
+                    // ORDER BY n2.id`,
                     {
                         id,
                         userId: user._id.toString(),

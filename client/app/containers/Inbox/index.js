@@ -50,7 +50,6 @@ export class Inbox extends React.Component { // eslint-disable-line react/prefer
          * // TODO: where to store batch sessions? - 2016-07-22
          */
         const { id } = this.props
-        this.props.setTitle("Inbox")
         this.props.getAllBatchNodes()
             .then(action => {
                 const nodeIds = action.response.result
@@ -125,11 +124,9 @@ function mapStateToProps(state, props) {
 }
 
 import {createBatchNode, getAllBatchNodes, loadNode } from '../../actions/async'
-import { setTitle } from '../../actions/ui'
 
 export default connect(mapStateToProps, {
     createBatchNode,
     getAllBatchNodes,
     loadNode,
-    setTitle,
 })(withRouter(Inbox));

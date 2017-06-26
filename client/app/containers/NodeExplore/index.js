@@ -10,14 +10,15 @@ import { connect } from 'react-redux';
 import NodeSearch from '../../containers/NodeSearch'
 import Spinner from '../../components/Spinner'
 import NodeGraph from '../../components/NodeGraph'
-import NodeToolbar from '../../containers/NodeToolbar'
-import SwitchGraphView from '../../components/SwitchGraphView'
+import EditModeButton from '../../components/EditModeButton'
+import FocusButton from '../../components/FocusButton'
+import FetchNodeButton from '../../components/FetchNodeButton'
 
 // TODO: don't store these calls in the store, becomes too heavy - 2016-07-15
 const loadData = (props) => {
     if (props.id) {
         props.loadNodeL2(props.id)
-            // .then(() => props.showGraphSideBar(props.id))
+        // .then(() => props.showGraphSideBar(props.id))
     }
 }
 
@@ -55,8 +56,6 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
 
     componentWillMount() {
         loadData(this.props)
-
-        this.props.setTitle('Node Explore')
     }
 
     componentWillReceiveProps(nextProps) {
@@ -72,20 +71,14 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
             .then(() => loadData(this.props))
     }
 
-  render() {
-      const { nodeView } = this.props
-    return (
-        <div className="appContainer">
-                {
-                    this.props.id ? // TODO: check for is integer instead - 2016-10-07
-                        <NodeToolbar page="nodes" />
-                        : null
-                }
-                {
-                    this.props.id ?  <SwitchGraphView /> : null
-                }
-            {
-                this.props.id ? // instead check for loading state here...
+    render() {
+        const { loadingStates } = this.props
+
+        if (loadingStates.GET_NODE_L2) {
+            return <Spinner />
+        }
+        return (
+            <div className="appContainer">
                     <NodeGraph 
                         id={this.props.id}
                         nodes={this.props.nodes || []}
@@ -94,22 +87,16 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
                         connectNodes2={this.connectNodes}
                         graphType={'explore'}
                     />
-                    :
-                    <NoNodesYet id={this.props.id} selectNode={this.selectNode} />
-            }
-            <div style={{ position: 'absolute', top: '20px', left: '20px' }}>
-                <div className="nodeBatchCreate-buttons">
+                <div className="graphActions">
+                    <FocusButton />
+                    <FetchNodeButton />
                 </div>
-                { /*
-                <NodeSearch
-                    onSearchClick={this.selectNode}
-                    placeholder={"Search a node to explore..."}
-                />
-                */ }
+                <div className="editModeButton-container">
+                    <EditModeButton />
+                </div>
             </div>
-        </div>
-    );
-  }
+        );
+    }
 }
 
 import { withRouter } from 'react-router-dom'
@@ -125,15 +112,12 @@ function mapStateToProps(state, props) {
         nodes: getL2Nodes(state, id),
         edges: getL2Edges(state, id),
         loadingStates: state.loadingStates,
-        nodeView: state.uiState.nodeView,
     };
 }
 
 import { loadNodeL2, connectNodes } from '../../actions/async'
-import { setTitle } from '../../actions/ui'
 
 export default connect(mapStateToProps, {
     loadNodeL2,
     connectNodes,
-    setTitle,
 })(NodeExplore)
