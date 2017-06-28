@@ -1,57 +1,29 @@
-/*
- *
- * NodeExplore
- *
- */
-
 import React from 'react';
 import { connect } from 'react-redux';
 
-import NodeSearch from '../../containers/NodeSearch'
-import Spinner from '../../components/Spinner'
-import NodeGraph from '../../components/NodeGraph'
-import EditModeButton from '../../components/EditModeButton'
-import FocusButton from '../../components/FocusButton'
-import FetchNodeButton from '../../components/FetchNodeButton'
+import {
+    loadNodeL1,
+    connectNodes,
+    updateNode
+} from '../../actions/async'
 
-// TODO: don't store these calls in the store, becomes too heavy - 2016-07-15
+import {
+    addNode,
+    setActiveNode,
+} from '../../actions/ui'
+
+import NodeView from '../NodeView'
+
 const loadData = (props) => {
-    if (props.id) {
-        props.loadNodeL2(props.id)
-        // .then(() => props.showGraphSideBar(props.id))
-    }
+    props.loadNodeL1(props.id)
 }
 
 import { accentColor } from '../App/muitheme.js'
 
-export const NoNodesYet = (props) => (
-    <div className="nodeExplore-noNodesYet">
-        <span className="nodeExplore-noNodesYet-text">
-            Search for a node to explore relations!<br/>
-        </span>
-        <NodeSearch 
-            id={props.id}
-            className="nodeExplore-nodeSearch"
-            nodeSearchListClass="nodeExplore-nodeSearch-list"
-            inputClass="nodeExplore-nodeSearch-input"
-            onSearchClick={props.selectNode}
-            placeholder={"Search..."}
-        />
-    </div>
-)
-
 export class NodeExplore extends React.Component { // eslint-disable-line react/prefer-stateless-function
     constructor(props) {
-
-        super()
-        this.selectNode = this.selectNode.bind(this)
+        super(props)
         this.connectNodes = this.connectNodes.bind(this)
-    }
-
-    selectNode(ESNode) {
-        const id = ESNode._id
-
-        this.props.history.push(`/app/nodes/${id}`)
     }
 
     componentWillMount() {
@@ -66,58 +38,62 @@ export class NodeExplore extends React.Component { // eslint-disable-line react/
 
     connectNodes(from, to) {
         // TODO: temporarity until we get a better solution... - 2016-07-29
-
         this.props.connectNodes(from, to)
             .then(() => loadData(this.props))
     }
 
     render() {
-        const { loadingStates } = this.props
+        const {
+            collection,
+            nodes,
+            links,
+            loadingStates,
+            focus,
+            mode,
+        } = this.props
 
-        if (loadingStates.GET_NODE_L2) {
-            return <Spinner />
-        }
+
         return (
-            <div className="appContainer">
-                    <NodeGraph 
-                        id={this.props.id}
-                        nodes={this.props.nodes || []}
-                        links={this.props.edges || []}
-                        selectedId={this.props.node && this.props.node.id}
-                        connectNodes2={this.connectNodes}
-                        graphType={'explore'}
-                    />
-                <div className="graphActions">
-                    <FocusButton />
-                    <FetchNodeButton />
-                </div>
-                <div className="editModeButton-container">
-                    <EditModeButton />
-                </div>
-            </div>
+            <NodeView 
+                graphType={"node"}
+                isLoading={loadingStates.GET_NODE_L2}
+                nodes={nodes}
+                links={links}
+                mode={mode}
+                focus={focus}
+
+                addNode={this.props.addNode}
+                connectNodes={this.connectNodes}
+                updateNode={this.props.updateNode}
+                setActiveNode={this.props.setActiveNode}
+            />
         );
     }
 }
 
-import { withRouter } from 'react-router-dom'
 
-import { getNode, getL2Nodes, getL2Edges } from '../../reducers'
+import {
+    getL1Nodes,
+    getL1Edges
+} from '../../reducers'
 
 function mapStateToProps(state, props) {
     const id = props.match.params && props.match.params.id
 
     return {
         id: id,
-        node: getNode(state, id),
-        nodes: getL2Nodes(state, id),
-        edges: getL2Edges(state, id),
+        mode: state.graphUiState.mode,
+        focus: state.graphUiState.focus,
+        nodes: getL1Nodes(state, id),
+        edges: getL1Edges(state, id),
         loadingStates: state.loadingStates,
     };
 }
 
-import { loadNodeL2, connectNodes } from '../../actions/async'
-
 export default connect(mapStateToProps, {
-    loadNodeL2,
+    loadNodeL1,
+    addNode,
     connectNodes,
+    updateNode,
+    setActiveNode,
 })(NodeExplore)

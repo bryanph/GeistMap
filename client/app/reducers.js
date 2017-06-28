@@ -952,7 +952,7 @@ export const getCollectionEdge = (state, id) => state.entities.collectionEdges[i
 export const getCollectionEdges = (state, id) => _.map(state.entities.collectionEdges, x => x)
 
 
-export const getNeighbouringNodes = (state, id) => {
+export const getL1Nodes = (state, id) => {
     /*
      * get the directly neighbouring nodes (including the node itself)
      * // TODO: easier: just get it from the response? - 2016-07-18
@@ -980,7 +980,7 @@ export const getEdgeIdsByNodeId = (state, id) => {
     ]
 }
 
-export const getEdgesByNodeId = (state, id) => {
+export const getL1Edges = (state, id) => {
     /*
      * get the direct neighbouring edges for a node with id ${id}
     */
@@ -994,7 +994,7 @@ export const getEdgesForNodes = (state, ids) => {
 
     // filter edges that have start/end not inside this collection of elements
     return _(ids)
-        .map(id => getEdgesByNodeId(state, id))
+        .map(id => getL1Edges(state, id))
         .flatMap()
         .uniqBy('id')
         .filter(edge => {

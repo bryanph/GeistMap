@@ -141,6 +141,7 @@ class NodeSearch extends React.Component {
                     onClick={this.onSubmit}
                     onFocus={ (e) => { this.setState({opened: true}) }}
                     value={this.state.searchValue}
+                    disabled={this.props.disabled}
                 />
                 <NodeSearchList
                     searchValue={searchValue}

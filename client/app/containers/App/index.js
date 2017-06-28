@@ -16,13 +16,10 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { HotKeys } from 'react-hotkeys'
 
 
-import Inbox from '../Inbox'
-import InboxEditor from '../InboxEditor'
 import CollectionOverview from "../CollectionOverview"
 import CollectionOverviewEditor from "../CollectionOverviewEditor"
-import CollectionDetail from '../CollectionDetail'
+import NodeView from '../NodeView'
 import CollectionDetailEditor from '../CollectionDetailEditor'
-import NodeExplore from '../NodeExplore'
 import NodeExploreEditor from '../NodeExploreEditor'
 import InboxSidebar from '../InboxSidebar'
 
@@ -71,14 +68,16 @@ class App extends React.Component {
                         <InboxSidebar />
 
                         <Switch>
-                            <Route exact path={'/app/inbox/:id?'} component={Inbox}/>
-                            <Route path={'/app/inbox/:id/edit'} component={InboxEditor}/>
-                            <Route exact path={'/app/nodes/:id?'} component={NodeExplore}/>
-                            <Route path={'/app/nodes/:id/edit'} component={NodeExploreEditor}/>
-                            <Route exact path={'/app/collections/:id?'} component={CollectionOverview}/>
-                            <Route path={'/app/collections/:id/edit'} component={CollectionOverviewEditor}/>
 
-                            <Route exact path={'/app/collections/:id/nodes/:nodeId?'} component={CollectionDetail}/>
+                            { /* The overview graph showing explicit collection links */ }
+                            <Route exact path={'/app/collections/:id?'} component={CollectionOverview}/>
+
+                            { /* same component to allow for smooth transitions */ }
+                            <Route exact path={'/app/nodes/:nodeId?'} component={NodeView}/>
+                            <Route exact path={'/app/collections/:collectionId/nodes/:nodeId?'} component={NodeView}/>
+
+                            <Route path={'/app/collections/:id/edit'} component={CollectionOverviewEditor}/>
+                            <Route path={'/app/nodes/:id/edit'} component={NodeExploreEditor}/>
                             <Route path={'/app/collections/:id/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
                             <Redirect from={'/app/'} to={'/app/collections'}/>
                         </Switch>

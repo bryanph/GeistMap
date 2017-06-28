@@ -37,13 +37,13 @@ class AddNodeWindow extends React.Component {
             return;
         }
 
-        const { collectionId } = this.props
+        const { collection } = this.props
 
         const createPromise = this.props.createNode({ name: label })
             .then(action => action.response.result)
 
-        if (collectionId) {
-            createPromise.then(id => this.props.addNodeToCollection(collectionId, id))
+        if (collection) {
+            createPromise.then(id => this.props.addNodeToCollection(collection.id, id))
         }
     }
 
@@ -52,12 +52,14 @@ class AddNodeWindow extends React.Component {
 
         const containerClass = classNames('addNodeWindow', { visible: opened })
 
+        // TODO: disable when disabled prop is true - 2017-06-28
         return (
             <Portal isOpened={true}>
                 <div className={ containerClass }>
                     <div className="addNodeWindow-container">
                         <div className="addNodeWindow-input">
                             <NodeSearch 
+                                disabled={this.props.disabled}
                                 onSearchClick={this.addExistingNode}
                                 onEnter={this.addNewNode}
                                 onClick={this.addNewNode}

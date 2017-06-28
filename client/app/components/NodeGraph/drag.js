@@ -19,7 +19,7 @@ export default (simulation) => (actions) => {
             /*
              * Freeze the graph
              */
-            if (this.props.editMode) {
+            if (this.props.mode === 'edit') {
                 this.graph.dragLine
                     .classed("hidden", false)
                     .attr("d", `M ${d.x} ${d.y} L ${currentEvent.x} ${currentEvent.y}`);
@@ -35,7 +35,7 @@ export default (simulation) => (actions) => {
         },
         drag: function(d) {
             currentEvent.x
-            if (this.props.editMode) {
+            if (this.props.mode === 'edit') {
                 this.graph.dragLine
                     .attr("d", `M ${d.x} ${d.y} L ${currentEvent.x} ${currentEvent.y}`);
             }
@@ -49,7 +49,7 @@ export default (simulation) => (actions) => {
             /*
              * Create an edge to all nodes which are being hovered over
              */
-            if (this.props.editMode) {
+            if (this.props.mode === 'edit') {
                 const nodeSelection = d3SelectAll('.node')
                 const { nodes } = this.props
 

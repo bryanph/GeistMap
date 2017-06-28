@@ -209,7 +209,7 @@ const createExploreEvents = function(simulation, actions) {
     }
 }
 
-const createCollectionDetailEvents = function(simulation, collectionId, actions) {
+const createCollectionDetailEvents = function(simulation, collection, actions) {
     /*
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
@@ -217,7 +217,7 @@ const createCollectionDetailEvents = function(simulation, collectionId, actions)
     const onNodeClick = function(d) {
         currentEvent.preventDefault()
 
-        actions.history.push(`/app/collections/${collectionId}/nodes/${d.id}/edit`)
+        actions.history.push(`/app/collections/${collection.id}/nodes/${d.id}/edit`)
     }
 
     const onConnect = (from, to) => {
@@ -324,9 +324,9 @@ class NodeGraph extends React.Component {
         console.log(node.enter().size(), node.enter().data(), link.enter().size())
 
         // enter-update-exit cycle depending on type of graph
-        if (graphType === 'explore') {
+        if (graphType === 'node') {
             this.exploreEvents(node, link, mode, focus)
-        } else if (graphType === 'collectionDetail') {
+        } else if (graphType === 'collection') {
             this.collectionDetailEvents(node, link, mode, focus)
         } else {
             console.error('this should not happen!')
@@ -337,8 +337,6 @@ class NodeGraph extends React.Component {
         this.simulation.force("link").links(links)
 
         if (nodes.length !== (this.prevProps && this.prevProps.nodes.length) || links.length !== (this.prevProps && this.prevProps.links.length)) {
-            console.log('calling !!');
-            console.log(nodes, links, this.prevProps);
             this.restartSimulation()
         }
 
@@ -358,8 +356,14 @@ class NodeGraph extends React.Component {
         this.simulation.stop()
     }
 
+    componentWillUnmount() {
+        console.log("called componentWillUnmount");
+    }
+
     componentDidMount() {
-        const { graphType, loadNode, removeEdge, connectNodes, connectCollections, collectionId } = this.props
+        const { graphType, loadNode, removeEdge, connectNodes, connectCollections, collection } = this.props
+
+        console.log('called componentDidMount');
 
         const domNode = ReactDOM.findDOMNode(this.refs.graph)
         this.graph = d3Select(domNode);
@@ -377,7 +381,7 @@ class NodeGraph extends React.Component {
         this.graph.on('mousedown', () => {
             const [ x, y ] = currentMouse(domNode)
 
-            if (this.props.editMode && graphType === 'collectionDetail') {
+            if (this.props.editMode && graphType === 'collection') {
                 // prompt for a node name
                 // this.props.addNode({ x, y })
             }
@@ -393,7 +397,7 @@ class NodeGraph extends React.Component {
             updateNode: this.props.updateNode,
         })
         // TODO: collectionId should be not be static like this - 2017-05-21
-        this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collectionId, {
+        this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collection, {
             history: this.props.history,
             removeEdge,
             connectNodes,
