@@ -34,7 +34,7 @@ export default (simulation) => (actions) => {
             }
 
             if (!currentEvent.active) {
-                simulation.alphaTarget(0.5).restart();
+                simulation.alphaTarget(0.8).restart();
                 // simulation.alpha(0.8).restart();
             }
 

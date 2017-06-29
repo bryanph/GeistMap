@@ -290,6 +290,8 @@ class NodeGraph extends React.Component {
             graphType,
             mode, // mode of the graph
             focus, // is a single node being edited?
+            activeNode, // if a single node is focused
+            activeCollection,
         } = nextProps
 
         let nodeById = {}
@@ -306,6 +308,17 @@ class NodeGraph extends React.Component {
         // set extra properties here
         nodes.forEach(node => {
             nodeById[node.id] = node
+            // only when coming from collection
+            if (graphType === 'collection' && activeNode) {
+                // TODO: fix collection nodes, zoom on node, center gravity on node - 2017-06-29
+                if (node.x && node.y) {
+                    node.fx = node.x
+                    node.fy = node.y
+                }
+            } else {
+                node.fx = null
+                node.fy = null
+            }
         })
 
         links.forEach(link => {
@@ -314,14 +327,13 @@ class NodeGraph extends React.Component {
         })
 
 
+
         // set data
         var node = this.container.selectAll('.node')
             .data(nodes, node => node.id)
 
         var link = this.container.selectAll('.link')
             .data(links, link => link.id)
-
-        console.log(node.enter().size(), node.enter().data(), link.enter().size())
 
         // enter-update-exit cycle depending on type of graph
         if (graphType === 'node') {
@@ -332,11 +344,16 @@ class NodeGraph extends React.Component {
             console.error('this should not happen!')
         }
 
-
         this.simulation.nodes(nodes)
         this.simulation.force("link").links(links)
 
         if (nodes.length !== (this.prevProps && this.prevProps.nodes.length) || links.length !== (this.prevProps && this.prevProps.links.length)) {
+            // if (activeNode) {
+            //     this.simulation.stop()
+            // }
+            // else {
+            //     this.restartSimulation()
+            // }
             this.restartSimulation()
         }
 
@@ -411,7 +428,7 @@ class NodeGraph extends React.Component {
         const ticked = (selection) => {
             if (!this.zoomed && this.simulation.alpha() < 0.6) {
                 this.zoomed = true
-                this.zoom.zoomFit(true)
+                this.zoom.zoomFit()
             }
 
             selection.selectAll('.node')
@@ -433,6 +450,7 @@ class NodeGraph extends React.Component {
 
     shouldComponentUpdate(nextProps) {
         if (nextProps.nodes !== this.props.nodes || nextProps.links !== this.props.links) {
+            console.log("calling update");
             this.update(nextProps)
         }
 

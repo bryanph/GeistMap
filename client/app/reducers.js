@@ -974,17 +974,14 @@ export const getEdgeIdsByNodeId = (state, id) => {
      * Direct edges from node
     */
 
+    if (!state.edgeListMap[id]) {
+        return []
+    }
+
     return [
         ...state.edgeListMap[id].from,
         ...state.edgeListMap[id].to,
     ]
-}
-
-export const getL1Edges = (state, id) => {
-    /*
-     * get the direct neighbouring edges for a node with id ${id}
-    */
-    return getEdgeIdsByNodeId(state, id).map(id => getEdge(state, id))
 }
 
 export const getEdgesForNodes = (state, ids) => {
@@ -1086,6 +1083,13 @@ export const getEdgesByActiveCollectionIds = (state) => (
 export const getL2Nodes = (state, id) => (
     state.pathL2Cache[id] && state.pathL2Cache[id].nodes.map(id => getNode(state, id))
 )
+export const getL1Edges = (state, id) => {
+    /*
+     * get the direct neighbouring edges for a node with id ${id}
+    */
+    return getEdgeIdsByNodeId(state, id).map(id => getEdge(state, id))
+}
+
 export const getL2Edges = (state, id) => (
     // _(getL2Nodes(state, id))
     //     // TODO: MUST check whether both edges endpoints are in this path

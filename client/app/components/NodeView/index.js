@@ -17,7 +17,7 @@ import FetchNodeButton from '../../components/FetchNodeButton'
 
 import './styles.scss'
 
-export class NodeView extends React.Component { // eslint-disable-line react/prefer-stateless-function
+export class NodeView extends React.PureComponent {
     render() {
         const {
             nodeId,
@@ -39,6 +39,8 @@ export class NodeView extends React.Component { // eslint-disable-line react/pre
                 />
                 <NodeGraph 
                     isLoading={isLoading}
+                    activeNode={this.props.activeNode}
+                    activeCollection={this.props.activeCollection}
                     nodes={nodes}
                     links={links}
                     collection={collection} 

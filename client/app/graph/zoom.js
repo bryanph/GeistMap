@@ -78,7 +78,7 @@ export default (root, container, fullWidth, fullHeight) => {
         zoomClick(-1)
     }
 
-    function zoomFit(onlyZoomOut=false) {
+    function zoomFit() {
         /*
          * Zoom to fit to the root node
         */
@@ -101,12 +101,14 @@ export default (root, container, fullWidth, fullHeight) => {
 
         if (width == 0 || height == 0) return; // nothing to fit
 
-        const scale = paddingPercent * Math.min(fullWidth / width, fullHeight / height)
-        const translate = [ -(midX*scale - fullWidth/2), -(midY*scale - fullHeight/2)];
+        let scale = paddingPercent * Math.min(fullWidth / width, fullHeight / height)
 
-        if (onlyZoomOut && scale > 1) {
+        if (scale > 1) {
+            // scale = 1;
             return;
         }
+
+        const translate = [ -(midX*scale - fullWidth/2), -(midY*scale - fullHeight/2)];
 
         function transform() {
             return zoomIdentity

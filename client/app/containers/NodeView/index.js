@@ -62,6 +62,8 @@ export class NodeViewContainer extends React.Component {
                 links={edges}
                 mode={mode}
                 focus={focus}
+                activeNode={this.props.activeNode}
+                activeCollection={this.props.activeCollection}
 
                 addNode={this.props.addNode}
                 connectNodes={this.props.connectNodes}
@@ -77,6 +79,7 @@ import {
     getL1Nodes,
     getL1Edges,
     getCollection,
+    getNode,
     getNodesByCollectionId,
     getEdgesByCollectionId,
 } from '../../reducers'
@@ -92,19 +95,19 @@ function mapStateToProps(state, props) {
         nodes = getNodesByCollectionId(state, collectionId);
         edges = getEdgesByCollectionId(state, collectionId);
         isLoading = state.loadingStates.GET_COLLECTION || state.loadingStates.GET_NODE
-        graphType = "node"
+        graphType = "collection"
     } else {
         nodes = getL1Nodes(state, nodeId);
         edges = getL1Edges(state, nodeId);
         isLoading = state.loadingStates.GET_NODE_L1
-        graphType = "collection"
+        graphType = "node"
     }
-
-    console.log(graphType);
 
     return {
         collectionId,
         nodeId,
+        activeNode: getNode(state, nodeId),
+        activeCollection: getCollection(state, collectionId),
         mode: state.graphUiState.mode,
         focus: state.graphUiState.focus,
         nodes,

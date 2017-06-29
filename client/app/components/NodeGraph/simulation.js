@@ -7,6 +7,8 @@ import {
     forceCenter
 } from 'd3-force'
 
+import { transition } from 'd3-transition'
+
 import { NODE_RADIUS } from '../../graph/constants'
 
 export const createNodeSimulation = function(WIDTH, HEIGHT, simulation) {
@@ -26,19 +28,11 @@ export const createNodeSimulation = function(WIDTH, HEIGHT, simulation) {
         .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
 }
 
+
 export const transformNode = (selection) => {
     return selection
-        // .attr("cx", d => d.x)
-        // .attr("cy", d => d.y)
             .attr("transform", (d) => {
-                return "translate(" 
-                    // + Math.max(minNodeXPos, Math.min(maxNodeXPos, d.x))
-                    // + ","
-                    // + Math.max(minNodeYPos, Math.min(maxNodeYPos, d.y))
-                    + d.x
-                    + ","
-                    + d.y
-                    + ")"
+                return `translate(${d.x}, ${d.y})`
             });
 };
 
