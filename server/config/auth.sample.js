@@ -1,9 +1,5 @@
 const env = process.env.NODE_ENV;
 
-if (env !== 'development') {
-    const stats = require('../../stats.json')
-}
-
 const auth = {
     oauth: {
         twitter: {
@@ -33,7 +29,7 @@ const auth = {
         logExpiration: '20m'
     },
     "sendWelcomeMail": false,
-    "bundleFileName": process.env.NODE_ENV === 'development' ? 'auth.bundle.js' : stats.assetsByChunkName.auth[0],
+    "bundleFileName": env === 'development' ? 'auth.bundle.js' : require('../../stats.json').assetsByChunkName.auth[0],
     "sendWelcomeMail": false,
     "authTemplate": 'auth.hbs',
     "appUrl": '/app',
