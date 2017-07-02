@@ -9,10 +9,6 @@ const { mobileUploadMiddleware, mobileUploadView } =  require('./api/private/mob
 const config = require('./config/config.js')
 const express = require('express')
 
-if (config.env === 'production') {
-    const stats = require('../stats.json')
-}
-
 module.exports = function(app, authRoutes, adminRoutes) {
 
     /*
@@ -26,7 +22,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
     app.get('/', (req, res) => {
         res.render("landing", {
             port: process.env.NODE_ENV === 'development' ? ':3000' : '',
-            fileName: process.env.NODE_ENV === 'development' ? 'landing.bundle.js' : stats.assetsByChunkName.landing[0],
+            fileName: process.env.NODE_ENV === 'development' ? 'landing.bundle.js' : require('../stats.json').assetsByChunkName.landing[0],
             protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
             title: "Geist",
@@ -48,7 +44,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
     app.get('/app/?*', middleware.ensureVerified, function(req, res) {
         res.render("app", {
             port: process.env.NODE_ENV === 'development' ? ':3000' : '',
-            fileName: process.env.NODE_ENV === 'development' ? 'app.bundle.js' : stats.assetsByChunkName.app[0],
+            fileName: process.env.NODE_ENV === 'development' ? 'app.bundle.js' : require('../stats.json').assetsByChunkName.app[0],
             protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
             title: "Geist",
