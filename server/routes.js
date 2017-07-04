@@ -25,7 +25,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
             fileName: process.env.NODE_ENV === 'development' ? 'landing.bundle.js' : require('../stats.json').assetsByChunkName.landing[0],
             protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
-            title: "Geist",
+            title: "Geist prototype",
             ga: config.ga,
             INITIAL_STATE: JSON.stringify({
                 user: req.user,
@@ -47,7 +47,7 @@ module.exports = function(app, authRoutes, adminRoutes) {
             fileName: process.env.NODE_ENV === 'development' ? 'app.bundle.js' : require('../stats.json').assetsByChunkName.app[0],
             protocol: process.env.NODE_ENV === 'development' ? 'http' : 'https',
             host: req.headers.host.split(":")[0],
-            title: "Geist",
+            title: "Geist prototype",
             ga: config.ga,
             INITIAL_STATE: JSON.stringify({
                 user: req.user,

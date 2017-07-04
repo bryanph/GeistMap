@@ -5,7 +5,8 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 import "../scss/landing.scss"
 
-const title = "Geist"
+// TODO: set from within settings - 2017-07-04
+const title = "Geist prototype"
 
 const mainSection = {
     header: "Get organized",
