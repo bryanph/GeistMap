@@ -72,10 +72,19 @@ class App extends React.Component {
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
                     <div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-                        <Dialogs 
-                            params={match.params} 
-                            location={location} 
-                        />
+                        <Switch>
+                            <Route exact path={"/app/collections/:id/nodes/:nodeId?"} render={() => (
+                                <Dialogs 
+                                    params={match.params} 
+                                    location={location} 
+                                />
+                            )}/>
+                        <Route exact render={() => (
+                            <Dialogs 
+                                location={location} 
+                            />
+                        )}/>
+                        </Switch>
                         <Errors />
                         <Topbar />
 

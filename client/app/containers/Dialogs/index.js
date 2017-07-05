@@ -18,6 +18,8 @@ export class Dialogs extends React.Component { // eslint-disable-line react/pref
     render() {
         const { uiState } = this.props
 
+        console.log(this.props);
+
         // TODO: this module is overly generic
         return (
             <div>

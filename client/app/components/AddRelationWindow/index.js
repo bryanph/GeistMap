@@ -108,7 +108,7 @@ class AddRelationWindow extends React.Component {
         const isContentLink = !!this.props.editorState
 
         const nodeToCreate = {
-            name: selectedText,
+            name: selectedText || "Untitled",
             content: '',
         }
 
