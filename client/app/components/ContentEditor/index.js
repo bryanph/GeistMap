@@ -497,7 +497,7 @@ class RichEditor extends React.Component {
                         onChange={this.onChange}
                         plugins={this.plugins}
                         placeholder={this.props.placeholder || "Write here..."}
-                        spellCheck={true}
+                        spellCheck={false}
                         ref="editor"
                     />
                 </div>
