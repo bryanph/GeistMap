@@ -171,9 +171,18 @@ export function setActiveNode(id) {
     }
 }
 
+// expand this collection
+export const EXPAND_COLLECTION = 'EXPAND_COLLECTION'
+export function expandCollection(id) {
+    return {
+        type: EXPAND_COLLECTION,
+        id,
+    }
+}
+
 // set this node in edit mode
 export const SET_GRAPH_MODE = 'SET_GRAPH_MODE'
-export function setGraphMode(mode: "view" | "edit" | "focus" | "fetch") {
+export function setGraphMode(mode: "view" | "edit" | "focus" | "expand") {
     return {
         type: SET_GRAPH_MODE,
         payload: mode,

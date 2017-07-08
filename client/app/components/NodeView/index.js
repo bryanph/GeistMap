@@ -13,7 +13,7 @@ import Spinner from '../../components/Spinner'
 import AddNodeWindow from '../../components/AddNodeWindow'
 import EditModeButton from '../../components/EditModeButton'
 import FocusButton from '../../components/FocusButton'
-import FetchNodeButton from '../../components/FetchNodeButton'
+import ExpandButton from '../../components/ExpandButton'
 
 import './styles.scss'
 
@@ -21,7 +21,6 @@ export class NodeView extends React.PureComponent {
     render() {
         const {
             nodeId,
-            collection,
             nodes,
             links,
             focus,
@@ -34,7 +33,7 @@ export class NodeView extends React.PureComponent {
             <div className='appContainer'>
                 <AddNodeWindow 
                     opened={mode === 'edit'} 
-                    collection={collection} 
+                    collection={this.props.activeCollection} 
                     disabled={isLoading}
                 />
                 <NodeGraph 
@@ -43,7 +42,6 @@ export class NodeView extends React.PureComponent {
                     activeCollection={this.props.activeCollection}
                     nodes={nodes}
                     links={links}
-                    collection={collection} 
                     graphType={ graphType }
                     mode={mode}
                     focus={focus}
@@ -52,11 +50,12 @@ export class NodeView extends React.PureComponent {
                     connectNodes={this.props.connectNodes}
                     updateNode={this.props.updateNode}
                     setActiveNode={this.props.setActiveNode}
+                    expandCollection={this.props.expandCollection}
                 />
                 { /* // TODO: combine this into one mode button - 2017-06-28 */ }
                 <div className="graphActions">
                     <FocusButton />
-                    <FetchNodeButton />
+                    <ExpandButton />
                 </div>
                 <div className="editModeButton-container">
                     <EditModeButton />

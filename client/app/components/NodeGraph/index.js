@@ -62,7 +62,6 @@ const createEnterNode = function(actions: { click: Function }) {
             .text((d) => getLabelText(d.name));
 
         return selection
-
     }
 }
 
@@ -127,6 +126,105 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
     else if (mode === 'view') {
         // make click go to editor
         selection.on('click', actions.onNodeClick)
+    }
+
+    return selection
+}
+
+const createEnterCollection = function(actions: { click: Function }) {
+    /*
+     * HOF for enterNode
+    */
+    return (selection, click) => {
+        selection
+            .attr("class", "node")
+            .attr('id', (d) => {
+                return `node-${d.id}`
+            }) 
+            .attr('r', NODE_RADIUS)
+
+        selection.on('click', actions.click)
+
+        selection
+            .append('circle')
+            .attr("r", (d) => NODE_RADIUS)
+            .attr("x", -8)
+            .attr("y", -8)
+            .style("fill", colorNode)
+
+        // TODO: split into lines when text gets too big - 2017-06-22
+        selection.append('text')
+            .attr("dy", NODE_RADIUS*2 + 1)
+            .text((d) => getLabelText(d.name));
+
+        return selection
+    }
+}
+
+const createUpdateCollection = (actions) => (selection, mode, focus) => {
+    selection.select('text').text(d => {
+        return getLabelText(d.name)
+    })
+
+    selection.select('.editMode').remove()
+
+    if (mode === 'view') {
+        // make click go to editor
+        selection.on('click', actions.onNodeClick)
+    }
+    else if (mode === 'edit') {
+        if (focus.id) {
+            selection.on('click', null)
+
+            const nodeSelection = d3Select(`#node-${focus.id}`)
+
+            const editMode = nodeSelection.append('g')
+                .attr('class', 'editMode')
+
+            const div = editMode.append('foreignObject')
+                .attr('x', -100)
+                .attr('y', (d) => NODE_RADIUS + 1)
+                .attr('width', 200)
+                .attr('height', 100)
+                .append('xhtml:div')
+
+            // div.attr("style", `width: ${sqLen}px; height: ${sqLen}px;`)
+
+            const textarea = div.append('textarea')
+                .attr('maxLength', 50)
+                .attr('autofocus', true)
+                .text((d) => d.name)
+                .on("keydown", function(d) {
+                    const e = currentEvent;
+
+                    if (e.which === 13) {
+                        e.stopPropagation()
+                        // on enter, update node
+                        const value = editMode.select('textarea').node().value
+                        actions.updateNode(d.id, { name: value })
+                        actions.setActiveNode(null)
+                    }
+                })
+            // .style("height", sqLen)
+            setTimeout(() => textarea.node().select(), 0)
+        }
+        else {
+            // change click to edit node
+            selection.on('click', (d) => {
+                actions.setActiveNode(d.id)
+            })
+        }
+    }
+    else if (mode === 'focus') {
+
+    }
+    else if (mode === 'expand') {
+        /*
+         * Expand the collection
+        */
+        selection.on('click', function(d) {
+            actions.expandCollection(d.id)
+        })
     }
 
     return selection
@@ -229,8 +327,6 @@ const createCollectionDetailEvents = function(simulation, collection, actions) {
         connect: onConnect,
     })
 
-    // TODO: find a way to not have to bind with this here
-    // problem is that in the drag event require the actual 'nodes'
     const nodeDrag = d3Drag()
         .on('drag', drag.drag.bind(this))
         .on('start', drag.dragstart.bind(this))
@@ -247,19 +343,33 @@ const createCollectionDetailEvents = function(simulation, collection, actions) {
         setActiveNode: actions.setActiveNode,
     })
 
+    const enterCollection = createEnterCollection({
+        onNodeClick
+    })
+
+    const updateCollection = createUpdateCollection({
+        expandCollection: actions.expandCollection,
+        // onNodeClick,
+        updateNode: actions.updateNode,
+        history: actions.history,
+        setActiveNode: actions.setActiveNode,
+    })
 
     const enterLink = createEnterLink({
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (node, link, mode, focus) => {
-
+    return (nodeSelection, link, mode, focus) => {
         // EXIT selection
-        node.exit().remove()
+        nodeSelection.exit().remove()
         // ENTER selection
-        node.enter().append('g').call(enterNode).call(nodeDrag)
+        const nodeEnter = nodeSelection.enter()
+        const nodeEnterNode = nodeEnter.filter(d => d.type !== 'collection').append('g').call(enterNode).call(nodeDrag)
+        const nodeEnterCollection = nodeEnter.filter(d => d.type === 'collection').append('g').call(enterCollection).call(nodeDrag)
         // ENTER + UPDATE selection
-            .merge(node).call((selection) => updateNode(selection, mode, focus))
+        nodeEnterNode.merge(nodeSelection).filter(d => d.type !== 'collection').call((selection) => updateNode(selection, mode, focus))
+        nodeEnterCollection.merge(nodeSelection).filter(d => d.type === 'collection').call((selection) => updateCollection(selection, mode, focus))
+
 
         // EXIT selection
         link.exit().remove()
@@ -420,6 +530,7 @@ class NodeGraph extends React.Component {
             connectNodes,
             setActiveNode: this.props.setActiveNode,
             updateNode: this.props.updateNode,
+            expandCollection: this.props.expandCollection,
         })
 
         //TODO: set to true on initial tick
@@ -450,7 +561,6 @@ class NodeGraph extends React.Component {
 
     shouldComponentUpdate(nextProps) {
         if (nextProps.nodes !== this.props.nodes || nextProps.links !== this.props.links) {
-            console.log("calling update");
             this.update(nextProps)
         }
 

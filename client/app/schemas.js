@@ -25,7 +25,7 @@ NodeSchema.define({
 CollectionSchema.define({
     nodes: arrayOf(NodeSchema),
     edges: arrayOf(CollectionRelationSchema), // edges going out from this collection to another collection
-    
+    childCollections: arrayOf(CollectionSchema),
 })
 
 

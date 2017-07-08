@@ -258,6 +258,15 @@ function collections(state={}, action) {
                 }
             }
 
+        case uiTypes.EXPAND_COLLECTION:
+            return {
+                ...state,
+                [action.id]: {
+                    ...state[action.id],
+                    collapsed: false,
+                }
+            }
+
         default:
             if (action.response && action.response.entities && action.response.entities.collections) {
                 return _.merge({}, state, action.response.entities.collections)
@@ -510,6 +519,7 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
                 [action.response.result.collection]: {
                     nodes: action.response.entities.collections[action.response.result.collection].nodes,
                     edges: action.response.result.edges,
+                    childCollections: action.response.entities.collections[action.response.result.collection].childCollections,
                 },
             }
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
@@ -523,6 +533,7 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
             return {
                 ...state,
                 [action.collectionId]: {
+                    ...state[action.collectionId],
                     nodes: [ ...((state[action.collectionId] && state[action.collectionId].nodes) || []), action.nodeId ],
                     edges: (state[action.collectionId] && state[action.collectionId].edges) || [],
                 },
@@ -722,8 +733,8 @@ const initialUiState = {
 }
 
 const initialGraphUIState = {
-    // can be "view", "edit", "focus" or "fetch"
-    mode: "view",
+    // can be "view", "edit", "focus" or "expand"
+    mode: "expand",
     focus: {
         id: null,
     },
@@ -1043,17 +1054,76 @@ export const getCollectionsByNodeId = (state, id) => {
 export const getNodeIdsByCollectionId = (state, id) => (
     (state.nodesAndEdgesByCollectionId[id] || { nodes: [] }).nodes
 )
-export const getNodesByCollectionId = (state, id) => (
-    getNodeIdsByCollectionId(state, id)
-        .map(nodeId => getNode(state, nodeId))
+export const getChildcollectionIdsByCollectionId = (state, id) => (
+    (state.nodesAndEdgesByCollectionId[id] || { childCollections: [] }).childCollections
 )
+
+export const getNodesAndEdgesByCollectionId = (state, id) => {
+    const nodes = getNodeIdsByCollectionId(state, id).map(nodeId => getNode(state, nodeId))
+    const edges = getEdgeIdsByCollectionId(state, id).map(edgeId => getEdge(state, edgeId))
+
+    const collectionIds = getChildcollectionIdsByCollectionId(state, id)
+    const collections = collectionIds.map(id => getCollection(state, id))
+
+    console.log(collections);
+
+    const collapsedCollections = collections.filter(n => n.collapsed)
+    const collapsedCollectionIds = collapsedCollections.map(n => n.id)
+
+    console.log(collectionIds, collapsedCollectionIds);
+
+    // visible nodes
+    // TODO: handle a collapsed state - 2017-07-07
+    const [ hiddenNodes, visibleNodes ] = _(nodes).partition((node) => collapsedCollectionIds.includes(...node.collections)).value()
+    const hiddenNodesMap = _.keyBy(hiddenNodes, 'id')
+
+    console.log(visibleNodes, hiddenNodes, hiddenNodesMap);
+
+    let transformedEdges = []
+    edges.forEach(edge => {
+        /*
+         * If one of the edges is in a collapsed collection, change the start/end
+        */
+        let startNode = hiddenNodesMap[edge.start]
+        let endNode = hiddenNodesMap[edge.end]
+        let newEdge = { ...edge }
+
+
+        // TODO: need to keep track of # of nodes in collection - 2017-07-07
+        // this assumes for now that each node has only one collection
+        if (startNode) {
+            // TODO: case when node has multiple collections - 2017-07-08
+            console.log('start is collapsed', startNode);
+            newEdge.start = startNode.collections[0]
+        }
+        if (endNode) {
+            // TODO: case when node has multiple collections - 2017-07-08
+            console.log('end is collapsed', endNode);
+            newEdge.end = endNode.collections[0]
+        }
+        if (startNode && endNode && (startNode === endNode)) {
+            return; // continue
+        }
+
+        transformedEdges.push(newEdge)
+    })
+
+    // both the collections and the visible nodes
+    const transformedNodes = [ ...collapsedCollections, ...visibleNodes ]
+
+    return {
+        nodes: transformedNodes,
+        edges: transformedEdges,
+    }
+}
 
 export const getEdgeIdsByCollectionId = (state, id) => (
     (state.nodesAndEdgesByCollectionId[id] || { edges: [] }).edges
 )
+
+
 export const getEdgesByCollectionId = (state, id) => (
-    getEdgeIdsByCollectionId(state, id)
-        .map(edgeId => getEdge(state, edgeId))
+    getEdgeIdsByCollectionId(state, id).map(edgeId => getEdge(state, edgeId))
 )
 
 export const getActiveCollectionIds = (state) => state.uiState.activeCollections

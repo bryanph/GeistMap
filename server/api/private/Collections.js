@@ -110,7 +110,18 @@ module.exports = function(db, es) {
                         id,
                         userId,
                     }
-                )
+                ),
+                // get all child collections (direct)
+                db.run(
+                    `MATCH (u:User)--(c:Collection) 
+                    WHERE u.id = {userId} AND c.id = {id}
+                    MATCH (c)<-[:PARENT]-(c2:Collection)
+                    RETURN properties(c2) AS childCollections`,
+                    {
+                        id,
+                        userId,
+                    }
+                ),
             ])
                 .then((results) => {
                     if (results[0].records.length === 0) {
@@ -132,12 +143,28 @@ module.exports = function(db, es) {
                             )
                         ))
 
+                    let childCollections = results[3].records.map(rec => {
+                        return mapIntegers(rec.get('childCollections'))
+                    })
+
+
+                    // TODO: type should be either a property or determined by label  - 2017-07-07
+                    // TODO: collapsed is a front-end implementation detail - 2017-07-07
+                    childCollections.map((c) => (Object.assign(
+                        c,
+                        {
+                            type: 'collection',
+                            collapsed: true,
+                        }
+                    )))
+
                     return res(null, {
                         collection: Object.assign({},
                             collection,
-                            { nodes }
+                            { childCollections }, // direct child collections
+                            { nodes } // all child nodes recursively
                         ),
-                        edges
+                        edges // all edges between the nodes
                     })
                 })
                 .catch(handleError)

@@ -5,7 +5,7 @@ import classNames from 'classnames'
 
 import './styles.scss'
 
-class FetchNodeButton extends React.Component {
+class ExpandButton extends React.Component {
     /*
      * On click, move graph in "selectNode" mode
     */
@@ -16,14 +16,14 @@ class FetchNodeButton extends React.Component {
     render() {
         const { mode } = this.props
 
-        const buttonClass = classNames("fetchNodeButton-button", {
-            "active": mode === 'fetch'
+        const buttonClass = classNames("expandButton-button", {
+            "active": mode === "expand"
         })
 
         return (
             <Button 
                 circular icon={ "expand" } size="big" className={ buttonClass }
-                onClick={ () => this.props.setGraphMode('fetch') }
+                onClick={ () => this.props.setGraphMode("expand") }
             />
         )
     }
@@ -33,7 +33,7 @@ import { setGraphMode } from '../../actions/ui'
 
 export default connect((state) => ({ mode: state.graphUiState.mode }), {
     setGraphMode
-})(FetchNodeButton)
+})(ExpandButton)
 
 
 

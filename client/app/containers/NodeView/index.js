@@ -12,6 +12,7 @@ import {
 import {
     addNode,
     setActiveNode,
+    expandCollection,
 } from '../../actions/ui'
 
 import NodeView from '../../components/NodeView'
@@ -69,6 +70,7 @@ export class NodeViewContainer extends React.Component {
                 connectNodes={this.props.connectNodes}
                 updateNode={this.props.updateNode}
                 setActiveNode={this.props.setActiveNode}
+                expandCollection={this.props.expandCollection}
             />
         );
     }
@@ -80,6 +82,7 @@ import {
     getL1Edges,
     getCollection,
     getNode,
+    getNodesAndEdgesByCollectionId,
     getNodesByCollectionId,
     getEdgesByCollectionId,
 } from '../../reducers'
@@ -92,8 +95,10 @@ function mapStateToProps(state, props) {
 
     if (collectionId) {
         // loading a collection id
-        nodes = getNodesByCollectionId(state, collectionId);
-        edges = getEdgesByCollectionId(state, collectionId);
+        // nodes = getNodesAndEdgesByCollectionId(state, collectionId);
+        // edges = getEdgesByCollectionId(state, collectionId);
+        ({ nodes, edges } = getNodesAndEdgesByCollectionId(state, collectionId))
+
         isLoading = state.loadingStates.GET_COLLECTION || state.loadingStates.GET_NODE
         graphType = "collection"
     } else {
@@ -124,4 +129,5 @@ export default connect(mapStateToProps, {
     connectNodes,
     updateNode,
     setActiveNode,
+    expandCollection,
 })(NodeViewContainer)
