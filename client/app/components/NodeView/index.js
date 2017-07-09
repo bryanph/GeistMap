@@ -14,20 +14,25 @@ import AddNodeWindow from '../../components/AddNodeWindow'
 import EditModeButton from '../../components/EditModeButton'
 import FocusButton from '../../components/FocusButton'
 import ExpandButton from '../../components/ExpandButton'
+import AbstractionList from '../../containers/AbstractionList'
 
 import './styles.scss'
+
 
 export class NodeView extends React.PureComponent {
     render() {
         const {
             nodeId,
             nodes,
+            collections,
             links,
             focus,
             mode,
             isLoading,
             graphType,
         } = this.props
+
+        // TODO: pass in collections and nodes separately - 2017-07-09
 
         return (
             <div className='appContainer'>
@@ -36,11 +41,15 @@ export class NodeView extends React.PureComponent {
                     collection={this.props.activeCollection} 
                     disabled={isLoading}
                 />
+                <AbstractionList 
+                    collections={collections}
+                />
                 <NodeGraph 
                     isLoading={isLoading}
                     activeNode={this.props.activeNode}
                     activeCollection={this.props.activeCollection}
                     nodes={nodes}
+                    collections={collections}
                     links={links}
                     graphType={ graphType }
                     mode={mode}
@@ -50,7 +59,7 @@ export class NodeView extends React.PureComponent {
                     connectNodes={this.props.connectNodes}
                     updateNode={this.props.updateNode}
                     setActiveNode={this.props.setActiveNode}
-                    expandCollection={this.props.expandCollection}
+                    toggleCollapse={this.props.toggleCollapse}
                 />
                 { /* // TODO: combine this into one mode button - 2017-06-28 */ }
                 <div className="graphActions">

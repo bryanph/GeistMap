@@ -258,12 +258,12 @@ function collections(state={}, action) {
                 }
             }
 
-        case uiTypes.EXPAND_COLLECTION:
+        case uiTypes.TOGGLE_COLLAPSE_COLLECTION:
             return {
                 ...state,
                 [action.id]: {
                     ...state[action.id],
-                    collapsed: false,
+                    collapsed: !state[action.id].collapsed,
                 }
             }
 
@@ -1107,10 +1107,13 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     })
 
     // both the collections and the visible nodes
-    const transformedNodes = [ ...collapsedCollections, ...visibleNodes ]
+    // TODO: handle this in the graph itself - 2017-07-09
+    // e.g. hide a collection if it collapsed, otherwise shown
+    // const transformedNodes = [ ...collapsedCollections, ...visibleNodes ]
 
     return {
-        nodes: transformedNodes,
+        nodes: visibleNodes,
+        collections: collections,
         edges: transformedEdges,
     }
 }

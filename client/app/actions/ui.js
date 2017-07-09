@@ -171,11 +171,11 @@ export function setActiveNode(id) {
     }
 }
 
-// expand this collection
-export const EXPAND_COLLECTION = 'EXPAND_COLLECTION'
-export function expandCollection(id) {
+// toggle the collapse for this collection
+export const TOGGLE_COLLAPSE_COLLECTION = 'TOGGLE_COLLAPSE_COLLECTION'
+export function toggleCollapse(id) {
     return {
-        type: EXPAND_COLLECTION,
+        type: TOGGLE_COLLAPSE_COLLECTION,
         id,
     }
 }

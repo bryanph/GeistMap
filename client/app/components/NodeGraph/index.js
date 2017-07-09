@@ -225,7 +225,7 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
          * Expand the collection
         */
         selection.on('click', function(d) {
-            actions.expandCollection(d.id)
+            actions.toggleCollapse(d.id)
         })
     }
 
@@ -348,7 +348,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
     })
 
     const updateCollection = createUpdateCollection({
-        expandCollection: actions.expandCollection,
+        toggleCollapse: actions.toggleCollapse,
         // onNodeClick,
         updateNode: actions.updateNode,
         history: actions.history,
@@ -405,6 +405,7 @@ class NodeGraph extends React.Component {
         */
         let { 
             nodes,
+            collections,
             links,
             graphType,
             mode, // mode of the graph
@@ -422,7 +423,14 @@ class NodeGraph extends React.Component {
         // make sure there are no duplicates in nodes, edges
         // TODO: shouldn't be nescessary - 2017-06-21
         nodes = _.uniqBy(nodes, (node) => node.id)
+        collections = _.uniqBy(collections, (node) => node.id)
         links = _.uniqBy(links, (link) => link.id)
+
+        console.log(collections);
+        collections = collections.filter(c => c.collapsed)
+        collections.forEach(c => {
+            nodeById[c.id] = c
+        })
 
         // set extra properties here
         nodes.forEach(node => {
@@ -445,16 +453,12 @@ class NodeGraph extends React.Component {
             link.target = nodeById[link.end]
         })
 
-        const nodeList = nodes.filter((node) => node.type !== 'collection')
-        const collectionList = nodes.filter((node) => node.type === 'collection')
-
-
         // set data
         var nodeSelection = this.container.selectAll('.node')
-            .data(nodeList, x => x.id)
+            .data(nodes, x => x.id)
 
         var collectionSelection = this.container.selectAll('.collection')
-            .data(collectionList, x => x.id)
+            .data(collections, x => x.id)
 
         var link = this.container.selectAll('.link')
             .data(links, link => link.id)
@@ -468,10 +472,14 @@ class NodeGraph extends React.Component {
             console.error('this should not happen!')
         }
 
-        this.simulation.nodes(nodes)
+        this.simulation.nodes([...nodes, ...collections])
         this.simulation.force("link").links(links)
 
-        if (nodes.length !== (this.prevProps && this.prevProps.nodes.length) || links.length !== (this.prevProps && this.prevProps.links.length)) {
+        if (
+            nodes.length !== (this.prevProps && this.prevProps.nodes.length) ||
+            collections.length !== (this.prevProps && this.prevProps.collections.length) ||
+            links.length !== (this.prevProps && this.prevProps.links.length)) 
+        {
             // if (activeNode) {
             //     this.simulation.stop()
             // }
@@ -482,7 +490,7 @@ class NodeGraph extends React.Component {
         }
 
         // nescessary because not using react here
-        this.prevProps = { nodes, links }
+        this.prevProps = { nodes, collections, links }
     }
 
     restartSimulation() {
@@ -544,7 +552,7 @@ class NodeGraph extends React.Component {
             connectNodes,
             setActiveNode: this.props.setActiveNode,
             updateNode: this.props.updateNode,
-            expandCollection: this.props.expandCollection,
+            toggleCollapse: this.props.toggleCollapse,
         })
 
         //TODO: set to true on initial tick

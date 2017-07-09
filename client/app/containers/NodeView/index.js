@@ -12,7 +12,7 @@ import {
 import {
     addNode,
     setActiveNode,
-    expandCollection,
+    toggleCollapse,
 } from '../../actions/ui'
 
 import NodeView from '../../components/NodeView'
@@ -41,7 +41,6 @@ export class NodeViewContainer extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.collectionId !== this.props.collectionId || nextProps.nodeId !== this.props.nodeId) {
-            console.log(nextProps);
             loadData(nextProps)
         }
     }
@@ -60,6 +59,7 @@ export class NodeViewContainer extends React.Component {
                 graphType={ this.props.graphType }
                 isLoading={ this.props.isLoading }
                 nodes={nodes}
+                collections={this.props.collections}
                 links={edges}
                 mode={mode}
                 focus={focus}
@@ -70,7 +70,7 @@ export class NodeViewContainer extends React.Component {
                 connectNodes={this.props.connectNodes}
                 updateNode={this.props.updateNode}
                 setActiveNode={this.props.setActiveNode}
-                expandCollection={this.props.expandCollection}
+                toggleCollapse={this.props.toggleCollapse}
             />
         );
     }
@@ -91,13 +91,13 @@ function mapStateToProps(state, props) {
     const collectionId = props.match.params && props.match.params.collectionId
     const nodeId = props.match.params && props.match.params.nodeId
 
-    let nodes, edges, isLoading, graphType;
+    let nodes, edges, collections, isLoading, graphType;
 
     if (collectionId) {
         // loading a collection id
         // nodes = getNodesAndEdgesByCollectionId(state, collectionId);
         // edges = getEdgesByCollectionId(state, collectionId);
-        ({ nodes, edges } = getNodesAndEdgesByCollectionId(state, collectionId))
+        ({ nodes, collections, edges } = getNodesAndEdgesByCollectionId(state, collectionId))
 
         isLoading = state.loadingStates.GET_COLLECTION || state.loadingStates.GET_NODE
         graphType = "collection"
@@ -117,6 +117,7 @@ function mapStateToProps(state, props) {
         focus: state.graphUiState.focus,
         nodes,
         edges,
+        collections,
         isLoading,
         graphType,
     };
@@ -129,5 +130,5 @@ export default connect(mapStateToProps, {
     connectNodes,
     updateNode,
     setActiveNode,
-    expandCollection,
+    toggleCollapse,
 })(NodeViewContainer)
