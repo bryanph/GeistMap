@@ -734,7 +734,7 @@ const initialUiState = {
 
 const initialGraphUIState = {
     // can be "view", "edit", "focus" or "expand"
-    mode: "expand",
+    mode: "edit",
     focus: {
         id: null,
     },
@@ -1093,12 +1093,10 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         // this assumes for now that each node has only one collection
         if (startNode) {
             // TODO: case when node has multiple collections - 2017-07-08
-            console.log('start is collapsed', startNode);
             newEdge.start = startNode.collections[0]
         }
         if (endNode) {
             // TODO: case when node has multiple collections - 2017-07-08
-            console.log('end is collapsed', endNode);
             newEdge.end = endNode.collections[0]
         }
         if (startNode && endNode && (startNode === endNode)) {

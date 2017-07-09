@@ -372,8 +372,8 @@ module.exports = function(db, es) {
             const updatedData = _.pick(data, ['name', 'content', 'editorState', 'editorPlainText'])
 
             db.run(
-                "MATCH (u:User)--(n:Node) " +
-                "WHERE u.id = {userId} " +
+                "MATCH (u:User)--(n) " +
+                "WHERE u.id = {userId} AND (n:Node OR n:Collection) " +
                 "AND n.id = {id} " +
                 "SET n += { data } " +
                 "SET n.modified = timestamp() " +

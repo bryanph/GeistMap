@@ -41,7 +41,7 @@ const createEnterNode = function(actions: { click: Function }) {
     */
     return (selection, click) => {
         selection
-            .attr("class", "node")
+            .attr("class", "node nodeStyles")
             .attr('id', (d) => {
                 return `node-${d.id}`
             }) 
@@ -72,15 +72,13 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
 
     selection.select('.editMode').remove()
 
-    // insert an editable text field at the bottom
-    if (mode === 'focus') {
-        selection.on('click', (d) => {
-            // go to NodeExplore, which will transition node to center and perform the fetching and filtering
-            actions.history.push(`/app/nodes/${d.id}`)
-        })
+    if (mode === 'view') {
+        // make click go to editor
+        selection.on('click', actions.onNodeClick)
     }
     else if (mode === 'edit') {
         if (focus.id) {
+
             selection.on('click', null)
 
             const nodeSelection = d3Select(`#node-${focus.id}`)
@@ -123,9 +121,12 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
         }
 
     }
-    else if (mode === 'view') {
-        // make click go to editor
-        selection.on('click', actions.onNodeClick)
+    // insert an editable text field at the bottom
+    else if (mode === 'focus') {
+        selection.on('click', (d) => {
+            // go to NodeExplore, which will transition node to center and perform the fetching and filtering
+            actions.history.push(`/app/nodes/${d.id}`)
+        })
     }
 
     return selection
@@ -137,10 +138,8 @@ const createEnterCollection = function(actions: { click: Function }) {
     */
     return (selection, click) => {
         selection
-            .attr("class", "node")
-            .attr('id', (d) => {
-                return `node-${d.id}`
-            }) 
+            .attr("class", "collection nodeStyles")
+            .attr('id', (d) => `node-${d.id}`) 
             .attr('r', NODE_RADIUS)
 
         selection.on('click', actions.click)
@@ -167,10 +166,13 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
     })
 
     selection.select('.editMode').remove()
+    selection.on('click', null)
 
     if (mode === 'view') {
         // make click go to editor
-        selection.on('click', actions.onNodeClick)
+        selection.on('click', (d) => {
+            actions.history.push(`/app/collections/${d.id}/edit`)
+        })
     }
     else if (mode === 'edit') {
         if (focus.id) {
@@ -307,15 +309,13 @@ const createExploreEvents = function(simulation, actions) {
     }
 }
 
-const createCollectionDetailEvents = function(simulation, collection, actions) {
+const createCollectionDetailEvents = function(simulation, actions) {
     /*
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
      */
-    const onNodeClick = function(d) {
-        currentEvent.preventDefault()
-
-        actions.history.push(`/app/collections/${collection.id}/nodes/${d.id}/edit`)
+    const onNodeClick = (d) => {
+        actions.history.push(`/app/collections/${this.props.activeCollection.id}/nodes/${d.id}/edit`)
     }
 
     const onConnect = (from, to) => {
@@ -359,16 +359,25 @@ const createCollectionDetailEvents = function(simulation, collection, actions) {
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (nodeSelection, link, mode, focus) => {
-        // EXIT selection
-        nodeSelection.exit().remove()
-        // ENTER selection
-        const nodeEnter = nodeSelection.enter()
-        const nodeEnterNode = nodeEnter.filter(d => d.type !== 'collection').append('g').call(enterNode).call(nodeDrag)
-        const nodeEnterCollection = nodeEnter.filter(d => d.type === 'collection').append('g').call(enterCollection).call(nodeDrag)
-        // ENTER + UPDATE selection
-        nodeEnterNode.merge(nodeSelection).filter(d => d.type !== 'collection').call((selection) => updateNode(selection, mode, focus))
-        nodeEnterCollection.merge(nodeSelection).filter(d => d.type === 'collection').call((selection) => updateCollection(selection, mode, focus))
+    return (nodeSelection, collectionSelection, link, mode, focus) => {
+        // TODO: if the mode changed, all nodes need to be updated - 2017-07-08
+        // one way is to just set a flag on the data
+
+        // if mode changed, update everything
+        if (this.props.mode !== mode) {
+            nodeSelection.call((selection) => updateNode(selection, mode, focus))
+            collectionSelection.call((selection) => updateCollection(selection, mode, focus))
+        } else {
+            // EXIT selection
+            nodeSelection.exit().remove()
+            collectionSelection.exit().remove()
+            // ENTER selection
+            nodeSelection.enter().append('g').call(enterNode).call(nodeDrag)
+                .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
+
+            collectionSelection.enter().append('g').call(enterCollection).call(nodeDrag)
+                .merge(collectionSelection).call((selection) => updateCollection(selection, mode, focus))
+        }
 
 
         // EXIT selection
@@ -436,20 +445,25 @@ class NodeGraph extends React.Component {
             link.target = nodeById[link.end]
         })
 
+        const nodeList = nodes.filter((node) => node.type !== 'collection')
+        const collectionList = nodes.filter((node) => node.type === 'collection')
 
 
         // set data
-        var node = this.container.selectAll('.node')
-            .data(nodes, node => node.id)
+        var nodeSelection = this.container.selectAll('.node')
+            .data(nodeList, x => x.id)
+
+        var collectionSelection = this.container.selectAll('.collection')
+            .data(collectionList, x => x.id)
 
         var link = this.container.selectAll('.link')
             .data(links, link => link.id)
 
         // enter-update-exit cycle depending on type of graph
         if (graphType === 'node') {
-            this.exploreEvents(node, link, mode, focus)
+            this.exploreEvents(nodeSelection, link, mode, focus)
         } else if (graphType === 'collection') {
-            this.collectionDetailEvents(node, link, mode, focus)
+            this.collectionDetailEvents(nodeSelection, collectionSelection, link, mode, focus)
         } else {
             console.error('this should not happen!')
         }
@@ -488,7 +502,7 @@ class NodeGraph extends React.Component {
     }
 
     componentDidMount() {
-        const { graphType, loadNode, removeEdge, connectNodes, connectCollections, collection } = this.props
+        const { graphType, loadNode, removeEdge, connectNodes, connectCollections, activeCollection } = this.props
 
         console.log('called componentDidMount');
 
@@ -524,7 +538,7 @@ class NodeGraph extends React.Component {
             updateNode: this.props.updateNode,
         })
         // TODO: collectionId should be not be static like this - 2017-05-21
-        this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, collection, {
+        this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, {
             history: this.props.history,
             removeEdge,
             connectNodes,
@@ -544,6 +558,9 @@ class NodeGraph extends React.Component {
 
             selection.selectAll('.node')
                 .call(transformNode);
+            selection.selectAll('.collection')
+                .call(transformNode);
+
             selection.selectAll('.link')
                 .call(transformLink);
         }
@@ -560,6 +577,7 @@ class NodeGraph extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
+        console.log('calling shouldComponentUpdate');
         if (nextProps.nodes !== this.props.nodes || nextProps.links !== this.props.links) {
             this.update(nextProps)
         }
