@@ -31,7 +31,6 @@ const entities = combineReducers({
 function nodes(state={}, action, collections) {
     /*
      * Handles the non-merging action types
-     * // TODO: how to handle caching here? - 2016-06-11
     */
 
     switch(action.type) {
@@ -39,7 +38,6 @@ function nodes(state={}, action, collections) {
         case actionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
         // add collection id
-        // TODO: use immutablejs with setIn for this, much easier to reason about - 2016-07-11
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
             return {
                 ...state,
@@ -504,6 +502,8 @@ function batchNodes(state=[], action) {
 }
 
 
+// TODO: this should only contain nodes and edges of the DIRECT children - 2017-07-10
+// right now, it contains nodes of all child collections as well
 function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
     /*
      * stores a mapping of collection ids to the contained nodes and edges involved with those nodes
@@ -512,7 +512,6 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
     // TODO: make nodes/edges keys a mapping as well so we can easily remove the keys - 2016-07-18
     // also, order doesnt matter anyway
     switch(action.type) {
-        // TODO: just do this explicitly in the API - 2016-07-18
         case actionTypes.GET_COLLECTION_SUCCESS:
             return {
                 ...state,
@@ -1065,51 +1064,75 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     const collectionIds = getChildcollectionIdsByCollectionId(state, id)
     const collections = collectionIds.map(id => getCollection(state, id))
 
-    console.log(collections);
+    const [ collapsedCollections, expandedCollections ] = _.partition(collections, (n => n.collapsed))
 
-    const collapsedCollections = collections.filter(n => n.collapsed)
-    const collapsedCollectionIds = collapsedCollections.map(n => n.id)
+    let visibleCollections = []
 
-    console.log(collectionIds, collapsedCollectionIds);
+    let visibleNodes = []
+    let visibleNodeMap = {}
 
-    // visible nodes
-    // TODO: handle a collapsed state - 2017-07-07
-    const [ hiddenNodes, visibleNodes ] = _(nodes).partition((node) => collapsedCollectionIds.includes(...node.collections)).value()
-    const hiddenNodesMap = _.keyBy(hiddenNodes, 'id')
+    // copy edges
+    let transformedEdges = edges.map(e => Object.assign({}, e))
 
-    console.log(visibleNodes, hiddenNodes, hiddenNodesMap);
-
-    let transformedEdges = []
-    edges.forEach(edge => {
-        /*
-         * If one of the edges is in a collapsed collection, change the start/end
-        */
-        let startNode = hiddenNodesMap[edge.start]
-        let endNode = hiddenNodesMap[edge.end]
-        let newEdge = { ...edge }
-
-
-        // TODO: need to keep track of # of nodes in collection - 2017-07-07
-        // this assumes for now that each node has only one collection
-        if (startNode) {
-            // TODO: case when node has multiple collections - 2017-07-08
-            newEdge.start = startNode.collections[0]
-        }
-        if (endNode) {
-            // TODO: case when node has multiple collections - 2017-07-08
-            newEdge.end = endNode.collections[0]
-        }
-        if (startNode && endNode && (startNode === endNode)) {
-            return; // continue
-        }
-
-        transformedEdges.push(newEdge)
+    expandedCollections.forEach(c => {
+        // mark its nodes as shown
+        getNodeIdsByCollectionId(state, c.id).forEach(n => {
+            visibleNodes.push(getNode(n))
+            visibleNodeMap[n] = n
+        })
     })
 
-    // both the collections and the visible nodes
-    // TODO: handle this in the graph itself - 2017-07-09
-    // e.g. hide a collection if it collapsed, otherwise shown
-    // const transformedNodes = [ ...collapsedCollections, ...visibleNodes ]
+    collapsedCollections.forEach(c => {
+        /*
+         * Hide nodes that are not expanded due to another collection
+        */
+        visibleCollections.push(c)
+
+        const nodeIds = getNodeIdsByCollectionId(state, c.id)
+        
+        // nodes that are hidden in this collection
+        let hiddenNodeMap = []
+
+        nodeIds.forEach(n => {
+            // if not shown already, don't show the node
+            if (!visibleNodeMap[n]) {
+                hiddenNodeMap[n] = n
+            }
+        })
+
+        console.log("transformedEdges", nodeIds);
+
+        // this mutates transformedEdges (already made a copy above)
+        // TODO: do this more efficiently - 2017-07-10
+        transformedEdges = transformedEdges.map((e) => {
+
+            // if start is hidden, change start to this collection
+            if (hiddenNodeMap[e.start]) {
+                console.log("CHANGING START");
+                e.start = c.id
+            }
+            if (hiddenNodeMap[e.end]) {
+                console.log("CHANGING END");
+                e.end = c.id
+            }
+            if (e.start === e.end) {
+                console.log("BOTH INSIDE");
+                return null
+            }
+
+            return e
+        }).filter(x => x !== null)
+    })
+
+    // add nodes that are not in any visible collection to the visible nodes
+    nodes.forEach(node => {
+        if (_.intersection(node.collections, collectionIds).length === 0) {
+            visibleNodes.push(node)
+        }
+    })
+
+    console.log(nodes, visibleNodes);
+    console.log(visibleCollections, transformedEdges);
 
     return {
         nodes: visibleNodes,

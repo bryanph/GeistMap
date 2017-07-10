@@ -103,6 +103,7 @@ function mapStateToProps(state, props) {
         graphType = "collection"
     } else {
         nodes = getL1Nodes(state, nodeId);
+        collections = []
         edges = getL1Edges(state, nodeId);
         isLoading = state.loadingStates.GET_NODE_L1
         graphType = "node"

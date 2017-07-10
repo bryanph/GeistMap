@@ -17,12 +17,12 @@
 //     }
 // }
 
-.nodeStyles:hover {
+.node:hover {
     cursor: pointer;
     fill: #000000;
 }
 
-.nodeStyles text {
+.node text {
     fill: #0F073B;
     stroke: none;
     font-size: 1.2em;

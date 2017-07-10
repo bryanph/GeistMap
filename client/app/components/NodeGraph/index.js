@@ -41,7 +41,7 @@ const createEnterNode = function(actions: { click: Function }) {
     */
     return (selection, click) => {
         selection
-            .attr("class", "node nodeStyles")
+            .attr("class", "nodeSelection node")
             .attr('id', (d) => {
                 return `node-${d.id}`
             }) 
@@ -70,7 +70,8 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
         return getLabelText(d.name)
     })
 
-    selection.select('.editMode').remove()
+    selection.selectAll('.editMode').remove()
+    selection.on('click', null)
 
     if (mode === 'view') {
         // make click go to editor
@@ -78,8 +79,6 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
     }
     else if (mode === 'edit') {
         if (focus.id) {
-
-            selection.on('click', null)
 
             const nodeSelection = d3Select(`#node-${focus.id}`)
 
@@ -138,7 +137,7 @@ const createEnterCollection = function(actions: { click: Function }) {
     */
     return (selection, click) => {
         selection
-            .attr("class", "collection nodeStyles")
+            .attr("class", "collectionSelection node")
             .attr('id', (d) => `node-${d.id}`) 
             .attr('r', NODE_RADIUS)
 
@@ -153,7 +152,7 @@ const createEnterCollection = function(actions: { click: Function }) {
 
         // TODO: split into lines when text gets too big - 2017-06-22
         selection.append('text')
-            .attr("dy", NODE_RADIUS*2 + 1)
+            .attr("dy", NODE_RADIUS*2 + 2)
             .text((d) => getLabelText(d.name));
 
         return selection
@@ -426,7 +425,6 @@ class NodeGraph extends React.Component {
         collections = _.uniqBy(collections, (node) => node.id)
         links = _.uniqBy(links, (link) => link.id)
 
-        console.log(collections);
         collections = collections.filter(c => c.collapsed)
         collections.forEach(c => {
             nodeById[c.id] = c
@@ -435,29 +433,20 @@ class NodeGraph extends React.Component {
         // set extra properties here
         nodes.forEach(node => {
             nodeById[node.id] = node
-            // only when coming from collection
-            if (graphType === 'collection' && activeNode) {
-                // TODO: fix collection nodes, zoom on node, center gravity on node - 2017-06-29
-                if (node.x && node.y) {
-                    node.fx = node.x
-                    node.fy = node.y
-                }
-            } else {
-                node.fx = null
-                node.fy = null
-            }
         })
 
         links.forEach(link => {
             link.source = nodeById[link.start]
             link.target = nodeById[link.end]
+
+            // console.log(link.start, link.source, link.target);
         })
 
         // set data
-        var nodeSelection = this.container.selectAll('.node')
+        var nodeSelection = this.container.selectAll('.nodeSelection')
             .data(nodes, x => x.id)
 
-        var collectionSelection = this.container.selectAll('.collection')
+        var collectionSelection = this.container.selectAll('.collectionSelection')
             .data(collections, x => x.id)
 
         var link = this.container.selectAll('.link')
@@ -564,9 +553,9 @@ class NodeGraph extends React.Component {
                 this.zoom.zoomFit()
             }
 
-            selection.selectAll('.node')
+            selection.selectAll('.nodeSelection')
                 .call(transformNode);
-            selection.selectAll('.collection')
+            selection.selectAll('.collectionSelection')
                 .call(transformNode);
 
             selection.selectAll('.link')
