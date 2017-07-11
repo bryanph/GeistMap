@@ -13,9 +13,11 @@ You can try Geist [here](https://www.geist.fyi). Please note that this version i
 ## Roadmap
 Can be found [here](https://github.com/bryanph/Geist/blob/master/meta/roadmaps/2017.md).
 
+Note: I am currently working on a complete redesign of this prototype.
+
 ## Installation instructions
 Will follow
 
 ## Contact
-To get help or to have a chat you can reach me on [Twitter](https://twitter.com/bphaakman) or join the IRC `##geist` on Freenode
+To get help or to have a chat you can reach me on [Twitter](https://twitter.com/bphaakman)
 
