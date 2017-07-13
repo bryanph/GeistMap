@@ -249,7 +249,7 @@ module.exports = function(db, es) {
 
             db.run(
                 "MERGE (u:User {id: {userId}}) " +
-                "CREATE (n:Node { id: {id}, name: {name}, created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u) " +
+                "CREATE (n:Node { id: {id}, type: \"node\", name: {name}, created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u) " +
                 "return properties(n) as node",
                 {
                     id,
@@ -265,101 +265,6 @@ module.exports = function(db, es) {
                 // now update ES indexes
                 updateIndex(es, user._id.toString(), result)
                     
-            })
-            .catch(handleError)
-        },
-
-        createBatchNode: function(user, id, data, res) {
-            /*
-             * Create a "batch create node" separately so we can perform
-             * clean-up later on, and provide persistence of sessions later on as well
-             * // TODO: create nodes on client-side only, then persist later when user changes its name - 2016-07-23
-            */
-
-            data.author = user;
-
-            db.run(
-                "MERGE (u:User {id: {userId}}) " +
-                "CREATE (n:Node:BatchNode { id: {id}, name: {name}, created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u) " +
-                "return properties(n) as node",
-                {
-                    id,
-                    userId: user._id.toString(),
-                    name: data.name,
-                }
-            )
-            .then((results) => {
-                const result = mapIntegers(results.records[0]._fields[0])
-
-                res(null, result)
-
-                // now update ES indexes
-                updateIndex(es, user._id.toString(), result)
-                    
-            })
-            .catch(handleError)
-        },
-
-        getAllBatchNodes: function(user, res) {
-            /*
-             * Get all nodes created in the batch create graph
-             */
-
-            // fetch all nodes that have no collection attached
-            Promise.all([
-                db.run(
-                    `MATCH (u:User)--(n:Node)
-                    WHERE u.id = {userId}
-                    AND NOT (n)-[:IN]->(:Collection)
-                    RETURN properties(n)
-                    ORDER BY n.modified DESC`,
-                    {
-                        userId: user._id.toString(),
-                    }
-                ),
-                db.run(
-                    `MATCH (u:User)--(n:Node)
-                    WHERE u.id = {userId}
-                    AND NOT (n)-[:IN]->(:Collection)
-                    WITH collect(n) as nodes
-                    UNWIND nodes as nodes1
-                    UNWIND nodes as nodes2
-                    OPTIONAL MATCH (nodes1)-[r:EDGE]->(nodes2)
-                    RETURN collect(distinct properties(r))`,
-                    {
-                        userId: user._id.toString(),
-                    }
-                ),
-            ])
-            .then((results) => {
-                const nodes = results[0].records.map(row => mapIntegers(row.get(0)))
-                const edges = results[1].records[0]._fields[0].map(mapIntegers)
-
-                return res(null, {
-                    nodes,
-                    edges,
-                })
-            })
-            .catch(handleError)
-        },
-
-        clearBatchNodes: function(user, res) {
-            /*
-             * Remove batch label from all batch nodes
-             * // TODO: Additionally remove untitled nodes? - 2016-07-23
-             */
-
-            db.run(
-                "MATCH (u:User)--(n:BatchNode) " +
-                "WHERE u.id = {userId} " +
-                "REMOVE n:BatchNode " +
-                "RETURN properties(n) as node",
-                {
-                    userId: user._id.toString()
-                }
-            )
-            .then((results) => {
-                return res(null, true)
             })
             .catch(handleError)
         },

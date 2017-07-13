@@ -51,7 +51,7 @@ module.exports = function(db, es) {
 
             const results = await db.run(
                 "MERGE (u:User {id: {userId}}) " +
-                "CREATE (c:Collection:RootCollection { id: {id} name: {name}, isRootCollection: true,  nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
+                "CREATE (c:Collection:RootCollection { id: {id} name: {name}, isRootCollection: true, type: \"root\", nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
                 "return properties(c) as collection",
                 {
                     id,
@@ -66,8 +66,6 @@ module.exports = function(db, es) {
         get: function(user, id, res) {
             /*
              * Get node with id ${id} (including its neightbours)
-             * // TODO: give this call an explicit name - 2016-07-15
-             * // TODO: Check this call's performance - 2016-07-11
              */
 
             const userId = user._id.toString()
@@ -87,36 +85,21 @@ module.exports = function(db, es) {
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND c.id = {id}
-                    OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
-                    WITH c, collect(distinct n) as ns
-                    UNWIND ns as n1
-                    UNWIND ns as n2
-                    OPTIONAL MATCH (n1)-[e:EDGE]-(n2)
-                    RETURN collect(distinct properties(e))`,
+                    OPTIONAL MATCH (c)<-[:AbstractEdge]-(n)-[e:EDGE]-(n2)
+                    RETURN distinct(properties(e)) as edge`,
                     {
                         id,
                         userId,
                     }
                 ),
-                // get all nodes in the collection, along with THEIR collections (ids)
+                // Get for every direct child, which abstractions they belong to
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND c.id = {id}
-                    OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
-                    WITH distinct n
-                    OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    RETURN properties(n), collect(distinct c2.id)`,
-                    {
-                        id,
-                        userId,
-                    }
-                ),
-                // get all child collections (direct)
-                db.run(
-                    `MATCH (u:User)--(c:Collection) 
-                    WHERE u.id = {userId} AND c.id = {id}
-                    MATCH (c)<-[:PARENT]-(c2:Collection)
-                    RETURN properties(c2) AS childCollections`,
+                    OPTIONAL MATCH (c)<-[:AbstractEdge]-(n)
+                    WITH n as nodes
+                    OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c2:Collection)
+                    RETURN properties(n) as node, collect(distinct c2.id) as collections`,
                     {
                         id,
                         userId,
@@ -130,7 +113,7 @@ module.exports = function(db, es) {
                     }
 
                     const collection = mapIntegers(results[0].records[0].get(0))
-                    const edges = results[1].records[0].get(0).map(mapIntegers)
+                    const edges = results[1].records.map(record => mapIntegers(record.get('edge')))
 
                     const nodes = results[2].records[0].get(0) === null ?
                         [] : 
@@ -143,26 +126,15 @@ module.exports = function(db, es) {
                             )
                         ))
 
-                    let childCollections = results[3].records.map(rec => {
-                        return mapIntegers(rec.get('childCollections'))
-                    })
+                    console.log(edges);
 
-
-                    // TODO: type should be either a property or determined by label  - 2017-07-07
-                    // TODO: collapsed is a front-end implementation detail - 2017-07-07
-                    childCollections.map((c) => (Object.assign(
-                        c,
-                        {
-                            type: 'collection',
-                            collapsed: true,
-                        }
-                    )))
+                    // TODO: return for every node whether it is a node or a collection - 2017-07-13
+                    // store this as a property
 
                     return res(null, {
                         collection: Object.assign({},
                             collection,
-                            { childCollections }, // direct child collections
-                            { nodes } // all child nodes recursively
+                            { nodes } // all direct children
                         ),
                         edges // all edges between the nodes
                     })
@@ -247,7 +219,7 @@ module.exports = function(db, es) {
 
             db.run(
                 "MERGE (u:User {id: {userId}}) " +
-                "CREATE (c:Collection { id: {id}, name: {name}, nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
+                "CREATE (c:Collection { id: {id}, name: {name}, type: \"collection\", nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
                 "return properties(c) as collection",
                 {
                     userId: user._id.toString(),
