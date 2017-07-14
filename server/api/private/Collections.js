@@ -101,7 +101,7 @@ module.exports = function(db, es) {
                     OPTIONAL MATCH (n)-[e:EDGE]-(n2)
                     WITH collect(n) as nodes1, collect(n2) as nodes2
                     UNWIND nodes1 + nodes2 as nodes
-                    MATCH (nodes)-[:AbstractEdge*0..]->(c2:Collection)
+                    MATCH (nodes)-[:AbstractEdge*1..]->(c2:Collection)
                     RETURN properties(nodes) as node, collect(distinct c2.id) as collections`,
                     {
                         id,
@@ -203,7 +203,7 @@ module.exports = function(db, es) {
 
             db.run(
                 "MERGE (u:User {id: {userId}}) " +
-                "CREATE (c:Collection { id: {id}, name: {name}, type: \"collection\", nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
+                "CREATE (c:Node:Collection { id: {id}, name: {name}, type: \"collection\", nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
                 "return properties(c) as collection",
                 {
                     userId: user._id.toString(),

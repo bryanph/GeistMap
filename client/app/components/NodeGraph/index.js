@@ -217,6 +217,7 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
         }
     }
     else if (mode === 'focus') {
+        console.log("should route to the collection detail");
 
     }
     else if (mode === 'expand') {
@@ -425,7 +426,9 @@ class NodeGraph extends React.Component {
         collections = _.uniqBy(collections, (node) => node.id)
         links = _.uniqBy(links, (link) => link.id)
 
+        // TODO: shouldn't have to happen here - 2017-07-14
         collections = collections.filter(c => c.collapsed)
+        console.log('called', collections);
         collections.forEach(c => {
             nodeById[c.id] = c
         })

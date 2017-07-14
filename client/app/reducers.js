@@ -514,22 +514,23 @@ function nodesByCollectionId(state={}, action) {
         case actionTypes.GET_COLLECTION_SUCCESS:
             let newState = { ...state }
             // for every node, add them to the corresponding collection list
-            console.log(action);
             _.forEach(action.response.entities.nodes, node => {
-                if (node.type === 'node') {
-                    _.forEach( node.collections, c => {
-                        if (!newState[c]) {
-                            newState[c] = [ node.id ]
-                        } else {
-                            newState[c].push(node.id)
-                        }
-                    })
-                }
+                _.forEach(node.collections, c => {
+                    if (!newState[c]) {
+                        newState[c] = [ node.id ]
+                    } else {
+                        newState[c].push(node.id)
+                    }
+                })
             })
 
             console.log(newState);
 
             return newState
+
+        case actionTypes.REMOVE_COLLECTION_SUCCESS:
+            return _.omit(state, action.collectionId)
+
         default:
             return state
     }
@@ -554,6 +555,7 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
             }
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
             return _.omit(state, action.collectionId)
+
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
             // we added a node. Get its node and the edges of the new node to be added
             // add its nodes and its edges to the corresponding collection mapping
@@ -1093,9 +1095,11 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => (
 export const getNodesAndEdgesByCollectionId = (state, id) => {
     // this gets the direct nodes including their children
     const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
-    const [ nodes, collections ] = _.partition(
-        nodesAndEdges.nodes.map(id => getNode(state, id)),
-        (n) => n.type === "node")
+
+    // nodes includes both nodes and collections
+    const nodesAndCollections = nodesAndEdges.nodes.map(id => getNode(state, id))
+    const nodes = nodesAndCollections.filter(n => n.type === 'node')
+    const collections = nodesAndCollections.filter(n => n.type === 'collection')
 
     const edges = nodesAndEdges.edges.map(edgeId => getEdge(state, edgeId))
 
@@ -1105,7 +1109,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     let visibleCollections = []
     let visibleNodes = []
 
-    let nodeMap = _.keyBy(nodes, n => n.id)
+    let nodeMap = _.keyBy(nodesAndCollections, n => n.id)
     let hiddenNodeMap = {}
     let visibleNodeMap = {}
 
@@ -1114,15 +1118,13 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
     const collectionIds = collections.map(c => c.id)
 
-    // add nodes that are direct children of this collection
+    // add :NODE nodes that are direct children of this collection
     nodes.forEach(node => {
         if (_.intersection(node.collections, collectionIds).length === 0) {
             visibleNodes.push(node)
             visibleNodeMap[node.id] = node
         }
     })
-
-    console.log(collectionChain);
 
     collections.forEach(c => {
         if (c.collapsed) {
@@ -1133,8 +1135,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
             // TODO: this should return the node ids for this collection - 2017-07-13
             const nodeIds = getNodeIdsByCollectionId(state, c.id)
-
-            console.log("CALLED", nodeIds);
 
             nodeIds.forEach(n => {
                 // if not shown already, don't show the node
@@ -1187,7 +1187,9 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
         else {
             // mark its nodes as shown
+            console.log(getNodeIdsByCollectionId(state, c.id).map( n => getNode(state, n)));
             getNodeIdsByCollectionId(state, c.id).forEach(n => {
+                console.log(n.type === "collection");
                 visibleNodes.push(getNode(state, n))
                 visibleNodeMap[n] = n
                 // we want to show this node even if it was hidden by another collection
@@ -1195,11 +1197,27 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                     delete hiddenNodeMap[n]
                 }
             })
+
+            // hide direct edges from/to this collection
+            transformedEdges = _(transformedEdges)
+                .filter((e) => {
+                    // TODO: should only happen for direct edges - 2017-07-14
+                    if (e.start === c.id) {
+                        return false
+                    }
+
+                    if (e.end === c.id) {
+                        return false
+
+                    }
+
+                    return true
+                })
+                .value()
         }
     })
 
-    console.log(nodes, visibleNodes);
-    console.log(visibleCollections, transformedEdges);
+    console.log(visibleNodes, visibleCollections);
 
     return {
         nodes: visibleNodes,
