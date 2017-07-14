@@ -78,7 +78,7 @@ module.exports = function(db, es) {
             db.run(
                 "MATCH (u:User)--(n:Node) " +
                 "WHERE u.id = {userId} " +
-                "AND NOT (n)-[:IN]-(:Collection) " +
+                "AND NOT (n)-[:AbstractEdge]-(:Collection) " +
                 "RETURN collect(properties(n)) as nodes",
                 {
                     userId: user._id.toString()
@@ -101,7 +101,7 @@ module.exports = function(db, es) {
             db.run(
                 "MATCH (u:User)--(n:Node) " +
                 "WHERE u.id = {userId} AND n.id = {id} " +
-                "OPTIONAL MATCH (n)-[:IN]->(:Collection)-[*0..5]->(c:Collection) " +
+                "OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection) " +
                 "RETURN properties(n) as node, collect(properties(c)) as collections",
                 {
                     id,
@@ -135,7 +135,7 @@ module.exports = function(db, es) {
             db.run(
                 "MATCH (u:User)--(n:Node) " +
                 "WHERE u.id = {userId} AND n.id = {id} " +
-                "OPTIONAL MATCH (n)-[:IN]->(:Collection)-[*0..5]->(c:Collection) " +
+                "OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection) " +
                 "OPTIONAL MATCH (n)-[e:EDGE]-(n2:Node) " +
                 "RETURN properties(n) as node, collect(distinct properties(n2)) as otherNodes, collect(distinct properties(e)) as edges, collect(distinct properties(c)) as collections",
                 {
@@ -175,8 +175,8 @@ module.exports = function(db, es) {
                 db.run(
                     `MATCH (u:User)--(n:Node) 
                     WHERE u.id = {userId} AND n.id = {id}
-                    OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    RETURN properties(n), collect(distinct properties(c2))`,
+                    OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection)
+                    RETURN properties(n), collect(distinct properties(c))`,
                     {
                         id,
                         userId: user._id.toString(),
@@ -188,8 +188,8 @@ module.exports = function(db, es) {
                     WHERE u.id = {userId} AND n.id = {id}
                     OPTIONAL MATCH (n)-[:EDGE*0..2]-(n2:Node)
                     WITH distinct n2
-                    OPTIONAL MATCH (n2)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    RETURN properties(n2), collect(distinct c2.id)`,
+                    OPTIONAL MATCH (n2)-[:AbstractEdge*0..]->(c:Collection)
+                    RETURN properties(n2), collect(distinct c.id)`,
                     // ORDER BY n2.id`,
                     {
                         id,
@@ -329,38 +329,6 @@ module.exports = function(db, es) {
             // TODO: Also remove indexes and other dangling references... - 2016-07-11
 
         },
-
-        // duplicate: function(user, nodeId, isBatch=false, res) {
-            
-        //     db.run(
-        //         "MATCH (u:User)--(n:Node) " +
-        //         "WHERE u.id = {userId} "  +
-        //         "AND n.id = {id} " +
-        //         "CREATE (u)-[:AUTHOR]->(nn:Node" + (isBatch ? ":BatchNode" : "") + " { name: 'copy of ' + n.name, created: timestamp(), modified: timestamp() }) " +
-        //         "WITH n as n, nn as nn " +
-        //         "OPTIONAL MATCH (n)--(c:Collection) " +
-        //         // "CREATE (nn)-[:IN]->(c) " +
-        //         "WITH n as n, nn as nn, collect(c) as c " +
-        //         "FOREACH (col IN c | CREATE (nn)-[:IN]->(col)) " +
-        //         "RETURN properties(nn), properties(c)",
-        //         {
-        //             userId: user._id.toString(),
-        //             id: nodeId,
-        //         }
-        //     )
-        //     .then(results => {
-        //         const node = results.records[0]._fields[0]
-        //         const collections = results.records[0]._fields[1]
-
-        //         res(null, Object.assign(node,
-        //             { collections }
-        //         ))
-
-        //         // now update ES indexes
-        //         updateIndex(es, user._id.toString(), node)
-        //     })
-        //     .catch(handleError)
-        // },
 
         connect: function(user, node1, node2, id, res) {
             /*

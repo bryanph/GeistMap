@@ -75,7 +75,8 @@ module.exports = function(db, es) {
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND c.id = {id}
-                    RETURN properties(c)`,
+                    OPTIONAL MATCH (c)-[:AbstractEdge*0..]->(c2:Collection)
+                    RETURN properties(c) as collection, collect(distinct c2.id) as collections`,
                     {
                         id,
                         userId,
@@ -85,7 +86,7 @@ module.exports = function(db, es) {
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND c.id = {id}
-                    OPTIONAL MATCH (c)<-[:AbstractEdge]-(n)-[e:EDGE]-(n2)
+                    MATCH (c)<-[:AbstractEdge]-(n)-[e:EDGE]-(n2)
                     RETURN distinct(properties(e)) as edge`,
                     {
                         id,
@@ -96,10 +97,12 @@ module.exports = function(db, es) {
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND c.id = {id}
-                    OPTIONAL MATCH (c)<-[:AbstractEdge]-(n)
-                    WITH n as nodes
-                    OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c2:Collection)
-                    RETURN properties(n) as node, collect(distinct c2.id) as collections`,
+                    MATCH (c)<-[:AbstractEdge]-(n)
+                    OPTIONAL MATCH (n)-[e:EDGE]-(n2)
+                    WITH collect(n) as nodes1, collect(n2) as nodes2
+                    UNWIND nodes1 + nodes2 as nodes
+                    MATCH (nodes)-[:AbstractEdge*0..]->(c2:Collection)
+                    RETURN properties(nodes) as node, collect(distinct c2.id) as collections`,
                     {
                         id,
                         userId,
@@ -112,21 +115,24 @@ module.exports = function(db, es) {
                         return res(new Error(`Collection with id ${id} was not found`))
                     }
 
-                    const collection = mapIntegers(results[0].records[0].get(0))
+                    const collection = Object.assign(
+                        mapIntegers(results[0].records[0].get(0)),
+                        { collections: results[0].records[0].get(1) }
+                    )
+
                     const edges = results[1].records.map(record => mapIntegers(record.get('edge')))
 
-                    const nodes = results[2].records[0].get(0) === null ?
+                    const nodes = !results[2].records.length  ?
                         [] : 
                         results[2].records.map(row => (
                             Object.assign({},
+                                { collapsed: true },
                                 mapIntegers(row.get(0)),
                                 {
                                     collections: row.get(1).map(mapIntegers), // ids for collections
                                 }
                             )
                         ))
-
-                    console.log(edges);
 
                     // TODO: return for every node whether it is a node or a collection - 2017-07-13
                     // store this as a property
@@ -144,14 +150,8 @@ module.exports = function(db, es) {
 
         getAll: function(user, res) {
             /*
-             * Get all collections and their relationships
-             * TODO: 2016-08-11 - These relationships define hierarchies
+             * Get all collections and their abstract relationships
              */
-
-            // TODO: Explicit relations (between collections) - 2016-07-11
-            // TODO: Implicit relations (between two nodes in collections - 2016-07-11
-            // TODO: Separate explicit and implicit relations? - 2016-04-02
-            // TODO: Separate explicit and implicit relations? - 2016-04-02
 
             Promise.all([
                 // get all the edges between the collections
@@ -161,7 +161,7 @@ module.exports = function(db, es) {
                     "WITH collect(c) as c2 " +
                     "UNWIND c2 as cu1 " +
                     "UNWIND c2 as cu2 " +
-                    "MATCH (cu1)-[e:PARENT]->(cu2) " +
+                    "MATCH (cu1)-[e:AbstractEdge]->(cu2) " +
                     "RETURN collect(properties(e))",
                     {
                         userId: user._id.toString()
@@ -170,7 +170,7 @@ module.exports = function(db, es) {
                 db.run(
                     "MATCH (u:User)--(c:Collection) " +
                     "WHERE u.id = {userId} " +
-                    "OPTIONAL MATCH (c)<-[:PARENT*0..5]-(c2:Collection) " +
+                    "OPTIONAL MATCH (c)<-[:AbstractEdge*0..5]-(c2:Collection) " +
                     "OPTIONAL MATCH (c2)--(n:Node) " +
                     "RETURN properties(c), count(n)",
                     {
@@ -195,22 +195,6 @@ module.exports = function(db, es) {
             })
                 .catch(handleError)
         },
-
-        // getCollectionGraph: function(user, res) {
-        //     /*
-        //      * Get a collection graph
-        //      *
-        //     */
-
-        //     db.cypher({
-        //         query: 
-        //             "MATCH (c1:Collection)-[e]-(n: Node), (n1: Node -[]-> (n2: Node))" +
-        //             "WHERE NOT (c1)-[e:IN|CONTAINS]-(c2)" +
-        //             "RETURN collect(c1, c2) as collections, collect(e) as edges"
-        //     }, function(error, results) {
-        //         res(null, results[0].collections)
-        //     })
-        // },
 
         create: function(user, id, data, res) {
             /*
@@ -302,14 +286,8 @@ module.exports = function(db, es) {
 
         addNode: function(user, collectionId, nodeId, id, res) {
             /*
-             * Create the edge [collection]-[edge:CONTAINS]->[node], and
-             * Create the edge [collection]<-[edge:IN]-[node], and
-             * Additionally, update collection relations
+             * Create the edge [collection]<-[:AbstractEdge]-[node]
              */
-
-            // TODO: Add an edge type argument - 2016-06-06
-            // TODO: assert edge type is defined - 2016-04-02
-            // TODO: How will we manage this? 2016-04-02
 
             if (!collectionId || !nodeId) {
                 return res("Set both node ids")
@@ -319,7 +297,7 @@ module.exports = function(db, es) {
                 "MATCH (u:User)--(c:Collection), (u:User)--(n:Node) " + 
                 "WHERE u.id = {userId} " +  
                 "AND c.id = {collectionId} AND n.id = {nodeId} " +  
-                "MERGE (n)-[e:IN { id: {id} }]->(c) " +
+                "MERGE (n)-[e:AbstractEdge { id: {id} }]->(c) " +
                 "RETURN properties(e) as edge, properties(n) as node, properties(c) as collection",
                 {
                     id,
@@ -371,13 +349,7 @@ module.exports = function(db, es) {
         connect: function(user, collection1, collection2, id, res) {
             /*
              * Create the edge [collection1]-[edge]->[collection2]
-             * Additionally, update collection relations
              */
-
-            // TODO: Add an edge type argument - 2016-06-06
-            // TODO: assert edge type is defined - 2016-04-02
-            // TODO: How will we manage this? 2016-04-02
-
 
             console.log(collection1, collection2, id);
 
@@ -393,7 +365,7 @@ module.exports = function(db, es) {
                 "MATCH (u:User)--(n1:Collection), (u:User)--(n2:Collection) " +
                 "WHERE u.id = {userId} " +
                 "AND n1.id = {collection1} AND n2.id = {collection2} " +
-                "MERGE (n1)-[e:PARENT { id: {id}, start: {collection1}, end: {collection2} }]->(n2) " +
+                "MERGE (n1)-[e:AbstractEdge { id: {id}, start: {collection1}, end: {collection2} }]->(n2) " +
                 "RETURN properties(e) as edge",
                 {
                     id,

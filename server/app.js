@@ -160,7 +160,7 @@ io.on('connection', function(socket) {
     // TODO: rename to getL1 - 2016-08-01
     socket.on('Node.getWithNeighbours', NodeAPI.getWithNeighbours.bind(null, user));
     socket.on('Node.getL2', NodeAPI.getL2.bind(null, user));
-    socket.on('Node.getAll', NodeAPI.getAll.bind(null, user));
+    // socket.on('Node.getAll', NodeAPI.getAll.bind(null, user));
     socket.on('Node.getInboxNodes', NodeAPI.getInboxNodes.bind(null, user));
     socket.on('Node.create', NodeAPI.create.bind(null, user));
     socket.on('Node.update', NodeAPI.update.bind(null, user));

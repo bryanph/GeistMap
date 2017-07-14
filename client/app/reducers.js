@@ -73,6 +73,15 @@ function nodes(state={}, action, collections) {
                     edges: _.without(state[action.end].edges, action.id),
                 }
             }
+        case uiTypes.TOGGLE_COLLAPSE_COLLECTION:
+            return {
+                ...state,
+                [action.id]: {
+                    ...state[action.id],
+                    collapsed: !state[action.id].collapsed,
+                }
+            }
+
 
 //         case actionTypes.GET_COLLECTION_SUCCESS:
 //             /*
@@ -256,15 +265,6 @@ function collections(state={}, action) {
                 }
             }
 
-        case uiTypes.TOGGLE_COLLAPSE_COLLECTION:
-            return {
-                ...state,
-                [action.id]: {
-                    ...state[action.id],
-                    collapsed: !state[action.id].collapsed,
-                }
-            }
-
         default:
             if (action.response && action.response.entities && action.response.entities.collections) {
                 return _.merge({}, state, action.response.entities.collections)
@@ -386,6 +386,10 @@ function edgeListMap(state={}, action) {
 
             if (action.response && action.response.entities && action.response.entities.edges) {
                 _.forEach(action.response.entities.edges, edge => {
+                    if (!map[edge.start] || !map[edge.end]) {
+                        return;
+                    }
+
                     map[edge.start].from.push(edge.id)
                     map[edge.end].to.push(edge.id)
                 })
@@ -501,12 +505,40 @@ function batchNodes(state=[], action) {
     }
 }
 
+function nodesByCollectionId(state={}, action) {
+    /*
+     * A mapping of nodes by collection Id
+     * // TODO: this is for now recomputed on every fetch (no merging) - 2017-07-14
+    */
+    switch(action.type) {
+        case actionTypes.GET_COLLECTION_SUCCESS:
+            let newState = { ...state }
+            // for every node, add them to the corresponding collection list
+            console.log(action);
+            _.forEach(action.response.entities.nodes, node => {
+                if (node.type === 'node') {
+                    _.forEach( node.collections, c => {
+                        if (!newState[c]) {
+                            newState[c] = [ node.id ]
+                        } else {
+                            newState[c].push(node.id)
+                        }
+                    })
+                }
+            })
 
-// TODO: this should only contain nodes and edges of the DIRECT children - 2017-07-10
-// right now, it contains nodes of all child collections as well
+            console.log(newState);
+
+            return newState
+        default:
+            return state
+    }
+}
+
 function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
     /*
      * stores a mapping of collection ids to the contained nodes and edges involved with those nodes
+     * (this is used to compute derived data)
     */
 
     // TODO: make nodes/edges keys a mapping as well so we can easily remove the keys - 2016-07-18
@@ -917,6 +949,7 @@ function rootReducer(state={}, action) {
         edgeListMap: edgeListMap(state.edgeListMap, action),
         pathL1Cache: pathL1Cache(state.pathL1Cache, action),
         pathL2Cache: pathL2Cache(state.pathL2Cache, action),
+        nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
         nodesAndEdgesByCollectionId: nodesAndEdgesByCollectionId(state.nodesAndEdgesByCollectionId, action, (state.entities && state.entities.nodes) || {}, state),
         inboxNodes: inboxNodes(state.inboxNodes, action),
         batchNodes: batchNodes(state.batchNodes, action),
@@ -1050,21 +1083,29 @@ export const getCollectionsByNodeId = (state, id) => {
 
 
 export const getNodeIdsByCollectionId = (state, id) => (
-    (state.nodesAndEdgesByCollectionId[id] || { nodes: [] }).nodes
+    state.nodesByCollectionId[id] || []
+)
+
+export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => (
+    state.nodesAndEdgesByCollectionId[id] || { nodes: [], edges: [] }
 )
 
 export const getNodesAndEdgesByCollectionId = (state, id) => {
     // this gets the direct nodes including their children
-    const nodesAndCollections = getNodeIdsByCollectionId(state, id).map(nodeId => getNode(state, nodeId))
-    const [ nodes, collections ] = _.partition(nodesAndCollections, (n) n.type === "node")
-    const edges = getEdgeIdsByCollectionId(state, id).map(edgeId => getEdge(state, edgeId))
-    const parentCollection = getCollection(state, id)
+    const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
+    const [ nodes, collections ] = _.partition(
+        nodesAndEdges.nodes.map(id => getNode(state, id)),
+        (n) => n.type === "node")
 
-    const [ collapsedCollections, expandedCollections ] = _.partition(collections, (n => n.collapsed))
+    const edges = nodesAndEdges.edges.map(edgeId => getEdge(state, edgeId))
+
+    const parentCollection = getCollection(state, id)
+    const collectionChain = (parentCollection && parentCollection.collections) || []
 
     let visibleCollections = []
-
     let visibleNodes = []
+
+    let nodeMap = _.keyBy(nodes, n => n.id)
     let hiddenNodeMap = {}
     let visibleNodeMap = {}
 
@@ -1077,8 +1118,11 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     nodes.forEach(node => {
         if (_.intersection(node.collections, collectionIds).length === 0) {
             visibleNodes.push(node)
+            visibleNodeMap[node.id] = node
         }
     })
+
+    console.log(collectionChain);
 
     collections.forEach(c => {
         if (c.collapsed) {
@@ -1090,17 +1134,61 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
             // TODO: this should return the node ids for this collection - 2017-07-13
             const nodeIds = getNodeIdsByCollectionId(state, c.id)
 
+            console.log("CALLED", nodeIds);
+
             nodeIds.forEach(n => {
                 // if not shown already, don't show the node
                 if (!visibleNodeMap[n]) {
                     hiddenNodeMap[n] = n
                 }
             })
+
+            // TODO: more performant - 2017-07-13
+            transformedEdges = _(transformedEdges)
+                .map((e) => {
+
+                    if (visibleNodeMap[e.start] && visibleNodeMap[e.end]) {
+                        // this link is in the graph directly, no need to alter edges
+                        return e;
+                    }
+
+
+                    // method for getting collections from node
+                    if (_.difference(collectionChain, nodeMap[e.start].collections).length > 0) {
+                        // console.log("REMOVING BECAUSE OF START");
+                        // the edge start is not part of this collection chain
+                        return null;
+                    }
+                    if (_.difference(collectionChain, nodeMap[e.end].collections).length > 0) {
+                        // console.log("REMOVING BECAUSE OF END");
+                        // the edge end is not part of this collection chain
+                        return null;
+                    }
+
+                    // if start is hidden, change start to this collection
+                    if (hiddenNodeMap[e.start]) {
+                        console.log("CHANGING START");
+                        e.start = c.id
+                    }
+                    if (hiddenNodeMap[e.end]) {
+                        console.log("CHANGING END");
+                        e.end = c.id
+                    }
+                    if (e.start === e.end) {
+                        console.log("BOTH INSIDE");
+                        return null
+                    }
+
+                    return e
+                })
+                .filter(x => x !== null)
+                .value()
         }
+
         else {
             // mark its nodes as shown
             getNodeIdsByCollectionId(state, c.id).forEach(n => {
-                visibleNodes.push(getNode(n))
+                visibleNodes.push(getNode(state, n))
                 visibleNodeMap[n] = n
                 // we want to show this node even if it was hidden by another collection
                 if (hiddenNodeMap[n]) {
@@ -1110,73 +1198,13 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    transformedEdges = _(transformedEdges)
-        .map((e) => {
-            const startNode = visibleNodeMap[e.start]
-            const endNode = visibleNodeMap[e.end]
-
-            if (startNode && endNode) {
-                // this link is in the graph directly
-                return e;
-            }
-
-            // source is not part of collection chain
-            if (nodeMap[e.start].collections) {
-                // does not share the collection chain
-                parentCollection
-
-            }
-
-            // if start is hidden, change start to this collection
-            if (hiddenNodeMap[e.start]) {
-                console.log("CHANGING START");
-                e.start = c.id
-            }
-            if (hiddenNodeMap[e.end]) {
-                console.log("CHANGING END");
-                e.end = c.id
-            }
-            if (e.start === e.end) {
-                console.log("BOTH INSIDE");
-                return null
-            }
-
-            return e
-        })
-        .filter(x => x !== null)
-        .value()
-
-    collapsedCollections.forEach(c => {
-        console.log("transformedEdges", nodeIds);
-
-        // this mutates transformedEdges (already made a copy above)
-        // TODO: do this more efficiently - 2017-07-10
-        transformedEdges = transformedEdges.map((e) => {
-
-            // if start is hidden, change start to this collection
-            if (hiddenNodeMap[e.start]) {
-                console.log("CHANGING START");
-                e.start = c.id
-            }
-            if (hiddenNodeMap[e.end]) {
-                console.log("CHANGING END");
-                e.end = c.id
-            }
-            if (e.start === e.end) {
-                console.log("BOTH INSIDE");
-                return null
-            }
-
-            return e
-        }).filter(x => x !== null)
-    })
-
     console.log(nodes, visibleNodes);
     console.log(visibleCollections, transformedEdges);
 
     return {
         nodes: visibleNodes,
         collections: collections,
+        visibleCollections,
         edges: transformedEdges,
     }
 }
@@ -1185,33 +1213,8 @@ export const getEdgeIdsByCollectionId = (state, id) => (
     (state.nodesAndEdgesByCollectionId[id] || { edges: [] }).edges
 )
 
-
 export const getEdgesByCollectionId = (state, id) => (
     getEdgeIdsByCollectionId(state, id).map(edgeId => getEdge(state, edgeId))
-)
-
-export const getActiveCollectionIds = (state) => state.uiState.activeCollections
-export const getActiveCollections = (state) => (
-    getActiveCollectionIds(state).map(id => getCollection(state, id))
-)
-
-
-export const getNodesByActiveCollectionIds = (state) => (
-    _(getActiveCollectionIds(state))
-        .map(id => getNodeIdsByCollectionId(state, id))
-        .flatMap()
-        .uniq()
-        .map(id => getNode(state, id))
-        .value()
-)
-
-export const getEdgesByActiveCollectionIds = (state) => (
-    _(getActiveCollectionIds(state))
-        .map(id => getEdgeIdsByCollectionId(state, id))
-        .flatMap()
-        .uniq()
-        .map(id => getEdge(state, id))
-        .value()
 )
 
 export const getL2Nodes = (state, id) => (
