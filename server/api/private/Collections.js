@@ -97,12 +97,14 @@ module.exports = function(db, es) {
                 db.run(
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND c.id = {id}
-                    MATCH (c)<-[:AbstractEdge]-(n)
-                    OPTIONAL MATCH (n)-[e:EDGE]-(n2)
+                    MATCH (c)<-[:AbstractEdge]-(n) // children of this collection
+                    OPTIONAL MATCH (n)-[e:EDGE]-(n2) // get neighbours
                     WITH collect(n) as nodes1, collect(n2) as nodes2
                     UNWIND nodes1 + nodes2 as nodes
-                    MATCH (nodes)-[:AbstractEdge*1..]->(c2:Collection)
-                    RETURN properties(nodes) as node, collect(distinct c2.id) as collections`,
+                    MATCH (nodes)-[:AbstractEdge*1..]->(c2:Collection) // get their abstractions
+                    WITH nodes, collect(distinct c2.id) as collections
+                    OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children) // count children
+                    RETURN properties(nodes) as node, collections, COUNT(children)`,
                     {
                         id,
                         userId,
@@ -153,6 +155,7 @@ module.exports = function(db, es) {
              * Get all collections and their abstract relationships
              */
 
+            // TODO: only get collections reachable from the root node - 2017-07-14
             Promise.all([
                 // get all the edges between the collections
                 db.run(
