@@ -1,4 +1,3 @@
-import { accentColor } from '../containers/App/muitheme.js'
 import {
     scaleOrdinal,
     scaleLinear,

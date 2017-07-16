@@ -3,7 +3,6 @@ import React from 'react'
 import { withRouter } from 'react-router-dom'
 import ReactDOM from 'react-dom'
 import classNames from 'classnames'
-import { scaleLinear } from 'd3-scale'
 import { drag as d3Drag } from 'd3-drag'
 import { select as d3Select } from 'd3-selection'
 import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
@@ -15,11 +14,39 @@ import { createNodeSimulation, transformNode, transformLink } from './simulation
 import createDrag from './drag'
 import { arrowHead } from '../../graph/svgdefs.js'
 import { MIN_NODE_RADIUS, MAX_NODE_RADIUS, NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
-import {colorActiveNode } from '../../graph/util'
 
 import ZoomButtons from '../ZoomButtons'
 
 import './styles.scss'
+
+import {
+    scaleOrdinal,
+    scaleLinear,
+    schemeCategory20,
+    schemeCategory20b,
+    schemeCategory20c
+} from 'd3-scale'
+
+export const colora = scaleOrdinal(schemeCategory20)
+export const colorb = scaleOrdinal(schemeCategory20b)
+export const colorc = scaleOrdinal(schemeCategory20c)
+
+// work around for now to make sure collections have a fixed color
+colora(undefined)
+colorb(undefined)
+colorc(undefined)
+
+export function colorNode(d) {
+    /*
+     * Assign a color to a node based on its collections
+    */
+    if (d.type === 'node') {
+        return colora(d.collections.sort().join(','))
+    } else {
+        return colora([d.id, ...d.collections].sort().join(','))
+
+    }
+}
 
 function getLabelText(text) {
     /*
@@ -32,8 +59,6 @@ function getLabelText(text) {
     return text
     return text.slice(0, 15) + '...'
 }
-
-import { colorNode } from '../../graph/util'
 
 const createEnterNode = function(actions: { click: Function }) {
     /*

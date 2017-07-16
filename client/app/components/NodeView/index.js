@@ -13,6 +13,7 @@ import Spinner from '../../components/Spinner'
 import AddNodeWindow from '../../components/AddNodeWindow'
 import EditModeButton from '../../components/EditModeButton'
 import FocusButton from '../../components/FocusButton'
+import GraphModes from '../../components/GraphModes'
 import ExpandButton from '../../components/ExpandButton'
 import AbstractionList from '../../containers/AbstractionList'
 
@@ -63,11 +64,7 @@ export class NodeView extends React.PureComponent {
                 />
                 { /* // TODO: combine this into one mode button - 2017-06-28 */ }
                 <div className="graphActions">
-                    <FocusButton />
-                    <ExpandButton />
-                </div>
-                <div className="editModeButton-container">
-                    <EditModeButton />
+                    <GraphModes />
                 </div>
             </div>
 
