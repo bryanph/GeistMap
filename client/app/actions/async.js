@@ -312,12 +312,13 @@ export const CONNECT_NODES_REQUEST = 'CONNECT_NODES_REQUEST'
 export const CONNECT_NODES_SUCCESS = 'CONNECT_NODES_SUCCESS'
 export const CONNECT_NODES_FAILURE = 'CONNECT_NODES_FAILURE'
 
-export function fetchConnectNodes(start, end) {
+export function fetchConnectNodes(start, end, endNodeIsFetched) {
     const id = uuidV4();
 
     return {
         start,
         end,
+        endNodeIsFetched,
         [CALL_API]: {
             types: [ CONNECT_NODES_REQUEST, CONNECT_NODES_SUCCESS, CONNECT_NODES_FAILURE ],
             endpoint: 'Node.connect',
@@ -330,9 +331,12 @@ export function connectNodes(start, end) {
     /*
      * we must first fetch the node, so we get its properties and show name and description
     */
-    // TODO: check if end/start is already fetched - 2016-07-18
-    return (dispatch) => {
-        return dispatch(fetchConnectNodes(start, end))
+    return (dispatch, getState) => {
+
+        // TODO: check if end is already fetched - 2017-07-17
+        const endNode = getNode(getState(), end)
+
+        return dispatch(fetchConnectNodes(start, end, !!endNode))
         // return dispatch(fetchNode(end))
         //     .then(() => dispatch(fetchConnectNodes(start, end)))
     }
@@ -755,6 +759,36 @@ export function removeFile(fileName) {
             }),
             // schema: Schemas.NODE
         }
+    }
+}
+
+export const MOVE_TO_ABSTRACTION_REQUEST = 'MOVE_TO_ABSTRACTION_REQUEST'
+export const MOVE_TO_ABSTRACTION_SUCCESS = 'MOVE_TO_ABSTRACTION_SUCCESS'
+export const MOVE_TO_ABSTRACTION_FAILURE = 'MOVE_TO_ABSTRACTION_FAILURE'
+export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId) {
+    return {
+        sourceCollectionId,
+        sourceId,
+        targetId,
+        edgeId,
+        [CALL_API]: {
+            types: [ MOVE_TO_ABSTRACTION_REQUEST, MOVE_TO_ABSTRACTION_SUCCESS, MOVE_TO_ABSTRACTION_FAILURE ],
+            endpoint: 'Node.moveToAbstraction',
+            payload: [ sourceCollectionId, sourceId, targetId, edgeId ],
+            // schema: {
+            //     node: Schemas.NODE,
+            // },
+        }
+    }
+}
+/*
+ * change the abstract edge to point to the given target collection
+*/
+export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
+    const edgeId = uuidV4()
+
+    return (dispatch, getState) => {
+        return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId))
     }
 }
 

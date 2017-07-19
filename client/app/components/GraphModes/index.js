@@ -39,27 +39,27 @@ class GraphModes extends React.Component {
                 <Button
                     circular icon={ "eye" } size="big" className={ viewClass }
                     onClick={ () => this.props.setGraphMode("view") }
-                    content="navigate"
+                    content="Navigate (n)"
                 />
                 <Button
                     circular icon={ "edit" } size="big" className={ editClass }
                     onClick={ () => this.props.setGraphMode("edit") }
-                    content="edit"
+                    content="Edit (e)"
+                />
+                <Button
+                    circular icon={ "abstract" } size="big" className={ abstractClass }
+                    onClick={ () => this.props.setGraphMode("abstract") }
+                    content="Abstract (a)"
                 />
                 <Button
                     circular icon={ "crosshairs" } size="big" className={ focusClass }
                     onClick={ () => this.props.setGraphMode("focus") }
-                    content="focus"
+                    content="Focus (f)"
                 />
                 <Button
                     circular icon={ "expand" } size="big" className={ expandClass }
                     onClick={ () => this.props.setGraphMode("expand") }
-                    content="expand"
-                />
-                <Button
-                    circular icon={ "expand" } size="big" className={ expandClass }
-                    onClick={ () => this.props.setGraphMode("abstract") }
-                    content="abstract"
+                    content="Expand (x)"
                 />
             </Button.Group>
         )

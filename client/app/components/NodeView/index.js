@@ -61,6 +61,7 @@ export class NodeView extends React.PureComponent {
                     updateNode={this.props.updateNode}
                     setActiveNode={this.props.setActiveNode}
                     toggleCollapse={this.props.toggleCollapse}
+                    moveToAbstraction={this.props.moveToAbstraction}
                 />
                 { /* // TODO: combine this into one mode button - 2017-06-28 */ }
                 <div className="graphActions">

@@ -70,20 +70,20 @@ const createEnterNode = function(actions: { click: Function }) {
             .attr('id', (d) => {
                 return `node-${d.id}`
             }) 
-            .attr('r', NODE_RADIUS)
+            .attr('r', (d) => d.radius)
 
         selection.on('click', actions.click)
 
         selection
             .append('circle')
-            .attr("r", (d) => NODE_RADIUS)
-            .attr("x", -8)
-            .attr("y", -8)
+            .attr("r", (d) => d.radius)
+            .attr("x", (d) => -d.radius)
+            .attr("y", (d) => -d.radius)
             .style("fill", colorNode)
 
         // TODO: split into lines when text gets too big - 2017-06-22
         selection.append('text')
-            .attr("dy", NODE_RADIUS*2 + 1)
+            .attr("dy", (d) => d.radius + 10)
             .text((d) => getLabelText(d.name));
 
         return selection
@@ -112,7 +112,7 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
 
             const div = editMode.append('foreignObject')
                 .attr('x', -100)
-                .attr('y', (d) => NODE_RADIUS + 1)
+                .attr('y', (d) => d.radius + 1)
                 .attr('width', 200)
                 .attr('height', 100)
                 .append('xhtml:div')
@@ -164,20 +164,20 @@ const createEnterCollection = function(actions: { click: Function }) {
         selection
             .attr("class", "collectionSelection node")
             .attr('id', (d) => `node-${d.id}`) 
-            .attr('r', NODE_RADIUS)
+            .attr('r', (d) => d.radius)
 
         selection.on('click', actions.click)
 
         selection
             .append('circle')
-            .attr("r", (d) => NODE_RADIUS)
-            .attr("x", -8)
-            .attr("y", -8)
+            .attr("r", (d) => d.radius)
+            .attr("x", (d) => -d.radius)
+            .attr("y", (d) => -d.radius)
             .style("fill", colorNode)
 
         // TODO: split into lines when text gets too big - 2017-06-22
         selection.append('text')
-            .attr("dy", NODE_RADIUS*2 + 2)
+            .attr("dy", (d) => d.radius + 10)
             .text((d) => getLabelText(d.name));
 
         return selection
@@ -209,7 +209,7 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
 
             const div = editMode.append('foreignObject')
                 .attr('x', -100)
-                .attr('y', (d) => NODE_RADIUS + 1)
+                .attr('y', (d) => d.radius + 1)
                 .attr('width', 200)
                 .attr('height', 100)
                 .append('xhtml:div')
@@ -291,7 +291,7 @@ const createExploreEvents = function(simulation, actions) {
 
     const drag = createDrag(simulation)({ 
         connect: onConnect,
-        click: onNodeClick,
+        moveToAbstraction: actions.moveToAbstraction,
     })
 
     // TODO: find a way to not have to bind with this here
@@ -350,6 +350,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const drag = createDrag(simulation)({ 
         connect: onConnect,
+        moveToAbstraction: actions.moveToAbstraction,
     })
 
     const nodeDrag = d3Drag()
@@ -442,8 +443,8 @@ class NodeGraph extends React.Component {
         let nodeById = {}
 
         // TODO: this only applies to CollectionOverview
-        // const maxNodeCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
-        // const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
+        const maxNodeCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
+        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
 
         // make sure there are no duplicates in nodes, edges
         // TODO: shouldn't be nescessary - 2017-06-21
@@ -453,14 +454,16 @@ class NodeGraph extends React.Component {
 
         // TODO: shouldn't have to happen here - 2017-07-14
         collections = collections.filter(c => c.collapsed)
-        console.log('called', collections);
         collections.forEach(c => {
             nodeById[c.id] = c
+
+            c.radius = radiusScale(c.count || 0)
         })
 
         // set extra properties here
         nodes.forEach(node => {
             nodeById[node.id] = node
+            node.radius = NODE_RADIUS
         })
 
         links.forEach(link => {
@@ -522,14 +525,8 @@ class NodeGraph extends React.Component {
         this.simulation.stop()
     }
 
-    componentWillUnmount() {
-        console.log("called componentWillUnmount");
-    }
-
     componentDidMount() {
         const { graphType, loadNode, removeEdge, connectNodes, connectCollections, activeCollection } = this.props
-
-        console.log('called componentDidMount');
 
         const domNode = ReactDOM.findDOMNode(this.refs.graph)
         this.graph = d3Select(domNode);
@@ -561,6 +558,7 @@ class NodeGraph extends React.Component {
             connectNodes,
             setActiveNode: this.props.setActiveNode,
             updateNode: this.props.updateNode,
+            moveToAbstraction: this.props.moveToAbstraction,
         })
         // TODO: collectionId should be not be static like this - 2017-05-21
         this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, {
@@ -570,6 +568,7 @@ class NodeGraph extends React.Component {
             setActiveNode: this.props.setActiveNode,
             updateNode: this.props.updateNode,
             toggleCollapse: this.props.toggleCollapse,
+            moveToAbstraction: this.props.moveToAbstraction,
         })
 
         //TODO: set to true on initial tick
@@ -602,7 +601,6 @@ class NodeGraph extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        console.log('calling shouldComponentUpdate');
         if (nextProps.nodes !== this.props.nodes || nextProps.links !== this.props.links) {
             this.update(nextProps)
         }

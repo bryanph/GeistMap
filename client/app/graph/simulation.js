@@ -99,8 +99,8 @@ function linkArc(d, curved=false) {
     // distance from source node to edge of target node
     // const nodeDistance = lineDistance - d.target.r
 
-    const sourceRadius = d.source.radius || NODE_RADIUS
-    const targetRadius = d.target.radius || NODE_RADIUS
+    const sourceRadius = d.source.radius
+    const targetRadius = d.target.radius
 
     const ox = (dx * targetRadius) / lineDistance
     const oy = (dy * targetRadius) / lineDistance

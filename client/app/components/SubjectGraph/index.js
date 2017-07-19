@@ -50,19 +50,19 @@ const createEnterNode = function(actions: { click: Function }) {
             .attr('id', (d) => {
                 return `node-${d.id}`
             }) 
-            .attr('r', NODE_RADIUS)
+            .attr('r', (d) => d.radius)
 
         selection.on('click', actions.click)
 
         selection
             .append('circle')
-            .attr("r", (d) => NODE_RADIUS)
+            .attr("r", (d) => d.radius)
             .attr("x", -8)
             .attr("y", -8)
             .style("fill", colorNode)
 
         selection.append('text')
-            .attr("dx", NODE_RADIUS + 1)
+            .attr("dx", (d) => d.radius + 1)
             .attr("dy", ".35em")
             .text((d) => getLabelText(d.name));
 

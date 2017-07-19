@@ -17,9 +17,14 @@
 //     }
 // }
 
-.node:hover {
+.node {
     cursor: pointer;
-    fill: #000000;
+}
+
+.node-hovered {
+    circle {
+        fill: #000000 !important;
+    }
 }
 
 .node text {
@@ -30,6 +35,7 @@
     z-index: 100;
 
     text-anchor: middle;
+    alignment-baseline: central;
     font-weight: bold;
 }
 

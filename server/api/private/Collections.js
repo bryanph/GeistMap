@@ -132,6 +132,7 @@ module.exports = function(db, es) {
                                 mapIntegers(row.get(0)),
                                 {
                                     collections: row.get(1).map(mapIntegers), // ids for collections
+                                    count: mapIntegers(row.get(2).toNumber())
                                 }
                             )
                         ))

@@ -6,7 +6,8 @@ import {
     loadCollection,
     loadNodeL1,
     connectNodes,
-    updateNode
+    updateNode,
+    moveToAbstraction,
 } from '../../actions/async'
 
 import {
@@ -71,6 +72,7 @@ export class NodeViewContainer extends React.Component {
                 updateNode={this.props.updateNode}
                 setActiveNode={this.props.setActiveNode}
                 toggleCollapse={this.props.toggleCollapse}
+                moveToAbstraction={this.props.moveToAbstraction}
             />
         );
     }
@@ -132,4 +134,5 @@ export default connect(mapStateToProps, {
     updateNode,
     setActiveNode,
     toggleCollapse,
+    moveToAbstraction,
 })(NodeViewContainer)

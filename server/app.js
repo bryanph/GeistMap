@@ -174,6 +174,7 @@ io.on('connection', function(socket) {
     // socket.on('Node.createBatchNode', NodeAPI.createBatchNode.bind(null, user));
     // socket.on('Node.getAllBatchNodes', NodeAPI.getAllBatchNodes.bind(null, user));
     // socket.on('Node.clearBatchNodes', NodeAPI.clearBatchNodes.bind(null, user));
+    socket.on('Node.moveToAbstraction', NodeAPI.moveToAbstraction.bind(null, user));
 
     socket.on('Collection.get', CollectionAPI.get.bind(null, user));
     // socket.on('Collection.getByIds', CollectionAPI.getByIds.bind(null, user));
