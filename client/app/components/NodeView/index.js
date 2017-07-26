@@ -16,6 +16,7 @@ import FocusButton from '../../components/FocusButton'
 import GraphModes from '../../components/GraphModes'
 import ExpandButton from '../../components/ExpandButton'
 import AbstractionList from '../../containers/AbstractionList'
+import AbstractionNavigator from '../../components/AbstractionNavigator'
 
 import './styles.scss'
 
@@ -41,6 +42,10 @@ export class NodeView extends React.PureComponent {
                     opened={mode === 'edit'} 
                     collection={this.props.activeCollection} 
                     disabled={isLoading}
+                />
+                <AbstractionNavigator
+                    collectionChain={this.props.collectionChain}
+                    collection={this.props.activeCollection}
                 />
                 <AbstractionList 
                     collections={collections}

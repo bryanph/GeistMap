@@ -348,6 +348,8 @@ module.exports = function(db, es) {
                 return res("Self referencing connections are not allowed")
             }
 
+            console.log(node1, node2);
+
             db.run(
                 "MATCH (u:User)--(n1:Node), (u:User)--(n2:Node) " +
                 "WHERE u.id = {userId} " +
@@ -481,6 +483,61 @@ module.exports = function(db, es) {
                 const result = results[1].records[0]._fields[0]
 
                 res(null, result)
+            })
+            .catch(handleError)
+        },
+
+        convertNodeToCollection: function(user, id, res) {
+
+            console.log(id);
+            db.run(
+                `
+                MATCH (u:User)--(n:Node)
+                WHERE u.id = {userId} AND n.id = { id }
+                REMOVE n:Node
+                SET n:Node:Collection
+                SET n.type = 'collection'
+                RETURN properties(n) as node
+                `,
+                {
+                    userId: user._id.toString(),
+                    id,
+                }
+            )
+            .then((results) => {
+                console.log(results.records);
+                const result = mapIntegers(results.records[0]._fields[0])
+
+                res(null, result)
+
+                // now update ES indexes...
+                updateIndex(es, user._id.toString(), result)
+            })
+            .catch(handleError)
+        },
+
+        convertCollectionToNode: function(user, id, res) {
+            db.run(
+                `
+                MATCH (u:User)--(n:Collection)
+                WHERE u.id = {userId} AND n.id = { id }
+                REMOVE n:Collection
+                SET n:Node
+                SET n.type = 'node'
+                RETURN properties(n) as node
+                `,
+                {
+                    userId: user._id.toString(),
+                    id,
+                }
+            )
+            .then((results) => {
+                const result = mapIntegers(results.records[0]._fields[0])
+
+                res(null, result)
+
+                // now update ES indexes...
+                updateIndex(es, user._id.toString(), result)
             })
             .catch(handleError)
         },

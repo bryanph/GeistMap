@@ -176,6 +176,9 @@ io.on('connection', function(socket) {
     // socket.on('Node.clearBatchNodes', NodeAPI.clearBatchNodes.bind(null, user));
     socket.on('Node.moveToAbstraction', NodeAPI.moveToAbstraction.bind(null, user));
 
+    socket.on('Node.convertNodeToCollection', NodeAPI.convertNodeToCollection.bind(null, user));
+    socket.on('Node.convertCollectionToNode', NodeAPI.convertCollectionToNode.bind(null, user));
+
     socket.on('Collection.get', CollectionAPI.get.bind(null, user));
     // socket.on('Collection.getByIds', CollectionAPI.getByIds.bind(null, user));
     socket.on('Collection.getAll', CollectionAPI.getAll.bind(null, user));

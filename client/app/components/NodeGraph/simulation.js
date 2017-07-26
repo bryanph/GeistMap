@@ -16,11 +16,11 @@ export const createNodeSimulation = function(WIDTH, HEIGHT, simulation) {
         // .alphaTarget(0.01)
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
-        .force("charge", forceManyBody().strength(-300))
+        .force("charge", forceManyBody().strength(-400))
         .force("link", 
             forceLink()
                 .id(d => d.id)
-                .distance(100)
+                .distance(d => 50 + d.source.radius + d.target.radius)
                 .strength(0.1)
         )
         .force("x", forceX().strength(0.05))

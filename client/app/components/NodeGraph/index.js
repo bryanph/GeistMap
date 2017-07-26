@@ -443,8 +443,8 @@ class NodeGraph extends React.Component {
         let nodeById = {}
 
         // TODO: this only applies to CollectionOverview
-        const maxNodeCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
-        const radiusScale = scaleLinear().domain([0, maxNodeCount]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
+        const maxCount = (_.maxBy(collections, (d) => d.count) || {}).count || 0
+        const radiusScale = scaleLinear().domain([0, maxCount]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
 
         // make sure there are no duplicates in nodes, edges
         // TODO: shouldn't be nescessary - 2017-06-21
@@ -472,6 +472,8 @@ class NodeGraph extends React.Component {
 
             // console.log(link.start, link.source, link.target);
         })
+
+        console.log(links);
 
         // set data
         var nodeSelection = this.container.selectAll('.nodeSelection')

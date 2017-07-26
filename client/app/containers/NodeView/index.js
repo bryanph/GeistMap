@@ -73,6 +73,7 @@ export class NodeViewContainer extends React.Component {
                 setActiveNode={this.props.setActiveNode}
                 toggleCollapse={this.props.toggleCollapse}
                 moveToAbstraction={this.props.moveToAbstraction}
+                collectionChain={this.props.collectionChain}
             />
         );
     }
@@ -93,13 +94,13 @@ function mapStateToProps(state, props) {
     const collectionId = props.match.params && props.match.params.collectionId
     const nodeId = props.match.params && props.match.params.nodeId
 
-    let nodes, edges, collections, isLoading, graphType;
+    let nodes, edges, collections, isLoading, graphType, collectionChain;
 
     if (collectionId) {
         // loading a collection id
         // nodes = getNodesAndEdgesByCollectionId(state, collectionId);
         // edges = getEdgesByCollectionId(state, collectionId);
-        ({ nodes, collections, edges } = getNodesAndEdgesByCollectionId(state, collectionId))
+        ({ nodes, collections, edges, collectionChain } = getNodesAndEdgesByCollectionId(state, collectionId))
 
         isLoading = state.loadingStates.GET_COLLECTION || state.loadingStates.GET_NODE
         graphType = "collection"
@@ -123,6 +124,7 @@ function mapStateToProps(state, props) {
         collections,
         isLoading,
         graphType,
+        collectionChain,
     };
 }
 

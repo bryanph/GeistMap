@@ -781,6 +781,42 @@ export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, e
         }
     }
 }
+
+export const CONVERT_NODE_TO_COLLECTION_REQUEST = 'CONVERT_NODE_TO_COLLECTION_REQUEST'
+export const CONVERT_NODE_TO_COLLECTION_SUCCESS = 'CONVERT_NODE_TO_COLLECTION_SUCCESS'
+export const CONVERT_NODE_TO_COLLECTION_FAILURE = 'CONVERT_NODE_TO_COLLECTION_FAILURE'
+export function convertNodeToCollection(id) {
+    /*
+     * Should have some extra
+    */
+
+    return {
+        id,
+        [CALL_API]: {
+            types: [ CONVERT_NODE_TO_COLLECTION_REQUEST, CONVERT_NODE_TO_COLLECTION_SUCCESS, CONVERT_NODE_TO_COLLECTION_FAILURE ],
+            endpoint: 'Node.convertNodeToCollection',
+            payload: [ id ],
+            schema: Schemas.NODE,
+        }
+    }
+}
+
+export const CONVERT_COLLECTION_TO_NODE_REQUEST = 'CONVERT_COLLECTION_TO_NODE_REQUEST'
+export const CONVERT_COLLECTION_TO_NODE_SUCCESS = 'CONVERT_COLLECTION_TO_NODE_SUCCESS'
+export const CONVERT_COLLECTION_TO_NODE_FAILURE = 'CONVERT_COLLECTION_TO_NODE_FAILURE'
+export function convertCollectionToNode(id) {
+
+    return {
+        id,
+        [CALL_API]: {
+            types: [ CONVERT_COLLECTION_TO_NODE_REQUEST, CONVERT_COLLECTION_TO_NODE_SUCCESS, CONVERT_COLLECTION_TO_NODE_FAILURE ],
+            endpoint: 'Node.convertCollectionToNode',
+            payload: [ id ],
+            schema: Schemas.NODE,
+        }
+    }
+}
+
 /*
  * change the abstract edge to point to the given target collection
 */
@@ -788,7 +824,21 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
     const edgeId = uuidV4()
 
     return (dispatch, getState) => {
-        return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId))
+        const source = getNode(getState(), sourceId)
+        const target = getNode(getState(), targetId)
+
+        console.log(sourceId, targetId);
+
+        // TODO: this should be converted to front-end manipulations with a "sync" method - 2017-07-20
+        if (target.type === "node") {
+            console.log("TYPE IS NODE", target);
+            // first need to convert the target to a collection
+            return dispatch(convertNodeToCollection(targetId))
+                .then(() => dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId)))
+        } else {
+            // can add node directly to the collection
+            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId))
+        }
     }
 }
 

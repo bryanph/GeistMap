@@ -1135,8 +1135,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     // copy edges
     let transformedEdges = edges.map(e => Object.assign({}, e))
 
-    console.log(transformedEdges);
-
     const collectionIds = collections.map(c => c.id)
 
     // add :NODE nodes that are direct children of this collection
@@ -1235,13 +1233,12 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    // console.log(visibleNodes, visibleCollections);
-
     return {
         nodes: visibleNodes,
         collections: collections,
         visibleCollections,
         edges: transformedEdges,
+        collectionChain: collectionChain.map(id => getCollection(state, id)),
     }
 }
 

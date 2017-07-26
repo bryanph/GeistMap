@@ -1,0 +1,13 @@
+@import '~styles/settings';
+
+.AbstractionNavigator {
+    display: inline-block;
+    z-index: 1000;
+}
+
+.AbstractionNavigator-item {
+    display: inline-block;
+
+    font-size: 3rem;
+
+}

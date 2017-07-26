@@ -76,7 +76,7 @@ module.exports = function(db, es) {
                     `MATCH (u:User)--(c:Collection) 
                     WHERE u.id = {userId} AND c.id = {id}
                     OPTIONAL MATCH (c)-[:AbstractEdge*0..]->(c2:Collection)
-                    RETURN properties(c) as collection, collect(distinct c2.id) as collections`,
+                    RETURN properties(c) as collection, collect(distinct properties(c2)) as collections`,
                     {
                         id,
                         userId,
@@ -119,8 +119,10 @@ module.exports = function(db, es) {
 
                     const collection = Object.assign(
                         mapIntegers(results[0].records[0].get(0)),
-                        { collections: results[0].records[0].get(1) }
+                        { collections: results[0].records[0].get(1).map(mapIntegers) }
                     )
+
+                    console.log(collection);
 
                     const edges = results[1].records.map(record => mapIntegers(record.get('edge')))
 
