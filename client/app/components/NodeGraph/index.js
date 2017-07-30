@@ -473,8 +473,6 @@ class NodeGraph extends React.Component {
             // console.log(link.start, link.source, link.target);
         })
 
-        console.log(links);
-
         // set data
         var nodeSelection = this.container.selectAll('.nodeSelection')
             .data(nodes, x => x.id)

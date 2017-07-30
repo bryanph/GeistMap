@@ -762,26 +762,6 @@ export function removeFile(fileName) {
     }
 }
 
-export const MOVE_TO_ABSTRACTION_REQUEST = 'MOVE_TO_ABSTRACTION_REQUEST'
-export const MOVE_TO_ABSTRACTION_SUCCESS = 'MOVE_TO_ABSTRACTION_SUCCESS'
-export const MOVE_TO_ABSTRACTION_FAILURE = 'MOVE_TO_ABSTRACTION_FAILURE'
-export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId) {
-    return {
-        sourceCollectionId,
-        sourceId,
-        targetId,
-        edgeId,
-        [CALL_API]: {
-            types: [ MOVE_TO_ABSTRACTION_REQUEST, MOVE_TO_ABSTRACTION_SUCCESS, MOVE_TO_ABSTRACTION_FAILURE ],
-            endpoint: 'Node.moveToAbstraction',
-            payload: [ sourceCollectionId, sourceId, targetId, edgeId ],
-            // schema: {
-            //     node: Schemas.NODE,
-            // },
-        }
-    }
-}
-
 export const CONVERT_NODE_TO_COLLECTION_REQUEST = 'CONVERT_NODE_TO_COLLECTION_REQUEST'
 export const CONVERT_NODE_TO_COLLECTION_SUCCESS = 'CONVERT_NODE_TO_COLLECTION_SUCCESS'
 export const CONVERT_NODE_TO_COLLECTION_FAILURE = 'CONVERT_NODE_TO_COLLECTION_FAILURE'
@@ -817,6 +797,26 @@ export function convertCollectionToNode(id) {
     }
 }
 
+export const MOVE_TO_ABSTRACTION_REQUEST = 'MOVE_TO_ABSTRACTION_REQUEST'
+export const MOVE_TO_ABSTRACTION_SUCCESS = 'MOVE_TO_ABSTRACTION_SUCCESS'
+export const MOVE_TO_ABSTRACTION_FAILURE = 'MOVE_TO_ABSTRACTION_FAILURE'
+export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId) {
+    return {
+        sourceCollectionId,
+        sourceId,
+        targetId,
+        edgeId,
+        [CALL_API]: {
+            types: [ MOVE_TO_ABSTRACTION_REQUEST, MOVE_TO_ABSTRACTION_SUCCESS, MOVE_TO_ABSTRACTION_FAILURE ],
+            endpoint: 'Node.moveToAbstraction',
+            payload: [ sourceCollectionId, sourceId, targetId, edgeId ],
+            // schema: {
+            //     node: Schemas.NODE,
+            // },
+        }
+    }
+}
+
 /*
  * change the abstract edge to point to the given target collection
 */
@@ -842,3 +842,22 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
     }
 }
 
+
+
+export const REMOVE_ABSTRACTION_REQUEST = 'REMOVE_ABSTRACTION_REQUEST'
+export const REMOVE_ABSTRACTION_SUCCESS = 'REMOVE_ABSTRACTION_SUCCESS'
+export const REMOVE_ABSTRACTION_FAILURE = 'REMOVE_ABSTRACTION_FAILURE'
+export function removeAbstraction(sourceCollectionId, id) {
+    /*
+     * This converts the abstraction to a node and the edges to normal edges
+    */
+    return {
+        sourceCollectionId,
+        id,
+        [CALL_API]: {
+            types: [ REMOVE_ABSTRACTION_REQUEST, REMOVE_ABSTRACTION_SUCCESS, REMOVE_ABSTRACTION_FAILURE ],
+            endpoint: 'Node.removeAbstraction',
+            payload: [ sourceCollectionId, id ],
+        }
+    }
+}

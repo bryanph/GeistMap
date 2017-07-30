@@ -8,6 +8,8 @@ const neo4j = require('neo4j-driver').v1
 const config = require('../../config/config')
 const { print, printTrace } = require('../../utils/dev')
 
+const uuidV4 = require('uuid/v4');
+
 const {
     updateIndex,
     removeNodeDocument,
@@ -449,7 +451,10 @@ module.exports = function(db, es) {
              * move the source to be in the target collection
             */
 
+            // TODO: different action if moving from a node to a node - 2017-07-29
+
             Promise.all([
+                // remove the node to be moved from the parent collection
                 db.run(
                     `
                     MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
@@ -464,6 +469,7 @@ module.exports = function(db, es) {
                     }
                 ),
                 db.run(
+                    // move the node to the collection with targetId 
                     `
                     MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {targetId}
@@ -483,6 +489,42 @@ module.exports = function(db, es) {
                 const result = results[1].records[0]._fields[0]
 
                 res(null, result)
+            })
+            .catch(handleError)
+        },
+
+
+        removeAbstraction: function(user, sourceCollectionId, id, res) {
+            /*
+             * This converts the abstraction to a node and the edges to normal edges
+             * instead it adds all the nodes to the sourceCollection with id sourceCollectionId
+            */
+
+            const edgeId = uuidV4();
+            const abstractEdgeId = uuidV4();
+
+            console.log(sourceCollectionId, id);
+
+            db.run(
+                `
+                MATCH (u:User)--(n:Collection)
+                WHERE u.id = {userId} AND n.id = {id}
+                MATCH (n)<-[e:AbstractEdge]-(n2:Node)
+                SET n.type = 'node'
+                REMOVE n:Collection
+                DELETE e
+                CREATE (n)-[:EDGE { id: {edgeId}, start: n.id, end: n2.id }]->(n2)
+                CREATE (n)<-[:AbstractEdge { id: { abstractEdgeId }, start: n.id, end: n2.id }]-(n2)
+                `,
+                {
+                    userId: user._id.toString(),
+                    id,
+                    edgeId,
+                    abstractEdgeId,
+                }
+            )
+            .then(results => {
+                return res(null, true) // success
             })
             .catch(handleError)
         },

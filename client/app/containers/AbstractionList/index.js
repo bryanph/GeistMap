@@ -12,6 +12,11 @@ import {
     toggleCollapse
 } from '../../actions/ui'
 
+import {
+    removeAbstraction,
+    fetchNodeL1,
+} from '../../actions/async'
+
 import './styles.scss'
 
 class AbstractionList extends React.Component {
@@ -20,9 +25,10 @@ class AbstractionList extends React.Component {
         super(props)
 
         this.focusAbstraction = this.focusAbstraction.bind(this)
+        this.removeAbstraction = this.removeAbstraction.bind(this)
     }
 
-    removeAbstraction() {
+    removeAbstraction(id) {
         /*
          * Permanently collapse this node
          *
@@ -30,6 +36,8 @@ class AbstractionList extends React.Component {
          * 2. all edges from this collection to its nodes should become normal
         */
 
+        this.props.removeAbstraction(this.props.activeCollection, id)
+            .then(() => this.props.fetchNodeL1(id))
     }
 
     focusAbstraction(id) {
@@ -47,11 +55,11 @@ class AbstractionList extends React.Component {
         const { collections } = this.props
 
         const collectionItems = collections.map(c => (
-            <AbstractionItem 
+            <AbstractionItem
                 key={c.id}
                 collection={c} 
                 onToggleCollapse={this.props.toggleCollapse}
-                removeAbstraction={this.props.removeAbstraction}
+                removeAbstraction={this.removeAbstraction}
                 focusAbstraction={this.focusAbstraction}
             />
         ))
@@ -86,7 +94,7 @@ class AbstractionItem extends React.Component {
                 <Button onClick={() => focusAbstraction(collection.id)} icon>
                     <Icon name='crosshairs' />
                 </Button>
-                <Button onClick={removeAbstraction} icon>
+                <Button onClick={() => removeAbstraction(collection.id)} icon>
                     <Icon name='remove' />
                 </Button>
 
@@ -99,4 +107,6 @@ class AbstractionItem extends React.Component {
 
 export default connect(null, {
     toggleCollapse,
+    removeAbstraction,
+    fetchNodeL1,
 })(withRouter(AbstractionList))

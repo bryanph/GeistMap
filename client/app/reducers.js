@@ -785,11 +785,12 @@ const initialUiState = {
 
 const initialGraphUIState = {
     // can be "view", "edit", "focus" or "expand"
-    mode: "edit",
+    mode: "view",
     focus: {
         id: null,
     },
 }
+
 function graphUiState(state=initialGraphUIState, action) {
     /*
      * UI state related to the graph
@@ -1232,6 +1233,8 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                 .value()
         }
     })
+
+    console.log(nodes, edges);
 
     return {
         nodes: visibleNodes,
