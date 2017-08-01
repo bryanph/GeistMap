@@ -58,6 +58,7 @@
     "material-ui": "0.15.4",
     "mocha": "3.4.1",
     "moment": "2.18.1",
+    "nock": "9.0.14",
     "node-sass": "4.5.3",
     "nodemon": "1.11.0",
     "parallelshell": "2.0.0",
@@ -78,6 +79,7 @@
     "redux-actions": "2.0.3",
     "redux-devtools-extension": "2.13.2",
     "redux-logger": "3.0.6",
+    "redux-mock-store": "1.2.3",
     "redux-promise": "0.5.3",
     "redux-thunk": "2.2.0",
     "reselect": "3.0.1",
@@ -94,8 +96,8 @@
     "webpack-hot-middleware": "2.18.0"
   },
   "scripts": {
-    "test:server": "mocha server/ --recursive",
-    "test:client": "",
+    "test": "jest",
+    "test:watch": "npm test -- --watch",
     "deploy": "./scripts/deploy.sh",
     "clean": "rm -f public/*.bundle.js public/*.map",
     "build:webpack": "NODE_ENV=production webpack --config webpack.config.prod.js",

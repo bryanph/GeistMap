@@ -303,7 +303,7 @@ module.exports = function(db, es) {
                 "MATCH (u:User)--(c:Collection), (u:User)--(n:Node) " + 
                 "WHERE u.id = {userId} " +  
                 "AND c.id = {collectionId} AND n.id = {nodeId} " +  
-                "MERGE (n)-[e:AbstractEdge { id: {id} }]->(c) " +
+                "MERGE (n)-[e:AbstractEdge { id: {id}, start: n.id, end: c.id }]->(c) " +
                 "RETURN properties(e) as edge, properties(n) as node, properties(c) as collection",
                 {
                     id,

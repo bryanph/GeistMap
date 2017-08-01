@@ -451,8 +451,6 @@ module.exports = function(db, es) {
              * move the source to be in the target collection
             */
 
-            // TODO: different action if moving from a node to a node - 2017-07-29
-
             Promise.all([
                 // remove the node to be moved from the parent collection
                 db.run(
@@ -530,8 +528,6 @@ module.exports = function(db, es) {
         },
 
         convertNodeToCollection: function(user, id, res) {
-
-            console.log(id);
             db.run(
                 `
                 MATCH (u:User)--(n:Node)
@@ -547,7 +543,6 @@ module.exports = function(db, es) {
                 }
             )
             .then((results) => {
-                console.log(results.records);
                 const result = mapIntegers(results.records[0]._fields[0])
 
                 res(null, result)

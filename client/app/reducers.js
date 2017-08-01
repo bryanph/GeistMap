@@ -78,6 +78,7 @@ function nodes(state={}, action, collections) {
             }
 
         case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
+            console.log("NEW STAAATE", [ ...state[action.sourceId].collections, action.targetId ])
             return {
                 ...state,
                 [action.sourceId]: {
@@ -85,6 +86,18 @@ function nodes(state={}, action, collections) {
                     collections: [ ...state[action.sourceId].collections, action.targetId ],
                 }
             }
+
+
+        case actionTypes.CONVERT_NODE_TO_COLLECTION_SUCCESS:
+            return {
+                ...state,
+                [action.id]: {
+                    ...state[action.id],
+                    ...action.response.entities.nodes[action.id],
+                    collapsed: true,
+                }
+            }
+
 
 //         case actionTypes.GET_COLLECTION_SUCCESS:
 //             /*
@@ -559,10 +572,10 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
 
         case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
             // remove the edges between the two nodes (since these are now abstraction relations
-            console.log('IN MOVE_TO_ABSTRACTION_SUCCESS');
-            console.log(state[action.sourceCollectionId].edges);
-            console.log(getEdgesForNodes(globalState, [action.sourceId, action.targetId]));
-            console.log(_.without( state[action.sourceCollectionId].edges, ...getEdgesForNodes(globalState, [action.sourceId, action.targetId]).map(e => e.id)))
+            // console.log('IN MOVE_TO_ABSTRACTION_SUCCESS');
+            // console.log(state[action.sourceCollectionId].edges);
+            // console.log(getEdgesForNodes(globalState, [action.sourceId, action.targetId]));
+            // console.log(_.without( state[action.sourceCollectionId].edges, ...getEdgesForNodes(globalState, [action.sourceId, action.targetId]).map(e => e.id)))
 
             return {
                 ...state,
@@ -1234,7 +1247,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log(nodes, edges);
+    console.log(nodes, collections,  edges);
 
     return {
         nodes: visibleNodes,
