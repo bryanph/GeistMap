@@ -11,8 +11,10 @@
 import { combineReducers } from 'redux'
 import _ from 'lodash'
 
-import * as actionTypes from './actions/async'
-import * as uiTypes from './actions/ui'
+import * as actionTypes from '../actions/async'
+import * as uiTypes from '../actions/ui'
+
+import update from 'immutability-helper'
 
 function entities(state={}, action, globalState) {
     return {
@@ -23,27 +25,22 @@ function entities(state={}, action, globalState) {
     }
 }
 
-function nodes(state={}, action, collections) {
+export function nodes(state={}, action, collections) {
     /*
      * Handles the non-merging action types
     */
-
     switch(action.type) {
-
         case actionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
+
         // add collection id
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            return {
-                ...state,
+            return update(state, {
                 [action.nodeId]: {
-                    ...state[action.nodeId],
-                    collections: [ 
-                        ...state[action.nodeId].collections || [],
-                        action.collectionId,
-                    ],
+                    collections: { $push: [ action.collectionId ]}
                 }
-            }
+            })
+
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
             // TODO: needs to know which nodes have this collection, so we can remove them from the array entry...
             return state

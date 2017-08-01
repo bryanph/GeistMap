@@ -133,7 +133,7 @@ class InboxItem extends React.Component {
     }
 }
 
-import { getNode, getBatchNodes, getEdgesForNodes } from '../../reducers.js'
+import { getNode, getBatchNodes, getEdgesForNodes } from '../../reducers'
 
 
 

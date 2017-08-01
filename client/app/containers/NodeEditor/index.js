@@ -54,7 +54,7 @@ class NodeEditor extends React.Component {
     }
 }
 
-import { getNode } from '../../reducers.js'
+import { getNode } from '../../reducers'
 
 function mapStateToProps(state, props) {
     const id = props.id || (props.match.params && props.match.params.id)

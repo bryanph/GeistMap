@@ -260,7 +260,11 @@ module.exports = function(db, es) {
                 }
             )
             .then((results) => {
-                const result = mapIntegers(results.records[0]._fields[0])
+                const result = mapIntegers(
+                    Object.assign(results.records[0]._fields[0], {
+                        collections: []
+                    })
+                )
 
                 res(null, result)
 

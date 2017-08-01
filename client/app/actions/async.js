@@ -612,7 +612,7 @@ export function fetchAddNodeToCollection(collectionId, nodeId) {
             payload: [ collectionId, nodeId, id ],
             schema: {
                 collection: Schemas.COLLECTION,
-                node: Schemas.NODE, // update collection array
+                // node: Schemas.NODE, // update collection array
             },
         }
     }
