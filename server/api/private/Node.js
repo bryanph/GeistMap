@@ -452,11 +452,11 @@ module.exports = function(db, es) {
 
         moveToAbstraction: function(user, sourceCollectionId, sourceId, targetId, edgeId, res) {
             /*
-             * move the source to be in the target collection
+             * move the source to be in the target abstraction
             */
 
             Promise.all([
-                // remove the node to be moved from the parent collection
+                // remove the AbstractEdge to the source abstraction
                 db.run(
                     `
                     MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
@@ -471,7 +471,7 @@ module.exports = function(db, es) {
                     }
                 ),
                 db.run(
-                    // move the node to the collection with targetId 
+                    // move the node to the abstraction with targetId 
                     `
                     MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {targetId}
@@ -505,6 +505,7 @@ module.exports = function(db, es) {
             const edgeId = uuidV4();
             const abstractEdgeId = uuidV4();
 
+            // TODO: not working properly? - 2017-08-02
             console.log(sourceCollectionId, id);
 
             db.run(

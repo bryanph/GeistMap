@@ -1,11 +1,16 @@
 {
-    "presets": [
-        "react",
-        "es2015",
-        "stage-1"
-    ],
-    "plugins": [
-        "transform-flow-strip-types",
-        "react-hot-loader/babel"
-    ]
+    "env": {
+        "development": {
+            "presets": [ "react", [ "es2015", { "modules": false }], "stage-1" ],
+            "plugins": [ "transform-flow-strip-types", "react-hot-loader/babel" ]
+        },
+        "test": {
+            "presets": [ "react", "es2015", "stage-1" ],
+            "plugins": [ "transform-flow-strip-types" ]
+        },
+        "production": {
+            "presets": [ "react", "es2015", "stage-1" ],
+            "plugins": [ "transform-flow-strip-types" ]
+        },
+    }
 }

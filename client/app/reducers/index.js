@@ -33,7 +33,7 @@ export function nodes(state={}, action, collections) {
         case actionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
 
-        // add collection id
+        // TESTED
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
             return update(state, {
                 [action.nodeId]: {
@@ -210,45 +210,8 @@ function collections(state={}, action) {
      * Handles the non-merging action types
     */
     switch(action.type) {
-        case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            return {
-                ...state,
-                [action.collectionId]: {
-                    ...state[action.collectionId],
-                    count: (state[action.collectionId] && state[action.collectionId].count) || 0 + 1
-                }
-            }
-        case actionTypes.REMOVE_NODE_SUCCESS:
-            // TODO: decrement node count for the corresponding collections - 2016-08-26
-            // TODO: actually, not nescessary, since we'll just refetch it? - 2017-05-23
-            return state
-        case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
-            return {
-                ...state,
-                [action.collectionId]: {
-                    ...state[action.collectionId],
-                    count: (state[action.collectionId] && state[action.collectionId].count) || 1 - 1
-                }
-            }
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
             return _.omit(state, action.collectionId)
-
-        case actionTypes.CONNECT_COLLECTIONS_SUCCESS:
-            return {
-                ...state,
-                [action.end]: {
-                    ...state[action.end],
-                    count: state[action.end].count + state[action.start].count
-                }
-            }
-        case actionTypes.REMOVE_COLLECTION_EDGE_SUCCESS:
-            return {
-                ...state,
-                [action.end]: {
-                    ...state[action.end],
-                    count: state[action.end].count - state[action.start].count
-                }
-            }
 
         case uiTypes.TOGGLE_EDIT_MODE:
             if (action.editMode) {
@@ -270,7 +233,6 @@ function collections(state={}, action) {
                 [action.id]: {
                     ...state[action.id],
                     type: 'node',
-                    count: 0,
                     isNew: true,
                     parentId: action.start, // parent node
                     edgeId: action.edgeId, // id of edge to the parent node
@@ -487,8 +449,6 @@ function inboxNodes(state=[], action) {
             return _.without(state, action.nodeId)
         case actionTypes.GET_INBOX_NODES_SUCCESS:
             return action.response.result.nodes
-        case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            return _.without(state, action.nodeId)
         default:
             return state
     }
@@ -547,15 +507,15 @@ function nodesByCollectionId(state={}, action) {
     }
 }
 
-function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
+export function abstractionDetail(state={}, action, nodes, globalState) {
     /*
      * stores a mapping of collection ids to the contained nodes and edges involved with those nodes
      * (this is used to compute derived data)
     */
 
-    // TODO: make nodes/edges keys a mapping as well so we can easily remove the keys - 2016-07-18
-    // also, order doesnt matter anyway
     switch(action.type) {
+
+        // this resets the state
         case actionTypes.GET_COLLECTION_SUCCESS:
             return {
                 ...state,
@@ -564,108 +524,62 @@ function nodesAndEdgesByCollectionId(state={}, action, nodes, globalState) {
                     edges: action.response.result.edges,
                 },
             }
+
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
         case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
-            // remove the edges between the two nodes (since these are now abstraction relations
-            // console.log('IN MOVE_TO_ABSTRACTION_SUCCESS');
-            // console.log(state[action.sourceCollectionId].edges);
-            // console.log(getEdgesForNodes(globalState, [action.sourceId, action.targetId]));
-            // console.log(_.without( state[action.sourceCollectionId].edges, ...getEdgesForNodes(globalState, [action.sourceId, action.targetId]).map(e => e.id)))
+            /*
+             * remove the edges between the two nodes (since these are now abstraction relations)
+            */
 
-            return {
-                ...state,
+            return update(state, {
                 [action.sourceCollectionId]: {
-                    nodes: state[action.sourceCollectionId].nodes,
                     edges: _.without(
                         state[action.sourceCollectionId].edges,
                         ...getEdgesForNodes(globalState, [action.sourceId, action.targetId]).map(e => e.id)
                     )
                 }
-            }
+            })
 
-
-            return _.omit(state, getEdgesForNodes(globalState, [action.sourceId, action.targetId]).map(e => e.id))
-
-
+        // TESTED
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            // we added a node. Get its node and the edges of the new node to be added
-            // add its nodes and its edges to the corresponding collection mapping
-            // but... only add the edges which go to a node IN this collection!
-
-            // TODO: its edges must also be added here... - 2016-07-18
-            return {
-                ...state,
+            // TODO: need to know from which view we did this, so the edges can be added - 2017-08-02
+            // edges are derived data
+            console.log("in ADD_NODE_TO_COLLECTION_SUCCESS", action);
+            return update(state, {
                 [action.collectionId]: {
-                    ...state[action.collectionId],
-                    nodes: [ ...((state[action.collectionId] && state[action.collectionId].nodes) || []), action.nodeId ],
-                    edges: (state[action.collectionId] && state[action.collectionId].edges) || [],
-                },
-            }
-        case actionTypes.CONNECT_NODES_SUCCESS:
-             /*
-              * add edge to all collections shared by both nodes
-             */
-
-           const edge = action.response.entities.edges[action.response.result]
-           const nodeStart = nodes[edge.start]
-           const nodeEnd = nodes[edge.end]
-
-           // TODO: call a selector for this - 2017-05-22
-           const targetCollectionIds = _.union(nodeStart.collections, nodeEnd.collections)
-
-
-            // TODO: make sure no duplicate nodes are added - 2017-07-17
-            return {
-                ...state,
-                ..._(targetCollectionIds)
-                    .keyBy(x => x)
-                    .mapValues(id => ({
-                        ...(state[id] || {}),
-                        edges: [ 
-                            ...((state[id] || {}).edges || {}),
-                            edge.id,
-                        ],
-                        nodes: _.uniq([  // for when endNode is not in collection
-                            ...((state[id] || {}).nodes || {}),
-                            nodeEnd.id
-                        ]),
-                    }))
-                    .value()
-            }
-
-
-
-        case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
-        case actionTypes.REMOVE_NODE_SUCCESS:
-            // get the node to be removed and its edges
-            // remove the node from all collections that have been fetched as well as the edges
-
-            // get all collections containing this node
-            const collectionIds = _.intersection(
-                nodes[action.nodeId].collections, // TODO: call a selector for this - 2017-05-22
-                Object.keys(state)
-            )
-
-            if (collectionIds.length === 0) {
-                return state
-            }
-
-            // remove node from the list and all edges containing this node
-            let changedState = {}
-            collectionIds.forEach(id => {
-                changedState[id] = {
-                    nodes: _.without((state[id] && state[id].nodes) || [], action.nodeId),
-                    edges: _.without((state[id] && state[id].edges) || [], ...getEdgeIdsByNodeId(globalState, action.nodeId)),
-                    // edges: (state[id] && state[id].edges) || [], // TODO: also remove edges involved - 2017-05-22
+                    nodes: { $push: [ action.nodeId ]}
                 }
             })
 
-            return {
-                ...state,
-                ...changedState,
+        case actionTypes.CONNECT_NODES_SUCCESS:
+             /*
+              * add edge to the source collection (from which it was called)
+             */
+
+            if (action.sourceCollectionId) {
+                return update(state, {
+                    [action.sourceCollectionId]: {
+                        edges: { $push: [ action.response.result ]} // pushes the edge id
+                    }
+                })
+                return update
             }
+
+            return state
+
+        case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
+        // case actionTypes.REMOVE_NODE_SUCCESS:
+            // get the node to be removed and its edges
+            // remove the node from all collections that have been fetched as well as the edges
+
+            return update(state, {
+                [action.collectionId]: {
+                    nodes: _.without((state[action.collectionId] && state[action.collectionId].nodes) || [], action.nodeId),
+                    edges: _.without((state[action.collectionId] && state[action.collectionId].edges) || [], ...getEdgeIdsByNodeId(globalState, action.nodeId)),
+                }
+            })
 
         default:
             return state
@@ -982,7 +896,7 @@ function rootReducer(state={}, action) {
         pathL1Cache: pathL1Cache(state.pathL1Cache, action),
         pathL2Cache: pathL2Cache(state.pathL2Cache, action),
         nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
-        nodesAndEdgesByCollectionId: nodesAndEdgesByCollectionId(state.nodesAndEdgesByCollectionId, action, (state.entities && state.entities.nodes) || {}, state),
+        abstractionDetail: abstractionDetail(state.abstractionDetail, action, (state.entities && state.entities.nodes) || {}, state),
         inboxNodes: inboxNodes(state.inboxNodes, action),
         batchNodes: batchNodes(state.batchNodes, action),
         // errorMessage: errorMessage(state.errorMessage, action),
@@ -1119,7 +1033,7 @@ export const getNodeIdsByCollectionId = (state, id) => (
 )
 
 export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => (
-    state.nodesAndEdgesByCollectionId[id] || { nodes: [], edges: [] }
+    state.abstractionDetail[id] || { nodes: [], edges: [] }
 )
 
 export const getNodesAndEdgesByCollectionId = (state, id) => {
@@ -1156,14 +1070,27 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
+    console.log(nodes, collections);
+
     collections.forEach(c => {
+        // TODO: can also be hidden because the parent is collapsed - 2017-08-03
+        // check if this collection has a parent, and that parent is not collapsed
+        // => hide the collection
+
+        console.log(collectionChain, c.collections, c);
+        console.log(_.difference(collectionChain, c.collections));
+        // if (_.difference(collectionChain, c.collections).length > 0) {
+        //     // this collection is not part of the chain
+        //     return;
+        // }
+
+
         if (c.collapsed) {
             /*
              * Hide nodes that are not expanded due to another collection
             */
-            visibleCollections.push(c)
 
-            // TODO: this should return the node ids for this collection - 2017-07-13
+            // returns node ids for this collection (not all, just the ones that were fetched)
             const nodeIds = getNodeIdsByCollectionId(state, c.id)
 
             nodeIds.forEach(n => {
@@ -1173,6 +1100,14 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                 }
             })
 
+            // visibleCollections.push(c)
+            visibleCollections.push({
+                ...c,
+                // TODO: this count won't work - 2017-08-02
+                count: nodeIds.length
+            })
+
+
             // TODO: more performant - 2017-07-13
             transformedEdges = _(transformedEdges)
                 .map((e) => {
@@ -1180,6 +1115,8 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                         // this link is in the graph directly, no need to alter edges
                         return e;
                     }
+
+                    // console.log(e, nodeMap[e.start], nodeMap[e.end]);
 
                     // method for getting collections from node
                     if (_.difference(collectionChain, nodeMap[e.start].collections).length > 0) {
@@ -1203,7 +1140,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                         e.end = c.id
                     }
                     if (e.start === e.end) {
-                        // console.log("BOTH INSIDE");
+                        // console.log("BOTH INSIDE THE SAME ABSTRACTION");
                         return null
                     }
 
@@ -1214,11 +1151,11 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
 
         else {
-            // mark its nodes as shown
-            // console.log(getNodeIdsByCollectionId(state, c.id).map( n => getNode(state, n)));
+            // TODO: this should only get the direct children - 2017-08-03
             getNodeIdsByCollectionId(state, c.id).forEach(n => {
                 visibleNodes.push(getNode(state, n))
                 visibleNodeMap[n] = n
+
                 // we want to show this node even if it was hidden by another collection
                 if (hiddenNodeMap[n]) {
                     delete hiddenNodeMap[n]
@@ -1244,7 +1181,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log(nodes, collections,  edges);
+    // console.log(nodes, collections,  edges);
 
     return {
         nodes: visibleNodes,
@@ -1256,7 +1193,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 }
 
 export const getEdgeIdsByCollectionId = (state, id) => (
-    (state.nodesAndEdgesByCollectionId[id] || { edges: [] }).edges
+    (state.abstractionDetail[id] || { edges: [] }).edges
 )
 
 export const getEdgesByCollectionId = (state, id) => (

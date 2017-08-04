@@ -344,8 +344,8 @@ const createCollectionDetailEvents = function(simulation, actions) {
     }
 
     const onConnect = (from, to) => {
-        // TODO: make sure this change is represented in the graph
-        return actions.connectNodes(from, to)
+        // this call is done from the abstractiondetail graph
+        return actions.connectNodes(from, to, this.props.activeCollection.id)
     }
 
     const drag = createDrag(simulation)({ 
@@ -527,7 +527,14 @@ class NodeGraph extends React.Component {
     }
 
     componentDidMount() {
-        const { graphType, loadNode, removeEdge, connectNodes, connectCollections, activeCollection } = this.props
+        const { 
+            graphType,
+            loadNode,
+            removeEdge,
+            connectNodes,
+            connectCollections,
+            activeCollection,
+        } = this.props
 
         const domNode = ReactDOM.findDOMNode(this.refs.graph)
         this.graph = d3Select(domNode);

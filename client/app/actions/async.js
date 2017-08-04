@@ -312,13 +312,13 @@ export const CONNECT_NODES_REQUEST = 'CONNECT_NODES_REQUEST'
 export const CONNECT_NODES_SUCCESS = 'CONNECT_NODES_SUCCESS'
 export const CONNECT_NODES_FAILURE = 'CONNECT_NODES_FAILURE'
 
-export function fetchConnectNodes(start, end, endNodeIsFetched) {
+export function fetchConnectNodes(start, end, sourceCollectionId) {
     const id = uuidV4();
 
     return {
         start,
         end,
-        endNodeIsFetched,
+        sourceCollectionId,
         [CALL_API]: {
             types: [ CONNECT_NODES_REQUEST, CONNECT_NODES_SUCCESS, CONNECT_NODES_FAILURE ],
             endpoint: 'Node.connect',
@@ -327,16 +327,13 @@ export function fetchConnectNodes(start, end, endNodeIsFetched) {
         }
     }
 }
-export function connectNodes(start, end) {
+export function connectNodes(start, end, sourceCollectionId) {
     /*
      * we must first fetch the node, so we get its properties and show name and description
     */
     return (dispatch, getState) => {
 
-        // TODO: check if end is already fetched - 2017-07-17
-        const endNode = getNode(getState(), end)
-
-        return dispatch(fetchConnectNodes(start, end, !!endNode))
+        return dispatch(fetchConnectNodes(start, end, sourceCollectionId))
         // return dispatch(fetchNode(end))
         //     .then(() => dispatch(fetchConnectNodes(start, end)))
     }
@@ -620,18 +617,19 @@ export function fetchAddNodeToCollection(collectionId, nodeId) {
 export function addNodeToCollection(collectionId, nodeId) {
     /*
      * Check if we have node in cache already, if not, fetch it first
+     * case 1: new node, no need to fetch neighbours
+     * case 2: existing node, need to add neighbours
     */
     return (dispatch, getState) => {
         const collection = getCollection(getState(), collectionId)
         const node = getNode(getState(), nodeId)
 
         const collectionPromise = !collection ? dispatch(fetchCollection(collectionId)) : Promise.resolve(collection)
-        const nodePromise = !node ? dispatch(fetchNode(nodeId)) : Promise.resolve(node)
+        // this fetches the neighbours as well
+        const nodePromise = !node ? dispatch(loadNodeL1(nodeId)) : Promise.resolve(node)
 
         return Promise.all([ collectionPromise, nodePromise ])
             .then(() => dispatch(fetchAddNodeToCollection(collectionId, nodeId)))
-
-        return dispatch(fetchCollection(id))
     }
 
 }

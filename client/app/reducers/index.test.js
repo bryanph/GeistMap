@@ -4,13 +4,14 @@ import * as actionTypes from '../actions/async'
 import * as uiTypes from '../actions/ui'
 
 import {
-    nodes as nodesReducer
+    nodes as nodesReducer,
+    abstractionDetail as abstractionDetailReducer
 } from './index.js'
 
 const uuidV4 = require('uuid/v4');
 
 describe('nodes', () => {
-    test.only('should handle CREATE_NODE_SUCCESS', () => {
+    test('should handle CREATE_NODE_SUCCESS', () => {
         const id = uuidV4()
         expect(
             nodesReducer({}, {
@@ -50,32 +51,12 @@ describe('abstractions', () => {
     /*
      * Test creating abstractions
     */
-    test('should return the initial state', () => {
-        expect(reducer(undefined, {})).toEqual([
-            {
-                text: 'Use Redux',
-                completed: false,
-                id: 0
-            }
-        ])
-    })
 
-    test.only('should handle ADD_NODE_TO_COLLECTION_SUCCESS', () => {
+    test('should handle ADD_NODE_TO_COLLECTION_SUCCESS', () => {
         // TODO: first mock a store with the root PKB collection and the node to be added - 2017-08-01
 
         const collectionId = uuidV4()
         const id = uuidV4()
-
-        const initialState = {
-            [id]: {
-                name: 'd',
-                modified: '1501582629992',
-                id: id,
-                type: 'node',
-                created: '1501582629992',
-                collections: [],
-            }
-        }
 
         const action = {
             collectionId: collectionId,
@@ -111,7 +92,16 @@ describe('abstractions', () => {
         }
 
         expect(
-            nodesReducer(initialState, action)
+            nodesReducer({
+                [id]: {
+                    name: 'd',
+                    modified: '1501582629992',
+                    id: id,
+                    type: 'node',
+                    created: '1501582629992',
+                    collections: [],
+                }
+            }, action)
         ).toEqual({
             [id]: {
                 name: 'd',
@@ -122,47 +112,22 @@ describe('abstractions', () => {
                 collections: [ collectionId ]
             }
         })
-    })
 
-    it('should handle ADD_TODO', () => {
+        /*
+         * adds the node to the nodes that will be considered for the derived data
+        */
         expect(
-            reducer([], {
-                type: types.ADD_TODO,
-                text: 'Run the tests'
-            })
-        ).toEqual([
-            {
-                text: 'Run the tests',
-                completed: false,
-                id: 0
-            }
-        ])
-
-        expect(
-            reducer(
-                [
-                    {
-                        text: 'Use Redux',
-                        completed: false,
-                        id: 0
-                    }
-                ],
-                {
-                    type: types.ADD_TODO,
-                    text: 'Run the tests'
+            abstractionDetailReducer({
+                [collectionId]: {
+                    nodes: [],
+                    edges: [],
                 }
-            )
-        ).toEqual([
-            {
-                text: 'Run the tests',
-                completed: false,
-                id: 1
-            },
-            {
-                text: 'Use Redux',
-                completed: false,
-                id: 0
+            }, action)
+        ).toEqual({
+            [collectionId]: {
+                nodes: [ id ],
+                edges: [], 
             }
-        ])
+        })
     })
 })
