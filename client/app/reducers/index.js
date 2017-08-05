@@ -75,15 +75,9 @@ export function nodes(state={}, action, collections) {
             }
 
         case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
-            console.log("NEW STAAATE", [ ...state[action.sourceId].collections, action.targetId ])
-            return {
-                ...state,
-                [action.sourceId]: {
-                    ...state[action.sourceId],
-                    collections: [ ...state[action.sourceId].collections, action.targetId ],
-                }
-            }
-
+            return update(state, {
+                [action.sourceId]: { collections: { $push: [ action.targetId ]}}
+            })
 
         case actionTypes.CONVERT_NODE_TO_COLLECTION_SUCCESS:
             return {
@@ -107,11 +101,11 @@ export function nodes(state={}, action, collections) {
 //                 ...state,
 //                 ..._.mapValues(action.response.entities.nodes, (node) => ({
 //                     ...node,
-//                     collections: [ 
+//                     collections: [
 //                         ...(node.collections || []),
-//                         action.response.result.collection 
+//                         action.response.result.collection
 //                     ]
-                        
+
 //                 }))
 //             }
 
@@ -265,7 +259,7 @@ function adjacencyMap(state={}, action) {
                 _.forEach(action.response.entities.edges, edge => {
                     if (!adjMap[edge.start]) {
                         if (state[edge.start]) {
-                            adjMap[edge.start] = [ ...state[edge.start] ] 
+                            adjMap[edge.start] = [ ...state[edge.start] ]
                         } else {
                             adjMap[edge.start] = []
                         }
@@ -302,7 +296,7 @@ function reverseAdjacencyMap(state={}, action) {
                 _.forEach(action.response.entities.edges, edge => {
                     if (!adjMap[edge.end]) {
                         if (state[edge.end]) {
-                            adjMap[edge.end] = [ ...state[edge.end] ] 
+                            adjMap[edge.end] = [ ...state[edge.end] ]
                         } else {
                             adjMap[edge.end] = []
                         }
@@ -502,6 +496,15 @@ function nodesByCollectionId(state={}, action) {
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
+        case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
+            if (!state[action.targetId]) {
+                state[action.targetId] = []
+            }
+
+            return update(state, {
+                [action.targetId]: { $push: [ action.sourceId ]}
+            })
+
         default:
             return state
     }
@@ -535,10 +538,10 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
 
             return update(state, {
                 [action.sourceCollectionId]: {
-                    edges: _.without(
+                    edges: { $set: _.without(
                         state[action.sourceCollectionId].edges,
                         ...getEdgesForNodes(globalState, [action.sourceId, action.targetId]).map(e => e.id)
-                    )
+                    )}
                 }
             })
 
@@ -546,7 +549,6 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
             // TODO: need to know from which view we did this, so the edges can be added - 2017-08-02
             // edges are derived data
-            console.log("in ADD_NODE_TO_COLLECTION_SUCCESS", action);
             return update(state, {
                 [action.collectionId]: {
                     nodes: { $push: [ action.nodeId ]}
@@ -612,7 +614,7 @@ function errors(state = initialErrorState, action) {
     if (action.type === uiTypes.RESET_ERROR_MESSAGE) {
         return { ...state, lastError: null }
     }
-    
+
     return state
 }
 
@@ -882,7 +884,7 @@ function editorState(state=null, action) {
     switch (action.type) {
         case uiTypes.SET_EDITOR_STATE:
             return action.payload
-        default: 
+        default:
             return state
     }
 }
@@ -1009,7 +1011,7 @@ export const getEdgesToNode = (state, id) => (
             ...edge,
             start: getNode(state, edge.start),
             end: getNode(state, edge.end),
-            
+
         }))
         .value()
 )
@@ -1077,14 +1079,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         // check if this collection has a parent, and that parent is not collapsed
         // => hide the collection
 
-        console.log(collectionChain, c.collections, c);
-        console.log(_.difference(collectionChain, c.collections));
-        // if (_.difference(collectionChain, c.collections).length > 0) {
-        //     // this collection is not part of the chain
-        //     return;
-        // }
-
-
         if (c.collapsed) {
             /*
              * Hide nodes that are not expanded due to another collection
@@ -1113,6 +1107,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                 .map((e) => {
                     if (visibleNodeMap[e.start] && visibleNodeMap[e.end]) {
                         // this link is in the graph directly, no need to alter edges
+                        console.log("LINK IS IN GRAPH DIRECTLY");
                         return e;
                     }
 
@@ -1132,11 +1127,11 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
                     // if start is hidden, change start to this collection
                     if (hiddenNodeMap[e.start]) {
-                        // console.log("CHANGING START");
+                        console.log("CHANGING START");
                         e.start = c.id
                     }
                     if (hiddenNodeMap[e.end]) {
-                        // console.log("CHANGING END");
+                        console.log("CHANGING END");
                         e.end = c.id
                     }
                     if (e.start === e.end) {
@@ -1181,6 +1176,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
+    console.log(transformedEdges);
     // console.log(nodes, collections,  edges);
 
     return {
@@ -1230,4 +1226,3 @@ export const getBatchNodes = (state) => (
 )
 
 export const isSynced = (state) => !state.synced
-

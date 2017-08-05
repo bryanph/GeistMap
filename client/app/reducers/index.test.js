@@ -53,8 +53,6 @@ describe('abstractions', () => {
     */
 
     test('should handle ADD_NODE_TO_COLLECTION_SUCCESS', () => {
-        // TODO: first mock a store with the root PKB collection and the node to be added - 2017-08-01
-
         const collectionId = uuidV4()
         const id = uuidV4()
 
@@ -126,8 +124,15 @@ describe('abstractions', () => {
         ).toEqual({
             [collectionId]: {
                 nodes: [ id ],
-                edges: [], 
+                edges: [],
             }
         })
+    })
+
+    test('should handle MOVE_TO_ABSTRACTION_SUCCESS', () => {
+        /*
+         *
+        */
+
     })
 })
