@@ -2,8 +2,8 @@
 
 .graphMode-button {
     color: white !important;
-    background: $accent-color !important;
-    opacity: 0.8;
+    // background: $accent-color !important;
+    // opacity: 0.8;
 
     &:nth-child(n+2) {
         margin-top: 10px;
@@ -14,14 +14,10 @@
     }
 
     &:active {
-        opacity: 0.6;
+        // opacity: 0.6;
     }
 
     &.active {
-        background: $success-color !important;
+        background: $accent-color !important;
     }
 }
-
-
-
-

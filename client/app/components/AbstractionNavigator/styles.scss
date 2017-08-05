@@ -2,12 +2,18 @@
 
 .AbstractionNavigator {
     display: inline-block;
-    z-index: 1000;
+    z-index: 10;
+    margin-top: 10px;
+    margin-left: 10px;
 }
 
 .AbstractionNavigator-item {
     display: inline-block;
 
     font-size: 3rem;
+
+    a {
+        font-weight: bold;
+    }
 
 }

@@ -1,11 +1,13 @@
 .graphActions {
-    position: absolute;
-    right: 20px;
-    top: 80px;
+    position: fixed;
+    width: 100%;
+    bottom: 0px;
+
     z-index: 100;
 
     display: flex;
+    justify-content: center;
+    align-items: center;
     flex-direction: column;
 
 }
-

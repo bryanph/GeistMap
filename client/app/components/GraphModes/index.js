@@ -16,8 +16,6 @@ class GraphModes extends React.Component {
     render() {
         const { mode } = this.props
 
-        console.log("MODE", mode);
-
         const viewClass = classNames("graphMode-button", {
             "active": mode === "view"
         })
@@ -32,6 +30,9 @@ class GraphModes extends React.Component {
         })
         const abstractClass = classNames("graphMode-button", {
             "active": mode === "abstract"
+        })
+        const deleteClass = classNames("graphMode-button", {
+            "active": mode === "delete"
         })
 
         return (
@@ -61,6 +62,11 @@ class GraphModes extends React.Component {
                     onClick={ () => this.props.setGraphMode("expand") }
                     content="Expand (x)"
                 />
+                <Button
+                    circular icon={ "trash" } size="big" className={ deleteClass }
+                    onClick={ () => this.props.setGraphMode("delete") }
+                    content="Delete (d)"
+                />
             </Button.Group>
         )
     }
@@ -71,6 +77,3 @@ import { setGraphMode } from '../../actions/ui'
 export default connect((state) => ({ mode: state.graphUiState.mode }), {
     setGraphMode
 })(GraphModes)
-
-
-

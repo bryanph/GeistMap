@@ -3,17 +3,15 @@
 .addNodeWindow {
     position: fixed;
     width: 100%;
-    height: 90px;
-    bottom: 0px;
-    bottom: -90px;
+    height: 80px;
+    bottom: 45px;
+    background-color: white;
 
     transition: all 300ms;
-
     transform: translate(0, 100%);
 
     &.visible {
         transform: translate(0, 0);
-        bottom: 0px;
     }
 
 
@@ -37,4 +35,3 @@
         // left: -50%;
     }
 }
-
