@@ -1,6 +1,28 @@
 @import '~styles/settings';
 
 .abstractionList {
-    z-index: 100;
+    z-index: 10;
+    position: absolute;
+    right: 0;
+    bottom: 50px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
 }
 
+.abstractionList-item {
+    display: flex;
+    align-items: center;
+
+    margin: 3px 0;
+
+    * {
+        margin-right: 10px !important;
+    }
+
+    span {
+        font-size: 1.2em;
+        font-weight: bold;
+    }
+}

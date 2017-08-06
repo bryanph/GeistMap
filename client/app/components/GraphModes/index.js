@@ -53,7 +53,7 @@ class GraphModes extends React.Component {
                     size="big" className={ abstractClass }
                     onClick={ () => this.props.setGraphMode("abstract") }
                 >
-                    <Icon name="abstract" /> <span>Abstract (a)</span>
+                    <Icon name="object group" /> <span>Abstract (a)</span>
                 </Button>
                 <Button
                     size="big" className={ focusClass }
@@ -61,12 +61,16 @@ class GraphModes extends React.Component {
                 >
                     <Icon name="crosshairs" /> <span>Focus (f)</span>
                 </Button>
+                {
+                    /*
                 <Button
                     size="big" className={ expandClass }
                     onClick={ () => this.props.setGraphMode("expand") }
                 >
                     <Icon name="expand" /> <span>Expand (x)</span>
                 </Button>
+                    */
+                }
                 <Button
                     icon={ "trash" } size="big" className={ deleteClass }
                     onClick={ () => this.props.setGraphMode("delete") }
