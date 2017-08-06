@@ -1,9 +1,29 @@
 @import '~styles/settings';
 
+.graphMode {
+    width: 100%;
+    // @media only screen and (max-width: $max-screen-width) {
+    //     width: 100%
+    // }
+}
+
 .graphMode-button {
     color: white !important;
     // background: $accent-color !important;
+    background: #BABBBC !important;
     // opacity: 0.8;
+
+    @media only screen and (max-width: $max-screen-width) {
+        span {
+            display: none;
+        }
+
+        i {
+            margin: 0 !important;
+        }
+    }
+
+
 
     &:nth-child(n+2) {
         margin-top: 10px;

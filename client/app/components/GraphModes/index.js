@@ -36,37 +36,44 @@ class GraphModes extends React.Component {
         })
 
         return (
-            <Button.Group>
+            <Button.Group className="graphMode">
                 <Button
-                    circular icon={ "eye" } size="big" className={ viewClass }
+                    size="big" className={ viewClass }
                     onClick={ () => this.props.setGraphMode("view") }
-                    content="Navigate (n)"
-                />
+                >
+                    <Icon name="eye" /> <span>Navigate (n)</span>
+                </Button>
                 <Button
-                    circular icon={ "edit" } size="big" className={ editClass }
+                    size="big" className={ editClass }
                     onClick={ () => this.props.setGraphMode("edit") }
-                    content="Edit (e)"
-                />
+                >
+                    <Icon name="edit" /> <span>Edit (e)</span>
+                </Button>
                 <Button
-                    circular icon={ "abstract" } size="big" className={ abstractClass }
+                    size="big" className={ abstractClass }
                     onClick={ () => this.props.setGraphMode("abstract") }
-                    content="Abstract (a)"
-                />
+                >
+                    <Icon name="abstract" /> <span>Abstract (a)</span>
+                </Button>
                 <Button
-                    circular icon={ "crosshairs" } size="big" className={ focusClass }
+                    size="big" className={ focusClass }
                     onClick={ () => this.props.setGraphMode("focus") }
-                    content="Focus (f)"
-                />
+                >
+                    <Icon name="crosshairs" /> <span>Focus (f)</span>
+                </Button>
                 <Button
-                    circular icon={ "expand" } size="big" className={ expandClass }
+                    size="big" className={ expandClass }
                     onClick={ () => this.props.setGraphMode("expand") }
-                    content="Expand (x)"
-                />
+                >
+                    <Icon name="expand" /> <span>Expand (x)</span>
+                </Button>
                 <Button
-                    circular icon={ "trash" } size="big" className={ deleteClass }
+                    icon={ "trash" } size="big" className={ deleteClass }
                     onClick={ () => this.props.setGraphMode("delete") }
                     content="Delete (d)"
-                />
+                >
+                    <Icon name="trash" /> <span>Delete (d)</span>
+                </Button>
             </Button.Group>
         )
     }
