@@ -7,7 +7,10 @@ import {
     loadNodeL1,
     connectNodes,
     updateNode,
+    removeNode,
+    removeAbstraction,
     moveToAbstraction,
+    fetchNodeL1,
 } from '../../actions/async'
 
 import {
@@ -56,7 +59,7 @@ export class NodeViewContainer extends React.Component {
         } = this.props
 
         return (
-            <NodeView 
+            <NodeView
                 graphType={ this.props.graphType }
                 isLoading={ this.props.isLoading }
                 nodes={nodes}
@@ -70,10 +73,13 @@ export class NodeViewContainer extends React.Component {
                 addNode={this.props.addNode}
                 connectNodes={this.props.connectNodes}
                 updateNode={this.props.updateNode}
+                removeNode={this.props.removeNode}
+                removeAbstraction={this.props.removeAbstraction}
                 setActiveNode={this.props.setActiveNode}
                 toggleCollapse={this.props.toggleCollapse}
                 moveToAbstraction={this.props.moveToAbstraction}
                 collectionChain={this.props.collectionChain}
+                fetchNodeL1={this.props.fetchNodeL1}
             />
         );
     }
@@ -134,7 +140,10 @@ export default connect(mapStateToProps, {
     addNode,
     connectNodes,
     updateNode,
+    removeNode,
+    removeAbstraction,
     setActiveNode,
     toggleCollapse,
     moveToAbstraction,
+    fetchNodeL1,
 })(NodeViewContainer)

@@ -175,7 +175,7 @@ module.exports = function(db, es) {
             Promise.all([
                 // get this node
                 db.run(
-                    `MATCH (u:User)--(n:Node) 
+                    `MATCH (u:User)--(n:Node)
                     WHERE u.id = {userId} AND n.id = {id}
                     OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection)
                     RETURN properties(n), collect(distinct properties(c))`,
@@ -186,7 +186,7 @@ module.exports = function(db, es) {
                 ),
                 // get all the nodes within a path 2 of node (including the node itself) along with their collections
                 db.run(
-                    `MATCH (u:User)--(n:Node) 
+                    `MATCH (u:User)--(n:Node)
                     WHERE u.id = {userId} AND n.id = {id}
                     OPTIONAL MATCH (n)-[:EDGE*0..2]-(n2:Node)
                     WITH distinct n2
@@ -270,7 +270,7 @@ module.exports = function(db, es) {
 
                 // now update ES indexes
                 updateIndex(es, user._id.toString(), result)
-                    
+
             })
             .catch(handleError)
         },
@@ -471,7 +471,7 @@ module.exports = function(db, es) {
                     }
                 ),
                 db.run(
-                    // move the node to the abstraction with targetId 
+                    // move the node to the abstraction with targetId
                     `
                     MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {targetId}
@@ -505,23 +505,28 @@ module.exports = function(db, es) {
             const edgeId = uuidV4();
             const abstractEdgeId = uuidV4();
 
-            // TODO: not working properly? - 2017-08-02
             console.log(sourceCollectionId, id);
 
             db.run(
+                /*
+                 * 1. Remove all nodes from the given abstraction
+                 * 2. Attach them to the parent abstraction instead
+                 * 3. Modify abstraction to be a node
+                */
                 `
-                MATCH (u:User)--(n:Collection)
-                WHERE u.id = {userId} AND n.id = {id}
-                MATCH (n)<-[e:AbstractEdge]-(n2:Node)
+                MATCH (u:User)--(n:Collection), (u)--(pn:Collection)
+                WHERE u.id = {userId} AND n.id = {id} AND pn.id = {sourceCollectionId}
+                MATCH (n)<-[e:AbstractEdge]-(n2:Node) // here n2 are the children
                 SET n.type = 'node'
                 REMOVE n:Collection
                 DELETE e
                 CREATE (n)-[:EDGE { id: {edgeId}, start: n.id, end: n2.id }]->(n2)
-                CREATE (n)<-[:AbstractEdge { id: { abstractEdgeId }, start: n.id, end: n2.id }]-(n2)
+                CREATE (pn)<-[:AbstractEdge { id: { abstractEdgeId }, start: n2.id, end: pn.id }]-(n2)
                 `,
                 {
                     userId: user._id.toString(),
                     id,
+                    sourceCollectionId,
                     edgeId,
                     abstractEdgeId,
                 }

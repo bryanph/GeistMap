@@ -43,7 +43,9 @@ export function nodes(state={}, action, collections) {
 
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
             // TODO: needs to know which nodes have this collection, so we can remove them from the array entry...
+            // TODO: same for REMOVE_ABSTRACTION_SUCCESS
             return state
+
         case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
             return {
                 ...state,
@@ -494,6 +496,7 @@ function nodesByCollectionId(state={}, action) {
             return newState
 
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
+        case actionTypes.REMOVE_ABSTRACTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
         case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
@@ -572,16 +575,20 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
             return state
 
         case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
-        // case actionTypes.REMOVE_NODE_SUCCESS:
+        case actionTypes.REMOVE_NODE_SUCCESS:
             // get the node to be removed and its edges
             // remove the node from all collections that have been fetched as well as the edges
 
-            return update(state, {
-                [action.collectionId]: {
-                    nodes: _.without((state[action.collectionId] && state[action.collectionId].nodes) || [], action.nodeId),
-                    edges: _.without((state[action.collectionId] && state[action.collectionId].edges) || [], ...getEdgeIdsByNodeId(globalState, action.nodeId)),
-                }
-            })
+            if (action.collectionId) {
+                return update(state, {
+                    [action.collectionId]: {
+                        nodes: { $set: _.without((state[action.collectionId] && state[action.collectionId].nodes) || [], action.nodeId) },
+                        edges: { $set: _.without((state[action.collectionId] && state[action.collectionId].edges) || [], ...getEdgeIdsByNodeId(globalState, action.nodeId)) },
+                    }
+                })
+            }
+
+            return state;
 
         default:
             return state

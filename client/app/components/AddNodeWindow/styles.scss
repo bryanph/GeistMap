@@ -8,7 +8,7 @@
     background-color: white;
 
     transition: all 300ms;
-    transform: translate(0, 100%);
+    transform: translate(0, 200%);
 
     &.visible {
         transform: translate(0, 0);

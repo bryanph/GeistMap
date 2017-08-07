@@ -69,8 +69,6 @@ function linkArc(d, curved=false) {
     const oxSource = (dx * sourceRadius) / lineDistance
     const oySource = (dy * sourceRadius) / lineDistance
 
-    console.log(oxSource, oySource);
-
     return "M" + (d.source.x + oxSource) + "," + (d.source.y + oySource) + "A" + dr + "," + dr + " 0 0,1 " + (d.target.x - ox) + "," + (d.target.y - oy);
 }
 

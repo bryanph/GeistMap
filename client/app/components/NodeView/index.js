@@ -34,24 +34,22 @@ export class NodeView extends React.PureComponent {
             graphType,
         } = this.props
 
-        // TODO: pass in collections and nodes separately - 2017-07-09
-
         return (
             <div className='appContainer'>
-                <AddNodeWindow 
-                    opened={mode === 'edit'} 
-                    collection={this.props.activeCollection} 
+                <AddNodeWindow
+                    opened={mode === 'edit'}
+                    collection={this.props.activeCollection}
                     disabled={isLoading}
                 />
                 <AbstractionNavigator
                     collectionChain={this.props.collectionChain}
                     collection={this.props.activeCollection}
                 />
-                <AbstractionList 
+                <AbstractionList
                     activeCollection={this.props.activeCollection}
                     collections={collections}
                 />
-                <NodeGraph 
+                <NodeGraph
                     isLoading={isLoading}
                     activeNode={this.props.activeNode}
                     activeCollection={this.props.activeCollection}
@@ -65,9 +63,12 @@ export class NodeView extends React.PureComponent {
                     addNode={this.props.addNode}
                     connectNodes={this.props.connectNodes}
                     updateNode={this.props.updateNode}
+                    removeNode={this.props.removeNode}
+                    removeAbstraction={this.props.removeAbstraction}
                     setActiveNode={this.props.setActiveNode}
                     toggleCollapse={this.props.toggleCollapse}
                     moveToAbstraction={this.props.moveToAbstraction}
+                    fetchNodeL1={this.props.fetchNodeL1}
                 />
                 { /* // TODO: combine this into one mode button - 2017-06-28 */ }
                 <div className="graphActions">
@@ -80,4 +81,3 @@ export class NodeView extends React.PureComponent {
 }
 
 export default NodeView
-

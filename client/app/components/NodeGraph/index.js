@@ -154,6 +154,14 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
             }
         })
     }
+    else if (mode === 'delete') {
+        selection.on('click', (d) => {
+            if (d.type === "node") {
+                // TODO: ask for a confirmation
+                actions.removeNode(d.id)
+            }
+        })
+    }
 
     return selection
 }
@@ -258,6 +266,14 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
             actions.toggleCollapse(d.id)
         })
     }
+    else if (mode === 'delete') {
+        selection.on('click', (d) => {
+            if (d.type === "collection") {
+                // TODO: ask for a confirmation
+                actions.removeAbstraction(d.id)
+            }
+        })
+    }
 
     return selection
 }
@@ -313,9 +329,9 @@ const createExploreEvents = function(simulation, actions) {
     const updateNode = createUpdateNode({
         onNodeClick,
         updateNode: actions.updateNode,
+        removeNode: actions.removeNode,
         history: actions.history,
         setActiveNode: actions.setActiveNode,
-
     })
 
     const enterLink = createEnterLink({
@@ -353,6 +369,15 @@ const createCollectionDetailEvents = function(simulation, actions) {
         return actions.connectNodes(from, to, this.props.activeCollection.id)
     }
 
+    const removeAbstraction = (id) => {
+        return actions.removeAbstraction(this.props.activeCollection.id, id)
+            .then(() => actions.fetchNodeL1(id))
+    }
+
+    const removeNode = (id) => {
+        return actions.removeNode(id, this.props.activeCollection.id)
+    }
+
     const drag = createDrag(simulation)({
         connect: onConnect,
         moveToAbstraction: actions.moveToAbstraction,
@@ -370,6 +395,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
     const updateNode = createUpdateNode({
         onNodeClick,
         updateNode: actions.updateNode,
+        removeNode: removeNode,
         history: actions.history,
         setActiveNode: actions.setActiveNode,
     })
@@ -382,6 +408,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
         toggleCollapse: actions.toggleCollapse,
         // onNodeClick,
         updateNode: actions.updateNode,
+        removeAbstraction: removeAbstraction,
         history: actions.history,
         setActiveNode: actions.setActiveNode,
     })
@@ -571,15 +598,20 @@ class NodeGraph extends React.Component {
             connectNodes,
             setActiveNode: this.props.setActiveNode,
             updateNode: this.props.updateNode,
+            removeNode: this.props.removeNode,
             moveToAbstraction: this.props.moveToAbstraction,
         })
+
         // TODO: collectionId should be not be static like this - 2017-05-21
         this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, {
             history: this.props.history,
             removeEdge,
             connectNodes,
+            fetchNodeL1: this.props.fetchNodeL1,
             setActiveNode: this.props.setActiveNode,
             updateNode: this.props.updateNode,
+            removeNode: this.props.removeNode,
+            removeAbstraction: this.props.removeAbstraction,
             toggleCollapse: this.props.toggleCollapse,
             moveToAbstraction: this.props.moveToAbstraction,
         })

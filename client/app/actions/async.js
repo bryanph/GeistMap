@@ -273,13 +273,14 @@ export function updateNode(id, properties) {
 export const REMOVE_NODE_REQUEST = 'REMOVE_NODE_REQUEST'
 export const REMOVE_NODE_SUCCESS = 'REMOVE_NODE_SUCCESS'
 export const REMOVE_NODE_FAILURE = 'REMOVE_NODE_FAILURE'
-export function removeNode(id) {
+export function removeNode(nodeId, sourceCollectionId) {
     return {
-        nodeId: id,
+        nodeId,
+        collectionId: sourceCollectionId,
         [CALL_API]: {
             types: [ REMOVE_NODE_REQUEST, REMOVE_NODE_SUCCESS, REMOVE_NODE_FAILURE ],
             endpoint: 'Node.remove',
-            payload: [ id ],
+            payload: [ nodeId ],
             // schema: Schemas.NODE
         }
     }
@@ -845,17 +846,17 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
 export const REMOVE_ABSTRACTION_REQUEST = 'REMOVE_ABSTRACTION_REQUEST'
 export const REMOVE_ABSTRACTION_SUCCESS = 'REMOVE_ABSTRACTION_SUCCESS'
 export const REMOVE_ABSTRACTION_FAILURE = 'REMOVE_ABSTRACTION_FAILURE'
-export function removeAbstraction(sourceCollectionId, id) {
+export function removeAbstraction(sourceCollectionId, collectionId) {
     /*
      * This converts the abstraction to a node and the edges to normal edges
     */
     return {
         sourceCollectionId,
-        id,
+        collectionId,
         [CALL_API]: {
             types: [ REMOVE_ABSTRACTION_REQUEST, REMOVE_ABSTRACTION_SUCCESS, REMOVE_ABSTRACTION_FAILURE ],
             endpoint: 'Node.removeAbstraction',
-            payload: [ sourceCollectionId, id ],
+            payload: [ sourceCollectionId, collectionId ],
         }
     }
 }
