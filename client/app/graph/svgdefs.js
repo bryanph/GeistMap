@@ -8,15 +8,16 @@ export function arrowHead(selection) {
     return selection
         .append('marker')
         .attr("id", "Triangle")
+        .attr("class", "node-arrow")
         .attr('viewBox', "0 0 8 8")
-        .attr("refX", 10)
+        .attr("refX", 0)
         .attr("refY", 4)
         .attr("markerUnits", 'userSpaceOnUse')
         .attr("markerWidth", 10)
         .attr("markerHeight", 10)
         .attr("orient", 'auto')
         .append('path')
-        .attr("d", 'M0,0 L0,8 L9,4 z');
+        .attr("d", 'M0,0 L0,8 L8,4 z');
         // .append('marker')
         // .attr("id", 'Triangle')
         // .attr("viewBox", "0 -5 10 10")

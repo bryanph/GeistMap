@@ -25,7 +25,7 @@ class AddNodeWindow extends React.Component {
 
     addExistingNode(esResult) {
         // add existing node to the graph
-        console.log('called addExistingNode', node);
+        console.log('called addExistingNode', esResult);
         const node = esResult._source
     }
 
@@ -58,7 +58,7 @@ class AddNodeWindow extends React.Component {
                 <div className={ containerClass }>
                     <div className="addNodeWindow-container">
                         <div className="addNodeWindow-input">
-                            <NodeSearch 
+                            <NodeSearch
                                 disabled={this.props.disabled}
                                 onSearchClick={this.addExistingNode}
                                 onEnter={this.addNewNode}

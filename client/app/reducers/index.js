@@ -1050,6 +1050,8 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     const edges = nodesAndEdges.edges.map(edgeId => getEdge(state, edgeId))
 
     const parentCollection = getCollection(state, id)
+    // TODO: this won't work when the abstraction belongs to multiple other abstractions
+    // instead, need to specify full chain in the URL (or identify each abstraction chain different) => probably better
     const collectionChain = (parentCollection && parentCollection.collections) || []
 
     let visibleCollections = []

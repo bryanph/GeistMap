@@ -17,7 +17,7 @@ export const createNodeSimulation = function(WIDTH, HEIGHT, simulation) {
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
         .force("charge", forceManyBody().strength(-400))
-        .force("link", 
+        .force("link",
             forceLink()
                 .id(d => d.id)
                 .distance(d => 50 + d.source.radius + d.target.radius)
@@ -63,13 +63,14 @@ function linkArc(d, curved=false) {
     const sourceRadius = d.source.radius
     const targetRadius = d.target.radius
 
-    const ox = (dx * targetRadius) / lineDistance
-    const oy = (dy * targetRadius) / lineDistance
+    const ox = (dx * (targetRadius + 10)) / lineDistance
+    const oy = (dy * (targetRadius + 10)) / lineDistance
 
     const oxSource = (dx * sourceRadius) / lineDistance
     const oySource = (dy * sourceRadius) / lineDistance
 
-        // TODO: get node radius here - 2017-01-22
+    console.log(oxSource, oySource);
+
     return "M" + (d.source.x + oxSource) + "," + (d.source.y + oySource) + "A" + dr + "," + dr + " 0 0,1 " + (d.target.x - ox) + "," + (d.target.y - oy);
 }
 
@@ -91,4 +92,3 @@ function drawPath(d) {
 
     return path
 }
-

@@ -56,8 +56,10 @@
     /* text-color-internal: #FFFFFF; */
 }
 
+.node-arrow {
+    fill: $light-accent-color;
+}
+
 .node-link.hidden {
     visibility: hidden;
 }
-
-

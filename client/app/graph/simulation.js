@@ -15,7 +15,7 @@ export const createCollectionSimulation = function(WIDTH, HEIGHT, simulation) {
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
         .force("charge", forceManyBody().strength(-300))
-        .force("link", 
+        .force("link",
             forceLink()
                 .id(d => d.id)
                 .distance((link) => {
@@ -47,7 +47,7 @@ export const createNodeSimulation = function(WIDTH, HEIGHT, simulation) {
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
         .force("charge", forceManyBody().strength(-300))
-        .force("link", 
+        .force("link",
             forceLink()
                 .id(d => d.id)
                 .distance(100)
@@ -63,7 +63,7 @@ export const transformNode = (selection) => {
         // .attr("cx", d => d.x)
         // .attr("cy", d => d.y)
             .attr("transform", (d) => {
-                return "translate(" 
+                return "translate("
                     // + Math.max(minNodeXPos, Math.min(maxNodeXPos, d.x))
                     // + ","
                     // + Math.max(minNodeYPos, Math.min(maxNodeYPos, d.y))
@@ -105,8 +105,8 @@ function linkArc(d, curved=false) {
     const ox = (dx * targetRadius) / lineDistance
     const oy = (dy * targetRadius) / lineDistance
 
-    const oxSource = (dx * sourceRadius) / lineDistance
-    const oySource = (dy * sourceRadius) / lineDistance
+    const oxSource = ((dx * sourceRadius) / lineDistance) - 2
+    const oySource = ((dy * sourceRadius) / lineDistance) - 2
 
         // TODO: get node radius here - 2017-01-22
     return "M" + (d.source.x + oxSource) + "," + (d.source.y + oySource) + "A" + dr + "," + dr + " 0 0,1 " + (d.target.x - ox) + "," + (d.target.y - oy);

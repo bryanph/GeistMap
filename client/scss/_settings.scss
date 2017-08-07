@@ -17,6 +17,7 @@ $total-screen-width: $sidebar-width + $max-screen-width;
 $primary-color: #1976D2;
 $primary-dark-color: #303f9f;
 $accent-color: #ff5722;
+$light-accent-color: lighten($accent-color, 10%);
 $accent2-color: #FF9800;
 $secondary-text-color: #C6C6C6;
 $success-color: green;
@@ -190,5 +191,3 @@ medium: 30px,
 );
 $grid-column-align-edge: true;
 $block-grid-max: 8;
-
-

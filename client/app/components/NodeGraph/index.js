@@ -69,7 +69,7 @@ const createEnterNode = function(actions: { click: Function }) {
             .attr("class", "nodeSelection node")
             .attr('id', (d) => {
                 return `node-${d.id}`
-            }) 
+            })
             .attr('r', (d) => d.radius)
 
         selection.on('click', actions.click)
@@ -149,7 +149,9 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
     else if (mode === 'focus') {
         selection.on('click', (d) => {
             // go to NodeExplore, which will transition node to center and perform the fetching and filtering
-            actions.history.push(`/app/nodes/${d.id}`)
+            if (d.type === "node") {
+                actions.history.push(`/app/nodes/${d.id}`)
+            }
         })
     }
 
@@ -163,7 +165,7 @@ const createEnterCollection = function(actions: { click: Function }) {
     return (selection, click) => {
         selection
             .attr("class", "collectionSelection node")
-            .attr('id', (d) => `node-${d.id}`) 
+            .attr('id', (d) => `node-${d.id}`)
             .attr('r', (d) => d.radius)
 
         selection.on('click', actions.click)
@@ -242,8 +244,11 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
         }
     }
     else if (mode === 'focus') {
-        console.log("should route to the collection detail");
-
+        selection.on('click', (d) => {
+            if (d.type === "collection") {
+                actions.history.push(`/app/collections/${d.id}/nodes`)
+            }
+        })
     }
     else if (mode === 'expand') {
         /*
@@ -289,7 +294,7 @@ const createExploreEvents = function(simulation, actions) {
         return actions.connectNodes(from, to)
     }
 
-    const drag = createDrag(simulation)({ 
+    const drag = createDrag(simulation)({
         connect: onConnect,
         moveToAbstraction: actions.moveToAbstraction,
     })
@@ -324,7 +329,7 @@ const createExploreEvents = function(simulation, actions) {
         node.enter().append('g').call(enterNode).call(nodeDrag)
         // ENTER + UPDATE selection
             .merge(node).call((selection) => updateNode(selection, mode, focus))
-        
+
         // EXIT selection
         link.exit().remove()
         // ENTER selection
@@ -348,7 +353,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
         return actions.connectNodes(from, to, this.props.activeCollection.id)
     }
 
-    const drag = createDrag(simulation)({ 
+    const drag = createDrag(simulation)({
         connect: onConnect,
         moveToAbstraction: actions.moveToAbstraction,
     })
@@ -429,7 +434,7 @@ class NodeGraph extends React.Component {
         /*
          * Go through the enter,update,exit cycle based on the route
         */
-        let { 
+        let {
             nodes,
             collections,
             links,
@@ -499,7 +504,7 @@ class NodeGraph extends React.Component {
         if (
             nodes.length !== (this.prevProps && this.prevProps.nodes.length) ||
             collections.length !== (this.prevProps && this.prevProps.collections.length) ||
-            links.length !== (this.prevProps && this.prevProps.links.length)) 
+            links.length !== (this.prevProps && this.prevProps.links.length))
         {
             // if (activeNode) {
             //     this.simulation.stop()
@@ -527,7 +532,7 @@ class NodeGraph extends React.Component {
     }
 
     componentDidMount() {
-        const { 
+        const {
             graphType,
             loadNode,
             removeEdge,
