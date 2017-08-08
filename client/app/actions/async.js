@@ -100,8 +100,10 @@ export function clearBatchNodes() {
 export const GET_NODE_L1_REQUEST = 'GET_NODE_L1_REQUEST'
 export const GET_NODE_L1_SUCCESS = 'GET_NODE_L1_SUCCESS'
 export const GET_NODE_L1_FAILURE = 'GET_NODE_L1_FAILURE'
-export function fetchNodeL1(id) {
+export function fetchNodeL1(id, collectionId) {
     return {
+        id,
+        sourceCollectionId: collectionId,
         [CALL_API]: {
             types: [ GET_NODE_L1_REQUEST, GET_NODE_L1_SUCCESS, GET_NODE_L1_FAILURE ],
             endpoint: 'Node.getWithNeighbours',
@@ -115,16 +117,9 @@ export function fetchNodeL1(id) {
         }
     }
 }
-export function loadNodeL1(id, refresh=true) {
+export function loadNodeL1(id, collectionId) {
     return (dispatch, getState) => {
-        const node = getNode(getState())
-
-        // TODO: handle the case when we got this node earlier as a neighbouring edge - 2016-06-19
-        if (node && !refresh) {
-            return null
-        }
-
-        return dispatch(fetchNodeL1(id))
+        return dispatch(fetchNodeL1(id, collectionId))
     }
 }
 

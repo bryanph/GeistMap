@@ -42,9 +42,10 @@ export function nodes(state={}, action, collections) {
             })
 
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
-            // TODO: needs to know which nodes have this collection, so we can remove them from the array entry...
-            // TODO: same for REMOVE_ABSTRACTION_SUCCESS
-            return state
+        case actionTypes.REMOVE_ABSTRACTION_SUCCESS:
+            return _.mapValues(state, (x) => update(x, {
+                collections: { $set: _.without(x.collections, action.collectionId) }
+            }))
 
         case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
             return {
@@ -207,6 +208,7 @@ function collections(state={}, action) {
     */
     switch(action.type) {
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
+        case actionTypes.REMOVE_ABSTRACTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
         case uiTypes.TOGGLE_EDIT_MODE:
@@ -547,6 +549,17 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
                     )}
                 }
             })
+
+        case actionTypes.GET_NODE_L1_SUCCESS:
+            if (action.sourceCollectionId) {
+                return update(state, {
+                    [action.sourceCollectionId]: {
+                        edges: { $set: _.union(state[action.sourceCollectionId].edges, action.response.result.edges)}
+                    }
+                })
+            }
+
+            return state
 
         // TESTED
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
@@ -1049,6 +1062,8 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     // this gets the direct nodes including their children
     const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
 
+    console.log(nodesAndEdges)
+
     // nodes includes both nodes and collections
     const nodesAndCollections = nodesAndEdges.nodes.map(id => getNode(state, id))
     const nodes = nodesAndCollections.filter(n => n.type === 'node')
@@ -1081,7 +1096,8 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log(nodes, collections);
+    console.log("UPDATING NODESNEDGES", edges)
+    // console.log(nodes, collections);
 
     collections.forEach(c => {
         // TODO: can also be hidden because the parent is collapsed - 2017-08-03

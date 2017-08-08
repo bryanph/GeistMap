@@ -371,7 +371,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const removeAbstraction = (id) => {
         return actions.removeAbstraction(this.props.activeCollection.id, id)
-            .then(() => actions.fetchNodeL1(id))
+            .then(() => actions.fetchNodeL1(id, this.props.activeCollection.id))
     }
 
     const removeNode = (id) => {
