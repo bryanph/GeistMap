@@ -73,9 +73,9 @@ module.exports = function(db, es) {
             Promise.all([
                 // get collection
                 db.run(
-                    `MATCH (u:User)--(c:Collection) 
+                    `MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
-                    OPTIONAL MATCH (c)-[:AbstractEdge*0..]->(c2:Collection)
+                    OPTIONAL MATCH (c)-[:AbstractEdge*1..]->(c2:Collection)
                     RETURN properties(c) as collection, collect(distinct properties(c2)) as collections`,
                     {
                         id,
@@ -84,7 +84,7 @@ module.exports = function(db, es) {
                 ),
                 // get all edges in the collection
                 db.run(
-                    `MATCH (u:User)--(c:Collection) 
+                    `MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
                     MATCH (c)<-[:AbstractEdge]-(n)-[e:EDGE]-(n2)
                     RETURN distinct(properties(e)) as edge`,
@@ -95,7 +95,7 @@ module.exports = function(db, es) {
                 ),
                 // Get for every direct child, which abstractions they belong to
                 db.run(
-                    `MATCH (u:User)--(c:Collection) 
+                    `MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
                     MATCH (c)<-[:AbstractEdge]-(n) // children of this collection
                     OPTIONAL MATCH (n)-[e:EDGE]-(n2) // get neighbours
@@ -122,12 +122,12 @@ module.exports = function(db, es) {
                         { collections: results[0].records[0].get(1).map(mapIntegers) }
                     )
 
-                    console.log(collection);
-
                     const edges = results[1].records.map(record => mapIntegers(record.get('edge')))
 
+                    console.log(results[2].records)
+
                     const nodes = !results[2].records.length  ?
-                        [] : 
+                        [] :
                         results[2].records.map(row => (
                             Object.assign({},
                                 { collapsed: true },
@@ -300,9 +300,9 @@ module.exports = function(db, es) {
             }
 
             db.run(
-                "MATCH (u:User)--(c:Collection), (u:User)--(n:Node) " + 
-                "WHERE u.id = {userId} " +  
-                "AND c.id = {collectionId} AND n.id = {nodeId} " +  
+                "MATCH (u:User)--(c:Collection), (u:User)--(n:Node) " +
+                "WHERE u.id = {userId} " +
+                "AND c.id = {collectionId} AND n.id = {nodeId} " +
                 "MERGE (n)-[e:AbstractEdge { id: {id}, start: n.id, end: c.id }]->(c) " +
                 "RETURN properties(e) as edge, properties(n) as node, properties(c) as collection",
                 {
@@ -336,9 +336,9 @@ module.exports = function(db, es) {
             }
 
             db.run(
-                "MATCH (u:User)--(c:Collection)-[e]-(n:Node)--(u:User) " + 
-                "WHERE u.id = {userId} " +  
-                "AND c.id = {collectionId} AND n.id = {nodeId} " +  
+                "MATCH (u:User)--(c:Collection)-[e]-(n:Node)--(u:User) " +
+                "WHERE u.id = {userId} " +
+                "AND c.id = {collectionId} AND n.id = {nodeId} " +
                 "DELETE e",
                 {
                     userId: user._id.toString(),

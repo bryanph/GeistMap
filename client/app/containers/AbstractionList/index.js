@@ -36,8 +36,8 @@ class AbstractionList extends React.Component {
          * 2. all edges from this collection to its nodes should become normal
         */
 
-        this.props.removeAbstraction(this.props.activeCollection, id)
-            .then(() => this.props.fetchNodeL1(id))
+        this.props.removeAbstraction(this.props.activeCollection.id, id)
+            .then(() => this.props.fetchNodeL1(id, this.props.activeCollection.id))
     }
 
     focusAbstraction(id) {
@@ -57,7 +57,7 @@ class AbstractionList extends React.Component {
         const collectionItems = collections.map(c => (
             <AbstractionItem
                 key={c.id}
-                collection={c} 
+                collection={c}
                 onToggleCollapse={this.props.toggleCollapse}
                 removeAbstraction={this.removeAbstraction}
                 focusAbstraction={this.focusAbstraction}

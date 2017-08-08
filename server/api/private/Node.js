@@ -520,7 +520,8 @@ module.exports = function(db, es) {
                 SET n.type = 'node'
                 REMOVE n:Collection
                 DELETE e
-                CREATE (n)-[:EDGE { id: {edgeId}, start: n.id, end: n2.id }]->(n2)
+                MERGE (n)-[ne:EDGE]->(n2)
+                ON CREATE SET ne += { id: {edgeId}, start: n.id, end: n2.id }
                 CREATE (pn)<-[:AbstractEdge { id: { abstractEdgeId }, start: n2.id, end: pn.id }]-(n2)
                 `,
                 {

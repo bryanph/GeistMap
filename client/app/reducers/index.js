@@ -1060,6 +1060,20 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => (
 
 export const getNodesAndEdgesByCollectionId = (state, id) => {
     // this gets the direct nodes including their children
+
+    const parentCollection = getCollection(state, id)
+
+    if (!parentCollection) {
+        // TODO: not necessary, just have a loading state
+        return {
+            nodes: [],
+            collections: [],
+            visibleCollections: [],
+            edges: [],
+            collectionChain: [],
+        }
+    }
+
     const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
 
     console.log(nodesAndEdges)
@@ -1071,13 +1085,13 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
     const edges = nodesAndEdges.edges.map(edgeId => getEdge(state, edgeId))
 
-    const parentCollection = getCollection(state, id)
     // TODO: this won't work when the abstraction belongs to multiple other abstractions
     // instead, need to specify full chain in the URL (or identify each abstraction chain different) => probably better
-    const collectionChain = (parentCollection && parentCollection.collections) || []
+    const collectionChain = [ parentCollection.id, ...((parentCollection && parentCollection.collections) || []) ]
 
     let visibleCollections = []
     let visibleNodes = []
+    let visibleEdges = []
 
     let nodeMap = _.keyBy(nodesAndCollections, n => n.id)
     let hiddenNodeMap = {}
@@ -1090,19 +1104,41 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
     // add :NODE nodes that are direct children of this collection
     nodes.forEach(node => {
-        if (_.intersection(node.collections, collectionIds).length === 0) {
+        // TODO: this won't work if collections has multiple forks
+        if (_.isEqual(node.collections, collectionChain)) {
             visibleNodes.push(node)
             visibleNodeMap[node.id] = node
         }
     })
 
-    console.log("UPDATING NODESNEDGES", edges)
-    // console.log(nodes, collections);
+    console.log(collectionChain, collections);
+    console.log("directly visible", nodes, visibleNodes);
+
+    // TODO: need to filter edges that go outside the collection
+    transformedEdges = transformedEdges.filter(e => {
+        /*
+         * iterate over all edges
+         * filter edges that go outside the collection
+        */
+        if (_.difference(collectionChain, nodeMap[e.start].collections).length > 0) {
+            return false;
+        }
+        if (_.difference(collectionChain, nodeMap[e.end].collections).length > 0) {
+            return false;
+        }
+
+        return true
+    })
+
 
     collections.forEach(c => {
         // TODO: can also be hidden because the parent is collapsed - 2017-08-03
         // check if this collection has a parent, and that parent is not collapsed
         // => hide the collection
+
+        if (c.id === parentCollection.id) {
+            return;
+        }
 
         if (c.collapsed) {
             /*
@@ -1111,6 +1147,8 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
             // returns node ids for this collection (not all, just the ones that were fetched)
             const nodeIds = getNodeIdsByCollectionId(state, c.id)
+
+            console.log("CALLED", nodeIds)
 
             nodeIds.forEach(n => {
                 // if not shown already, don't show the node
@@ -1126,7 +1164,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                 count: nodeIds.length
             })
 
-
             // TODO: more performant - 2017-07-13
             transformedEdges = _(transformedEdges)
                 .map((e) => {
@@ -1134,20 +1171,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                         // this link is in the graph directly, no need to alter edges
                         console.log("LINK IS IN GRAPH DIRECTLY");
                         return e;
-                    }
-
-                    // console.log(e, nodeMap[e.start], nodeMap[e.end]);
-
-                    // method for getting collections from node
-                    if (_.difference(collectionChain, nodeMap[e.start].collections).length > 0) {
-                        // console.log("REMOVING BECAUSE OF START");
-                        // the edge start is not part of this collection chain
-                        return null;
-                    }
-                    if (_.difference(collectionChain, nodeMap[e.end].collections).length > 0) {
-                        // console.log("REMOVING BECAUSE OF END");
-                        // the edge end is not part of this collection chain
-                        return null;
                     }
 
                     // if start is hidden, change start to this collection
