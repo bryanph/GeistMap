@@ -47,14 +47,14 @@ export class NodeView extends React.PureComponent {
                 />
                 <AbstractionList
                     activeCollection={this.props.activeCollection}
-                    collections={collections}
+                    collections={this.props.collections}
                 />
                 <NodeGraph
                     isLoading={isLoading}
                     activeNode={this.props.activeNode}
                     activeCollection={this.props.activeCollection}
                     nodes={nodes}
-                    collections={collections}
+                    collections={this.props.visibleCollections}
                     links={links}
                     graphType={ graphType }
                     mode={mode}

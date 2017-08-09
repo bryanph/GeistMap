@@ -64,6 +64,7 @@ export class NodeViewContainer extends React.Component {
                 isLoading={ this.props.isLoading }
                 nodes={nodes}
                 collections={this.props.collections}
+                visibleCollections={this.props.visibleCollections}
                 links={edges}
                 mode={mode}
                 focus={focus}
@@ -100,19 +101,20 @@ function mapStateToProps(state, props) {
     const collectionId = props.match.params && props.match.params.collectionId
     const nodeId = props.match.params && props.match.params.nodeId
 
-    let nodes, edges, collections, isLoading, graphType, collectionChain;
+    let nodes, edges, collections, visibleCollections, isLoading, graphType, collectionChain;
 
     if (collectionId) {
         // loading a collection id
         // nodes = getNodesAndEdgesByCollectionId(state, collectionId);
         // edges = getEdgesByCollectionId(state, collectionId);
-        ({ nodes, collections, edges, collectionChain } = getNodesAndEdgesByCollectionId(state, collectionId))
+        ({ nodes, collections, visibleCollections, edges, collectionChain } = getNodesAndEdgesByCollectionId(state, collectionId))
 
         isLoading = state.loadingStates.GET_COLLECTION || state.loadingStates.GET_NODE
         graphType = "collection"
     } else {
         nodes = getL1Nodes(state, nodeId);
         collections = []
+        visibleCollections = []
         edges = getL1Edges(state, nodeId);
         isLoading = state.loadingStates.GET_NODE_L1
         graphType = "node"
@@ -128,6 +130,7 @@ function mapStateToProps(state, props) {
         nodes,
         edges,
         collections,
+        visibleCollections,
         isLoading,
         graphType,
         collectionChain,

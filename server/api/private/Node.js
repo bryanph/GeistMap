@@ -249,6 +249,7 @@ module.exports = function(db, es) {
                 return res("Set a title")
             }
 
+            // TODO: connect to the root node?
             db.run(
                 "MERGE (u:User {id: {userId}}) " +
                 "CREATE (n:Node { id: {id}, type: \"node\", name: {name}, created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u) " +
@@ -520,8 +521,6 @@ module.exports = function(db, es) {
                 SET n.type = 'node'
                 REMOVE n:Collection
                 DELETE e
-                MERGE (n)-[ne:EDGE]->(n2)
-                ON CREATE SET ne += { id: {edgeId}, start: n.id, end: n2.id }
                 CREATE (pn)<-[:AbstractEdge { id: { abstractEdgeId }, start: n2.id, end: pn.id }]-(n2)
                 `,
                 {

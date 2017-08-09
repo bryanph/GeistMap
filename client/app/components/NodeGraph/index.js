@@ -448,7 +448,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 }
 
 
-class NodeGraph extends React.Component {
+class NodeGraph extends React.PureComponent {
     constructor(props) {
         super(props)
 

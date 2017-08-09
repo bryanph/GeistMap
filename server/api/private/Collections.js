@@ -87,6 +87,7 @@ module.exports = function(db, es) {
                     `MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
                     MATCH (c)<-[:AbstractEdge]-(n)-[e:EDGE]-(n2)
+                    WHERE c <> n2
                     RETURN distinct(properties(e)) as edge`,
                     {
                         id,
@@ -94,6 +95,7 @@ module.exports = function(db, es) {
                     }
                 ),
                 // Get for every direct child, which abstractions they belong to
+                // TODO: make sure nodes here doesn't include the collection itself
                 db.run(
                     `MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
@@ -124,9 +126,7 @@ module.exports = function(db, es) {
 
                     const edges = results[1].records.map(record => mapIntegers(record.get('edge')))
 
-                    console.log(results[2].records)
-
-                    const nodes = !results[2].records.length  ?
+                    let nodes = !results[2].records.length  ?
                         [] :
                         results[2].records.map(row => (
                             Object.assign({},
@@ -138,6 +138,10 @@ module.exports = function(db, es) {
                                 }
                             )
                         ))
+                    // TODO: enforce this in the query
+                    nodes = nodes.filter(x => x.id !== id)
+
+                    console.log(nodes)
 
                     // TODO: return for every node whether it is a node or a collection - 2017-07-13
                     // store this as a property
@@ -316,6 +320,8 @@ module.exports = function(db, es) {
                     const edge = results.records[0]._fields[0]
                     const node = mapIntegers(results.records[0]._fields[1])
                     const collection = mapIntegers(results.records[0]._fields[2])
+
+                    console.log(collection, node);
 
                     // res(null, result)
                     res(null, {

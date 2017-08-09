@@ -35,6 +35,8 @@ export function nodes(state={}, action, collections) {
 
         // TESTED
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
+        // TODO: need to just replace the complete chain
+        // TODO: To support multiple abstractions per node, this data structure must be a tree (like collections)
             return update(state, {
                 [action.nodeId]: {
                     collections: { $push: [ action.collectionId ]}
@@ -525,6 +527,7 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
 
         // this resets the state
         case actionTypes.GET_COLLECTION_SUCCESS:
+            // TODO: here nodes should not include the colleciton itself
             return {
                 ...state,
                 [action.response.result.collection]: {
@@ -563,7 +566,6 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
 
         // TESTED
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            // TODO: need to know from which view we did this, so the edges can be added - 2017-08-02
             // edges are derived data
             return update(state, {
                 [action.collectionId]: {
@@ -1076,6 +1078,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
     const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
 
+    console.log(parentCollection);
     console.log(nodesAndEdges)
 
     // nodes includes both nodes and collections
@@ -1111,7 +1114,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log(collectionChain, collections);
+    console.log(collectionChain, collections, parentCollection);
     console.log("directly visible", nodes, visibleNodes);
 
     // TODO: need to filter edges that go outside the collection
@@ -1224,7 +1227,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log(transformedEdges);
+    console.log(visibleCollections, transformedEdges);
     // console.log(nodes, collections,  edges);
 
     return {
