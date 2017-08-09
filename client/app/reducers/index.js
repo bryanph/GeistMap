@@ -1076,21 +1076,22 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     }
 
-    const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
-
-    console.log(parentCollection);
-    console.log(nodesAndEdges)
-
-    // nodes includes both nodes and collections
-    const nodesAndCollections = nodesAndEdges.nodes.map(id => getNode(state, id))
-    const nodes = nodesAndCollections.filter(n => n.type === 'node')
-    const collections = nodesAndCollections.filter(n => n.type === 'collection')
-
-    const edges = nodesAndEdges.edges.map(edgeId => getEdge(state, edgeId))
-
     // TODO: this won't work when the abstraction belongs to multiple other abstractions
     // instead, need to specify full chain in the URL (or identify each abstraction chain different) => probably better
     const collectionChain = [ parentCollection.id, ...((parentCollection && parentCollection.collections) || []) ]
+
+    const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
+
+
+    // nodes includes both nodes and collections
+    const nodesAndCollections = nodesAndEdges.nodes.map(id => getNode(state, id))
+    const nodes = nodesAndCollections
+        .filter(n => n.type === 'node')
+
+    const collections = nodesAndCollections.filter(n => n.type === 'collection')
+        // .filter(n => !collectionChain.includes(n.id)) // necessary for now to make sure that parentCollections are not displayed
+
+    const edges = nodesAndEdges.edges.map(edgeId => getEdge(state, edgeId))
 
     let visibleCollections = []
     let visibleNodes = []
@@ -1114,8 +1115,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log(collectionChain, collections, parentCollection);
-    console.log("directly visible", nodes, visibleNodes);
+    console.log("edges", transformedEdges);
 
     // TODO: need to filter edges that go outside the collection
     transformedEdges = transformedEdges.filter(e => {

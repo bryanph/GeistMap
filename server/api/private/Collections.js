@@ -83,6 +83,7 @@ module.exports = function(db, es) {
                     }
                 ),
                 // get all edges in the collection
+                // TODO: should also filter out edges between parent collections and the nodes
                 db.run(
                     `MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
@@ -95,7 +96,7 @@ module.exports = function(db, es) {
                     }
                 ),
                 // Get for every direct child, which abstractions they belong to
-                // TODO: make sure nodes here doesn't include the collection itself
+                // TODO: make sure nodes here doesn't include any parent collection
                 db.run(
                     `MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
@@ -320,8 +321,6 @@ module.exports = function(db, es) {
                     const edge = results.records[0]._fields[0]
                     const node = mapIntegers(results.records[0]._fields[1])
                     const collection = mapIntegers(results.records[0]._fields[2])
-
-                    console.log(collection, node);
 
                     // res(null, result)
                     res(null, {
