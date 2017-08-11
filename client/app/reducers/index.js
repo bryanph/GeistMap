@@ -37,10 +37,9 @@ export function nodes(state={}, action, collections) {
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
         // TODO: need to just replace the complete chain
         // TODO: To support multiple abstractions per node, this data structure must be a tree (like collections)
-
             return update(state, {
                 [action.nodeId]: {
-                    collections: { $push: action.abstractionChain }
+                    collections: { $set: action.abstractionChain }
                 }
             })
 
@@ -81,8 +80,9 @@ export function nodes(state={}, action, collections) {
             }
 
         case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
+        // TODO: To support multiple abstractions per node, this data structure must be a tree (like collections)
             return update(state, {
-                [action.sourceId]: { collections: { $push: [ action.targetId ]}}
+                [action.sourceId]: { collections: { $set: action.abstractionChain }}
             })
 
         case actionTypes.CONVERT_NODE_TO_COLLECTION_SUCCESS:
@@ -1113,7 +1113,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     nodes.forEach(node => {
         // TODO: this won't work if collections has multiple forks
         // TODO: make sure collections ordering is correct
-        if (_.intersection(node.collections, collectionChain).length === collectionChain.length) {
+        if (_.isEqual(node.collections, collectionChain)) {
             visibleNodes.push(node)
             visibleNodeMap[node.id] = node
         }
@@ -1234,6 +1234,8 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
+    console.log("visible nodes after", visibleNodes);
+
     return {
         nodes: visibleNodes,
         collections: collections,
@@ -1283,12 +1285,12 @@ export const getBatchNodes = (state) => (
 export const isSynced = (state) => !state.synced
 
 export const getAbstractionChain = (state, id) => {
-    const collection = getCollection(state, id)
+    const node = getCollection(state, id) || getNode(state, id)
 
-    if (!collection) return null
+    if (!node) return null
 
     return [
-        collection.id,
-        ...collection.collections
+        node.id,
+        ...node.collections
     ]
 }
