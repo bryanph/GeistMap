@@ -54,7 +54,7 @@ export class NodeView extends React.PureComponent {
                     activeNode={this.props.activeNode}
                     activeCollection={this.props.activeCollection}
                     nodes={nodes}
-                    collections={this.props.visibleCollections}
+                    collections={this.props.collections}
                     links={links}
                     graphType={ graphType }
                     mode={mode}

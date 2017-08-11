@@ -37,9 +37,10 @@ export function nodes(state={}, action, collections) {
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
         // TODO: need to just replace the complete chain
         // TODO: To support multiple abstractions per node, this data structure must be a tree (like collections)
+
             return update(state, {
                 [action.nodeId]: {
-                    collections: { $push: [ action.collectionId ]}
+                    collections: { $push: action.abstractionChain }
                 }
             })
 
@@ -1063,6 +1064,8 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => (
 export const getNodesAndEdgesByCollectionId = (state, id) => {
     // this gets the direct nodes including their children
 
+    // console.log(JSON.stringify(state))
+
     const parentCollection = getCollection(state, id)
 
     if (!parentCollection) {
@@ -1109,13 +1112,12 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     // add :NODE nodes that are direct children of this collection
     nodes.forEach(node => {
         // TODO: this won't work if collections has multiple forks
-        if (_.isEqual(node.collections, collectionChain)) {
+        // TODO: make sure collections ordering is correct
+        if (_.intersection(node.collections, collectionChain).length === collectionChain.length) {
             visibleNodes.push(node)
             visibleNodeMap[node.id] = node
         }
     })
-
-    console.log("edges", transformedEdges);
 
     // TODO: need to filter edges that go outside the collection
     transformedEdges = transformedEdges.filter(e => {
@@ -1133,15 +1135,22 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         return true
     })
 
+    console.log("LETSAGOMARIO");
+    console.log(nodes, visibleNodes);
+    console.log(edges, transformedEdges);
 
+    // TODO: first filter the parent collections out, we don't want to show their nodes
     collections.forEach(c => {
         // TODO: can also be hidden because the parent is collapsed - 2017-08-03
-        // check if this collection has a parent, and that parent is not collapsed
+        // TODO: check if this collection has a parent, and that parent is not collapsed
         // => hide the collection
 
-        if (c.id === parentCollection.id) {
+        // TODO: shouldn't be necessary
+        if (collectionChain.includes(c.id)) {
             return;
         }
+
+        console.log("HANDLING COLLECTION", c);
 
         if (c.collapsed) {
             /*
@@ -1150,8 +1159,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
             // returns node ids for this collection (not all, just the ones that were fetched)
             const nodeIds = getNodeIdsByCollectionId(state, c.id)
-
-            console.log("CALLED", nodeIds)
 
             nodeIds.forEach(n => {
                 // if not shown already, don't show the node
@@ -1227,9 +1234,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log(visibleCollections, transformedEdges);
-    // console.log(nodes, collections,  edges);
-
     return {
         nodes: visibleNodes,
         collections: collections,
@@ -1277,3 +1281,14 @@ export const getBatchNodes = (state) => (
 )
 
 export const isSynced = (state) => !state.synced
+
+export const getAbstractionChain = (state, id) => {
+    const collection = getCollection(state, id)
+
+    if (!collection) return null
+
+    return [
+        collection.id,
+        ...collection.collections
+    ]
+}

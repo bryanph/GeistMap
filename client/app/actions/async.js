@@ -10,8 +10,15 @@ import Schemas from '../schemas'
 import { CALL_API } from '../middleware/api'
 import { CALL_REST_API } from '../middleware/restApi'
 
-import { getCollection, getNode } from '../reducers'
-import { getEdge, getCollectionEdge } from '../reducers'
+import {
+    getCollection,
+    getNode,
+    getAbstractionChain,
+ } from '../reducers'
+import {
+    getEdge,
+    getCollectionEdge,
+ } from '../reducers'
 
 import { batchActions } from '../middleware/batch'
 
@@ -593,12 +600,13 @@ export function removeCollection(id) {
 export const ADD_NODE_TO_COLLECTION_REQUEST = 'ADD_NODE_TO_COLLECTION_REQUEST'
 export const ADD_NODE_TO_COLLECTION_SUCCESS = 'ADD_NODE_TO_COLLECTION_SUCCESS'
 export const ADD_NODE_TO_COLLECTION_FAILURE = 'ADD_NODE_TO_COLLECTION_FAILURE'
-export function fetchAddNodeToCollection(collectionId, nodeId) {
+export function fetchAddNodeToCollection(collectionId, nodeId, abstractionChain) {
     const id = uuidV4();
 
     return {
         collectionId,
         nodeId,
+        abstractionChain,
         [CALL_API]: {
             types: [ ADD_NODE_TO_COLLECTION_REQUEST, ADD_NODE_TO_COLLECTION_SUCCESS, ADD_NODE_TO_COLLECTION_FAILURE ],
             endpoint: 'Collection.addNode',
@@ -620,12 +628,14 @@ export function addNodeToCollection(collectionId, nodeId) {
         const collection = getCollection(getState(), collectionId)
         const node = getNode(getState(), nodeId)
 
+        const abstractionChain = getAbstractionChain(getState(), collectionId)
+
         const collectionPromise = !collection ? dispatch(fetchCollection(collectionId)) : Promise.resolve(collection)
-        // this fetches the neighbours as well
+        // this fetches the neighbours as well (why?)
         const nodePromise = !node ? dispatch(loadNodeL1(nodeId)) : Promise.resolve(node)
 
         return Promise.all([ collectionPromise, nodePromise ])
-            .then(() => dispatch(fetchAddNodeToCollection(collectionId, nodeId)))
+            .then(() => dispatch(fetchAddNodeToCollection(collectionId, nodeId, abstractionChain)))
     }
 
 }

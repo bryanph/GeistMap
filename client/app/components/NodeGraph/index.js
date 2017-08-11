@@ -485,6 +485,8 @@ class NodeGraph extends React.PureComponent {
         collections = _.uniqBy(collections, (node) => node.id)
         links = _.uniqBy(links, (link) => link.id)
 
+        console.log(collections);
+
         // TODO: shouldn't have to happen here - 2017-07-14
         collections = collections.filter(c => c.collapsed)
         collections.forEach(c => {
@@ -533,12 +535,6 @@ class NodeGraph extends React.PureComponent {
             collections.length !== (this.prevProps && this.prevProps.collections.length) ||
             links.length !== (this.prevProps && this.prevProps.links.length))
         {
-            // if (activeNode) {
-            //     this.simulation.stop()
-            // }
-            // else {
-            //     this.restartSimulation()
-            // }
             this.restartSimulation()
         }
 
