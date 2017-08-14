@@ -63,14 +63,13 @@ module.exports = function(db, es) {
             const result = mapIntegers(results.records[0]._fields[0])
         },
 
-        get: function(user, rawId, res) {
+        get: function(user, id, res) {
             /*
              * Get node with id ${id} (including its neightbours)
              * // TODO: give this call an explicit name - 2016-07-15
              * // TODO: Check this call's performance - 2016-07-11
              */
 
-            const id = neo4j.int(rawId)
             const userId = user._id.toString()
 
             Promise.all([

@@ -44,10 +44,6 @@
     stroke-width: 3px;
     stroke-opacity: .4;
 
-    &:hover {
-        cursor: pointer;
-    }
-
     /* shaft-width: 1px; */
     /* stroke-width:1.5px */
     /* font-size: 8px; */
@@ -55,6 +51,16 @@
     /* text-color-external: #000000; */
     /* text-color-internal: #FFFFFF; */
 }
+
+.node-link-transparent {
+    stroke: transparent;
+    stroke-width: 10px;
+    
+    &:hover {
+        cursor: pointer;
+    }
+}
+
 
 .node-arrow {
     fill: $light-accent-color;

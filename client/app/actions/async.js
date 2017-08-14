@@ -506,7 +506,7 @@ export const GET_COLLECTION_REQUEST = 'GET_COLLECTION_REQUEST'
 export const GET_COLLECTION_SUCCESS = 'GET_COLLECTION_SUCCESS'
 export const GET_COLLECTION_FAILURE = 'GET_COLLECTION_FAILURE'
 
-export function fetchCollectionL1(id) {
+export function getCollectionL1(id) {
     return {
         [CALL_API]: {
             types: [ GET_COLLECTION_REQUEST, GET_COLLECTION_SUCCESS, GET_COLLECTION_FAILURE ],
@@ -521,21 +521,29 @@ export function fetchCollectionL1(id) {
         }
     }
 }
-export function getCollectionL1(id, refresh=true) {
-    /*
-     * Load collection, including all the nodes
-    */
-    return (dispatch, getState) => {
-        const collection = getCollection(getState())
 
-        if (collection && !refresh) {
-            return null
+/*
+ * Get all collection
+*/
+// export const GET_COLLECTION_REQUEST = 'GET_COLLECTION_REQUEST'
+// export const GET_COLLECTION_SUCCESS = 'GET_COLLECTION_SUCCESS'
+// export const GET_COLLECTION_FAILURE = 'GET_COLLECTION_FAILURE'
+
+export function fetchCollection(id) {
+    return {
+        [CALL_API]: {
+            types: [ GET_COLLECTION_REQUEST, GET_COLLECTION_SUCCESS, GET_COLLECTION_FAILURE ],
+            endpoint: 'Collection.get',
+            payload: [ id ],
+            // schema: Schemas.COLLECTION,
+            schema: {
+                collection: Schemas.COLLECTION,
+                // nodes: arrayOf(Schemas.NODE),
+                edges: arrayOf(Schemas.EDGE),
+            }
         }
-
-        return dispatch(fetchCollectionL1(id))
     }
 }
-
 
 /*
  * Create a collection
@@ -874,7 +882,9 @@ export function removeAbstraction(sourceCollectionId, collectionId) {
     return (dispatch, getState) => {
         // get the direct child nodes,
         // TODO: must be merged with previous
-        return dispatch(getCollection(collectionId))
+        // TODO: should be getCollection?
+        console.log(collectionId);
+        return dispatch(getCollectionL1(collectionId))
             .then(() => {
                 return dispatch(fetchRemoveAbstraction(sourceCollectionId, collectionId))
             })

@@ -81,6 +81,7 @@ export function nodes(state={}, action, collections) {
 
         case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
         // TODO: To support multiple abstractions per node, this data structure must be a tree (like collections)
+            console.log("moving to abstraction setting", action.abstractionChain);
             return update(state, {
                 [action.sourceId]: { collections: { $set: action.abstractionChain }}
             })
@@ -533,63 +534,21 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
                 ...state,
                 [action.response.result.collection]: {
                     nodes: action.response.entities.collections[action.response.result.collection].nodes,
-                    edges: action.response.result.edges,
                 },
             }
 
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
-        case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
-            /*
-             * remove the edges between the two nodes (since these are now abstraction relations)
-            */
-
-            return update(state, {
-                [action.sourceCollectionId]: {
-                    edges: { $set: _.without(
-                        state[action.sourceCollectionId].edges,
-                        ...getEdgesForNodes(globalState, [action.sourceId, action.targetId]).map(e => e.id)
-                    )}
-                }
-            })
-
-        case actionTypes.GET_NODE_L1_SUCCESS:
-            if (action.sourceCollectionId) {
-                return update(state, {
-                    [action.sourceCollectionId]: {
-                        edges: { $set: _.union(state[action.sourceCollectionId].edges, action.response.result.edges)}
-                    }
-                })
-            }
-
-            return state
-
         // TESTED
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            // edges are derived data
             return update(state, {
                 [action.collectionId]: {
                     nodes: { $push: [ action.nodeId ]}
                 }
             })
 
-        case actionTypes.CONNECT_NODES_SUCCESS:
-             /*
-              * add edge to the source collection (from which it was called)
-             */
-
-            if (action.sourceCollectionId) {
-                return update(state, {
-                    [action.sourceCollectionId]: {
-                        edges: { $push: [ action.response.result ]} // pushes the edge id
-                    }
-                })
-                return update
-            }
-
-            return state
-
+        // TODO: just make nodes derived data as well?
         case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
         case actionTypes.REMOVE_NODE_SUCCESS:
             // get the node to be removed and its edges
@@ -599,7 +558,6 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
                 return update(state, {
                     [action.collectionId]: {
                         nodes: { $set: _.without((state[action.collectionId] && state[action.collectionId].nodes) || [], action.nodeId) },
-                        edges: { $set: _.without((state[action.collectionId] && state[action.collectionId].edges) || [], ...getEdgeIdsByNodeId(globalState, action.nodeId)) },
                     }
                 })
             }
@@ -997,23 +955,6 @@ export const getEdgeIdsByNodeId = (state, id) => {
     ]
 }
 
-export const getEdgesForNodes = (state, ids) => {
-    /*
-     * Gets all edges between [ ids ]
-    */
-
-    // filter edges that have start/end not inside this collection of elements
-    return _(ids)
-        .map(id => getL1Edges(state, id))
-        .flatMap()
-        .uniqBy('id')
-        .filter(edge => {
-            // must both be in ids[] array, otherwise we get edges pointing to nodes not in ids[]
-            return _.every([edge.start, edge.end], (id) => _.includes(ids, id))
-        })
-        .value()
-}
-
 // TODO: how can we ensure consistent order? - 2016-06-18
 // TODO: Keep track of an adjacency list in a reducer to make this faster 2016-06-19
 export const getEdgesFromNode = (state, id) => (
@@ -1057,9 +998,53 @@ export const getNodeIdsByCollectionId = (state, id) => (
     state.nodesByCollectionId[id] || []
 )
 
-export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => (
-    state.abstractionDetail[id] || { nodes: [], edges: [] }
-)
+export const getEdgesForNodes = (state, ids) => {
+    /*
+     * Gets all edges between [ ids ] (and their neighbours)
+    */
+
+    // TODO: make this more efficient
+    // filter edges that have start/end not inside this collection of elements
+    return _(ids)
+        .map(id => getL1Edges(state, id))
+        .flatMap()
+        .uniqBy('id')
+        .filter(edge => {
+            // must both be in ids[] array, otherwise we get edges pointing to nodes not in ids[]
+            return _.every([edge.start, edge.end], (id) => _.includes(ids, id))
+        })
+        .map(x => x.id)
+        .value()
+}
+
+export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
+    const parentCollection = getCollection(state, id)
+
+    if (!parentCollection) {
+        return {
+            nodes: [],
+            edges: []
+        }
+    }
+
+    const collectionChain = [ parentCollection.id, ...((parentCollection && parentCollection.collections) || []) ]
+
+    // const nodes = (state.abstractionDetail[id] && state.abstractionDetail[id].nodes) || []
+    const nodes = getNodes(state)
+        .filter(node => {
+            return _.intersection(node.collections, collectionChain).length === collectionChain.length
+        })
+        .map(node => node.id)
+
+    console.log("works", collectionChain, nodes);
+
+    const edges = getEdgesForNodes(state, nodes)
+
+    return {
+        nodes,
+        edges,
+    }
+}
 
 export const getNodesAndEdgesByCollectionId = (state, id) => {
     // this gets the direct nodes including their children
@@ -1125,6 +1110,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
          * iterate over all edges
          * filter edges that go outside the collection
         */
+
         if (_.difference(collectionChain, nodeMap[e.start].collections).length > 0) {
             return false;
         }

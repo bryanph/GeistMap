@@ -37,7 +37,6 @@ class AbstractionList extends React.Component {
         */
 
         this.props.removeAbstraction(this.props.activeCollection.id, id)
-            .then(() => this.props.fetchNodeL1(id, this.props.activeCollection.id))
     }
 
     focusAbstraction(id) {

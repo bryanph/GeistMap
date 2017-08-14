@@ -280,21 +280,35 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
 
 const createEnterLink = function(actions) {
     return (selection) => {
-        return selection
-            .append("path")
+        const g = selection
+            .insert("g", ":first-child")
             .attr('id', (d) => `link-${d.id}`) // for later reference from data
-            .attr("class", "link node-link")
+            .attr("class", "link")
+
+        // transparent clickable edge
+        g
+            .append("path")
+            .attr("class", "node-link-transparent")
             .attr("marker-end", "url(#Triangle)")
-            .on('dblclick', actions.doubleClick)
-        // .append("path")
-        // .attr('id', (d) => `link-${d.id}`) // for later reference from data
-        // .attr('fill', (d) => lightAccentColor)
-        // .attr("class", "link node-link")
-        // .on('dblclick', events.linkDoubleClick)
-        // .attr("marker-mid", "url(#Triangle)")
+            // .on('dblclick', actions.doubleClick)
+
+        // visible non-clickable edge
+        g
+            .append("path")
+            .attr("class", "node-link")
+            .attr("marker-end", "url(#Triangle)")
     }
 }
 
+const createUpdateLink = function({ onClick }) {
+    return (selection, mode) => {
+        selection.on('click', null)
+
+        if (mode === 'delete') {
+            selection.on('click', onClick)
+        }
+    }
+}
 
 const createExploreEvents = function(simulation, actions) {
     /*
@@ -349,7 +363,7 @@ const createExploreEvents = function(simulation, actions) {
         // EXIT selection
         link.exit().remove()
         // ENTER selection
-        link.enter().insert('g', ":first-child").call(enterLink)
+        link.enter().call(enterLink)
         // ENTER + UPDATE selection
         // .merge(link).call(updateLink)
     }
@@ -371,7 +385,6 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const removeAbstraction = (id) => {
         return actions.removeAbstraction(this.props.activeCollection.id, id)
-            .then(() => actions.fetchNodeL1(id, this.props.activeCollection.id))
     }
 
     const removeNode = (id) => {
@@ -417,14 +430,20 @@ const createCollectionDetailEvents = function(simulation, actions) {
         doubleClick: (d) => actions.removeEdge(d.id)
     })
 
+    const updateLink = createUpdateLink({
+        onClick: (d) => actions.removeEdge(d.id)
+    })
+
     return (nodeSelection, collectionSelection, link, mode, focus) => {
         // TODO: if the mode changed, all nodes need to be updated - 2017-07-08
         // one way is to just set a flag on the data
 
         // if mode changed, update everything
+        // TODO: find a different way to achieve this
         if (this.props.mode !== mode) {
             nodeSelection.call((selection) => updateNode(selection, mode, focus))
             collectionSelection.call((selection) => updateCollection(selection, mode, focus))
+            link.call((selection) => updateLink(selection, mode))
         } else {
             // EXIT selection
             nodeSelection.exit().remove()
@@ -626,7 +645,7 @@ class NodeGraph extends React.PureComponent {
             selection.selectAll('.collectionSelection')
                 .call(transformNode);
 
-            selection.selectAll('.link')
+            selection.selectAll('.link > path')
                 .call(transformLink);
         }
 
