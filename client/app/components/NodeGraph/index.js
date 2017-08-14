@@ -282,7 +282,7 @@ const createEnterLink = function(actions) {
     return (selection) => {
         const g = selection
             .insert("g", ":first-child")
-            .attr('id', (d) => `link-${d.id}`) // for later reference from data
+            .attr('id', (d) => `link-${d.id}`)
             .attr("class", "link")
 
         // transparent clickable edge
@@ -443,26 +443,27 @@ const createCollectionDetailEvents = function(simulation, actions) {
         if (this.props.mode !== mode) {
             nodeSelection.call((selection) => updateNode(selection, mode, focus))
             collectionSelection.call((selection) => updateCollection(selection, mode, focus))
-            link.call((selection) => updateLink(selection, mode))
+            // link.call((selection) => updateLink(selection, mode))
         } else {
             // EXIT selection
             nodeSelection.exit().remove()
             collectionSelection.exit().remove()
             // ENTER selection
             nodeSelection.enter().append('g').call(enterNode).call(nodeDrag)
-                .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
+            .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
 
             collectionSelection.enter().append('g').call(enterCollection).call(nodeDrag)
-                .merge(collectionSelection).call((selection) => updateCollection(selection, mode, focus))
+            .merge(collectionSelection).call((selection) => updateCollection(selection, mode, focus))
+
+            // EXIT selection
+            link.exit().remove()
+            // ENTER selection
+            link.enter().call(enterLink)
+            // ENTER + UPDATE selection
+            // .merge(link).call(updateLink)
         }
 
 
-        // EXIT selection
-        link.exit().remove()
-        // ENTER selection
-        link.enter().insert('g', ":first-child").call(enterLink)
-        // ENTER + UPDATE selection
-        // .merge(link).call(updateLink)
     }
 }
 
@@ -645,8 +646,8 @@ class NodeGraph extends React.PureComponent {
             selection.selectAll('.collectionSelection')
                 .call(transformNode);
 
-            selection.selectAll('.link > path')
-                .call(transformLink);
+            selection.selectAll('.link')
+                .each(transformLink)
         }
 
         this.simulation.on('tick', () => {

@@ -6,7 +6,7 @@ import {
     forceLink,
     forceCenter
 } from 'd3-force'
-
+import { select as d3Select } from 'd3-selection'
 import { transition } from 'd3-transition'
 
 import { NODE_RADIUS } from '../../graph/constants'
@@ -36,15 +36,15 @@ export const transformNode = (selection) => {
             });
 };
 
-export const transformLink = (selection) => {
-    return selection
-        .attr('d', (d) => linkArc(d, d.curved))
-    // return selection
-    //     .attr("x1", (d) => d.source.x)
-    //     .attr("y1", (d) => d.source.y)
-    //     .attr("x2", (d) => d.target.x)
-    //     .attr("y2", (d) => d.target.y);
+export const transformLink = function(d) {
+    const selection = d3Select(this)
+    const pathPos = linkArc(d, d.curved)
 
+    selection.selectAll('path').each(function(d) {
+        const path = d3Select(this)
+
+        path.attr('d', pathPos)
+    })
 };
 
 function linkArc(d, curved=false) {

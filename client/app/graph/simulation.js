@@ -76,7 +76,6 @@ export const transformNode = (selection) => {
 
 export const transformLink = (selection) => {
     // TODO: proper selection here for tick - 2016-06-13
-
     return selection
         .attr('d', (d) => linkArc(d, d.curved))
 };
