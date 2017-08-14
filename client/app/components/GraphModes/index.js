@@ -72,9 +72,8 @@ class GraphModes extends React.Component {
                     */
                 }
                 <Button
-                    icon={ "trash" } size="big" className={ deleteClass }
+                    size="big" className={ deleteClass }
                     onClick={ () => this.props.setGraphMode("delete") }
-                    content="Delete (d)"
                 >
                     <Icon name="trash" /> <span>Delete (d)</span>
                 </Button>

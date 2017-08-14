@@ -1135,22 +1135,34 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         return true
     })
 
-    console.log("LETSAGOMARIO");
-    console.log(nodes, visibleNodes);
-    console.log(edges, transformedEdges);
+    const filteredCollections = _(collections)
+        .sortBy('collections')
+        .filter(c => {
+            // if this is a parent collection, don't handle it
+            if (collectionChain.includes(c.id)) {
+                return false;
+            }
 
-    // TODO: first filter the parent collections out, we don't want to show their nodes
-    collections.forEach(c => {
-        // TODO: can also be hidden because the parent is collapsed - 2017-08-03
-        // TODO: check if this collection has a parent, and that parent is not collapsed
-        // => hide the collection
+            // is a direct child
+            if (_.isEqual(c.collections, collectionChain)) {
+                // TODO: avoid mutations
+                return true
+            }
 
-        // TODO: shouldn't be necessary
-        if (collectionChain.includes(c.id)) {
-            return;
-        }
+            // check if the direct parent is collapsed or not
+            console.log("the collections", c.collections);
+            // TODO: must be consistent with ordering of collections
+            const parentCollection = nodeMap[c.collections[0]]
 
-        console.log("HANDLING COLLECTION", c);
+            if (parentCollection.collapsed) {
+                return false;
+            }
+
+            return true;
+        })
+        .value()
+
+    filteredCollections.forEach(c => {
 
         if (c.collapsed) {
             /*
@@ -1234,11 +1246,9 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log("visible nodes after", visibleNodes);
-
     return {
         nodes: visibleNodes,
-        collections: collections,
+        collections: filteredCollections,
         visibleCollections,
         edges: transformedEdges,
         collectionChain: collectionChain.map(id => getCollection(state, id)),

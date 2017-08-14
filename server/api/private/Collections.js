@@ -63,7 +63,88 @@ module.exports = function(db, es) {
             const result = mapIntegers(results.records[0]._fields[0])
         },
 
-        get: function(user, id, res) {
+        get: function(user, rawId, res) {
+            /*
+             * Get node with id ${id} (including its neightbours)
+             * // TODO: give this call an explicit name - 2016-07-15
+             * // TODO: Check this call's performance - 2016-07-11
+             */
+
+            const id = neo4j.int(rawId)
+            const userId = user._id.toString()
+
+            Promise.all([
+                // get collection
+                db.run(
+                    `MATCH (u:User)--(c:Collection)
+                    WHERE u.id = {userId} AND id(c) = {id}
+                    RETURN c;`,
+                    {
+                        id,
+                        userId,
+                    }
+                ),
+                // get all edges in the collection
+                db.run(
+                    `MATCH (u:User)--(c:Collection)
+                    WHERE u.id = {userId} AND id(c) = {id}
+                    OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
+                    WITH c, collect(distinct n) as ns
+                    UNWIND ns as n1
+                    UNWIND ns as n2
+                    OPTIONAL MATCH (n1)-[e:EDGE]-(n2)
+                    RETURN collect(distinct e)`,
+                    {
+                        id,
+                        userId,
+                    }
+                ),
+                // get all nodes in the collection, along with THEIR collections (ids)
+                db.run(
+                    `MATCH (u:User)--(c:Collection)
+                    WHERE u.id = {userId} AND id(c) = {id}
+                    OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
+                    WITH distinct n
+                    OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
+                    RETURN n, collect(distinct id(c2))
+                    ORDER BY id(n)`,
+                    {
+                        id,
+                        userId,
+                    }
+                )
+            ])
+            .then((results) => {
+                if (results[0].records.length === 0) {
+                    console.log("collection not found..");
+                    return res(new Error(`Collection with id ${id} was not found`))
+                }
+
+                const collection = mapIdentity(results[0].records[0].get(0))
+                const edges = results[1].records[0].get(0).map(mapEdges)
+                const nodes = results[2].records[0].get(0) === null ?
+                    [] :
+                    results[2].records.map(row => (
+                        Object.assign({},
+                            mapIdentity(row.get(0)),
+                            {
+                                collections: row.get(1).map(x => x.toString()), // ids for collections
+                            }
+                        )
+                    ))
+
+                return res(null, {
+                    collection: Object.assign({},
+                        collection,
+                        { nodes }
+                    ),
+                    edges
+                })
+            })
+            .catch(handleError)
+        },
+
+        getL1: function(user, id, res) {
             /*
              * Get node with id ${id} (including its neightbours)
              */
@@ -141,8 +222,6 @@ module.exports = function(db, es) {
                         ))
                     // TODO: enforce this in the query
                     nodes = nodes.filter(x => x.id !== id)
-
-                    console.log(nodes)
 
                     // TODO: return for every node whether it is a node or a collection - 2017-07-13
                     // store this as a property

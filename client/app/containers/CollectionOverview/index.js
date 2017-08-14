@@ -17,17 +17,17 @@ import EditModeButton from '../../components/EditModeButton'
 
 import './styles.scss'
 
-import { 
+import {
     createCollection,
     updateCollection,
     fetchCollections,
-    loadCollection,
+    getCollectionL1,
     connectCollections,
     removeCollection,
-    removeCollectionEdge 
+    removeCollectionEdge
 } from '../../actions/async'
 
-import { 
+import {
     showCreateCollectionWindow,
     setActiveCollection,
     addCollection,
@@ -35,7 +35,7 @@ import {
 
 
 export const AddCollectionShootButton = (props) => (
-    <AddButton 
+    <AddButton
         onTouchTap={() => props.showCreateCollectionWindow()}
     />
 )
@@ -44,7 +44,7 @@ export const AddCollectionShootButton = (props) => (
 
 function loadData(props) {
     if (props.id) {
-        props.loadCollection(props.id)
+        props.getCollectionL1(props.id)
     }
 }
 
@@ -77,7 +77,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                 <SubjectGraph
                     selectedId={this.props.id}
                     nodes={collections || []}
-                    links={collectionLinks || []} 
+                    links={collectionLinks || []}
                     connectCollections={this.props.connectCollections}
                     removeCollectionEdge={this.props.removeCollectionEdge}
                     setActiveCollection={this.props.setActiveCollection}
@@ -119,7 +119,7 @@ export default connect(mapStateToProps, {
     createCollection,
     showCreateCollectionWindow,
     fetchCollections,
-    loadCollection,
+    getCollectionL1,
     connectCollections,
     removeCollection,
     removeCollectionEdge,

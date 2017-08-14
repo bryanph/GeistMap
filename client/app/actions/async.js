@@ -506,11 +506,11 @@ export const GET_COLLECTION_REQUEST = 'GET_COLLECTION_REQUEST'
 export const GET_COLLECTION_SUCCESS = 'GET_COLLECTION_SUCCESS'
 export const GET_COLLECTION_FAILURE = 'GET_COLLECTION_FAILURE'
 
-export function fetchCollection(id) {
+export function fetchCollectionL1(id) {
     return {
         [CALL_API]: {
             types: [ GET_COLLECTION_REQUEST, GET_COLLECTION_SUCCESS, GET_COLLECTION_FAILURE ],
-            endpoint: 'Collection.get',
+            endpoint: 'Collection.getL1',
             payload: [ id ],
             // schema: Schemas.COLLECTION,
             schema: {
@@ -521,7 +521,7 @@ export function fetchCollection(id) {
         }
     }
 }
-export function loadCollection(id, refresh=true) {
+export function getCollectionL1(id, refresh=true) {
     /*
      * Load collection, including all the nodes
     */
@@ -532,7 +532,7 @@ export function loadCollection(id, refresh=true) {
             return null
         }
 
-        return dispatch(fetchCollection(id))
+        return dispatch(fetchCollectionL1(id))
     }
 }
 
@@ -630,7 +630,7 @@ export function addNodeToCollection(collectionId, nodeId) {
 
         const abstractionChain = getAbstractionChain(getState(), collectionId)
 
-        const collectionPromise = !collection ? dispatch(fetchCollection(collectionId)) : Promise.resolve(collection)
+        const collectionPromise = !collection ? dispatch(fetchCollectionL1(collectionId)) : Promise.resolve(collection)
         // this fetches the neighbours as well (why?)
         const nodePromise = !node ? dispatch(loadNodeL1(nodeId)) : Promise.resolve(node)
 
@@ -851,7 +851,7 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
 export const REMOVE_ABSTRACTION_REQUEST = 'REMOVE_ABSTRACTION_REQUEST'
 export const REMOVE_ABSTRACTION_SUCCESS = 'REMOVE_ABSTRACTION_SUCCESS'
 export const REMOVE_ABSTRACTION_FAILURE = 'REMOVE_ABSTRACTION_FAILURE'
-export function removeAbstraction(sourceCollectionId, collectionId) {
+export function fetchRemoveAbstraction(sourceCollectionId, collectionId) {
     /*
      * This converts the abstraction to a node and the edges to normal edges
     */
@@ -864,4 +864,20 @@ export function removeAbstraction(sourceCollectionId, collectionId) {
             payload: [ sourceCollectionId, collectionId ],
         }
     }
+}
+
+export function removeAbstraction(sourceCollectionId, collectionId) {
+    /*
+     * 1. Fetch direct child nodes of ${collectionId}
+     * 2. Move abstraction with ${collectionId} to ${sourceCollectionId}
+    */
+    return (dispatch, getState) => {
+        // get the direct child nodes,
+        // TODO: must be merged with previous
+        return dispatch(getCollection(collectionId))
+            .then(() => {
+                return dispatch(fetchRemoveAbstraction(sourceCollectionId, collectionId))
+            })
+    }
+
 }

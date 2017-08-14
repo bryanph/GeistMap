@@ -56,7 +56,7 @@ const sessionMiddleware = session({
     store: sessionStore
 })
 
-app.engine('.hbs', exphbs({ 
+app.engine('.hbs', exphbs({
     extname: '.hbs',
     defaultLayout: false,
     layoutsDir: path.join(__dirname, 'views/layouts'),
@@ -180,7 +180,16 @@ io.on('connection', function(socket) {
     socket.on('Node.convertNodeToCollection', NodeAPI.convertNodeToCollection.bind(null, user));
     socket.on('Node.convertCollectionToNode', NodeAPI.convertCollectionToNode.bind(null, user));
 
+    /*
+     * gets collection with its nodes
+    */
     socket.on('Collection.get', CollectionAPI.get.bind(null, user));
+
+    /*
+     * gets collection with its nodes and their direct neighbours
+    */
+    socket.on('Collection.getL1', CollectionAPI.getL1.bind(null, user));
+
     // socket.on('Collection.getByIds', CollectionAPI.getByIds.bind(null, user));
     socket.on('Collection.getAll', CollectionAPI.getAll.bind(null, user));
     socket.on('Collection.create', CollectionAPI.create.bind(null, user));

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import {
     loadNode,
-    loadCollection,
+    getCollectionL1,
     loadNodeL1,
     connectNodes,
     updateNode,
@@ -23,7 +23,7 @@ import NodeView from '../../components/NodeView'
 
 function loadData(props) {
     if (props.collectionId) {
-        return props.loadCollection(props.collectionId)
+        return props.getCollectionL1(props.collectionId)
             .then((action) => {
                 if (props.nodeId) {
                     props.loadNode(props.nodeId)
@@ -138,7 +138,7 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, {
-    loadCollection,
+    getCollectionL1,
     loadNodeL1,
     addNode,
     connectNodes,
