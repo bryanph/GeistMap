@@ -11,6 +11,7 @@ import {
     removeAbstraction,
     moveToAbstraction,
     fetchNodeL1,
+    removeEdge,
 } from '../../actions/async'
 
 import {
@@ -81,6 +82,7 @@ export class NodeViewContainer extends React.Component {
                 moveToAbstraction={this.props.moveToAbstraction}
                 collectionChain={this.props.collectionChain}
                 fetchNodeL1={this.props.fetchNodeL1}
+                removeEdge={this.props.removeEdge}
             />
         );
     }
@@ -149,4 +151,5 @@ export default connect(mapStateToProps, {
     toggleCollapse,
     moveToAbstraction,
     fetchNodeL1,
+    removeEdge,
 })(NodeViewContainer)

@@ -302,6 +302,7 @@ const createEnterLink = function(actions) {
 
 const createUpdateLink = function({ onClick }) {
     return (selection, mode) => {
+        console.log(mode);
         selection.on('click', null)
 
         if (mode === 'delete') {
@@ -443,7 +444,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
         if (this.props.mode !== mode) {
             nodeSelection.call((selection) => updateNode(selection, mode, focus))
             collectionSelection.call((selection) => updateCollection(selection, mode, focus))
-            // link.call((selection) => updateLink(selection, mode))
+            link.call((selection) => updateLink(selection, mode))
         } else {
             // EXIT selection
             nodeSelection.exit().remove()
