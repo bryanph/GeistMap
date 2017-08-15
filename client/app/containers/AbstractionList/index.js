@@ -15,6 +15,7 @@ import {
 import {
     removeAbstraction,
     fetchNodeL1,
+    getCollectionL1,
 } from '../../actions/async'
 
 import './styles.scss'
@@ -26,6 +27,7 @@ class AbstractionList extends React.Component {
 
         this.focusAbstraction = this.focusAbstraction.bind(this)
         this.removeAbstraction = this.removeAbstraction.bind(this)
+        this.toggleCollapse = this.toggleCollapse.bind(this)
     }
 
     removeAbstraction(id) {
@@ -49,6 +51,15 @@ class AbstractionList extends React.Component {
         this.props.history.push(`/app/collections/${id}/nodes`)
     }
 
+    toggleCollapse(id) {
+        /*
+         * 1. fetch the collection to collapse if it hasn't been fetched yet
+         * 2. toggle the collapse
+        */
+        this.props.getCollectionL1(id, { cache: true })
+            .then(() => this.props.toggleCollapse(id))
+    }
+
 
     render() {
         const { collections } = this.props
@@ -57,7 +68,7 @@ class AbstractionList extends React.Component {
             <AbstractionItem
                 key={c.id}
                 collection={c}
-                onToggleCollapse={this.props.toggleCollapse}
+                onToggleCollapse={this.toggleCollapse}
                 removeAbstraction={this.removeAbstraction}
                 focusAbstraction={this.focusAbstraction}
             />
@@ -108,4 +119,5 @@ export default connect(null, {
     toggleCollapse,
     removeAbstraction,
     fetchNodeL1,
+    getCollectionL1,
 })(withRouter(AbstractionList))

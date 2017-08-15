@@ -506,7 +506,7 @@ export const GET_COLLECTION_REQUEST = 'GET_COLLECTION_REQUEST'
 export const GET_COLLECTION_SUCCESS = 'GET_COLLECTION_SUCCESS'
 export const GET_COLLECTION_FAILURE = 'GET_COLLECTION_FAILURE'
 
-export function getCollectionL1(id) {
+export function fetchCollectionL1(id) {
     return {
         [CALL_API]: {
             types: [ GET_COLLECTION_REQUEST, GET_COLLECTION_SUCCESS, GET_COLLECTION_FAILURE ],
@@ -518,6 +518,23 @@ export function getCollectionL1(id) {
                 // nodes: arrayOf(Schemas.NODE),
                 edges: arrayOf(Schemas.EDGE),
             }
+        }
+    }
+}
+export function getCollectionL1(id, { cache = true } = {}) {
+    /*
+     * Check if we have node in cache already, if not, fetch it first
+     * case 1: new node, no need to fetch neighbours
+     * case 2: existing node, need to add neighbours
+    */
+    return (dispatch, getState) => {
+        const collection = getCollection(getState(), id)
+
+        if (cache) {
+            return !collection ? dispatch(fetchCollectionL1(id)) : Promise.resolve(collection)
+        }
+        else {
+            return dispatch(fetchCollectionL1(id))
         }
     }
 }
@@ -645,7 +662,6 @@ export function addNodeToCollection(collectionId, nodeId) {
         return Promise.all([ collectionPromise, nodePromise ])
             .then(() => dispatch(fetchAddNodeToCollection(collectionId, nodeId, abstractionChain)))
     }
-
 }
 
 /*

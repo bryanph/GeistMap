@@ -17,6 +17,7 @@ import GraphModes from '../../components/GraphModes'
 import ExpandButton from '../../components/ExpandButton'
 import AbstractionList from '../../containers/AbstractionList'
 import AbstractionNavigator from '../../components/AbstractionNavigator'
+import { HotKeys } from 'react-hotkeys';
 
 import './styles.scss'
 
@@ -34,8 +35,17 @@ export class NodeView extends React.PureComponent {
             graphType,
         } = this.props
 
+        const handlers = {
+            'escape': () => this.props.setGraphMode("view"),
+            'navigateMode': () => this.props.setGraphMode("view"),
+            'editMode': () => this.props.setGraphMode("edit"),
+            'abstractMode': () => this.props.setGraphMode("abstract"),
+            'focusMode': () => this.props.setGraphMode("focus"),
+            'deleteMode': () => this.props.setGraphMode("delete"),
+        }
+
         return (
-            <div className='appContainer'>
+            <HotKeys handlers={handlers} className='appContainer'>
                 <AddNodeWindow
                     opened={mode === 'edit'}
                     collection={this.props.activeCollection}
@@ -73,9 +83,10 @@ export class NodeView extends React.PureComponent {
                 />
                 { /* // TODO: combine this into one mode button - 2017-06-28 */ }
                 <div className="graphActions">
-                    <GraphModes />
+                    <GraphModes
+                    />
                 </div>
-            </div>
+            </HotKeys>
 
         );
     }

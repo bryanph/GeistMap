@@ -26,12 +26,18 @@ import InboxSidebar from '../InboxSidebar'
 import EditCollectionOverlay from '../EditCollectionOverlay'
 
 const keyMapping = {
+    'escape': 'esc',
     'explore': 'ctrl+alt+e',
     'addRelation': 'ctrl+alt+r',
     'duplicate': 'ctrl+alt+d',
     'trash': 'ctrl+alt+g',
     'addCollection': 'ctrl+alt+c',
     'focusSearch': 'ctrl+alt+f',
+    "navigateMode": "n",
+    "editMode": "e",
+    "abstractMode": "a",
+    "focusMode": "f",
+    "deleteMode": "d",
 
 }
 
@@ -57,9 +63,9 @@ class App extends React.Component {
             <MuiThemeProvider muiTheme={getMuiTheme()}>
                 <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
                     <div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-                        <Dialogs 
-                            params={match.params} 
-                            location={location} 
+                        <Dialogs
+                            params={match.params}
+                            location={location}
                         />
                         <EditCollectionOverlay />
                         <Errors />
@@ -90,7 +96,7 @@ class App extends React.Component {
                     </div>
                 </HotKeys>
             </MuiThemeProvider>
-        )   
+        )
     }
 }
 
@@ -101,4 +107,3 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, {})(withRouter(App))
-

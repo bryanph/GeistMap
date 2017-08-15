@@ -18,6 +18,7 @@ import {
     addNode,
     setActiveNode,
     toggleCollapse,
+    setGraphMode,
 } from '../../actions/ui'
 
 import NodeView from '../../components/NodeView'
@@ -83,6 +84,7 @@ export class NodeViewContainer extends React.Component {
                 collectionChain={this.props.collectionChain}
                 fetchNodeL1={this.props.fetchNodeL1}
                 removeEdge={this.props.removeEdge}
+                setGraphMode={this.props.setGraphMode}
             />
         );
     }
@@ -152,4 +154,5 @@ export default connect(mapStateToProps, {
     moveToAbstraction,
     fetchNodeL1,
     removeEdge,
+    setGraphMode,
 })(NodeViewContainer)

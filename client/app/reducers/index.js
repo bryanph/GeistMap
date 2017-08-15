@@ -45,7 +45,11 @@ export function nodes(state={}, action, collections) {
 
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
         case actionTypes.REMOVE_ABSTRACTION_SUCCESS:
-            return _.mapValues(state, (x) => update(x, {
+            let newState = update(state, {
+                [action.collectionId]: { type: { $set: "node"}}
+            })
+
+            return _.mapValues(newState, (x) => update(x, {
                 collections: { $set: _.without(x.collections, action.collectionId) }
             }))
 
@@ -81,7 +85,6 @@ export function nodes(state={}, action, collections) {
 
         case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
         // TODO: To support multiple abstractions per node, this data structure must be a tree (like collections)
-            console.log("moving to abstraction setting", action.abstractionChain);
             return update(state, {
                 [action.sourceId]: { collections: { $set: action.abstractionChain }}
             })
@@ -1036,8 +1039,6 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
         })
         .map(node => node.id)
 
-    console.log("works", collectionChain, nodes);
-
     const edges = getEdgesForNodes(state, nodes)
 
     return {
@@ -1048,8 +1049,6 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
 
 export const getNodesAndEdgesByCollectionId = (state, id) => {
     // this gets the direct nodes including their children
-
-    // console.log(JSON.stringify(state))
 
     const parentCollection = getCollection(state, id)
 
@@ -1082,7 +1081,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     const edges = nodesAndEdges.edges.map(edgeId => getEdge(state, edgeId))
 
     let visibleCollections = []
-    let visibleNodes = []
     let visibleEdges = []
 
     let nodeMap = _.keyBy(nodesAndCollections, n => n.id)
@@ -1099,7 +1097,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         // TODO: this won't work if collections has multiple forks
         // TODO: make sure collections ordering is correct
         if (_.isEqual(node.collections, collectionChain)) {
-            visibleNodes.push(node)
             visibleNodeMap[node.id] = node
         }
     })
@@ -1136,7 +1133,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
             }
 
             // check if the direct parent is collapsed or not
-            console.log("the collections", c.collections);
             // TODO: must be consistent with ordering of collections
             const parentCollection = nodeMap[c.collections[0]]
 
@@ -1158,11 +1154,14 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
             // returns node ids for this collection (not all, just the ones that were fetched)
             const nodeIds = getNodeIdsByCollectionId(state, c.id)
 
+            console.log(c.id, nodeIds);
+
             nodeIds.forEach(n => {
-                // if not shown already, don't show the node
-                if (!visibleNodeMap[n]) {
-                    hiddenNodeMap[n] = n
+                // TODO: need to account for case where node is part of two collections and hidden by one, shown by the other
+                if (visibleNodeMap[n]) {
+                    delete visibleNodeMap[n]
                 }
+                hiddenNodeMap[n] = n
             })
 
             // visibleCollections.push(c)
@@ -1177,17 +1176,17 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                 .map((e) => {
                     if (visibleNodeMap[e.start] && visibleNodeMap[e.end]) {
                         // this link is in the graph directly, no need to alter edges
-                        console.log("LINK IS IN GRAPH DIRECTLY");
+                        // console.log("LINK IS IN GRAPH DIRECTLY");
                         return e;
                     }
 
                     // if start is hidden, change start to this collection
                     if (hiddenNodeMap[e.start]) {
-                        console.log("CHANGING START");
+                        // console.log("CHANGING START");
                         e.start = c.id
                     }
                     if (hiddenNodeMap[e.end]) {
-                        console.log("CHANGING END");
+                        // console.log("CHANGING END");
                         e.end = c.id
                     }
                     if (e.start === e.end) {
@@ -1202,15 +1201,18 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
 
         else {
+            /*
+             * 1. Determine which nodes should be hidden
+             * 2. Show the nodes that are not hidden
+            */
             // TODO: this should only get the direct children - 2017-08-03
             getNodeIdsByCollectionId(state, c.id).forEach(n => {
-                visibleNodes.push(getNode(state, n))
                 visibleNodeMap[n] = n
 
                 // we want to show this node even if it was hidden by another collection
-                if (hiddenNodeMap[n]) {
-                    delete hiddenNodeMap[n]
-                }
+                // if (hiddenNodeMap[n]) {
+                //     delete hiddenNodeMap[n]
+                // }
             })
 
             // hide direct edges from/to this collection
@@ -1231,6 +1233,10 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                 .value()
         }
     })
+
+    const visibleNodes = nodes
+        .filter(n => !!visibleNodeMap[n.id])
+        .map(n => getNode(state, n.id))
 
     return {
         nodes: visibleNodes,

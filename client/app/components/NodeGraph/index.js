@@ -302,7 +302,6 @@ const createEnterLink = function(actions) {
 
 const createUpdateLink = function({ onClick }) {
     return (selection, mode) => {
-        console.log(mode);
         selection.on('click', null)
 
         if (mode === 'delete') {
@@ -505,8 +504,6 @@ class NodeGraph extends React.PureComponent {
         nodes = _.uniqBy(nodes, (node) => node.id)
         collections = _.uniqBy(collections, (node) => node.id)
         links = _.uniqBy(links, (link) => link.id)
-
-        console.log(collections);
 
         // TODO: shouldn't have to happen here - 2017-07-14
         collections = collections.filter(c => c.collapsed)
