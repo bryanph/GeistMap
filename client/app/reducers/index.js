@@ -1118,6 +1118,8 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         return true
     })
 
+    console.log("original collections", collections);
+
     const filteredCollections = _(collections)
         .sortBy('collections')
         .filter(c => {
@@ -1133,16 +1135,19 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
             }
 
             // check if the direct parent is collapsed or not
+            console.log("the collections", c.collections);
             // TODO: must be consistent with ordering of collections
             const parentCollection = nodeMap[c.collections[0]]
 
-            if (parentCollection.collapsed) {
+            if (!parentCollection || parentCollection.collapsed) {
                 return false;
             }
 
             return true;
         })
         .value()
+
+    console.log("new collections", filteredCollections);
 
     filteredCollections.forEach(c => {
 
