@@ -44,7 +44,7 @@ export function nodes(state={}, action, collections) {
             })
 
         case actionTypes.REMOVE_COLLECTION_SUCCESS:
-        case actionTypes.REMOVE_ABSTRACTION_SUCCESS:
+        case actionTypes.REMOVE_ABSTRACTION_SUCCESS: {
             let newState = update(state, {
                 [action.collectionId]: { type: { $set: "node"}}
             })
@@ -52,6 +52,7 @@ export function nodes(state={}, action, collections) {
             return _.mapValues(newState, (x) => update(x, {
                 collections: { $set: _.without(x.collections, action.collectionId) }
             }))
+        }
 
         case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
             return {
@@ -83,11 +84,27 @@ export function nodes(state={}, action, collections) {
                 }
             }
 
-        case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
+        case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
         // TODO: To support multiple abstractions per node, this data structure must be a tree (like collections)
-            return update(state, {
+
+            const sourceNode = state[action.sourceId]
+
+            let newState = state;
+
+            // must also update the nodes if source is a collection
+            if (sourceNode.type === "collection") {
+                const oldAbstractionChain = [ action.sourceId, ...sourceNode.collections]
+                const newAbstractionChain = [ action.sourceId, action.targetId, ...sourceNode.collections]
+
+                newState = _.mapValues(newState, (n) => update(n, {
+                    collections: { $set: _.isEqual(oldAbstractionChain, n.collections) ? newAbstractionChain : n.collections }
+                }))
+            }
+
+            return update(newState, {
                 [action.sourceId]: { collections: { $set: action.abstractionChain }}
             })
+        }
 
         case actionTypes.CONVERT_NODE_TO_COLLECTION_SUCCESS:
             return {
@@ -508,14 +525,26 @@ function nodesByCollectionId(state={}, action) {
         case actionTypes.REMOVE_ABSTRACTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
-        case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS:
-            if (!state[action.targetId]) {
-                state[action.targetId] = []
+        case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
+            let newState = state;
+
+            if (!newState[action.targetId]) {
+                newState[action.targetId] = []
             }
 
-            return update(state, {
+            if (action.sourceNode.type === "collection") {
+                /*
+                 * Add nodes from source to target collection as well
+                */
+                newState = update(state, {
+                    [action.targetId]: { $set: _.union(state[action.targetId], state[action.sourceId]) }
+                })
+            }
+
+            return update(newState, {
                 [action.targetId]: { $push: [ action.sourceId ]}
             })
+        }
 
         default:
             return state
@@ -1118,8 +1147,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         return true
     })
 
-    console.log("original collections", collections);
-
     const filteredCollections = _(collections)
         .sortBy('collections')
         .filter(c => {
@@ -1135,10 +1162,10 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
             }
 
             // check if the direct parent is collapsed or not
-            console.log("the collections", c.collections);
             // TODO: must be consistent with ordering of collections
             const parentCollection = nodeMap[c.collections[0]]
 
+            // not fetched yet, or collapsed
             if (!parentCollection || parentCollection.collapsed) {
                 return false;
             }
@@ -1146,8 +1173,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
             return true;
         })
         .value()
-
-    console.log("new collections", filteredCollections);
 
     filteredCollections.forEach(c => {
 
@@ -1158,8 +1183,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
             // returns node ids for this collection (not all, just the ones that were fetched)
             const nodeIds = getNodeIdsByCollectionId(state, c.id)
-
-            console.log(c.id, nodeIds);
 
             nodeIds.forEach(n => {
                 // TODO: need to account for case where node is part of two collections and hidden by one, shown by the other

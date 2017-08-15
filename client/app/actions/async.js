@@ -828,13 +828,14 @@ export function convertCollectionToNode(id) {
 export const MOVE_TO_ABSTRACTION_REQUEST = 'MOVE_TO_ABSTRACTION_REQUEST'
 export const MOVE_TO_ABSTRACTION_SUCCESS = 'MOVE_TO_ABSTRACTION_SUCCESS'
 export const MOVE_TO_ABSTRACTION_FAILURE = 'MOVE_TO_ABSTRACTION_FAILURE'
-export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, abstractionChain) {
+export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, abstractionChain, sourceNode) {
     return {
         sourceCollectionId,
         sourceId,
         targetId,
         edgeId,
         abstractionChain,
+        sourceNode, // TODO: don't pass down?
         [CALL_API]: {
             types: [ MOVE_TO_ABSTRACTION_REQUEST, MOVE_TO_ABSTRACTION_SUCCESS, MOVE_TO_ABSTRACTION_FAILURE ],
             endpoint: 'Node.moveToAbstraction',
@@ -862,10 +863,10 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
         if (target.type === "node") {
             // first need to convert the target to a collection
             return dispatch(convertNodeToCollection(targetId))
-                .then(() => dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, abstractionChain)))
+                .then(() => dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, abstractionChain, source)))
         } else {
             // can add node directly to the collection
-            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, abstractionChain))
+            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, abstractionChain, source))
         }
     }
 }
