@@ -1,6 +1,6 @@
 #!/bin/bash
 
-neo4j-shell -c "MATCH (n) DETACH DELETE n;";
+# neo4j-shell -c "MATCH (n) DETACH DELETE n;";
 curl -XDELETE localhost:9200/nodes;
 curl -XDELETE localhost:9200/collections;
 

@@ -31,9 +31,6 @@ function mapIntegers(node) {
     if (node.modified) {
         node.modified = node.modified.toString()
     }
-    if (node.collections) {
-        node.collections = node.collections.map(x => x.toString())
-    }
     if (node.nodes) {
         node.nodes = node.nodes.map(x => x.toString())
     }
@@ -250,10 +247,11 @@ module.exports = function(db, es) {
             }
 
             // TODO: connect to the root node?
-            db.run(
-                "MERGE (u:User {id: {userId}}) " +
-                "CREATE (n:Node { id: {id}, type: \"node\", name: {name}, created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u) " +
-                "return properties(n) as node",
+            db.run(`
+                MERGE (u:User {id: {userId}})
+                CREATE (n:Node { id: {id}, type: "node", name: {name}, created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)
+                return properties(n) as node
+                `,
                 {
                     id,
                     userId: user._id.toString(),
@@ -263,7 +261,7 @@ module.exports = function(db, es) {
             .then((results) => {
                 const result = mapIntegers(
                     Object.assign(results.records[0]._fields[0], {
-                        collections: []
+                        collectionChains: []
                     })
                 )
 

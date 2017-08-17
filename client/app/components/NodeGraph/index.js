@@ -41,9 +41,9 @@ export function colorNode(d) {
      * Assign a color to a node based on its collections
     */
     if (d.type === 'node') {
-        return colora(d.collections.sort().join(','))
+        return colora(_.flatten(d.collectionChains).sort().join(','))
     } else {
-        return colora([d.id, ...d.collections].sort().join(','))
+        return colora([d.id, ..._.flatten(d.collectionChains)].sort().join(','))
 
     }
 }

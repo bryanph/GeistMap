@@ -76,7 +76,7 @@ module.exports = function(db, es) {
                 // get collection
                 db.run(
                     `MATCH (u:User)--(c:Collection)
-                    WHERE u.id = {userId} AND id(c) = {id}
+                    WHERE u.id = {userId} AND c.id = {id}
                     RETURN c;`,
                     {
                         id,
@@ -86,7 +86,7 @@ module.exports = function(db, es) {
                 // get all edges in the collection
                 db.run(
                     `MATCH (u:User)--(c:Collection)
-                    WHERE u.id = {userId} AND id(c) = {id}
+                    WHERE u.id = {userId} AND c.id = {id}
                     OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
                     WITH c, collect(distinct n) as ns
                     UNWIND ns as n1
@@ -99,14 +99,15 @@ module.exports = function(db, es) {
                     }
                 ),
                 // get all nodes in the collection, along with THEIR collections (ids)
-                db.run(
-                    `MATCH (u:User)--(c:Collection)
-                    WHERE u.id = {userId} AND id(c) = {id}
+                db.run( `
+                    MATCH (u:User)--(c:Collection)
+                    WHERE u.id = {userId} AND c.id = {id}
                     OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
                     WITH distinct n
                     OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    RETURN n, collect(distinct id(c2))
-                    ORDER BY id(n)`,
+                    RETURN n, collect(distinct c2.id)
+                    ORDER BY n.id
+                    `,
                     {
                         id,
                         userId,
@@ -151,7 +152,9 @@ module.exports = function(db, es) {
             const userId = user._id.toString()
 
             Promise.all([
-                // get collection
+                /*
+                 * Get collection and all collections in the chain to the root collection
+                */
                 db.run(
                     `MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
@@ -177,17 +180,23 @@ module.exports = function(db, es) {
                 ),
                 // Get for every direct child, which abstractions they belong to
                 // TODO: make sure nodes here doesn't include any parent collection
-                db.run(
-                    `MATCH (u:User)--(c:Collection)
+                /*
+                 * Get every direct child
+                 * Including their top-level abstractions in a list (ids)
+                */
+                db.run( `
+                    MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
                     MATCH (c)<-[:AbstractEdge]-(n) // children of this collection
                     OPTIONAL MATCH (n)-[e:EDGE]-(n2) // get neighbours
                     WITH collect(n) as nodes1, collect(n2) as nodes2
                     UNWIND nodes1 + nodes2 as nodes
-                    MATCH (nodes)-[:AbstractEdge*1..]->(c2:Collection) // get their abstractions
-                    WITH nodes, collect(distinct c2.id) as collections
-                    OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children) // count children
-                    RETURN properties(nodes) as node, collections, COUNT(children)`,
+                    WITH DISTINCT nodes
+                    MATCH p=(nodes)-[:AbstractEdge*0..]->(:RootCollection)
+                    WITH nodes, collect(extract(c IN tail(nodes(p)) | c.id)) as collections
+                    OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
+                    RETURN properties(nodes) as node, collections, COUNT(children)
+                    `,
                     {
                         id,
                         userId,
@@ -202,7 +211,7 @@ module.exports = function(db, es) {
 
                     const collection = Object.assign(
                         mapIntegers(results[0].records[0].get(0)),
-                        { collections: results[0].records[0].get(1).map(mapIntegers) }
+                        { collectionChain: results[0].records[0].get(1).map(mapIntegers) }
                     )
 
                     const edges = results[1].records.map(record => mapIntegers(record.get('edge')))
@@ -214,7 +223,7 @@ module.exports = function(db, es) {
                                 { collapsed: true },
                                 mapIntegers(row.get(0)),
                                 {
-                                    collections: row.get(1).map(mapIntegers), // ids for collections
+                                    collectionChains: row.get(1), // ids for collections
                                     count: mapIntegers(row.get(2).toNumber())
                                 }
                             )

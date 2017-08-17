@@ -35,11 +35,9 @@ export function nodes(state={}, action, collections) {
 
         // TESTED
         case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-        // TODO: need to just replace the complete chain
-        // TODO: To support multiple abstractions per node, this data structure must be a tree (like collections)
             return update(state, {
                 [action.nodeId]: {
-                    collections: { $set: action.abstractionChain }
+                    collectionChains: { $push: [ action.abstractionChain ] }
                 }
             })
 
@@ -50,18 +48,22 @@ export function nodes(state={}, action, collections) {
             })
 
             return _.mapValues(newState, (x) => update(x, {
-                collections: { $set: _.without(x.collections, action.collectionId) }
+                collectionChains: { $apply: (chains) => chains.map(chain => _.without(chain, action.collectionId))}
             }))
         }
 
         case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
-            return {
-                ...state,
+            /*
+             * Remove node from abstraction x
+             * a -> b -> x => a -> b
+            */
+            return update(state, {
                 [action.nodeId]: {
-                    ...state[action.nodeId],
-                    collections: _.without(state[action.nodeId].collections, action.collectionId),
+                    collectionChains: { $apply: (chains) => chains.map(
+                        chain => _.without(chain, action.collectionId)
+                    )}
                 }
-            }
+            })
 
         case actionTypes.REMOVE_EDGE_SUCCESS:
             return {
@@ -85,8 +87,6 @@ export function nodes(state={}, action, collections) {
             }
 
         case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
-        // TODO: To support multiple abstractions per node, this data structure must be a tree (like collections)
-
             const sourceNode = state[action.sourceId]
 
             let newState = state;
@@ -97,12 +97,20 @@ export function nodes(state={}, action, collections) {
                 const newAbstractionChain = [ action.sourceId, action.targetId, ...sourceNode.collections]
 
                 newState = _.mapValues(newState, (n) => update(n, {
-                    collections: { $set: _.isEqual(oldAbstractionChain, n.collections) ? newAbstractionChain : n.collections }
+                    collectionChains: { $apply: (chains) => chains.map(
+                        chain => _.isEqual(oldAbstractionChain, chain) ? newAbstractionChain : chain
+                    )}
                 }))
             }
 
+            /*
+             * move the source to the target collection
+             * TODO: should be tested
+            */
             return update(newState, {
-                [action.sourceId]: { collections: { $set: action.abstractionChain }}
+                [action.sourceId]: { collectionChains: { $apply: (chains) => chains.map(
+                    chain => chain[chain.length - 1] === action.sourceCollectionId ? action.abstractionChain : chain
+                )}}
             })
         }
 
@@ -116,33 +124,9 @@ export function nodes(state={}, action, collections) {
                 }
             }
 
-
-//         case actionTypes.GET_COLLECTION_SUCCESS:
-//             /*
-//              * for all nodes, check if they are in the GET_COLLECTION response
-//              * this is for keeping ColletionDetail page in sync
-//              * // TODO: should this be nescessary? - 2016-07-29
-//             */
-
-//             return {
-//                 ...state,
-//                 ..._.mapValues(action.response.entities.nodes, (node) => ({
-//                     ...node,
-//                     collections: [
-//                         ...(node.collections || []),
-//                         action.response.result.collection
-//                     ]
-
-//                 }))
-//             }
-
         default:
             if (action.response && action.response.entities && action.response.entities.nodes) {
                 return _.merge({}, state, action.response.entities.nodes)
-                return {
-                    ...state,
-                    ...action.response.entities.nodes
-                }
             }
 
             return state
@@ -509,8 +493,11 @@ function nodesByCollectionId(state={}, action) {
         case actionTypes.GET_COLLECTION_SUCCESS:
             let newState = { ...state }
             // for every node, add them to the corresponding collection list
+
             _.forEach(action.response.entities.nodes, node => {
-                _.forEach(node.collections, c => {
+                const uniqueCollections = _.uniq(_.flatten(node.collectionChains))
+
+                _.forEach(uniqueCollections, c => {
                     if (!newState[c]) {
                         newState[c] = [ node.id ]
                     } else {
@@ -1014,16 +1001,16 @@ export const getEdgesToNode = (state, id) => (
 
 export const getCollections = (state, id) => _.map(state.entities.collections, x => x)
 export const getCollection = (state, id) => state.entities.collections[id]
-
-export const getCollectionsByNodeId = (state, id) => {
-    const node = getNode(state, id)
-
-    if (!node) {
-        return []
-    }
-
-    return (node.collections || []).map(id => getCollection(state, id)).filter(x => x !== undefined)
-}
+//
+// export const getCollectionsByNodeId = (state, id) => {
+//     const node = getNode(state, id)
+//
+//     if (!node) {
+//         return []
+//     }
+//
+//     return (node.collections || []).map(id => getCollection(state, id)).filter(x => x !== undefined)
+// }
 
 
 export const getNodeIdsByCollectionId = (state, id) => (
@@ -1043,6 +1030,7 @@ export const getEdgesForNodes = (state, ids) => {
         .uniqBy('id')
         .filter(edge => {
             // must both be in ids[] array, otherwise we get edges pointing to nodes not in ids[]
+            // TODO:can  make this into a _.some to get the neighbouring edges as well
             return _.every([edge.start, edge.end], (id) => _.includes(ids, id))
         })
         .map(x => x.id)
@@ -1059,13 +1047,15 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
         }
     }
 
-    const collectionChain = [ parentCollection.id, ...((parentCollection && parentCollection.collections) || []) ]
+    const collectionChain = [ parentCollection.id, ...(parentCollection.collectionChain || []) ]
 
     // const nodes = (state.abstractionDetail[id] && state.abstractionDetail[id].nodes) || []
     const nodes = getNodes(state)
-        .filter(node => {
-            return _.intersection(node.collections, collectionChain).length === collectionChain.length
-        })
+        .filter(node => (
+            _.some(node.collectionChains, (chain) =>
+                _.intersection(chain, collectionChain).length === collectionChain.length
+            )
+        ))
         .map(node => node.id)
 
     const edges = getEdgesForNodes(state, nodes)
@@ -1094,10 +1084,9 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
     // TODO: this won't work when the abstraction belongs to multiple other abstractions
     // instead, need to specify full chain in the URL (or identify each abstraction chain different) => probably better
-    const collectionChain = [ parentCollection.id, ...((parentCollection && parentCollection.collections) || []) ]
+    const collectionChain = [ parentCollection.id, ...(parentCollection.collectionChain || []) ]
 
     const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
-
 
     // nodes includes both nodes and collections
     const nodesAndCollections = nodesAndEdges.nodes.map(id => getNode(state, id))
@@ -1123,12 +1112,12 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
     // add :NODE nodes that are direct children of this collection
     nodes.forEach(node => {
-        // TODO: this won't work if collections has multiple forks
-        // TODO: make sure collections ordering is correct
-        if (_.isEqual(node.collections, collectionChain)) {
+        if (_.some(node.collectionChains, (list) => _.isEqual(list, collectionChain))) {
             visibleNodeMap[node.id] = node
         }
     })
+
+    console.log(visibleNodeMap);
 
     // TODO: need to filter edges that go outside the collection
     transformedEdges = transformedEdges.filter(e => {
@@ -1137,10 +1126,12 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
          * filter edges that go outside the collection
         */
 
-        if (_.difference(collectionChain, nodeMap[e.start].collections).length > 0) {
+        // if start is not part of this collection, remove the edge
+        if (_.every(nodeMap[e.start].collectionChains, (list) =>_.difference(collectionChain, list).length > 0)) {
             return false;
         }
-        if (_.difference(collectionChain, nodeMap[e.end].collections).length > 0) {
+        // if end is not part of this collection, remove the edge
+        if (_.every(nodeMap[e.end].collectionChains, (list) =>_.difference(collectionChain, list).length > 0)) {
             return false;
         }
 
@@ -1156,20 +1147,33 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
             }
 
             // is a direct child
-            if (_.isEqual(c.collections, collectionChain)) {
-                // TODO: avoid mutations
+            // TODO: do this at the same time with direct nodes children
+            if (_.some(c.collectionChains, (list) => _.isEqual(list, collectionChain))) {
                 return true
             }
 
-            // check if the direct parent is collapsed or not
-            // TODO: must be consistent with ordering of collections
-            const parentCollection = nodeMap[c.collections[0]]
 
-            // not fetched yet, or collapsed
-            if (!parentCollection || parentCollection.collapsed) {
-                return false;
+            // case 1: only one parent collection
+            // case 2: multiple parent collections
+            // case 3: combination of external collections and child collections
+
+            // check if the direct parent is collapsed or not
+            // TODO: there can be multiple parent collections
+            // TODO: must be consistent with ordering of collections
+            const parentCollections = _(c.collectionChain)
+                .filter(list => _.difference(collectionChain, list).length === 0) // filter out chains that go outside of this collection
+                .map(list => nodeMap[list[0]])
+
+            if (_.every(parentCollections, (c) => !c || c.collapsed)) {
+                return false
             }
 
+            // const parentCollection = nodeMap[c.collections[0]]
+            // // not fetched yet, or collapsed
+            // if (!parentCollection || parentCollection.collapsed) {
+            //     return false;
+            // }
+            //
             return true;
         })
         .value()
@@ -1204,21 +1208,21 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                 .map((e) => {
                     if (visibleNodeMap[e.start] && visibleNodeMap[e.end]) {
                         // this link is in the graph directly, no need to alter edges
-                        // console.log("LINK IS IN GRAPH DIRECTLY");
+                        console.log("LINK IS IN GRAPH DIRECTLY");
                         return e;
                     }
 
                     // if start is hidden, change start to this collection
                     if (hiddenNodeMap[e.start]) {
-                        // console.log("CHANGING START");
+                        console.log("CHANGING START");
                         e.start = c.id
                     }
                     if (hiddenNodeMap[e.end]) {
-                        // console.log("CHANGING END");
+                        console.log("CHANGING END");
                         e.end = c.id
                     }
                     if (e.start === e.end) {
-                        // console.log("BOTH INSIDE THE SAME ABSTRACTION");
+                        console.log("BOTH INSIDE THE SAME ABSTRACTION");
                         return null
                     }
 

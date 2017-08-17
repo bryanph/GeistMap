@@ -643,7 +643,7 @@ export function fetchAddNodeToCollection(collectionId, nodeId, abstractionChain)
         }
     }
 }
-export function addNodeToCollection(collectionId, nodeId) {
+export function addNodeToCollection(collectionId, nodeId, currentAbstractionChain) {
     /*
      * Check if we have node in cache already, if not, fetch it first
      * case 1: new node, no need to fetch neighbours
@@ -653,14 +653,12 @@ export function addNodeToCollection(collectionId, nodeId) {
         const collection = getCollection(getState(), collectionId)
         const node = getNode(getState(), nodeId)
 
-        const abstractionChain = getAbstractionChain(getState(), collectionId)
-
         const collectionPromise = !collection ? dispatch(fetchCollectionL1(collectionId)) : Promise.resolve(collection)
         // this fetches the neighbours as well (why?)
         const nodePromise = !node ? dispatch(loadNodeL1(nodeId)) : Promise.resolve(node)
 
         return Promise.all([ collectionPromise, nodePromise ])
-            .then(() => dispatch(fetchAddNodeToCollection(collectionId, nodeId, abstractionChain)))
+            .then(() => dispatch(fetchAddNodeToCollection(collectionId, nodeId, currentAbstractionChain)))
     }
 }
 
@@ -850,23 +848,21 @@ export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, e
 /*
  * change the abstract edge to point to the given target collection
 */
-export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
+export function moveToAbstraction(sourceCollectionId, sourceId, targetId, currentAbstractionChain) {
     const edgeId = uuidV4()
 
     return (dispatch, getState) => {
         const source = getNode(getState(), sourceId)
         const target = getNode(getState(), targetId)
 
-        const abstractionChain = getAbstractionChain(getState(), targetId)
-
         // TODO: this should be converted to front-end manipulations with a "sync" method - 2017-07-20
         if (target.type === "node") {
             // first need to convert the target to a collection
             return dispatch(convertNodeToCollection(targetId))
-                .then(() => dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, abstractionChain, source)))
+                .then(() => dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, currentAbstractionChain, source)))
         } else {
             // can add node directly to the collection
-            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, abstractionChain, source))
+            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, currentAbstractionChain, source))
         }
     }
 }

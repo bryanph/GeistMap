@@ -25,14 +25,18 @@ class AddNodeWindow extends React.Component {
 
     addExistingNode(esResult) {
         // add existing node to the graph
-        console.log('called addExistingNode', esResult);
-        const node = esResult._source
+        const id = esResult._id
+        const { collection } = this.props
+
+        return this.props.addNodeToCollection(
+            collection.id,
+            id,
+            [ collection.id, ...collection.collectionChain ],
+         )
     }
 
     addNewNode(label) {
         // add a new node to the graph
-        console.log('called addNewNode', label);
-
         if (!label) {
             return;
         }
@@ -43,7 +47,12 @@ class AddNodeWindow extends React.Component {
             .then(action => action.response.result)
 
         if (collection) {
-            createPromise.then(id => this.props.addNodeToCollection(collection.id, id))
+            // TODO: need to keep track of current abstraction chain somewhere (in URL?)
+            createPromise.then(id => this.props.addNodeToCollection(
+                collection.id,
+                 id,
+                 [ collection.id, ...collection.collectionChain ],
+             ))
         }
     }
 

@@ -1,4 +1,4 @@
-import { 
+import {
     event as currentEvent,
     selectAll as d3SelectAll,
     select as d3Select,
@@ -75,7 +75,7 @@ export default (simulation) => (actions) => {
             else if (this.props.mode === 'abstract') {
                 // first just move ...
                 d.fx = currentEvent.x;
-                d.fy = currentEvent.y; 
+                d.fy = currentEvent.y;
 
                 const nodeSelection = d3SelectAll('.node')
 
@@ -101,7 +101,7 @@ export default (simulation) => (actions) => {
             else {
                 // just move ...
                 d.fx = currentEvent.x;
-                d.fy = currentEvent.y; 
+                d.fy = currentEvent.y;
             }
         },
         dragend: function(d) {
@@ -165,7 +165,13 @@ export default (simulation) => (actions) => {
 
                     if (distanceToNode < node.radius) {
                         // move this node to the abstraction that is hovered over
-                        return actions.moveToAbstraction(this.props.activeCollection.id, d.id, node.id)
+                        // TODO: need a method for getting the currently visible abstraction chain
+                        return actions.moveToAbstraction(
+                            this.props.activeCollection.id,
+                             d.id,
+                             node.id,
+                             [ this.props.activeCollection.id, ...this.props.activeCollection.collectionChain ]
+                         )
                     }
                 })
 
@@ -184,4 +190,3 @@ export default (simulation) => (actions) => {
         }
     }
 }
-

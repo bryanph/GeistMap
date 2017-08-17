@@ -27,7 +27,7 @@ class NodeSearchList extends React.Component {
         const { searchResults, searchValue } = this.props
 
         const listItems = _.map(searchResults, result => (
-            <ListItem 
+            <ListItem
                 onTouchTap={() => this.onClick(result)}
                 primaryText={result._source.title || result._source.name}
                 secondaryText={"Node"}
@@ -67,13 +67,13 @@ class SearchInput extends React.Component {
         } = this.props
 
         return (
-            <Input 
+            <Input
                 size='large'
                 action={<Button content="Add" onClick={this.props.onClick} />}
                 placeholder="Label"
                 className="nodeSearch-input"
                 ref={(input) => this.input = input}
-                {...restProps} 
+                {...restProps}
             />
         )
     }
@@ -135,7 +135,7 @@ class NodeSearch extends React.Component {
 
         return (
             <div className="nodeSearch">
-                <SearchInput 
+                <SearchInput
                     onChange={this.onChange}
                     onKeyPress={this.onKeyPress}
                     onClick={this.onSubmit}
@@ -160,4 +160,3 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, { searchNode })(NodeSearch)
-
