@@ -482,6 +482,7 @@ class NodeGraph extends React.PureComponent {
          * Go through the enter,update,exit cycle based on the route
         */
         let {
+            isLoading,
             nodes,
             collections,
             links,
@@ -491,6 +492,10 @@ class NodeGraph extends React.PureComponent {
             activeNode, // if a single node is focused
             activeCollection,
         } = nextProps
+
+        if (isLoading) {
+            return;
+        }
 
         let nodeById = {}
 
@@ -574,6 +579,7 @@ class NodeGraph extends React.PureComponent {
 
     componentDidMount() {
         const {
+            isLoading,
             graphType,
             loadNode,
             removeEdge,

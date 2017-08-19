@@ -46,6 +46,7 @@ export class NodeViewContainer extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
+        console.log("loading data!!!!!");
         if (nextProps.collectionId !== this.props.collectionId || nextProps.nodeId !== this.props.nodeId) {
             loadData(nextProps)
         }
@@ -111,16 +112,17 @@ function mapStateToProps(state, props) {
         // loading a collection id
         // nodes = getNodesAndEdgesByCollectionId(state, collectionId);
         // edges = getEdgesByCollectionId(state, collectionId);
+        isLoading = state.loadingStates.GET_COLLECTION;
         ({ nodes, collections, visibleCollections, edges, collectionChain } = getNodesAndEdgesByCollectionId(state, collectionId))
-
-        isLoading = state.loadingStates.GET_COLLECTION || state.loadingStates.GET_NODE
         graphType = "collection"
+
+        console.log(isLoading, nodes, edges, visibleCollections);
     } else {
+        isLoading = state.loadingStates.GET_NODE_L1
         nodes = getL1Nodes(state, nodeId);
         collections = []
         visibleCollections = []
         edges = getL1Edges(state, nodeId);
-        isLoading = state.loadingStates.GET_NODE_L1
         graphType = "node"
     }
 

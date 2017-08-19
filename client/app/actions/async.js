@@ -521,21 +521,22 @@ export function fetchCollectionL1(id) {
         }
     }
 }
-export function getCollectionL1(id, { cache = true } = {}) {
+export function getCollectionL1(id, { cache = false } = {}) {
     /*
      * Check if we have node in cache already, if not, fetch it first
      * case 1: new node, no need to fetch neighbours
      * case 2: existing node, need to add neighbours
     */
     return (dispatch, getState) => {
-        const collection = getCollection(getState(), id)
-
-        if (cache) {
-            return !collection ? dispatch(fetchCollectionL1(id)) : Promise.resolve(collection)
-        }
-        else {
-            return dispatch(fetchCollectionL1(id))
-        }
+        return dispatch(fetchCollectionL1(id))
+        // const collection = getCollection(getState(), id)
+        //
+        // if (cache) {
+        //     return !collection ? dispatch(fetchCollectionL1(id)) : Promise.resolve(collection)
+        // }
+        // else {
+        //     return dispatch(fetchCollectionL1(id))
+        // }
     }
 }
 

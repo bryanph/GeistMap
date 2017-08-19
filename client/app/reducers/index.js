@@ -491,7 +491,8 @@ function nodesByCollectionId(state={}, action) {
     */
     switch(action.type) {
         case actionTypes.GET_COLLECTION_SUCCESS:
-            let newState = { ...state }
+            // TODO: should be merged?
+            let newState = {}
             // for every node, add them to the corresponding collection list
 
             _.forEach(action.response.entities.nodes, node => {
@@ -1117,7 +1118,9 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log(visibleNodeMap);
+    console.log(nodes);
+
+    // console.log(visibleNodeMap);
 
     // TODO: need to filter edges that go outside the collection
     transformedEdges = transformedEdges.filter(e => {
@@ -1139,7 +1142,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     })
 
     const filteredCollections = _(collections)
-        .sortBy('collections')
+        .sortBy('collectionChains')
         .filter(c => {
             // if this is a parent collection, don't handle it
             if (collectionChain.includes(c.id)) {
@@ -1160,10 +1163,11 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
             // check if the direct parent is collapsed or not
             // TODO: there can be multiple parent collections
             // TODO: must be consistent with ordering of collections
-            const parentCollections = _(c.collectionChain)
+            const parentCollections = c.collectionChains
                 .filter(list => _.difference(collectionChain, list).length === 0) // filter out chains that go outside of this collection
                 .map(list => nodeMap[list[0]])
 
+            // console.log("parent collections", c, parentCollections);
             if (_.every(parentCollections, (c) => !c || c.collapsed)) {
                 return false
             }
@@ -1208,21 +1212,21 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
                 .map((e) => {
                     if (visibleNodeMap[e.start] && visibleNodeMap[e.end]) {
                         // this link is in the graph directly, no need to alter edges
-                        console.log("LINK IS IN GRAPH DIRECTLY");
+                        // console.log("LINK IS IN GRAPH DIRECTLY");
                         return e;
                     }
 
                     // if start is hidden, change start to this collection
                     if (hiddenNodeMap[e.start]) {
-                        console.log("CHANGING START");
+                        // console.log("CHANGING START");
                         e.start = c.id
                     }
                     if (hiddenNodeMap[e.end]) {
-                        console.log("CHANGING END");
+                        // console.log("CHANGING END");
                         e.end = c.id
                     }
                     if (e.start === e.end) {
-                        console.log("BOTH INSIDE THE SAME ABSTRACTION");
+                        // console.log("BOTH INSIDE THE SAME ABSTRACTION");
                         return null
                     }
 
