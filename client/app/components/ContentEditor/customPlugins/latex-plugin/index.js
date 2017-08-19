@@ -74,9 +74,9 @@ function texHandleKeyCommand(
     //     window.localStorage.setItem('draftjs-copyState', JSON.stringify(rawBlocks))
 
     //     // return 'handled'
-    //     return 
+    //     return
     // }
-    
+
 
     return 'not-handled'
 }
@@ -101,7 +101,7 @@ export default (config = {}) => {
                 rawBlocks.editorKey = getEditorKey()
 
                 window.localStorage.setItem('draftjs-copyState', JSON.stringify(rawBlocks))
-                
+
                 // set clipboard to null, must happen after draft sets it - 2016-11-16
                 setTimeout(() => setClipboard(null), 0)
 
@@ -208,7 +208,7 @@ export default (config = {}) => {
                 // check if localstorage has fresh fragments
                 // if so, go through all fragments and clone all the entities
                 // TODO: this only works between tabs - 2016-11-16
-                const rawBlocksString = window.localStorage.getItem('draftjs-copyState') 
+                const rawBlocksString = window.localStorage.getItem('draftjs-copyState')
                 if (rawBlocksString && (!!html)) {
                     const rawBlocks = JSON.parse(rawBlocksString)
 
@@ -222,7 +222,7 @@ export default (config = {}) => {
                     if (!(match && match[1] === rawBlocks.editorKey) && !match2) {
                         return
                     }
-                    
+
                     const rawText = _(rawBlocks.blocks).reduce(
                         (text, value) => text + '\u000A' + value['text'], "")
 
@@ -354,4 +354,3 @@ const addEntityEolDelimiter = (editorState, block) => {
 }
 
 export { InsertTeXButton, InsertInlineTeXButton } from './components/InsertTeXButton'
-

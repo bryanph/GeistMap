@@ -187,6 +187,8 @@ io.on('connection', function(socket) {
     */
     socket.on('Collection.getL1', CollectionAPI.getL1.bind(null, user));
 
+    socket.on('Collection.getAll', CollectionAPI.getAll.bind(null, user));
+
     // socket.on('Collection.getByIds', CollectionAPI.getByIds.bind(null, user));
     socket.on('Collection.create', CollectionAPI.create.bind(null, user));
     socket.on('Collection.update', CollectionAPI.update.bind(null, user));

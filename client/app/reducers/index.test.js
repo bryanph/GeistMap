@@ -26,7 +26,7 @@ describe('nodes', () => {
                                 id: id,
                                 type: 'node',
                                 created: '1501582629992',
-                                collections: [],
+                                collectionChains: [],
                             }
                         }
                     },
@@ -41,24 +41,27 @@ describe('nodes', () => {
                 id: id,
                 type: 'node',
                 created: '1501582629992',
-                collections: [],
+                collectionChains: [],
             }
         })
     })
 })
 
 describe('abstractions', () => {
-    /*
-     * Test creating abstractions
-    */
 
-    test('should handle ADD_NODE_TO_COLLECTION_SUCCESS', () => {
+    /*
+     * Test manipulating abstractions
+    */
+    test('add node to abstraction', () => {
         const collectionId = uuidV4()
         const id = uuidV4()
+
+        const abstractionChain = [ collectionId ]
 
         const action = {
             collectionId: collectionId,
             nodeId: id,
+            abstractionChain,
             response: {
                 entities: {
                     collections: {
@@ -97,7 +100,7 @@ describe('abstractions', () => {
                     id: id,
                     type: 'node',
                     created: '1501582629992',
-                    collections: [],
+                    collectionChains: [],
                 }
             }, action)
         ).toEqual({
@@ -107,7 +110,9 @@ describe('abstractions', () => {
                 id: id,
                 type: 'node',
                 created: '1501582629992',
-                collections: [ collectionId ]
+                collectionChains: [
+                    abstractionChain,
+                ]
             }
         })
 
