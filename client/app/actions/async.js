@@ -24,28 +24,6 @@ import { batchActions } from '../middleware/batch'
 
 const uuidV4 = require('uuid/v4');
 
-export const GET_ALL_REQUEST = 'GET_ALL_REQUEST'
-export const GET_ALL_SUCCESS = 'GET_ALL_SUCCESS'
-export const GET_ALL_FAILURE = 'GET_ALL_FAILURE'
-
-export function getAllNodesAndEdges() {
-    /*
-     * // TODO: this probably isn't a scalable call - 2016-06-12
-     * // TODO: instead, have a collection overview graph generated on the server - 2016-06-12
-    */
-
-    return {
-        [CALL_API]: {
-            types: [ GET_ALL_REQUEST, GET_ALL_SUCCESS, GET_ALL_FAILURE ],
-            endpoint: 'Node.getAll',
-            schema: {
-                nodes: arrayOf(Schemas.NODE),
-                edges: arrayOf(Schemas.EDGE),
-            },
-        }
-    }
-}
-
 export const GET_ALL_BATCH_NODES_REQUEST = 'GET_ALL_BATCH_NODES_REQUEST'
 export const GET_ALL_BATCH_NODES_SUCCESS = 'GET_ALL_BATCH_NODES_SUCCESS'
 export const GET_ALL_BATCH_NODES_FAILURE = 'GET_ALL_BATCH_NODES_FAILURE'
@@ -113,7 +91,7 @@ export function fetchNodeL1(id, collectionId) {
         sourceCollectionId: collectionId,
         [CALL_API]: {
             types: [ GET_NODE_L1_REQUEST, GET_NODE_L1_SUCCESS, GET_NODE_L1_FAILURE ],
-            endpoint: 'Node.getWithNeighbours',
+            endpoint: 'Node.getL1',
             payload: [ id ],
             schema: {
                 node: Schemas.NODE,

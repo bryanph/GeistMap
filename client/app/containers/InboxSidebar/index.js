@@ -28,15 +28,7 @@ export class InboxSidebar extends React.Component { // eslint-disable-line react
 
     componentDidMount() {
         const { id } = this.props
-        // this.props.getAllBatchNodes()
     }
-
-    // createBatchNode(node) {
-    //     this.props.createBatchNode(node)
-    //         .then((action) => {
-    //             this.props.history.push(`/app/inbox/${action.response.result}/`)
-    //         })
-    // }
 
     editNode(id) {
         const { history } = this.props
@@ -62,9 +54,9 @@ export class InboxSidebar extends React.Component { // eslint-disable-line react
         }
 
         const items = nodes.map(node => (
-            <InboxItem 
+            <InboxItem
                 key={node.id}
-                node={node} 
+                node={node}
                 deleteNode={this.deleteNode}
                 editNode={this.editNode}
             />
@@ -107,7 +99,7 @@ class InboxItem extends React.Component {
                 <div className="inboxSidebar-header">
                     <h2>{ node.name }</h2>
                     <span>
-                        { moment.unix(node.modified / 1000).fromNow() } 
+                        { moment.unix(node.modified / 1000).fromNow() }
                     </span>
                 </div>
 

@@ -158,10 +158,8 @@ io.on('connection', function(socket) {
 
     socket.on('Node.get', NodeAPI.get.bind(null, user));
     // TODO: rename to getL1 - 2016-08-01
-    socket.on('Node.getWithNeighbours', NodeAPI.getWithNeighbours.bind(null, user));
+    socket.on('Node.getL1', NodeAPI.getL1.bind(null, user));
     socket.on('Node.getL2', NodeAPI.getL2.bind(null, user));
-    // socket.on('Node.getAll', NodeAPI.getAll.bind(null, user));
-    socket.on('Node.getInboxNodes', NodeAPI.getInboxNodes.bind(null, user));
     socket.on('Node.create', NodeAPI.create.bind(null, user));
     socket.on('Node.update', NodeAPI.update.bind(null, user));
     // socket.on('Node.duplicate', NodeAPI.duplicate.bind(null, user));
@@ -172,7 +170,6 @@ io.on('connection', function(socket) {
     socket.on('Node.search', NodeAPI.search.bind(null, user));
     socket.on('Node.searchAll', NodeAPI.searchAll.bind(null, user));
     // socket.on('Node.createBatchNode', NodeAPI.createBatchNode.bind(null, user));
-    // socket.on('Node.getAllBatchNodes', NodeAPI.getAllBatchNodes.bind(null, user));
     // socket.on('Node.clearBatchNodes', NodeAPI.clearBatchNodes.bind(null, user));
     socket.on('Node.moveToAbstraction', NodeAPI.moveToAbstraction.bind(null, user));
     socket.on('Node.removeAbstraction', NodeAPI.removeAbstraction.bind(null, user));
@@ -191,7 +188,6 @@ io.on('connection', function(socket) {
     socket.on('Collection.getL1', CollectionAPI.getL1.bind(null, user));
 
     // socket.on('Collection.getByIds', CollectionAPI.getByIds.bind(null, user));
-    socket.on('Collection.getAll', CollectionAPI.getAll.bind(null, user));
     socket.on('Collection.create', CollectionAPI.create.bind(null, user));
     socket.on('Collection.update', CollectionAPI.update.bind(null, user));
     socket.on('Collection.remove', CollectionAPI.remove.bind(null, user));

@@ -46,55 +46,6 @@ module.exports = function(db, es) {
     */
 
     return {
-        getAll: function(user, res) {
-            /*
-             * Get all nodes
-             */
-
-            db.run(
-                "MATCH (u:User)--(c:Node)-[r]-(:Node) " +
-                "WHERE u.id = {userId} " +
-                "RETURN collect(properties(c)) as nodes, collect(properties(r)) as edges",
-                {
-                    userId: user._id.toString()
-                }
-            )
-            .then((results) => {
-                return res(null, {
-                    nodes: results.records[0]._fields[0].map(mapIntegers),
-                    edges: results.records[0]._fields[1].map(mapIntegers),
-                })
-            })
-            .catch(handleError)
-        },
-
-        getInboxNodes: function(user, res) {
-            /*
-             * Nodes without collections assigned to them
-             * // TODO: Check this call's performance - 2016-07-11
-             */
-
-            db.run(
-                "MATCH (u:User)--(n:Node) " +
-                "WHERE u.id = {userId} " +
-                "AND NOT (n)-[:AbstractEdge]-(:Collection) " +
-                "RETURN collect(properties(n)) as nodes",
-                {
-                    userId: user._id.toString()
-                }
-            )
-            .then((results) => {
-                if (results.records.length === 0) {
-                    return res(null, { nodes: [] })
-                }
-
-                res(null, {
-                    nodes: results.records[0]._fields[0].map(mapIntegers)
-                })
-            })
-            .catch(handleError)
-        },
-
         get: function(user, id, res) {
             // TODO: also need the outgoing edges for ContentLink - 2016-10-20
             db.run(
@@ -125,7 +76,7 @@ module.exports = function(db, es) {
             .catch(handleError)
         },
 
-        getWithNeighbours: function(user, id, res) {
+        getL1: function(user, id, res) {
             /*
              * Get node with id ${id} (including its neightbours)
              * // TODO: Check this call's performance - 2016-07-11
@@ -165,10 +116,8 @@ module.exports = function(db, es) {
         getL2: function(user, id, res) {
             /*
              * Get node with id ${id} (including adjacent nodes distance of max 2 away)
-             * // TODO: should also get collection ids of all nodes - 2017-05-23
              */
 
-            // TODO: Limit the number of results and notify if the numer of results were limited for performance reasons- 2016-07-15
             Promise.all([
                 // get this node
                 db.run(
@@ -341,10 +290,6 @@ module.exports = function(db, es) {
              * Additionally, update collection relations
              */
 
-            // TODO: Add an edge type argument - 2016-06-06
-            // TODO: assert edge type is defined - 2016-04-02
-            // TODO: How will we manage this? 2016-04-02
-
             if (!node1 || !node2) {
                 return res("Set both node ids")
             }
@@ -352,8 +297,6 @@ module.exports = function(db, es) {
             if (node1 === node2) {
                 return res("Self referencing connections are not allowed")
             }
-
-            console.log(node1, node2);
 
             db.run(
                 "MATCH (u:User)--(n1:Node), (u:User)--(n2:Node) " +
@@ -370,7 +313,6 @@ module.exports = function(db, es) {
                 }
             )
             .then(results => {
-                // TODO: only return the edge that was changed 2016-06-08
                 const result = results.records[0]._fields[0]
 
                 res(null, result)
@@ -382,6 +324,7 @@ module.exports = function(db, es) {
             /*
              * Remove all edges between node1 and node2
              */
+             // TODO
         },
 
         addEdge: function(user, node1, node2, id, text, res) {
@@ -389,12 +332,7 @@ module.exports = function(db, es) {
              * Create a detailed edge from node1 to node2 with text as the context
             */
 
-            // TODO: how to represent the content? - 2016-06-25
-            //      - as plain text
-            // store the content as attribute in the edge?
-            // TODO: create an elastic search index for the content - 2016-06-25
-            // TODO: Need to store extra info about the text? - 2016-06-25
-            // TODO: How to deal with overlapping edge content? - 2016-06-25
+            // TODO: Create extra search indexes for the content
 
             if (!node1 || !node2) {
                 return res("set both node ids")
@@ -504,8 +442,6 @@ module.exports = function(db, es) {
             const edgeId = uuidV4();
             const abstractEdgeId = uuidV4();
 
-            console.log(sourceCollectionId, id);
-
             db.run(
                 /*
                  * 1. Remove all nodes from the given abstraction
@@ -592,6 +528,8 @@ module.exports = function(db, es) {
              * Full text search for a node
             */
 
+            // TODO: Index abstractions and nodes the same way
+
             es.search({
                 index: config.es.nodeIndex,
                 body: {
@@ -606,7 +544,6 @@ module.exports = function(db, es) {
                             ],
                             "should": [
                             {
-                                // TODO: make this match exactly (needs a separate index) - 2016-07-26
                                 "match": {
                                     "title": {
                                         query,
@@ -628,8 +565,6 @@ module.exports = function(db, es) {
                                 "match": {
                                     "content": {
                                         query,
-                                        // TODO: should be AND? - 2016-07-26
-                                        // TODO: AND with minimum amount of words - 2016-07-26
                                         "operator": "and",
                                     }
                                 },
@@ -661,11 +596,9 @@ module.exports = function(db, es) {
                                 {
                                     "term": { "user": user._id.toString() }
                                 }
-
                             ],
                             "should": [
                             {
-                                // TODO: make this match exactly (needs a separate index) - 2016-07-26
                                 "match": {
                                     "title": {
                                         query,
@@ -687,8 +620,6 @@ module.exports = function(db, es) {
                                 "match": {
                                     "content": {
                                         query,
-                                        // TODO: should be AND? - 2016-07-26
-                                        // TODO: AND with minimum amount of words - 2016-07-26
                                         "operator": "and",
                                     }
                                 },

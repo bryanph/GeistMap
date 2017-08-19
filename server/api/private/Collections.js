@@ -49,10 +49,11 @@ module.exports = function(db, es) {
 
             const id = uuidV4();
 
-            const results = await db.run(
-                "MERGE (u:User {id: {userId}}) " +
-                "CREATE (c:Collection:RootCollection { id: {id} name: {name}, isRootCollection: true, type: \"root\", nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
-                "return properties(c) as collection",
+            const results = await db.run(`
+                MERGE (u:User {id: {userId}})
+                CREATE (c:Collection:RootCollection { id: {id} name: {name}, isRootCollection: true, type: "root", nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)
+                return properties(c) as collection
+                `,
                 {
                     id,
                     userId: user._id.toString(),
@@ -65,9 +66,7 @@ module.exports = function(db, es) {
 
         get: function(user, id, res) {
             /*
-             * Get node with id ${id} (including its neightbours)
-             * // TODO: give this call an explicit name - 2016-07-15
-             * // TODO: Check this call's performance - 2016-07-11
+             * Get abstraction with id ${id} and its children
              */
 
             const userId = user._id.toString()
@@ -146,7 +145,7 @@ module.exports = function(db, es) {
 
         getL1: function(user, id, res) {
             /*
-             * Get node with id ${id} (including its neightbours)
+             * Get abstraction with id ${id} including its children and their direct neighbours
              */
 
             const userId = user._id.toString()
@@ -231,9 +230,6 @@ module.exports = function(db, es) {
                     // TODO: enforce this in the query
                     nodes = nodes.filter(x => x.id !== id)
 
-                    // TODO: return for every node whether it is a node or a collection - 2017-07-13
-                    // store this as a property
-
                     return res(null, {
                         collection: Object.assign({},
                             collection,
@@ -253,24 +249,26 @@ module.exports = function(db, es) {
             // TODO: only get collections reachable from the root node - 2017-07-14
             Promise.all([
                 // get all the edges between the collections
-                db.run(
-                    "MATCH (u:User)--(c:Collection) " +
-                    "WHERE u.id = {userId} " +
-                    "WITH collect(c) as c2 " +
-                    "UNWIND c2 as cu1 " +
-                    "UNWIND c2 as cu2 " +
-                    "MATCH (cu1)-[e:AbstractEdge]->(cu2) " +
-                    "RETURN collect(properties(e))",
+                db.run(`
+                    MATCH (u:User)--(c:Collection)
+                    WHERE u.id = {userId}
+                    WITH collect(c) as c2
+                    UNWIND c2 as cu1
+                    UNWIND c2 as cu2
+                    MATCH (cu1)-[e:AbstractEdge]->(cu2)
+                    RETURN collect(properties(e))
+                    `,
                     {
                         userId: user._id.toString()
                     }
                 ),
-                db.run(
-                    "MATCH (u:User)--(c:Collection) " +
-                    "WHERE u.id = {userId} " +
-                    "OPTIONAL MATCH (c)<-[:AbstractEdge*0..5]-(c2:Collection) " +
-                    "OPTIONAL MATCH (c2)--(n:Node) " +
-                    "RETURN properties(c), count(n)",
+                db.run(`
+                    MATCH (u:User)--(c:Collection)
+                    WHERE u.id = {userId}
+                    OPTIONAL MATCH (c)<-[:AbstractEdge*0..5]-(c2:Collection)
+                    OPTIONAL MATCH (c2)--(n:Node)
+                    RETURN properties(c), count(n)
+                    `,
                     {
                         userId: user._id.toString()
                     }
@@ -332,7 +330,7 @@ module.exports = function(db, es) {
                 return res("set at least a name")
             }
 
-            // TODO: enforce a structure on ${data} - 2016-07-14
+            // TODO: this method is not necessary, use Node.update
             db.run(
                 "MATCH (u:User)--(n:Collection) " +
                 "WHERE u.id = {userId} " +
@@ -384,7 +382,7 @@ module.exports = function(db, es) {
 
         addNode: function(user, collectionId, nodeId, id, res) {
             /*
-             * Create the edge [collection]<-[:AbstractEdge]-[node]
+             * Create the edge (collection)<-[:AbstractEdge]-(node)
              */
 
             if (!collectionId || !nodeId) {
@@ -448,8 +446,6 @@ module.exports = function(db, es) {
             /*
              * Create the edge [collection1]-[edge]->[collection2]
              */
-
-            console.log(collection1, collection2, id);
 
             if (!collection1 || !collection2) {
                 return res("Set both collection ids")
