@@ -12,6 +12,7 @@
 # python
 __pycache__/
 **/*.py[cod]
+.vagrant
 
 # js
 frontend/app/config.js
