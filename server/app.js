@@ -90,7 +90,7 @@ app.db.once('open', function () {
       //and... we have a data store
     });
 
-const driver = neo4j.driver("bolt://localhost", neo4j.auth.basic(config.neo4j.user, config.neo4j.password))
+const driver = neo4j.driver(config.neo4j.url, neo4j.auth.basic(config.neo4j.user, config.neo4j.password))
 const db = driver.session();
 
 const es = elasticsearch.Client({

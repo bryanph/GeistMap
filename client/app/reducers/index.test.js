@@ -134,6 +134,10 @@ describe('abstractions', () => {
         })
     })
 
+    test('Add abstraction to abstraction', () => {
+
+    })
+
     test('should handle MOVE_TO_ABSTRACTION_SUCCESS', () => {
         /*
          *

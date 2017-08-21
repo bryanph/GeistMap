@@ -34,3 +34,7 @@ sudo systemctl start mongod
 sudo systemctl enable mongod
 sudo systemctl start elasticsearch
 sudo systemctl enable elasticsearch
+sudo systemctl start neo4j
+sudo systemctl enable neo4j
+sudo systemctl start redis-server
+sudo systemctl enable redis-server
