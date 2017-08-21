@@ -13,7 +13,7 @@ const config = {
     },
 
     "neo4j": {
-        "url": "bolt://localhost:7878",
+        "url": "bolt://localhost",
         "user": "neo4j",
         "password": "test",
     },

@@ -4,13 +4,13 @@
 const _ = require('lodash')
 const neo4j = require('neo4j-driver').v1
 
-const config = require('../../config/config')
-const { print, printTrace } = require('../../utils/dev')
+const config = require('../../../config/config')
+const { print, printTrace } = require('../../../utils/dev')
 
 const {
     updateCollectionIndex,
     removeCollectionDocument,
-} = require('../../fulltext')
+} = require('../../../fulltext')
 
 const uuidV4 = require('uuid/v4');
 
@@ -50,9 +50,19 @@ module.exports = function(db, es) {
             const id = uuidV4();
 
             const results = await db.run(`
-                MERGE (u:User {id: {userId}})
-                CREATE (c:Collection:RootCollection { id: {id} name: {name}, isRootCollection: true, type: "root", nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)
-                return properties(c) as collection
+                MERGE (u:User {
+                    id: {userId}
+                })
+                CREATE (c:Collection:RootCollection {
+                    id: {id},
+                    name: {name},
+                    isRootCollection: true,
+                    type: "root",
+                    nodes: [],
+                    created: timestamp(),
+                    modified: timestamp()
+                })<-[:AUTHOR]-(u)
+                RETURN properties(c) as collection
                 `,
                 {
                     id,
@@ -294,13 +304,24 @@ module.exports = function(db, es) {
 
         create: function(user, id, data, res) {
             /*
-             * Create a new collection
+             * Create a new collection connected to the root collection
+             * TODO this should also
              */
 
-            db.run(
-                "MERGE (u:User {id: {userId}}) " +
-                "CREATE (c:Node:Collection { id: {id}, name: {name}, type: \"collection\", nodes: [], created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)  " +
-                "return properties(c) as collection",
+            db.run(`
+                MERGE (u:User {
+                    id: {userId}
+                })
+                CREATE (c:Node:Collection {
+                    id: {id},
+                    name: {name},
+                    type: \"collection\",
+                    nodes: [],
+                    created: timestamp(),
+                    modified: timestamp(),
+                 })<-[:AUTHOR]-(u)
+                return properties(c) as collection
+                `,
                 {
                     userId: user._id.toString(),
                     id,

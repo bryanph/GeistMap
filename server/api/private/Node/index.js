@@ -5,15 +5,15 @@
 const _ = require('lodash')
 const neo4j = require('neo4j-driver').v1
 
-const config = require('../../config/config')
-const { print, printTrace } = require('../../utils/dev')
+const config = require('../../../config/config')
+const { print, printTrace } = require('../../../utils/dev')
 
 const uuidV4 = require('uuid/v4');
 
 const {
     updateIndex,
     removeNodeDocument,
-} = require('../../fulltext')
+} = require('../../../fulltext')
 
 function handleError(error) {
     if (error.stack) {
@@ -63,11 +63,11 @@ module.exports = function(db, es) {
                     return res(`Node with id ${id} was not found`)
                 }
 
-                const collections = results.records[0]._fields[1].map(mapIntegers)
+                const collections = results.records[0]._fields[1]
 
                 res(null, {
                     node: Object.assign({},
-                        mapIntegers(results.records[0]._fields[0]),
+                        results.records[0]._fields[0],
                         { collections: collections.map(x => x.id) }
                     ),
                     collections,

@@ -20,7 +20,7 @@ require('isomorphic-fetch');
 const config = require("./config/config.js")
 const authConfig = require('./config/auth')
 
-const createCollectionAPI = require("./api/private/Collections")
+const createCollectionAPI = require("./api/private/Collection")
 const createNodeAPI = require('./api/private/Node')
 const createUserAPI = require('./api/private/User')
 
@@ -107,7 +107,7 @@ const UserAPI = createUserAPI(app, db, redisClient, es)
 
 const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, Object.assign(authConfig, {
         onSignup: function(user, account) {
-            console.log('called onSignup');
+            console.log("new signup", user);
             CollectionAPI.createRootCollection(user)
         }
     })
