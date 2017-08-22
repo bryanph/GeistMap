@@ -58,7 +58,6 @@ module.exports = function(db, es) {
                     name: {name},
                     isRootCollection: true,
                     type: "root",
-                    nodes: [],
                     created: timestamp(),
                     modified: timestamp()
                 })<-[:AUTHOR]-(u)
@@ -302,80 +301,103 @@ module.exports = function(db, es) {
                 .catch(handleError)
         },
 
-        create: function(user, id, data, res) {
+        create: function(user, id, parentId, data, res) {
             /*
              * Create a new collection connected to the root collection
-             * TODO this should also
+             * TODO this should also include the abstraction it should belong to
              */
 
-            db.run(`
-                MERGE (u:User {
-                    id: {userId}
-                })
+            if (!id || !parentId) {
+                return res("set at least a name")
+            }
+
+            const edgeId = uuidV4()
+
+            return db.run(`
+                MATCH (u:User)--(p:Collection)
+                WHERE u.id = {userId} AND p.id = {parentId}
+
                 CREATE (c:Node:Collection {
                     id: {id},
                     name: {name},
                     type: \"collection\",
-                    nodes: [],
                     created: timestamp(),
-                    modified: timestamp(),
+                    modified: timestamp()
                  })<-[:AUTHOR]-(u)
-                return properties(c) as collection
+                MERGE (c)-[e:AbstractEdge { id: {edgeId}, start: {id}, end: {parentId} }]->(p)
+                return properties(c) as collection, properties(e) as edge
                 `,
                 {
                     userId: user._id.toString(),
                     id,
+                    edgeId,
+                    parentId,
                     name: data.name,
                 }
             )
                 .then((results) => {
-                    const result = mapIntegers(results.records[0]._fields[0])
+                    const node = results.records[0]._fields[0]
+                    const edge = results.records[0]._fields[1]
+                    const result = {
+                        node,
+                        edge
+                    }
 
-                    res(null, result)
+                    // TODO: want socket.io to handle promises
+                    if (res) {
+                        res(null, result)
+                    }
 
                     // now update ES indexes
-                    updateCollectionIndex(es, user, result)
+                    updateCollectionIndex(es, user, {
+                        node,
+                        edge
+                    })
+
+                    return result
 
                 })
                 .catch(handleError)
         },
 
-        update: function(user, id, data, res) {
+        connect: function(user, sourceId, targetId, id, res) {
             /*
-             * Update properties of collection with id ${id}
+             * Create the edge [sourceId]-[edge]->[targetId]
              */
 
-            const updatedData = _.pick(data, ['name', 'editorState', 'editorPlainText'])
-
-            if (!updatedData.name) {
-                return res("set at least a name")
+            if (!sourceId || !targetId) {
+                return res("Set both collection ids")
             }
 
-            // TODO: this method is not necessary, use Node.update
-            db.run(
-                "MATCH (u:User)--(n:Collection) " +
-                "WHERE u.id = {userId} " +
-                "AND n.id = {id} " +
-                "SET n.name = { name } " +
-                "SET n.modified = timestamp() " +
-                "RETURN properties(n) as collection",
+            if (sourceId === targetId) {
+                return res("Self referencing connections are not allowed")
+            }
+
+            return db.run(`
+                MATCH (u:User)--(n1:Collection), (u:User)--(n2:Collection)
+                WHERE u.id = {userId}
+                AND n1.id = {sourceId} AND n2.id = {targetId}
+                MERGE (n1)-[e:AbstractEdge { id: {id}, start: {sourceId}, end: {targetId} }]->(n2)
+                RETURN properties(e) as edge
+                `,
                 {
-                    userId: user._id.toString(),
                     id,
-                    name: updatedData.name,
+                    sourceId,
+                    targetId,
+                    userId: user._id.toString(),
                 }
             )
-                .then((results) => {
-                    const result = mapIntegers(results.records[0]._fields[0])
+                .then(results => {
+                    const result = results.records[0]._fields[0]
 
-                    res(null, result)
+                    if (res) {
+                        res(null, result)
+                    }
 
-                    // now update ES indexes...
-                    updateCollectionIndex(es, user, result)
+                    return result
                 })
                 .catch(handleError)
         },
-
 
         remove: function(user, id, res) {
             /*
@@ -459,40 +481,6 @@ module.exports = function(db, es) {
             )
                 .then(results => {
                     res(null, true)
-                })
-                .catch(handleError)
-        },
-
-        connect: function(user, collection1, collection2, id, res) {
-            /*
-             * Create the edge [collection1]-[edge]->[collection2]
-             */
-
-            if (!collection1 || !collection2) {
-                return res("Set both collection ids")
-            }
-
-            if (collection1 === collection2) {
-                return res("Self referencing connections are not allowed")
-            }
-
-            db.run(
-                "MATCH (u:User)--(n1:Collection), (u:User)--(n2:Collection) " +
-                "WHERE u.id = {userId} " +
-                "AND n1.id = {collection1} AND n2.id = {collection2} " +
-                "MERGE (n1)-[e:AbstractEdge { id: {id}, start: {collection1}, end: {collection2} }]->(n2) " +
-                "RETURN properties(e) as edge",
-                {
-                    id,
-                    collection1,
-                    collection2,
-                    userId: user._id.toString(),
-                }
-            )
-                .then(results => {
-                    const result = results.records[0]._fields[0]
-
-                    res(null, result)
                 })
                 .catch(handleError)
         },

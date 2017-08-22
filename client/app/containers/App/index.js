@@ -37,11 +37,11 @@ const keyMapping = {
     "editMode": "e",
     "abstractMode": "a",
     "focusMode": "f",
-    "deleteMode": "d",
-
+    "deleteMode": "d"
 }
 
 class App extends React.Component {
+
     constructor(props) {
         super(props)
 

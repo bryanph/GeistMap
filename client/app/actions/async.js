@@ -547,16 +547,20 @@ export function fetchCollection(id) {
 export const CREATE_COLLECTION_REQUEST = 'CREATE_COLLECTION_REQUEST'
 export const CREATE_COLLECTION_SUCCESS = 'CREATE_COLLECTION_SUCCESS'
 export const CREATE_COLLECTION_FAILURE = 'CREATE_COLLECTION_FAILURE'
-export function createCollection(id, collection) {
+export function createCollection(id, parentId, data) {
     // const id = uuidV4();
 
     return {
         id,
+        parentId,
         [CALL_API]: {
             types: [ CREATE_COLLECTION_REQUEST, CREATE_COLLECTION_SUCCESS, CREATE_COLLECTION_FAILURE ],
             endpoint: 'Collection.create',
-            payload: [ id, collection ],
-            schema: Schemas.COLLECTION
+            payload: [ id, parentId, data ],
+            schema: {
+                node: Schemas.COLLECTION,
+                edge: Schemas.COLLECTION_EDGE,
+            }
         }
     }
 }

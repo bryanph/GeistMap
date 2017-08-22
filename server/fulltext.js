@@ -28,7 +28,6 @@ exports.removeNodeDocument = function removeNodeDocument(es, id) {
         type: nodeMappingType,
         id: id,
     })
-    .then(res => console.log(res))
     .catch(error => console.error(error))
 }
 
@@ -45,7 +44,6 @@ exports.updateCollectionIndex = function updateCollectionIndex(es, user, collect
             // collections: collection.collections
         }
     })
-    .then(res => console.log(res))
     .catch(error => console.error(error))
 }
 
@@ -55,7 +53,5 @@ exports.removeCollectionDocument = function removeCollectionDocument(es, id) {
         type: collectionMappingType,
         id: id,
     })
-    .then(res => console.log(res))
     .catch(error => console.error(error))
 }
-

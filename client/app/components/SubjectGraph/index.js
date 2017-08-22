@@ -49,7 +49,7 @@ const createEnterNode = function(actions: { click: Function }) {
         // for later reference from data
             .attr('id', (d) => {
                 return `node-${d.id}`
-            }) 
+            })
             .attr('r', (d) => d.radius)
 
         selection.on('click', actions.click)
@@ -110,7 +110,7 @@ const createEnterCollection = function(actions: { click: Function }) {
         // for later reference from data
             .attr('id', (d) => {
                 return `node-${d.id}`
-            }) 
+            })
 
         selection.on('click', actions.click)
 
@@ -264,8 +264,9 @@ const createUpdateCollection = function(actions) {
                         actions.zoomFit()
 
                         if (data.isNew) {
-                            actions.createCollection(data.id, { name: value })
-                                .then(() => actions.connectCollections(data.id, data.parentId, data.edgeId))
+                            // TODO: should be combined
+                            actions.createCollection(data.id, data.parentId, { name: value })
+                                // .then(() => actions.connectCollections(data.id, data.parentId, data.edgeId))
                             actions.setActiveCollection(null)
                         }
                         // save the node, we changed it
@@ -334,7 +335,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         return actions.connect(from, to)
     }
 
-    const drag = createDrag(simulation)({ 
+    const drag = createDrag(simulation)({
         connect: onConnect,
         click: onCollectionClick,
     })
@@ -467,11 +468,11 @@ const createCollectionOverviewEvents = function(simulation, actions) {
                 }
                 else {
                     // TODO: only set collectionDrag if hasn't been set before - 2017-06-07
-                    return updateCollection(s, d, mode, focus).call(collectionDrag) 
+                    return updateCollection(s, d, mode, focus).call(collectionDrag)
                 }
             })
             // .merge(node).call((s) => updateCollection(s, mode))
-        
+
         // EXIT selection
         link.exit().remove()
         // ENTER selection
@@ -505,7 +506,7 @@ class SubjectGraph extends React.Component {
         /*
          * Go through the enter,update,exit cycle based on the route
         */
-        let { 
+        let {
             nodes,
             links,
             graphType,
@@ -631,7 +632,7 @@ class SubjectGraph extends React.Component {
                     zoomOut={() => his.zoom.zoomOut()}
                     zoomFit={() => this.zoom.zoomFit()}
                 />
-                <svg 
+                <svg
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                     preserveAspectRatio="xMidYMid meet"
                     className="svg-content"
