@@ -14,26 +14,14 @@ const {
 
 const uuidV4 = require('uuid/v4');
 
+// TODO: separate - 2017-08-23
 function handleError(error) {
-    console.log(error);
-    console.error(error.stack)
-}
-
-function mapIntegers(node) {
-    if (node.created) {
-        node.created = node.created.toString()
+    if (error.stack) {
+        console.error(error.stack)
     }
-    if (node.modified) {
-        node.modified = node.modified.toString()
+    else {
+        console.error(error)
     }
-    if (node.collections) {
-        node.collections = node.collections.map(x => x.toString())
-    }
-    if (node.nodes) {
-        node.nodes = node.nodes.map(x => x.toString())
-    }
-
-    return node
 }
 
 module.exports = function(db, es) {
@@ -70,7 +58,7 @@ module.exports = function(db, es) {
                 }
             )
 
-            const result = mapIntegers(results.records[0]._fields[0])
+            const result = results.records[0]._fields[0]
         },
 
         get: function(user, id, res) {
@@ -218,21 +206,21 @@ module.exports = function(db, es) {
                     }
 
                     const collection = Object.assign(
-                        mapIntegers(results[0].records[0].get(0)),
-                        { collectionChain: results[0].records[0].get(1).map(mapIntegers) }
+                        results[0].records[0].get(0),
+                        { collectionChain: results[0].records[0].get(1) }
                     )
 
-                    const edges = results[1].records.map(record => mapIntegers(record.get('edge')))
+                    const edges = results[1].records.map(record => record.get('edge'))
 
                     let nodes = !results[2].records.length  ?
                         [] :
                         results[2].records.map(row => (
                             Object.assign({},
                                 { collapsed: true },
-                                mapIntegers(row.get(0)),
+                                row.get(0),
                                 {
                                     collectionChains: row.get(1), // ids for collections
-                                    count: mapIntegers(row.get(2).toNumber())
+                                    count: row.get(2).toNumber()
                                 }
                             )
                         ))
@@ -286,7 +274,7 @@ module.exports = function(db, es) {
                 const edges = results[0].records[0]._fields[0]
                 const collections = results[1].records.map(row => (
                     Object.assign({},
-                        mapIntegers(row.get(0)),
+                        row.get(0),
                         {
                             count: row.get(1).toNumber()
                         }
@@ -476,8 +464,8 @@ module.exports = function(db, es) {
             )
                 .then(results => {
                     const edge = results.records[0]._fields[0]
-                    const node = mapIntegers(results.records[0]._fields[1])
-                    const collection = mapIntegers(results.records[0]._fields[2])
+                    const node = results.records[0]._fields[1]
+                    const collection = results.records[0]._fields[2]
 
                     if (res) {
                         res(null, edge)

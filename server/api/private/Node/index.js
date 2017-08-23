@@ -24,20 +24,6 @@ function handleError(error) {
     }
 }
 
-function mapIntegers(node) {
-    if (node.created) {
-        node.created = node.created.toString()
-    }
-    if (node.modified) {
-        node.modified = node.modified.toString()
-    }
-    if (node.nodes) {
-        node.nodes = node.nodes.map(x => x.toString())
-    }
-
-    return node
-}
-
 module.exports = function(db, es) {
     /*
      * initialized with
@@ -47,12 +33,12 @@ module.exports = function(db, es) {
 
     return {
         get: function(user, id, res) {
-            // TODO: also need the outgoing edges for ContentLink - 2016-10-20
-            db.run(
-                "MATCH (u:User)--(n:Node) " +
-                "WHERE u.id = {userId} AND n.id = {id} " +
-                "OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection) " +
-                "RETURN properties(n) as node, collect(properties(c)) as collections",
+            db.run(`
+                MATCH (u:User)--(n:Node)
+                WHERE u.id = {userId} AND n.id = {id}
+                OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection)
+                RETURN properties(n) as node, collect(properties(c)) as collections
+                `,
                 {
                     id,
                     userId: user._id.toString()
@@ -79,15 +65,15 @@ module.exports = function(db, es) {
         getL1: function(user, id, res) {
             /*
              * Get node with id ${id} (including its neightbours)
-             * // TODO: Check this call's performance - 2016-07-11
              */
 
-            db.run(
-                "MATCH (u:User)--(n:Node) " +
-                "WHERE u.id = {userId} AND n.id = {id} " +
-                "OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection) " +
-                "OPTIONAL MATCH (n)-[e:EDGE]-(n2:Node) " +
-                "RETURN properties(n) as node, collect(distinct properties(n2)) as otherNodes, collect(distinct properties(e)) as edges, collect(distinct properties(c)) as collections",
+            db.run(`
+                MATCH (u:User)--(n:Node)
+                WHERE u.id = {userId} AND n.id = {id}
+                OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection)
+                OPTIONAL MATCH (n)-[e:EDGE]-(n2:Node)
+                RETURN properties(n) as node, collect(distinct properties(n2)) as otherNodes, collect(distinct properties(e)) as edges, collect(distinct properties(c)) as collections
+                `,
                 {
                     userId: user._id.toString(),
                     id,
@@ -98,14 +84,14 @@ module.exports = function(db, es) {
                     return res(`Node with id ${id} was not found`)
                 }
 
-                const collections = results.records[0]._fields[3].map(mapIntegers)
+                const collections = results.records[0]._fields[3]
 
                 res(null, {
                     node: Object.assign({},
-                        mapIntegers(results.records[0]._fields[0]),
+                        results.records[0]._fields[0],
                         { collections: collections.map(x => x.id) }
                     ),
-                    connectedNodes: results.records[0]._fields[1].map(mapIntegers),
+                    connectedNodes: results.records[0]._fields[1],
                     edges: results.records[0]._fields[2],
                     collections,
                 })
@@ -119,7 +105,7 @@ module.exports = function(db, es) {
              */
 
             Promise.all([
-                // get this node
+                // get this node and its collections
                 db.run(
                     `MATCH (u:User)--(n:Node)
                     WHERE u.id = {userId} AND n.id = {id}
@@ -164,12 +150,12 @@ module.exports = function(db, es) {
                     return res(`Node with id ${id} was not found`)
                 }
 
-                let node = mapIntegers(results[0].records[0].get(0))
-                node.collections = results[0].records[0].get(1).map(mapIntegers)
+                let node = results[0].records[0].get(0)
+                node.collections = results[0].records[0].get(1)
 
                 const otherNodes = results[1].records.map(row => {
                     return Object.assign({},
-                        mapIntegers(row.get(0)),
+                        row.get(0),
                         {
                             collections: row.get(1), // ids for collections
                         }
@@ -188,18 +174,23 @@ module.exports = function(db, es) {
 
         create: function(user, id, data, res) {
             /*
-             * Create a new node
+             * Create a new (disconnected) node
              */
 
             if (!data.name) {
                 return res("Set a title")
             }
 
-            // TODO: connect to the root node?
-            db.run(`
+            return db.run(`
                 MERGE (u:User {id: {userId}})
-                CREATE (n:Node { id: {id}, type: "node", name: {name}, created: timestamp(), modified: timestamp()})<-[:AUTHOR]-(u)
-                return properties(n) as node
+                CREATE (n:Node { 
+                    id: {id},
+                    type: "node",
+                    name: {name},
+                    created: timestamp(),
+                    modified: timestamp()
+                })<-[:AUTHOR]-(u)
+                RETURN properties(n) as node
                 `,
                 {
                     id,
@@ -208,16 +199,19 @@ module.exports = function(db, es) {
                 }
             )
             .then((results) => {
-                const result = mapIntegers(
+                const result = 
                     Object.assign(results.records[0]._fields[0], {
                         collectionChains: []
                     })
-                )
 
-                res(null, result)
+                if (res) {
+                    res(null, result)
+                }
 
                 // now update ES indexes
                 updateIndex(es, user._id.toString(), result)
+
+                return result
 
             })
             .catch(handleError)
@@ -244,7 +238,7 @@ module.exports = function(db, es) {
                 }
             )
             .then((results) => {
-                const result = mapIntegers(results.records[0]._fields[0])
+                const result = results.records[0]._fields[0]
 
                 res(null, result)
 
@@ -441,7 +435,7 @@ module.exports = function(db, es) {
                 }
             )
             .then((results) => {
-                const result = mapIntegers(results.records[0]._fields[0])
+                const result = results.records[0]._fields[0]
 
                 res(null, result)
 
@@ -467,7 +461,7 @@ module.exports = function(db, es) {
                 }
             )
             .then((results) => {
-                const result = mapIntegers(results.records[0]._fields[0])
+                const result = results.records[0]._fields[0]
 
                 res(null, result)
 
