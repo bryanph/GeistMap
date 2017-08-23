@@ -258,13 +258,13 @@ module.exports = function(db, es) {
             /*
              * Permanently delete node with id #{id}
              */
-
             // TODO: also prompt user to remove collections if they aren't referenced by any other nodes? - 2016-07-18
-            db.run(
-                "MATCH (u:User)--(n:Node) " +
-                "WHERE u.id = {userId} "  +
-                "AND n.id = {id} " +
-                "DETACH DELETE n",
+            db.run(`
+                MATCH (u:User)--(n:Node)
+                WHERE u.id = {userId}
+                AND n.id = {id}
+                DETACH DELETE n
+                `,
                 {
                     userId: user._id.toString(),
                     id,
@@ -318,13 +318,6 @@ module.exports = function(db, es) {
                 res(null, result)
             })
             .catch(handleError)
-        },
-
-        disconnect: function(user, node1, node2, res) {
-            /*
-             * Remove all edges between node1 and node2
-             */
-             // TODO
         },
 
         addEdge: function(user, node1, node2, id, text, res) {
@@ -428,45 +421,6 @@ module.exports = function(db, es) {
                 const result = results[1].records[0]._fields[0]
 
                 res(null, result)
-            })
-            .catch(handleError)
-        },
-
-
-        removeAbstraction: function(user, sourceCollectionId, id, res) {
-            /*
-             * This converts the abstraction to a node and the edges to normal edges
-             * instead it adds all the nodes to the sourceCollection with id sourceCollectionId
-            */
-
-            const edgeId = uuidV4();
-            const abstractEdgeId = uuidV4();
-
-            db.run(
-                /*
-                 * 1. Remove all nodes from the given abstraction
-                 * 2. Attach them to the parent abstraction instead
-                 * 3. Modify abstraction to be a node
-                */
-                `
-                MATCH (u:User)--(n:Collection), (u)--(pn:Collection)
-                WHERE u.id = {userId} AND n.id = {id} AND pn.id = {sourceCollectionId}
-                MATCH (n)<-[e:AbstractEdge]-(n2:Node) // here n2 are the children
-                SET n.type = 'node'
-                REMOVE n:Collection
-                DELETE e
-                CREATE (pn)<-[:AbstractEdge { id: { abstractEdgeId }, start: n2.id, end: pn.id }]-(n2)
-                `,
-                {
-                    userId: user._id.toString(),
-                    id,
-                    sourceCollectionId,
-                    edgeId,
-                    abstractEdgeId,
-                }
-            )
-            .then(results => {
-                return res(null, true) // success
             })
             .catch(handleError)
         },

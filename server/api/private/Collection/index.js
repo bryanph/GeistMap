@@ -401,26 +401,46 @@ module.exports = function(db, es) {
 
         remove: function(user, id, res) {
             /*
-             * Permanently delete node with id #{id}
-             */
+             * This converts the abstraction to a node and the edges to normal edges
+             * instead it adds all the nodes to the parent collection
+            */
 
-            db.run(
-                "MATCH (u:User)--(c:Collection) " +
-                "WHERE NOT c:RootCollection AND u.id = {userId} " +
-                "AND c.id = {id} " +
-                "DETACH DELETE c",
+            if (!id) {
+                res("Must specify source id")
+            }
+
+            // TODO: should the abstract edges be returned to the user?
+            // TODO: uuid created in the cypther here, how to sync this with the back-end
+
+            return db.run(
+                /*
+                 * 1. Remove all nodes from the given abstraction
+                 * 2. Attach them to the parent abstraction instead
+                 * 3. Modify abstraction to be a node
+                */
+                `
+                MATCH (u:User)--(n:Collection)-[:AbstractEdge]->(pn:Collection)
+                WHERE u.id = {userId} AND n.id = {id} AND NOT n:RootCollection
+                SET n.type = 'node'
+                REMOVE n:Collection
+                WITH n, pn
+                MATCH (n)<-[e:AbstractEdge]-(n2:Node)
+                DELETE e
+                MERGE (pn)<-[:AbstractEdge { id: apoc.create.uuid(), start: n2.id, end: pn.id }]-(n2)
+                `,
                 {
                     userId: user._id.toString(),
                     id,
                 }
             )
-                .then(results => {
-                    res(null, true)
+            .then(results => {
+                if (res) {
+                    return res(null, true) // success
+                }
 
-                    // now remove document from ES
-                    removeCollectionDocument(es, id)
-                })
-                .catch(handleError)
+                return true
+            })
+            .catch(handleError)
         },
 
         addNode: function(user, collectionId, nodeId, id, res) {
@@ -428,16 +448,25 @@ module.exports = function(db, es) {
              * Create the edge (collection)<-[:AbstractEdge]-(node)
              */
 
+             // TODO: this results in node duplicated in Collection tree branch
+
             if (!collectionId || !nodeId) {
                 return res("Set both node ids")
             }
 
-            db.run(
-                "MATCH (u:User)--(c:Collection), (u:User)--(n:Node) " +
-                "WHERE u.id = {userId} " +
-                "AND c.id = {collectionId} AND n.id = {nodeId} " +
-                "MERGE (n)-[e:AbstractEdge { id: {id}, start: n.id, end: c.id }]->(c) " +
-                "RETURN properties(e) as edge, properties(n) as node, properties(c) as collection",
+            // TODO: does this make sense?
+            if (!id) {
+                return res("id must be explicitly passed")
+            }
+
+            // TODO: what if we add it to PKB directly?
+            return db.run(`
+                MATCH (u:User)--(c:Collection), (u:User)--(n:Node)
+                WHERE u.id = {userId}
+                AND c.id = {collectionId} AND n.id = {nodeId}
+                MERGE (n)-[e:AbstractEdge { id: {id}, start: n.id, end: c.id }]->(c)
+                RETURN properties(e) as edge, properties(n) as node, properties(c) as collection
+                `,
                 {
                     id,
                     userId: user._id.toString(),
@@ -450,11 +479,11 @@ module.exports = function(db, es) {
                     const node = mapIntegers(results.records[0]._fields[1])
                     const collection = mapIntegers(results.records[0]._fields[2])
 
-                    // res(null, result)
-                    res(null, {
-                        collection,
-                        node,
-                    })
+                    if (res) {
+                        res(null, edge)
+                    }
+
+                    return edge
                 })
                 .catch(handleError)
         },
@@ -468,11 +497,12 @@ module.exports = function(db, es) {
                 return res("Set both node ids")
             }
 
-            db.run(
-                "MATCH (u:User)--(c:Collection)-[e]-(n:Node)--(u:User) " +
-                "WHERE u.id = {userId} " +
-                "AND c.id = {collectionId} AND n.id = {nodeId} " +
-                "DELETE e",
+            return db.run(`
+                MATCH (u:User)--(c:Collection)-[e]-(n:Node)--(u:User)
+                WHERE u.id = {userId}
+                AND c.id = {collectionId} AND n.id = {nodeId}
+                DELETE e
+                `,
                 {
                     userId: user._id.toString(),
                     collectionId,
@@ -480,104 +510,13 @@ module.exports = function(db, es) {
                 }
             )
                 .then(results => {
-                    res(null, true)
-                })
-                .catch(handleError)
-        },
-
-        removeEdge: function(user, id, res) {
-            /*
-             * Remove edge with id ${id}
-             */
-
-            db.run(
-                "MATCH (u:User)--(:Collection)-[e]->(:Collection)--(u:User) " +
-                "WHERE u.id = {userId} " +
-                "AND e.id = {id} " +
-                "DELETE e",
-                {
-                    id,
-                    userId: user._id.toString(),
-                }
-            )
-                .then(results => {
-
-                    res(null, true)
-                })
-                .catch(handleError)
-
-        },
-
-        search: function(user, query, res) {
-            /*
-             * Full text search for a collection
-             */
-
-            // es.search({
-            //     index: 'collections',
-            //     q: query
-            // })
-            // .then(body => {
-            //    res(null, body.hits.hits)
-            // })
-            es.search({
-                index: config.es.collectionIndex,
-                // explain: true,
-                body: {
-                    "min_score": 0.1,
-                    "query": {
-                        "bool": {
-                            "must": [
-                                {
-                                    "term": { "user": user._id.toString() }
-                                }
-                            ],
-                            "should": [
-                                {
-                                    // TODO: make this match exactly (needs a separate index) - 2016-07-26
-                                    "match": {
-                                        "title": {
-                                            query,
-                                            "operator": "and",
-                                            "boost": 10,
-                                        }
-                                    }
-                                },
-                                {
-                                    "match": {
-                                        "title": {
-                                            query,
-                                            "fuzziness": "AUTO",
-                                            // "boost": 3,
-                                        }
-                                    }
-                                },
-                                {
-                                    "match": {
-                                        "description": {
-                                            query,
-                                            // TODO: should be AND? - 2016-07-26
-                                            // TODO: AND with minimum amount of words - 2016-07-26
-                                            "operator": "and",
-                                        }
-                                    },
-                                }
-                            ]
-                        }
+                    if (res) {
+                        res(null, true)
                     }
-                    // "multi_match": {
-                    //     "fields": [ "id", "title^3", "description" ]
-                    //     "query": query,
-                    //     "fuzziness": "AUTO",
-                    // }
-                }
-            })
-                .then(body => {
-                    res(null, body.hits.hits)
+
+                    return true
                 })
-                .catch(error => {
-                    console.error(error)
-                })
+                .catch(handleError)
         },
     }
 }

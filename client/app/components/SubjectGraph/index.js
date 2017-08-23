@@ -569,7 +569,7 @@ class SubjectGraph extends React.Component {
     }
 
     componentDidMount() {
-        const { graphType, loadNode, removeEdge, connectNodes, connectCollections, removeCollectionEdge, collectionId } = this.props
+        const { graphType, loadNode, removeEdge, connectNodes, connectCollections, collectionId } = this.props
 
         this.graph = d3Select(ReactDOM.findDOMNode(this.refs.graph));
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
@@ -581,7 +581,7 @@ class SubjectGraph extends React.Component {
 
         this.collectionOverviewEvents = createCollectionOverviewEvents.call(this, this.simulation, {
             history: this.props.history,
-            removeEdge: removeCollectionEdge,
+            removeEdge, // TODO: this must be removeNodeFromCollection instead
             connectCollections: this.props.connectCollections,
             setActiveCollection: this.props.setActiveCollection,
             createCollection: this.props.createCollection,

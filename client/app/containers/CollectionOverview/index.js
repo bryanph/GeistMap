@@ -24,7 +24,6 @@ import {
     getCollectionL1,
     connectCollections,
     removeCollection,
-    removeCollectionEdge
 } from '../../actions/async'
 
 import {
@@ -79,7 +78,6 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                     nodes={collections || []}
                     links={collectionLinks || []}
                     connectCollections={this.props.connectCollections}
-                    removeCollectionEdge={this.props.removeCollectionEdge}
                     setActiveCollection={this.props.setActiveCollection}
                     addCollection={this.props.addCollection}
                     createCollection={this.props.createCollection}
@@ -122,7 +120,6 @@ export default connect(mapStateToProps, {
     getCollectionL1,
     connectCollections,
     removeCollection,
-    removeCollectionEdge,
     setActiveCollection,
     addCollection
 })(CollectionOverview);

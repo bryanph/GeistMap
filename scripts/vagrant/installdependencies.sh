@@ -29,6 +29,9 @@ sudo apt-get install -y elasticsearch=5.5.2
 sudo apt-get install -y redis-server
 sudo apt-get install -y nodejs
 
+# neo4j APOC extension (for uuids)
+wget https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/download/3.2.0.4/apoc-3.2.0.4-all.jar -O /var/lib/neo4j/plugins/apoc-3.2.0.4-all.jar
+
 # start services
 sudo systemctl start mongod
 sudo systemctl enable mongod

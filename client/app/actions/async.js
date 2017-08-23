@@ -423,39 +423,6 @@ export function removeEdge(id) {
     }
 }
 
-/*
- * Remove a relation from collection with id ${id}
-*/
-
-export const REMOVE_COLLECTION_EDGE_REQUEST = 'REMOVE_COLLECTION_EDGE_REQUEST'
-export const REMOVE_COLLECTION_EDGE_SUCCESS = 'REMOVE_COLLECTION_EDGE_SUCCESS'
-export const REMOVE_COLLECTION_EDGE_FAILURE = 'REMOVE_COLLECTION_EDGE_FAILURE'
-export function fetchRemoveCollectionEdge(id, start, end) {
-    // i need to know the from. and to properties of the edge, how to pass?
-    return {
-        id,
-        start,
-        end,
-        [CALL_API]: {
-            types: [ REMOVE_COLLECTION_EDGE_REQUEST, REMOVE_COLLECTION_EDGE_SUCCESS, REMOVE_COLLECTION_EDGE_FAILURE ],
-            endpoint: 'Collection.removeEdge',
-            payload: id,
-        }
-    }
-}
-export function removeCollectionEdge(id) {
-    // i need to know the from. and to properties of the edge, how to pass?
-
-    return (dispatch, getState) => {
-        // get from, to edge id's then dispatch them to fetchRemoveCollectionEdge
-        const edge = getCollectionEdge(getState(), id)
-        const start = edge.start
-        const end = edge.end
-
-        return dispatch(fetchRemoveCollectionEdge(id, start, end))
-    }
-}
-
 
 /*
  * Get all collections
@@ -619,10 +586,7 @@ export function fetchAddNodeToCollection(collectionId, nodeId, abstractionChain)
             types: [ ADD_NODE_TO_COLLECTION_REQUEST, ADD_NODE_TO_COLLECTION_SUCCESS, ADD_NODE_TO_COLLECTION_FAILURE ],
             endpoint: 'Collection.addNode',
             payload: [ collectionId, nodeId, id ],
-            schema: {
-                collection: Schemas.COLLECTION,
-                // node: Schemas.NODE, // update collection array
-            },
+            schema: Schemas.COLLECTION_EDGE,
         }
     }
 }
@@ -855,7 +819,7 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId, curren
 export const REMOVE_ABSTRACTION_REQUEST = 'REMOVE_ABSTRACTION_REQUEST'
 export const REMOVE_ABSTRACTION_SUCCESS = 'REMOVE_ABSTRACTION_SUCCESS'
 export const REMOVE_ABSTRACTION_FAILURE = 'REMOVE_ABSTRACTION_FAILURE'
-export function fetchRemoveAbstraction(sourceCollectionId, collectionId) {
+export function fetchRemoveAbstraction(collectionId) {
     /*
      * This converts the abstraction to a node and the edges to normal edges
     */
@@ -864,13 +828,13 @@ export function fetchRemoveAbstraction(sourceCollectionId, collectionId) {
         collectionId,
         [CALL_API]: {
             types: [ REMOVE_ABSTRACTION_REQUEST, REMOVE_ABSTRACTION_SUCCESS, REMOVE_ABSTRACTION_FAILURE ],
-            endpoint: 'Node.removeAbstraction',
-            payload: [ sourceCollectionId, collectionId ],
+            endpoint: 'Collection.remove',
+            payload: [ collectionId ],
         }
     }
 }
 
-export function removeAbstraction(sourceCollectionId, collectionId) {
+export function removeAbstraction(collectionId) {
     /*
      * 1. Fetch direct child nodes of ${collectionId}
      * 2. Move abstraction with ${collectionId} to ${sourceCollectionId}
@@ -882,7 +846,7 @@ export function removeAbstraction(sourceCollectionId, collectionId) {
         console.log(collectionId);
         return dispatch(getCollectionL1(collectionId))
             .then(() => {
-                return dispatch(fetchRemoveAbstraction(sourceCollectionId, collectionId))
+                return dispatch(fetchRemoveAbstraction(collectionId))
             })
     }
 
