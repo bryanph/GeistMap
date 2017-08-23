@@ -224,26 +224,31 @@ module.exports = function(db, es) {
 
             const updatedData = _.pick(data, ['name', 'content', 'editorState', 'editorPlainText'])
 
-            db.run(
-                "MATCH (u:User)--(n) " +
-                "WHERE u.id = {userId} AND (n:Node OR n:Collection) " +
-                "AND n.id = {id} " +
-                "SET n += { data } " +
-                "SET n.modified = timestamp() " +
-                "RETURN properties(n) as node",
+            return db.run(`
+                MATCH (u:User)--(n)
+                WHERE u.id = {userId} AND (n:Node OR n:Collection)
+                AND n.id = {id}
+                SET n += { data }
+                SET n.modified = timestamp()
+                RETURN properties(n) as node
+                `,
                 {
                     userId: user._id.toString(),
-                    id,
+                    id: id,
                     data: updatedData,
                 }
             )
             .then((results) => {
                 const result = results.records[0]._fields[0]
 
-                res(null, result)
+                if (res) {
+                    res(null, result)
+                }
 
                 // now update ES indexes...
                 updateIndex(es, user._id.toString(), result)
+
+                return result
             })
             .catch(handleError)
         },
@@ -253,7 +258,7 @@ module.exports = function(db, es) {
              * Permanently delete node with id #{id}
              */
             // TODO: also prompt user to remove collections if they aren't referenced by any other nodes? - 2016-07-18
-            db.run(`
+            return db.run(`
                 MATCH (u:User)--(n:Node)
                 WHERE u.id = {userId}
                 AND n.id = {id}
@@ -265,23 +270,22 @@ module.exports = function(db, es) {
                 }
             )
             .then(results => {
-                res(null, true)
+
+                if (res) {
+                    res(null, true)
+                }
 
                 // now remove ES document
                 removeNodeDocument(es, id)
 
-                // TODO: also update collection count - 2016-08-01
+                return true
             })
             .catch(handleError)
-
-            // TODO: Also remove indexes and other dangling references... - 2016-07-11
-
         },
 
         connect: function(user, node1, node2, id, res) {
             /*
-             * Create the edge [node1]-[edge]->[node2]
-             * Additionally, update collection relations
+             * Create the edge [node1]-[:EDGE]->[node2]
              */
 
             if (!node1 || !node2) {

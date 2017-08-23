@@ -98,6 +98,183 @@ describe('nodeApi', () => {
             })
     })
 
-    
+    test("Node.update test nodes properties get updated", () => {
+
+        const updatedNode = {
+            "name": "Node after",
+            "cantSetThis": "cantSetThis",
+        }
+
+        return loadFixtures(db, userId.toString(), [
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node before",
+                    "id": "TEST__Node",
+                    "type": "node"
+                }
+            }
+
+        ])
+            .then(() => {
+                return nodeApi.update(user, "TEST__Node", updatedNode)
+            })
+            .then((result) => {
+                // expect result to return the edge
+                expect(result).toMatchObject({
+                    name: 'Node after',
+                    type: 'node',
+                    id: "TEST__Node",
+                })
+
+                return getUserGraphData(db, userId)
+            })
+            .then((graphState) => {
+                // test if graph state is as expected
+                expect(sortById(graphState.nodes)).toMatchObject(sortById([
+                    {
+                        properties: {
+                            name: 'Node after',
+                            type: 'node',
+                            id: "TEST__Node",
+                        },
+                        labels: [ 'Node' ]
+                    }
+                ]))
+
+                expect(sortById(graphState.edges)).toMatchObject(sortById([
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    }
+                ]))
+            })
+    })
+
+    test("Node.remove() should remove the node and any associated edges", function() {
+        return loadFixtures(db, userId.toString(), [
+            {
+                properties: {
+                    name: 'My Knowledge Base',
+                    id: 'TEST__rootCollection',
+                    type: 'root',
+                    isRootCollection: true,
+                },
+                labels: [ 'RootCollection', 'Collection' ]
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node",
+                    "id": "TEST__node",
+                    "type": "node"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Other Node",
+                    "id": "TEST__node2",
+                    "type": "node"
+                }
+            },
+        ], [
+            {
+                properties: {
+                    end: "TEST__rootCollection",
+                    start: "TEST__collection",
+                    id: "TEST__collection_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__collection",
+                    start: "TEST__node",
+                    id: "TEST__node_collection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST_node2",
+                    start: "TEST__node",
+                    id: "TEST__node_node2",
+                },
+                type: "EDGE"
+            },
+
+        ])
+            .then(() => {
+                return nodeApi.remove(user, "TEST_node")
+            })
+            .then((result) => {
+                expect(result).toBe(true)
+                return getUserGraphData(db, userId)
+            })
+            .then((graphState) => {
+                // TODO: instead compare using the original object
+                console.log(require('util').inspect(graphState, false, null))
+                expect(sortById(graphState.nodes)).toMatchObject(sortById([
+                    {
+                        properties: {
+                            name: 'My Knowledge Base',
+                            id: 'TEST__rootCollection',
+                            type: 'root',
+                            isRootCollection: true,
+                        },
+                        labels: [ 'RootCollection', 'Collection' ]
+                    },
+                    {
+                        labels: [ "Node" ],
+                        properties: {
+                            "name": "Node",
+                            "id": "TEST__node",
+                            "type": "node"
+                        }
+                    },
+                    {
+                        labels: [ "Node" ],
+                        properties: {
+                            "name": "Other Node",
+                            "id": "TEST__node2",
+                            "type": "node"
+                        }
+                    }
+                ]))
+
+                expect(sortById(graphState.edges)).toMatchObject(sortById([
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        properties: {
+                            end: "TEST__rootCollection",
+                            start: "TEST__collection",
+                            id: "TEST__collection_rootCollection",
+                        },
+                        type: "AbstractEdge"
+                    },
+                    {
+                        properties: {
+                            end: "TEST__rootCollection",
+                            start: "TEST__collection",
+                            id: "TEST__collection_rootCollection",
+                        },
+                        type: "AbstractEdge"
+                    },
+                ]))
+            })
+
+    })
 })
 

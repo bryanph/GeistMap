@@ -18,7 +18,6 @@ exports.updateIndex = function updateIndex(es, userid, node) {
             // collections: node.collections
         }
     })
-    .then(res => console.log(res))
     .catch(error => console.error(error))
 }
 
