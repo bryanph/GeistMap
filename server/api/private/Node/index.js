@@ -296,12 +296,13 @@ module.exports = function(db, es) {
                 return res("Self referencing connections are not allowed")
             }
 
-            db.run(
-                "MATCH (u:User)--(n1:Node), (u:User)--(n2:Node) " +
-                "WHERE u.id = {userId} " +
-                "AND n1.id = {node1} AND n2.id = {node2} " +
-                "MERGE (n1)-[e:EDGE { id: {id}, start: n1.id, end: n2.id }]->(n2) " +
-                "RETURN properties(e) as edge",
+            return db.run(`
+                MATCH (u:User)--(n1:Node), (u:User)--(n2:Node)
+                WHERE u.id = {userId}
+                AND n1.id = {node1} AND n2.id = {node2}
+                MERGE (n1)-[e:EDGE { id: {id}, start: n1.id, end: n2.id }]->(n2)
+                RETURN properties(e) as edge
+                `,
                 {
                     node1,
                     node2,
@@ -313,7 +314,11 @@ module.exports = function(db, es) {
             .then(results => {
                 const result = results.records[0]._fields[0]
 
-                res(null, result)
+                if (res) {
+                    res(null, result)
+                }
+
+                return result
             })
             .catch(handleError)
         },
@@ -333,12 +338,18 @@ module.exports = function(db, es) {
                 return res("Self referencing connections are not allowed")
             }
 
-            db.run(
-                "MATCH (u:User)--(n1:Node), (u:User)--(n2: Node) " +
-                "WHERE u.id = {userId} " +
-                "AND n1.id = {node1} AND n2.id = {node2} " +
-                "CREATE (n1)-[e:EDGE { id: {id}, content: {content} }]->(n2) " +
-                "RETURN properties(e) as edge",
+            return db.run(`
+                MATCH (u:User)--(n1:Node), (u:User)--(n2: Node)
+                WHERE u.id = {userId}
+                AND n1.id = {node1} AND n2.id = {node2}
+                CREATE (n1)-[e:EDGE { 
+                    id: {id},
+                    content: {content},
+                    start: {node1},
+                    end: {node2}
+                }]->(n2)
+                RETURN properties(e) as edge
+                `,
                 {
                     id,
                     node1,
@@ -349,9 +360,13 @@ module.exports = function(db, es) {
                 }
             )
             .then(results => {
-                // TODO: only return the edge that was changed 2016-06-08
                 const result = results.records[0]._fields[0]
-                res(null, result)
+
+                if (res) {
+                    res(null, result)
+                }
+
+                return result
             })
             .catch(handleError)
         },
@@ -361,11 +376,12 @@ module.exports = function(db, es) {
              * Remove edge with id ${id}
              */
 
-            db.run(
-                "MATCH (u:User)--(:Node)-[e]->(:Node)--(u:User) " +
-                "WHERE u.id = {userId} " +
-                "AND e.id = {id} " +
-                "DELETE e",
+            return db.run(`
+                MATCH (u:User)--(:Node)-[e]->(:Node)--(u:User)
+                WHERE u.id = {userId}
+                AND e.id = {id}
+                DELETE e
+                `,
                 {
                     id,
                     userId: user._id.toString(),
@@ -373,58 +389,18 @@ module.exports = function(db, es) {
             )
             .then(results => {
 
-                res(null, true)
+                if (res) {
+                    res(null, true)
+                }
+
+                return true
             })
             .catch(handleError)
         },
 
-        moveToAbstraction: function(user, sourceCollectionId, sourceId, targetId, edgeId, res) {
-            /*
-             * move the source to be in the target abstraction
-            */
+        toCollection: function(user, id, res) {
 
-            Promise.all([
-                // remove the AbstractEdge to the source abstraction
-                db.run(
-                    `
-                    MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
-                    WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {sourceCollectionId}
-                    MATCH (n)-[e:AbstractEdge]->(c)
-                    DELETE e
-                    `,
-                    {
-                        userId: user._id.toString(),
-                        sourceId,
-                        sourceCollectionId,
-                    }
-                ),
-                db.run(
-                    // move the node to the abstraction with targetId
-                    `
-                    MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
-                    WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {targetId}
-                    CREATE (n)-[e:AbstractEdge { id: {edgeId}, start: {sourceId}, end: {targetId} }]->(c)
-                    RETURN e
-                    `,
-                    {
-                        userId: user._id.toString(),
-                        sourceId,
-                        targetId,
-                        edgeId,
-                    }
-                )
-
-            ])
-            .then(results => {
-                const result = results[1].records[0]._fields[0]
-
-                res(null, result)
-            })
-            .catch(handleError)
-        },
-
-        convertNodeToCollection: function(user, id, res) {
-            db.run(
+            return db.run(
                 `
                 MATCH (u:User)--(n:Node)
                 WHERE u.id = {userId} AND n.id = { id }
@@ -441,36 +417,14 @@ module.exports = function(db, es) {
             .then((results) => {
                 const result = results.records[0]._fields[0]
 
-                res(null, result)
-
-                // now update ES indexes...
-                updateIndex(es, user._id.toString(), result)
-            })
-            .catch(handleError)
-        },
-
-        convertCollectionToNode: function(user, id, res) {
-            db.run(
-                `
-                MATCH (u:User)--(n:Collection)
-                WHERE u.id = {userId} AND n.id = { id }
-                REMOVE n:Collection
-                SET n:Node
-                SET n.type = 'node'
-                RETURN properties(n) as node
-                `,
-                {
-                    userId: user._id.toString(),
-                    id,
+                if (res) {
+                    res(null, result)
                 }
-            )
-            .then((results) => {
-                const result = results.records[0]._fields[0]
-
-                res(null, result)
 
                 // now update ES indexes...
                 updateIndex(es, user._id.toString(), result)
+
+                return result
             })
             .catch(handleError)
         },

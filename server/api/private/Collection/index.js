@@ -506,5 +506,55 @@ module.exports = function(db, es) {
                 })
                 .catch(handleError)
         },
+
+        moveNode: function(user, sourceCollectionId, sourceId, targetId, edgeId, res) {
+            /*
+             * move the source to be in the target abstraction
+            */
+
+            return Promise.all([
+                // remove the AbstractEdge to the source abstraction
+                db.run(
+                    `
+                    MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
+                    WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {sourceCollectionId}
+                    MATCH (n)-[e:AbstractEdge]->(c)
+                    DELETE e
+                    `,
+                    {
+                        userId: user._id.toString(),
+                        sourceId,
+                        sourceCollectionId,
+                    }
+                ),
+                db.run(
+                    // move the node to the abstraction with targetId
+                    `
+                    MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
+                    WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {targetId}
+                    CREATE (n)-[e:AbstractEdge { id: {edgeId}, start: {sourceId}, end: {targetId} }]->(c)
+                    RETURN properties(e)
+                    `,
+                    {
+                        userId: user._id.toString(),
+                        sourceId,
+                        targetId,
+                        edgeId,
+                    }
+                )
+
+            ])
+            .then(results => {
+                const result = results[1].records[0]._fields[0]
+
+                if (res) {
+                    res(null, result)
+                }
+
+                return result
+            })
+            .catch(handleError)
+        },
+
     }
 }

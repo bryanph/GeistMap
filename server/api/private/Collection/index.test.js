@@ -777,4 +777,137 @@ describe('collectionApi', () => {
                 ]))
             })
     })
+
+    test("Collection.moveNode() should move the node from the source collection to the target collection", () => {
+        return loadFixtures(db, userId.toString(), [
+            {
+                properties: {
+                    name: 'My Knowledge Base',
+                    id: 'TEST__rootCollection',
+                    type: 'root',
+                    isRootCollection: true,
+                },
+                labels: [ 'RootCollection', 'Collection' ]
+            },
+            {
+                labels: [ "Collection", "Node" ],
+                properties: {
+                    "name": "Collection",
+                    "id": "TEST__collection",
+                    "type": "collection"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node",
+                    "id": "TEST__node",
+                    "type": "node"
+                }
+            }
+        ], [
+            {
+                properties: {
+                    end: "TEST__rootCollection",
+                    start: "TEST__collection",
+                    id: "TEST__collection_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__rootCollection",
+                    start: "TEST__node",
+                    id: "TEST__node_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+
+        ])
+            .then(() => {
+                return collectionApi.moveNode(user,
+                    "TEST__rootCollection",
+                    "TEST__node",
+                    "TEST__collection",
+                    "TEST__node_collection",
+                )
+            })
+            .then((result) => {
+                // expect result to return true
+                expect(result).toMatchObject({
+                    start: "TEST__node",
+                    end: "TEST__collection",
+                    id: "TEST__node_collection",
+                })
+                return getUserGraphData(db, userId)
+            })
+            .then((graphState) => {
+                // TODO: instead compare using the original object
+
+                expect(sortById(graphState.nodes)).toMatchObject(sortById([
+                    {
+                        properties: {
+                            name: 'My Knowledge Base',
+                            id: 'TEST__rootCollection',
+                            type: 'root',
+                            isRootCollection: true,
+                        },
+                        labels: [ 'RootCollection', 'Collection' ]
+                    },
+                    {
+                        labels: [ "Collection", "Node" ],
+                        properties: {
+                            "name": "Collection",
+                            "id": "TEST__collection",
+                            "type": "collection"
+                        }
+                    },
+                    {
+                        labels: [ "Node" ],
+                        properties: {
+                            "name": "Node",
+                            "id": "TEST__node",
+                            "type": "node"
+                        }
+                    },
+                    {
+                        properties: {
+                            id: userId.toString(),
+                        },
+                        labels: [ 'User' ]
+                    }
+                ]))
+
+                expect(sortById(graphState.edges)).toMatchObject(sortById([
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        properties: {
+                            end: "TEST__rootCollection",
+                            start: "TEST__collection",
+                            id: "TEST__collection_rootCollection",
+                        },
+                        type: "AbstractEdge"
+                    },
+                    {
+                        properties: {
+                            end: "TEST__collection",
+                            start: "TEST__node",
+                            id: "TEST__node_collection",
+                        },
+                        type: "AbstractEdge"
+                    },
+                ]))
+            })
+    })
 })

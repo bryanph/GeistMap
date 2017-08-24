@@ -260,5 +260,282 @@ describe('nodeApi', () => {
                 ]))
             })
     })
+
+    test("Test Node.connect() creates an edge between the two nodes", function() {
+        return loadFixtures(db, userId.toString(), [
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node",
+                    "id": "TEST__node",
+                    "type": "node"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Other Node",
+                    "id": "TEST__node2",
+                    "type": "node"
+                }
+            },
+        ])
+            .then(() => {
+                return nodeApi.connect(user,"TEST__node", "TEST__node2", "TEST__node_node2")
+            })
+            .then((result) => {
+                expect(result).toMatchObject({
+                    end: "TEST__node2",
+                    start: "TEST__node",
+                    id: "TEST__node_node2",
+                })
+
+                return getUserGraphData(db, userId)
+            })
+            .then((graphState) => {
+                // TODO: instead compare using the original object
+                expect(sortById(graphState.nodes)).toMatchObject(sortById([
+                    {
+                        properties: {
+                            id: userId.toString(),
+                        },
+                        labels: [ 'User' ]
+                    },
+                    {
+                        labels: [ "Node" ],
+                        properties: {
+                            "name": "Node",
+                            "id": "TEST__node",
+                            "type": "node"
+                        }
+                    },
+                    {
+                        labels: [ "Node" ],
+                        properties: {
+                            "name": "Other Node",
+                            "id": "TEST__node2",
+                            "type": "node"
+                        }
+                    },
+                ]))
+
+                expect(sortById(graphState.edges)).toMatchObject(sortById([
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        properties: {
+                            end: "TEST__node2",
+                            start: "TEST__node",
+                            id: "TEST__node_node2",
+                        },
+                        type: "EDGE"
+                    },
+                ]))
+            })
+    })
+
+    test("Test Node.addEdge(n1, n2) adds a detailed edged from n1 to n2", function() {
+        return loadFixtures(db, userId.toString(), [
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node",
+                    "id": "TEST__node",
+                    "type": "node"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Other Node",
+                    "id": "TEST__node2",
+                    "type": "node"
+                }
+            },
+        ])
+            .then(() => {
+                return nodeApi.addEdge(user,"TEST__node", "TEST__node2", "TEST__node_node2", "some text")
+            })
+            .then((result) => {
+                expect(result).toMatchObject({
+                    end: "TEST__node2",
+                    start: "TEST__node",
+                    id: "TEST__node_node2",
+                    content: "some text"
+                })
+
+                return getUserGraphData(db, userId)
+            })
+            .then((graphState) => {
+                // TODO: instead compare using the original object
+                expect(sortById(graphState.nodes)).toMatchObject(sortById([
+                    {
+                        properties: {
+                            id: userId.toString(),
+                        },
+                        labels: [ 'User' ]
+                    },
+                    {
+                        labels: [ "Node" ],
+                        properties: {
+                            "name": "Node",
+                            "id": "TEST__node",
+                            "type": "node"
+                        }
+                    },
+                    {
+                        labels: [ "Node" ],
+                        properties: {
+                            "name": "Other Node",
+                            "id": "TEST__node2",
+                            "type": "node"
+                        }
+                    },
+                ]))
+
+                expect(sortById(graphState.edges)).toMatchObject(sortById([
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        properties: {
+                            end: "TEST__node2",
+                            start: "TEST__node",
+                            id: "TEST__node_node2",
+                            content: "some text",
+                        },
+                        type: "EDGE"
+                    },
+                ]))
+            })
+
+    })
+
+    test("Test Node.removeEdge(id) succesfully removes the single edge with id ${id}", function() {
+        return loadFixtures(db, userId.toString(), [
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node",
+                    "id": "TEST__node",
+                    "type": "node"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Other Node",
+                    "id": "TEST__node2",
+                    "type": "node"
+                }
+            },
+        ], [
+            {
+                properties: {
+                    start: "TEST__node",
+                    end: "TEST__node2",
+                    id: "TEST__node_node2",
+                },
+                type: "EDGE"
+            },
+
+        ])
+            .then(() => {
+                return nodeApi.removeEdge(user, "TEST__node_node2")
+            })
+            .then((result) => {
+                expect(result).toBe(true)
+
+                return getUserGraphData(db, userId)
+            })
+            .then((graphState) => {
+                // TODO: instead compare using the original object
+                expect(sortById(graphState.nodes)).toMatchObject(sortById([
+                    {
+                        labels: [ "Node" ],
+                        properties: {
+                            "name": "Node",
+                            "id": "TEST__node",
+                            "type": "node"
+                        }
+                    },
+                    {
+                        labels: [ "Node" ],
+                        properties: {
+                            "name": "Other Node",
+                            "id": "TEST__node2",
+                            "type": "node"
+                        }
+                    },
+                ]))
+
+                expect(sortById(graphState.edges)).toMatchObject(sortById([
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    },
+                ]))
+            })
+    })
+
+    test("test Node.toCollection converts the given node to a collection", function() {
+        return loadFixtures(db, userId.toString(), [
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node",
+                    "id": "TEST__node",
+                    "type": "node"
+                }
+            },
+        ])
+            .then(() => {
+                return nodeApi.toCollection(user, "TEST__node")
+            })
+            .then((result) => {
+                expect(result).toMatchObject({
+                    "name": "Node",
+                    "id": "TEST__node",
+                    "type": "collection"
+                })
+
+                return getUserGraphData(db, userId)
+            })
+            .then((graphState) => {
+                // TODO: instead compare using the original object
+                expect(sortById(graphState.nodes)).toMatchObject(sortById([
+                    {
+                        labels: [ "Collection", "Node" ],
+                        properties: {
+                            "name": "Node",
+                            "id": "TEST__node",
+                            "type": "collection"
+                        }
+                    }
+                ]))
+
+                expect(sortById(graphState.edges)).toMatchObject(sortById([
+                    {
+                        type: 'AUTHOR',
+                        properties: {}
+                    }
+                ]))
+            })
+    })
 })
 

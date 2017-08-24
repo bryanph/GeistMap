@@ -171,10 +171,8 @@ io.on('connection', function(socket) {
     socket.on('Node.searchAll', NodeAPI.searchAll.bind(null, user));
     // socket.on('Node.createBatchNode', NodeAPI.createBatchNode.bind(null, user));
     // socket.on('Node.clearBatchNodes', NodeAPI.clearBatchNodes.bind(null, user));
-    socket.on('Node.moveToAbstraction', NodeAPI.moveToAbstraction.bind(null, user));
 
-    socket.on('Node.convertNodeToCollection', NodeAPI.convertNodeToCollection.bind(null, user));
-    socket.on('Node.convertCollectionToNode', NodeAPI.convertCollectionToNode.bind(null, user));
+    socket.on('Node.toCollection', NodeAPI.toCollection.bind(null, user));
 
     /*
      * gets collection with its nodes
@@ -194,6 +192,7 @@ io.on('connection', function(socket) {
     socket.on('Collection.connect', CollectionAPI.connect.bind(null, user));
     socket.on('Collection.addNode', CollectionAPI.addNode.bind(null, user));
     socket.on('Collection.removeNode', CollectionAPI.removeNode.bind(null, user));
+    socket.on('Collection.moveNode', CollectionAPI.moveNode.bind(null, user));
 
 })
 

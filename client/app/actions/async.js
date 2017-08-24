@@ -747,7 +747,7 @@ export function convertNodeToCollection(id) {
         id,
         [CALL_API]: {
             types: [ CONVERT_NODE_TO_COLLECTION_REQUEST, CONVERT_NODE_TO_COLLECTION_SUCCESS, CONVERT_NODE_TO_COLLECTION_FAILURE ],
-            endpoint: 'Node.convertNodeToCollection',
+            endpoint: 'Node.toCollection',
             payload: [ id ],
             schema: Schemas.NODE,
         }
@@ -783,7 +783,7 @@ export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, e
         sourceNode, // TODO: don't pass down?
         [CALL_API]: {
             types: [ MOVE_TO_ABSTRACTION_REQUEST, MOVE_TO_ABSTRACTION_SUCCESS, MOVE_TO_ABSTRACTION_FAILURE ],
-            endpoint: 'Node.moveToAbstraction',
+            endpoint: 'Collection.moveNode',
             payload: [ sourceCollectionId, sourceId, targetId, edgeId ],
             // schema: {
             //     node: Schemas.NODE,
