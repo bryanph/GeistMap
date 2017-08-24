@@ -182,22 +182,22 @@ describe('nodeApi', () => {
             {
                 properties: {
                     end: "TEST__rootCollection",
-                    start: "TEST__collection",
-                    id: "TEST__collection_rootCollection",
-                },
-                type: "AbstractEdge"
-            },
-            {
-                properties: {
-                    end: "TEST__collection",
                     start: "TEST__node",
-                    id: "TEST__node_collection",
+                    id: "TEST__node_rootCollection",
                 },
                 type: "AbstractEdge"
             },
             {
                 properties: {
-                    end: "TEST_node2",
+                    end: "TEST__rootCollection",
+                    start: "TEST__node2",
+                    id: "TEST__node2_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__node2",
                     start: "TEST__node",
                     id: "TEST__node_node2",
                 },
@@ -206,7 +206,7 @@ describe('nodeApi', () => {
 
         ])
             .then(() => {
-                return nodeApi.remove(user, "TEST_node")
+                return nodeApi.remove(user, "TEST__node")
             })
             .then((result) => {
                 expect(result).toBe(true)
@@ -214,7 +214,6 @@ describe('nodeApi', () => {
             })
             .then((graphState) => {
                 // TODO: instead compare using the original object
-                console.log(require('util').inspect(graphState, false, null))
                 expect(sortById(graphState.nodes)).toMatchObject(sortById([
                     {
                         properties: {
@@ -226,12 +225,10 @@ describe('nodeApi', () => {
                         labels: [ 'RootCollection', 'Collection' ]
                     },
                     {
-                        labels: [ "Node" ],
                         properties: {
-                            "name": "Node",
-                            "id": "TEST__node",
-                            "type": "node"
-                        }
+                            id: userId.toString(),
+                        },
+                        labels: [ 'User' ]
                     },
                     {
                         labels: [ "Node" ],
@@ -253,28 +250,15 @@ describe('nodeApi', () => {
                         properties: {}
                     },
                     {
-                        type: 'AUTHOR',
-                        properties: {}
-                    },
-                    {
                         properties: {
                             end: "TEST__rootCollection",
-                            start: "TEST__collection",
-                            id: "TEST__collection_rootCollection",
-                        },
-                        type: "AbstractEdge"
-                    },
-                    {
-                        properties: {
-                            end: "TEST__rootCollection",
-                            start: "TEST__collection",
-                            id: "TEST__collection_rootCollection",
+                            start: "TEST__node2",
+                            id: "TEST__node2_rootCollection",
                         },
                         type: "AbstractEdge"
                     },
                 ]))
             })
-
     })
 })
 

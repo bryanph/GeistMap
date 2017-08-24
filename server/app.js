@@ -190,13 +190,10 @@ io.on('connection', function(socket) {
 
     // socket.on('Collection.getByIds', CollectionAPI.getByIds.bind(null, user));
     socket.on('Collection.create', CollectionAPI.create.bind(null, user));
-    socket.on('Collection.update', CollectionAPI.update.bind(null, user));
     socket.on('Collection.remove', CollectionAPI.remove.bind(null, user));
     socket.on('Collection.connect', CollectionAPI.connect.bind(null, user));
-    socket.on('Collection.removeEdge', CollectionAPI.removeEdge.bind(null, user));
     socket.on('Collection.addNode', CollectionAPI.addNode.bind(null, user));
     socket.on('Collection.removeNode', CollectionAPI.removeNode.bind(null, user));
-    socket.on('Collection.search', CollectionAPI.search.bind(null, user));
 
 })
 

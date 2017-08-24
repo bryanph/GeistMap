@@ -56,22 +56,23 @@ function loadFixtures(db, userId, nodes=[], edges=[]) {
 
     edges.forEach(e => {
         edgeInserts.push([`
-                MATCH (n1), (n2)
-                WHERE n1.id = "${e.properties.start}" AND n2.id = "${e.properties.end}"
+                MATCH (n1)
+                WHERE n1.id = "${e.properties.start}"
+                WITH n1
+                MATCH (n2)
+                WHERE n2.id = "${e.properties.end}"
                 CREATE (n1)-[e:${e.type} { properties }]->(n2)
                 `,
             { properties: e.properties || {} }
         ])
     })
 
-    console.log(edgeInserts)
-
     return db.writeTransaction(tx => {
         return Promise.all([
             ...nodeInserts.map(statement => tx.run(...statement)),
             ...edgeInserts.map(statement => tx.run(...statement))
         ])
-    })
+    }).catch(e => console.error(e))
 }
 
 module.exports = {
