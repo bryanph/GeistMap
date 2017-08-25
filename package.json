@@ -60,6 +60,7 @@
     "linkify-it": "2.0.3",
     "material-ui": "0.15.4",
     "mocha": "3.4.1",
+    "mock-socket": "7.0.0",
     "moment": "2.18.1",
     "nock": "9.0.14",
     "node-sass": "4.5.3",

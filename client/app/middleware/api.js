@@ -61,7 +61,7 @@ export default function createSocketMiddleware(_socket) {
 
             },
             error => next(actionWith({
-                ...error,
+                error,
                 type: failureType,
             }))
         )
