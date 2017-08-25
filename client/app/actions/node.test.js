@@ -11,8 +11,11 @@ import {
 
 const uuidV4 = require('uuid/v4');
 
-describe('nodes', () => {
-    test('should handle CREATE_NODE_SUCCESS', () => {
+describe('node actions', () => {
+    /*
+     * Tests the node actions and the reducer reacting on the state changes
+    */
+    test("Test Node.create() passes the correct actions", () => {
         const id = uuidV4()
         expect(
             nodesReducer({}, {
@@ -146,3 +149,4 @@ describe('abstractions', () => {
 
     })
 })
+
