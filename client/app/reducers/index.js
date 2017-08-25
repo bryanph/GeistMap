@@ -10,14 +10,13 @@
 
 import { combineReducers } from 'redux'
 import _ from 'lodash'
+import update from 'immutability-helper'
 
 import * as nodeActionTypes from '../actions/node'
 import * as collectionActionTypes from '../actions/collection'
-import * as uiTypes from '../actions/ui'
+import * as uiActionTypes from '../actions/ui'
 import * as fileActionTypes from '../actions/file'
 import * as searchActionTypes from '../actions/search'
-
-import update from 'immutability-helper'
 
 function entities(state={}, action, globalState) {
     return {
@@ -80,7 +79,7 @@ export function nodes(state={}, action, collections) {
                     edges: _.without(state[action.end].edges, action.id),
                 }
             }
-        case uiTypes.TOGGLE_COLLAPSE_COLLECTION:
+        case uiActionTypes.TOGGLE_COLLAPSE_COLLECTION:
             return {
                 ...state,
                 [action.id]: {
@@ -174,7 +173,7 @@ function collectionEdges(state={}, action) {
             })
             return state
 
-        case uiTypes.ADD_COLLECTION:
+        case uiActionTypes.ADD_COLLECTION:
             // temporarily add a collection and defer synching with the server
             return {
                 ...state,
@@ -188,7 +187,7 @@ function collectionEdges(state={}, action) {
                 }
             }
 
-        case uiTypes.TOGGLE_EDIT_MODE:
+        case uiActionTypes.TOGGLE_EDIT_MODE:
             if (action.editMode) {
                 // add the addCollectionEdges
                 return {
@@ -220,7 +219,7 @@ function collections(state={}, action) {
         case collectionActionTypes.REMOVE_ABSTRACTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
-        case uiTypes.TOGGLE_EDIT_MODE:
+        case uiActionTypes.TOGGLE_EDIT_MODE:
             if (action.editMode) {
                 // add the addCollectionNodes
                 return {
@@ -232,7 +231,7 @@ function collections(state={}, action) {
                 return _.omitBy(state, (e) => e.type === 'addCollection')
             }
 
-        case uiTypes.ADD_COLLECTION:
+        case uiActionTypes.ADD_COLLECTION:
             // TODO: should this be done with more of a "sync" behaviour? - 2017-06-14
             // temporarily add a collection and defer synching with the server
             return {
@@ -579,7 +578,7 @@ function errors(state = initialErrorState, action) {
         }
     }
 
-    if (action.type === uiTypes.RESET_ERROR_MESSAGE) {
+    if (action.type === uiActionTypes.RESET_ERROR_MESSAGE) {
         return { ...state, lastError: null }
     }
 
@@ -668,9 +667,9 @@ function graphUiState(state=initialGraphUIState, action) {
      * UI state related to the graph
     */
     switch(action.type) {
-        case uiTypes.SET_ACTIVE_COLLECTION:
-        case uiTypes.SET_ACTIVE_NODE:
-        case uiTypes.ADD_COLLECTION:
+        case uiActionTypes.SET_ACTIVE_COLLECTION:
+        case uiActionTypes.SET_ACTIVE_NODE:
+        case uiActionTypes.ADD_COLLECTION:
             return {
                 ...state,
                 focus: {
@@ -678,13 +677,13 @@ function graphUiState(state=initialGraphUIState, action) {
                 }
             }
 
-        case uiTypes.SET_GRAPH_MODE:
+        case uiActionTypes.SET_GRAPH_MODE:
             return {
                 ...state,
                 mode: action.payload,
             }
 
-        case uiTypes.TOGGLE_EDIT_MODE:
+        case uiActionTypes.TOGGLE_EDIT_MODE:
             return {
                 ...state,
                 mode: state.mode === "edit" ? "view" : "edit",
@@ -700,47 +699,47 @@ function graphUiState(state=initialGraphUIState, action) {
 
 function uiState(state=initialUiState, action) {
     switch(action.type) {
-        case uiTypes.SHOW_CONNECT_WINDOW:
+        case uiActionTypes.SHOW_CONNECT_WINDOW:
             return {
                 ...state,
                 connectWindowOpened: true,
                 editorState: action.editorState,
             }
-        case uiTypes.HIDE_CONNECT_WINDOW:
+        case uiActionTypes.HIDE_CONNECT_WINDOW:
             return {
                 ...state,
                 connectWindowOpened: false,
             }
-        case uiTypes.SHOW_ADD_RELATION_WINDOW:
+        case uiActionTypes.SHOW_ADD_RELATION_WINDOW:
             return {
                 ...state,
                 windowProps: action.windowProps,
                 addRelationWindowOpened: true,
             }
-        case uiTypes.SHOW_ADD_COLLECTION_RELATION_WINDOW:
+        case uiActionTypes.SHOW_ADD_COLLECTION_RELATION_WINDOW:
             return {
                 ...state,
                 windowProps: action.windowProps,
                 addCollectionRelationWindowOpened: true,
             }
-        case uiTypes.HIDE_ADD_RELATION_WINDOW:
+        case uiActionTypes.HIDE_ADD_RELATION_WINDOW:
             return {
                 ...state,
                 addRelationWindowOpened: false,
                 addCollectionRelationWindowOpened: false,
             }
-        case uiTypes.SHOW_CREATE_COLLECTION_WINDOW:
+        case uiActionTypes.SHOW_CREATE_COLLECTION_WINDOW:
             return {
                 ...state,
                 createCollectionWindowOpened: true,
                 // createCollectionWindowState: action.payload,
             }
-        case uiTypes.HIDE_CREATE_COLLECTION_WINDOW:
+        case uiActionTypes.HIDE_CREATE_COLLECTION_WINDOW:
             return {
                 ...state,
                 createCollectionWindowOpened: false,
             }
-        case uiTypes.SHOW_ADD_NODE_TO_COLLECTION_WINDOW:
+        case uiActionTypes.SHOW_ADD_NODE_TO_COLLECTION_WINDOW:
             return {
                 ...state,
                 addNodeToCollectionWindowState: {
@@ -748,7 +747,7 @@ function uiState(state=initialUiState, action) {
                     opened: true,
                 }
             }
-        case uiTypes.HIDE_ADD_NODE_TO_COLLECTION_WINDOW:
+        case uiActionTypes.HIDE_ADD_NODE_TO_COLLECTION_WINDOW:
             return {
                 ...state,
                 addNodeToCollectionWindowState: {
@@ -756,7 +755,7 @@ function uiState(state=initialUiState, action) {
                     opened: false,
                 }
             }
-        case uiTypes.SHOW_ADD_PICTURE_WINDOW:
+        case uiActionTypes.SHOW_ADD_PICTURE_WINDOW:
             return {
                 ...state,
                 addPictureWindowOpened: {
@@ -764,7 +763,7 @@ function uiState(state=initialUiState, action) {
                     opened: true,
                 }
             }
-        case uiTypes.HIDE_ADD_PICTURE_WINDOW:
+        case uiActionTypes.HIDE_ADD_PICTURE_WINDOW:
             return {
                 ...state,
                 addPictureWindowOpened: {
@@ -772,7 +771,7 @@ function uiState(state=initialUiState, action) {
                     opened: false,
                 }
             }
-        case uiTypes.SHOW_ADD_VIDEO_WINDOW:
+        case uiActionTypes.SHOW_ADD_VIDEO_WINDOW:
             return {
                 ...state,
                 addVideoWindowOpened: {
@@ -780,7 +779,7 @@ function uiState(state=initialUiState, action) {
                     opened: true,
                 }
             }
-        case uiTypes.HIDE_ADD_VIDEO_WINDOW:
+        case uiActionTypes.HIDE_ADD_VIDEO_WINDOW:
             return {
                 ...state,
                 addVideoWindowOpened: {
@@ -788,7 +787,7 @@ function uiState(state=initialUiState, action) {
                     opened: false,
                 }
             }
-        case uiTypes.SHOW_INBOX_SIDEBAR:
+        case uiActionTypes.SHOW_INBOX_SIDEBAR:
             return {
                 ...state,
                 inboxSidebar: {
@@ -796,7 +795,7 @@ function uiState(state=initialUiState, action) {
                     opened: true,
                 }
             }
-        case uiTypes.HIDE_INBOX_SIDEBAR:
+        case uiActionTypes.HIDE_INBOX_SIDEBAR:
             return {
                 ...state,
                 inboxSidebar: {
@@ -805,7 +804,7 @@ function uiState(state=initialUiState, action) {
                 }
             }
         // used with CollectionExploreGraph
-        case uiTypes.SET_ACTIVE_COLLECTIONS:
+        case uiActionTypes.SET_ACTIVE_COLLECTIONS:
             return {
                 ...state,
                 activeCollections: action.collectionIds,
@@ -828,7 +827,7 @@ function user(state={}, action) {
 
 function editorState(state=null, action) {
     switch (action.type) {
-        case uiTypes.SET_EDITOR_STATE:
+        case uiActionTypes.SET_EDITOR_STATE:
             return action.payload
         default:
             return state
