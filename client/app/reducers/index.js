@@ -491,6 +491,7 @@ function nodesByCollectionId(state={}, action) {
     */
     switch(action.type) {
         case actionTypes.GET_COLLECTION_SUCCESS:
+        case actionTypes.GET_COLLECTIONL1_SUCCESS:
             // TODO: should be merged?
             let newState = {}
             // for every node, add them to the corresponding collection list

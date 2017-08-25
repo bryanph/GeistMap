@@ -112,17 +112,8 @@ class AddRelationWindow extends React.Component {
             content: '',
         }
 
-        // in the inbox
-        if (this.props.fromBatch) {
-            this.props.createBatchNode(nodeToCreate)
-                .then(action => action.response.entities.nodes[action.response.result])
-                .then(node => (
-                    (isContentLink ?  this.addContentLink(node, node.id, editorState) : this.addRelation(node.id)).then(() => node)
-                        // this.props.connectNodes(this.props.id, id, "to", true).then(() => id)
-                ))
-
-        // in the collection detail view
-        } else if (this.props.fromCollectionDetail) {
+        // TODO: use another approach for this - 2017-08-25
+        if (this.props.fromCollectionDetail) {
             const { collectionId } = this.props
             this.props.createNode(nodeToCreate)
                 .then(action => action.response.entities.nodes[action.response.result])

@@ -63,7 +63,6 @@ export class CollectionToolbar extends React.Component { // eslint-disable-line 
 
         this.removeCollection = this.removeCollection.bind(this)
         // this.exploreNode = this.exploreNode.bind(this)
-        // this.duplicateNode = this.duplicateNode.bind(this)
         this.addRelation = this.addRelation.bind(this)
     }
 
@@ -101,7 +100,6 @@ export class CollectionToolbar extends React.Component { // eslint-disable-line 
         const handlers = {
             // 'explore': this.exploreNode,
             // 'addRelation': this.addRelation,
-            // 'duplicate': this.duplicateNode,
             // 'trash': this.removeCollection,
         }
 

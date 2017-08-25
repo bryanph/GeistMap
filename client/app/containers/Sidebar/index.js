@@ -51,7 +51,7 @@ class Sidebar extends React.Component {
     }
 
     createNode() {
-        this.props.createBatchNode(defaultNode)
+        this.props.createNode(defaultNode)
             .then(action => action.response.result)
             .then(id => this.props.history.push(`/app/inbox/${id}/edit`))
 

@@ -169,8 +169,6 @@ io.on('connection', function(socket) {
     socket.on('Node.removeEdge', NodeAPI.removeEdge.bind(null, user));
     socket.on('Node.search', NodeAPI.search.bind(null, user));
     socket.on('Node.searchAll', NodeAPI.searchAll.bind(null, user));
-    // socket.on('Node.createBatchNode', NodeAPI.createBatchNode.bind(null, user));
-    // socket.on('Node.clearBatchNodes', NodeAPI.clearBatchNodes.bind(null, user));
 
     socket.on('Node.toCollection', NodeAPI.toCollection.bind(null, user));
 

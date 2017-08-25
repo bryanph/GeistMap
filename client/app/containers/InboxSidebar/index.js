@@ -140,12 +140,15 @@ function mapStateToProps(state, props) {
     }
 }
 
-import { createBatchNode, getAllBatchNodes, removeNode } from '../../actions/async'
-import { hideInboxSidebar } from '../../actions/ui'
+import {
+    removeNode
+} from '../../actions/async'
+
+import {
+    hideInboxSidebar
+} from '../../actions/ui'
 
 export default connect(mapStateToProps, {
-    createBatchNode,
-    getAllBatchNodes,
     hideInboxSidebar,
     removeNode,
 })(withRouter(InboxSidebar));

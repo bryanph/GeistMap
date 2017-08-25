@@ -26,7 +26,6 @@ export class NodeEditorToolbar extends React.Component {
         this.toGraphView = this.toGraphView.bind(this)
         this.removeNode = this.removeNode.bind(this)
         this.exploreNode = this.exploreNode.bind(this)
-        this.duplicateNode = this.duplicateNode.bind(this)
         this.addRelation = this.addRelation.bind(this)
     }
 
@@ -60,14 +59,6 @@ export class NodeEditorToolbar extends React.Component {
         this.props.history.push(`/app/nodes/${this.props.node.id}`)
     }
 
-    duplicateNode() {
-        const { history, page, id } = this.props
-        this.props.duplicateNode(id, page === "inbox")
-            .then(action =>
-                history.push(`/app/${page}/${action.response.result}`)
-            )
-    }
-
     render() {
         const { node, loadingStates } = this.props
 
@@ -79,7 +70,6 @@ export class NodeEditorToolbar extends React.Component {
         const handlers = {
             'explore': this.exploreNode,
             'addRelation': this.addRelation,
-            'duplicate': this.duplicateNode,
             'trash': this.removeNode,
         }
 
@@ -127,7 +117,7 @@ export class NodeEditorToolbar extends React.Component {
 }
 
 import { getNode } from '../../reducers'
-import { updateNode, removeNode, duplicateNode, removeEdge } from '../../actions/async'
+import { updateNode, removeNode, removeEdge } from '../../actions/async'
 import { showAddRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
@@ -145,7 +135,6 @@ function mapStateToProps(state, props) {
 export default withRouter(connect(mapStateToProps, {
     updateNode,
     removeNode,
-    duplicateNode,
     removeEdge,
     showAddRelationWindow
 })(NodeEditorToolbar))

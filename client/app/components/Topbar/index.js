@@ -66,7 +66,7 @@ class Topbar extends React.Component {
     }
 
     createNode() {
-        return this.props.createBatchNode({ name: 'Untitled', content: '' })
+        return this.props.createNode({ name: 'Untitled', content: '' })
             .then(action => action.response.result)
             .then(id => this.props.history.push(`/app/nodes/${id}/edit`))
     }
@@ -104,7 +104,7 @@ class Topbar extends React.Component {
     }
 }
 
-import { createNode, createBatchNode } from '../../actions/async'
+import { createNode } from '../../actions/async'
 import { showInboxSidebar, hideInboxSidebar } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
@@ -116,7 +116,6 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
     createNode,
-    createBatchNode,
     showInboxSidebar,
     hideInboxSidebar,
 })(withRouter(Topbar));

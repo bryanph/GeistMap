@@ -69,15 +69,8 @@ class AddCollectionRelationWindow extends React.Component {
     addCollectionWithRelation() {
         const { editorState } = this.props
 
-        if (this.props.fromBatch) {
-            this.props.createCollection()
-                .then(action => action.response.entities.nodes[action.response.result])
-                .then(node => (
-                    (isContentLink ?  this.addContentLink(node, node.id, editorState) : this.addRelation(node.id)).then(() => node)
-                    // this.props.connectNodes(this.props.id, id, "to", true).then(() => id)
-                ))
-
-        } else if (this.props.fromCollectionDetail) {
+        // TODO: use another approach for this - 2017-08-25
+        if (this.props.fromCollectionDetail) {
             const { collectionId } = this.props
             this.props.createNode()
                 .then(action => action.response.entities.nodes[action.response.result])

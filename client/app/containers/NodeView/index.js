@@ -27,6 +27,7 @@ function loadData(props) {
     if (props.collectionId) {
         return props.getCollectionL1(props.collectionId)
             .then((action) => {
+                // TODO: not necessary? - 2017-08-25
                 if (props.nodeId) {
                     props.loadNode(props.nodeId)
                     return action
