@@ -24,7 +24,7 @@ import {
     getCollectionL1,
     connectCollections,
     removeCollection,
-} from '../../actions/async'
+} from '../../actions/collection'
 
 import {
     showCreateCollectionWindow,

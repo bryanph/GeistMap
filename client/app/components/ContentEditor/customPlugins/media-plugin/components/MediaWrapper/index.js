@@ -15,7 +15,8 @@ import './dropdown.scss'
 import './media.scss'
 import './block.scss'
 
-import { removeFile } from '../../../../../../actions/async'
+// TODO: pass this down instead - 2017-08-25
+import { removeFile } from '../../../../../../actions/file'
 
 const styles = {
     media: {

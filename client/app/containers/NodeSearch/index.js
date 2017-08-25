@@ -3,7 +3,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { List, ListItem } from 'material-ui/List'
-import { searchNode } from '../../actions/async'
+import { searchNode } from '../../actions/search'
 
 import {HotKeys} from 'react-hotkeys';
 

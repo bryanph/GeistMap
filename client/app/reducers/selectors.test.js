@@ -1,10 +1,3 @@
-import reducer from './index.js'
-
-import * as actionTypes from '../actions/async'
-import * as uiTypes from '../actions/ui'
-
-import rootReducer from './index.js'
-
 import {
     getNodesAndEdgesByCollectionId,
 } from './index.js'

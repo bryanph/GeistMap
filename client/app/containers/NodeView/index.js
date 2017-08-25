@@ -3,16 +3,17 @@ import { connect } from 'react-redux';
 
 import {
     loadNode,
-    getCollectionL1,
-    loadNodeL1,
     connectNodes,
     updateNode,
     removeNode,
-    removeAbstraction,
-    moveToAbstraction,
     fetchNodeL1,
     removeEdge,
-} from '../../actions/async'
+} from '../../actions/node'
+import {
+    getCollectionL1,
+    removeAbstraction,
+    moveToAbstraction,
+} from '../../actions/collection'
 
 import {
     addNode,

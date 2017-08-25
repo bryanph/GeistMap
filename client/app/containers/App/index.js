@@ -71,7 +71,7 @@ class App extends React.Component {
                         <Errors />
                         <Topbar />
 
-                        <InboxSidebar />
+                        { /* <InboxSidebar /> */ }
 
                         <Switch>
 

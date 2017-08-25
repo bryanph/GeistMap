@@ -25,7 +25,7 @@ export class NodeCollectionListContainer extends React.Component { // eslint-dis
 }
 
 import { getCollectionsByNodeId } from '../../reducers'
-import { addNodeToCollection, removeNodeFromCollection, createCollection } from '../../actions/async'
+import { addNodeToCollection, removeNodeFromCollection, createCollection } from '../../actions/collection'
 
 function mapStateToProps(state, props) {
 

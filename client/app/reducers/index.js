@@ -11,8 +11,11 @@
 import { combineReducers } from 'redux'
 import _ from 'lodash'
 
-import * as actionTypes from '../actions/async'
+import * as nodeActionTypes from '../actions/node'
+import * as collectionActionTypes from '../actions/collection'
 import * as uiTypes from '../actions/ui'
+import * as fileActionTypes from '../actions/file'
+import * as searchActionTypes from '../actions/search'
 
 import update from 'immutability-helper'
 
@@ -30,19 +33,19 @@ export function nodes(state={}, action, collections) {
      * Handles the non-merging action types
     */
     switch(action.type) {
-        case actionTypes.REMOVE_NODE_SUCCESS:
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
 
         // TESTED
-        case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
+        case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
             return update(state, {
                 [action.nodeId]: {
                     collectionChains: { $push: [ action.abstractionChain ] }
                 }
             })
 
-        case actionTypes.REMOVE_COLLECTION_SUCCESS:
-        case actionTypes.REMOVE_ABSTRACTION_SUCCESS: {
+        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
+        case collectionActionTypes.REMOVE_ABSTRACTION_SUCCESS: {
             let newState = update(state, {
                 [action.collectionId]: { type: { $set: "node"}}
             })
@@ -52,7 +55,7 @@ export function nodes(state={}, action, collections) {
             }))
         }
 
-        case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
+        case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
             /*
              * Remove node from abstraction x
              * a -> b -> x => a -> b
@@ -65,7 +68,7 @@ export function nodes(state={}, action, collections) {
                 }
             })
 
-        case actionTypes.REMOVE_EDGE_SUCCESS:
+        case nodeActionTypes.REMOVE_EDGE_SUCCESS:
             return {
                 ...state,
                 [action.start]: {
@@ -86,7 +89,7 @@ export function nodes(state={}, action, collections) {
                 }
             }
 
-        case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
+        case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
             const sourceNode = state[action.sourceId]
 
             let newState = state;
@@ -114,7 +117,7 @@ export function nodes(state={}, action, collections) {
             })
         }
 
-        case actionTypes.CONVERT_NODE_TO_COLLECTION_SUCCESS:
+        case nodeActionTypes.CONVERT_NODE_TO_COLLECTION_SUCCESS:
             return {
                 ...state,
                 [action.id]: {
@@ -138,11 +141,11 @@ function edges(state={}, action, globalState) {
      * Handles the non-merging action types
     */
     switch(action.type) {
-        case actionTypes.REMOVE_NODE_SUCCESS:
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
             // TODO: when removing the node, remove the edge as well - 2016-09-10
             // TODO: basically, need to know which edges have this node as a from or to, and then delete them  - 2016-09-10
             return state
-        case actionTypes.REMOVE_EDGE_SUCCESS:
+        case nodeActionTypes.REMOVE_EDGE_SUCCESS:
             return _.omit(state, action.id)
 
 
@@ -163,15 +166,13 @@ function collectionEdges(state={}, action) {
      * Handles the non-merging action types
     */
     switch(action.type) {
-        case actionTypes.REMOVE_COLLECTION_SUCCESS:
+        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
             // TODO: need to know which edges have this collection as a to or a from - 2016-09-06
             const { collectionId } = action
             return _.filter(state, edge => {
                 return !(edge.start === collectionId || edge.end === collectionId)
             })
             return state
-        case actionTypes.REMOVE_COLLECTION_EDGE_SUCCESS:
-            return _.omit(state, action.id)
 
         case uiTypes.ADD_COLLECTION:
             // temporarily add a collection and defer synching with the server
@@ -215,8 +216,8 @@ function collections(state={}, action) {
      * Handles the non-merging action types
     */
     switch(action.type) {
-        case actionTypes.REMOVE_COLLECTION_SUCCESS:
-        case actionTypes.REMOVE_ABSTRACTION_SUCCESS:
+        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
+        case collectionActionTypes.REMOVE_ABSTRACTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
         case uiTypes.TOGGLE_EDIT_MODE:
@@ -260,7 +261,7 @@ function adjacencyMap(state={}, action) {
      * To what nodes does this node link?
     */
     switch(action.type) {
-        case actionTypes.REMOVE_NODE_SUCCESS:
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
         default:
             // TODO: only keep track of detail nodes for an adjacency list - 2016-06-19
@@ -295,7 +296,7 @@ function reverseAdjacencyMap(state={}, action) {
      * What nodes link to this node?
     */
     switch(action.type) {
-        case actionTypes.REMOVE_NODE_SUCCESS:
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
         default:
 
@@ -335,9 +336,9 @@ function edgeListMap(state={}, action) {
     */
 
     switch(action.type) {
-        case actionTypes.REMOVE_NODE_SUCCESS:
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
-        case actionTypes.REMOVE_EDGE_SUCCESS:
+        case nodeActionTypes.REMOVE_EDGE_SUCCESS:
             return {
                 ...state,
                 [action.start]: {
@@ -388,11 +389,11 @@ function pathL1Cache(state={}, action) {
 
     switch(action.type) {
         // TODO: cleanup differently? - 2016-07-18
-        case actionTypes.REMOVE_NODE_SUCCESS:
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
         // TODO: easier to get edges at least in real time? - 2016-07-18
         // TODO: handle CONNNECT and ADD_EDGE - 2016-07-18
-        case actionTypes.GET_NODE_L1_SUCCESS:
+        case nodeActionTypes.GET_NODE_L1_SUCCESS:
             return {
                 ...state,
                 [action.response.result.node]: {
@@ -412,11 +413,11 @@ function pathL2Cache(state={}, action) {
 
     switch(action.type) {
         // TODO: cleanup differently? - 2016-07-18
-        case actionTypes.REMOVE_NODE_SUCCESS:
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
         // TODO: handle CONNNECT and ADD_EDGE - 2016-07-18
-        case actionTypes.CONNECT_NODES_SUCCESS:
-        case actionTypes.ADD_EDGE_SUCCESS:
+        case nodeActionTypes.CONNECT_NODES_SUCCESS:
+        case nodeActionTypes.ADD_EDGE_SUCCESS:
             // TODO: this only handles direct relations though - 2016-08-25
             const pathl2Keys = Object.keys(state)
             const l2Keys = _.intersection(pathl2Keys, [action.start, action.end])
@@ -436,7 +437,7 @@ function pathL2Cache(state={}, action) {
                 }
 
             }, state)
-        case actionTypes.GET_NODE_L2_SUCCESS:
+        case nodeActionTypes.GET_NODE_L2_SUCCESS:
             return {
                 ...state,
                 [action.response.result.node]: {
@@ -449,49 +450,14 @@ function pathL2Cache(state={}, action) {
     }
 }
 
-function inboxNodes(state=[], action) {
-    switch(action.type) {
-        case actionTypes.REMOVE_NODE_SUCCESS:
-            return _.without(state, action.nodeId)
-        case actionTypes.GET_INBOX_NODES_SUCCESS:
-            return action.response.result.nodes
-        default:
-            return state
-    }
-}
-
-function batchNodes(state=[], action) {
-    switch(action.type) {
-        case actionTypes.REMOVE_NODE_SUCCESS:
-            return _.without(state, action.nodeId)
-        case actionTypes.GET_ALL_BATCH_NODES_SUCCESS:
-            // TODO: we also need to explicitly store edges? because we MUST only select edges that are explicitly between these nodes - 2016-07-23
-            return action.response.result.nodes
-        case actionTypes.CREATE_BATCH_NODE_SUCCESS:
-            return [ ...state, action.response.result ]
-        case actionTypes.DUPLICATE_NODE_SUCCESS:
-            return action.isBatch ?  [ ...state, action.response.result ] : state
-        case actionTypes.CONNECT_NODES_SUCCESS:
-            const batchNodes = _.intersection(state, [action.start, action.end])
-            if (batchNodes.length === 1) {
-                return  [ ...state, action.start === batchNodes[0] ? action.end : action.start ]
-            }
-            return state
-        case actionTypes.CLEAR_BATCH_NODES_SUCCESS:
-            return []
-        default:
-            return state
-    }
-}
-
 function nodesByCollectionId(state={}, action) {
     /*
      * A mapping of nodes by collection Id
      * // TODO: this is for now recomputed on every fetch (no merging) - 2017-07-14
     */
     switch(action.type) {
-        case actionTypes.GET_COLLECTION_SUCCESS:
-        case actionTypes.GET_COLLECTIONL1_SUCCESS:
+        case collectionActionTypes.GET_COLLECTION_SUCCESS:
+        case collectionActionTypes.GET_COLLECTIONL1_SUCCESS:
             // TODO: should be merged?
             let newState = {}
             // for every node, add them to the corresponding collection list
@@ -510,11 +476,11 @@ function nodesByCollectionId(state={}, action) {
 
             return newState
 
-        case actionTypes.REMOVE_COLLECTION_SUCCESS:
-        case actionTypes.REMOVE_ABSTRACTION_SUCCESS:
+        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
+        case collectionActionTypes.REMOVE_ABSTRACTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
-        case actionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
+        case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
             let newState = state;
 
             if (!newState[action.targetId]) {
@@ -549,7 +515,7 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
     switch(action.type) {
 
         // this resets the state
-        case actionTypes.GET_COLLECTION_SUCCESS:
+        case collectionActionTypes.GET_COLLECTION_SUCCESS:
             // TODO: here nodes should not include the colleciton itself
             return {
                 ...state,
@@ -558,11 +524,11 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
                 },
             }
 
-        case actionTypes.REMOVE_COLLECTION_SUCCESS:
+        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
         // TESTED
-        case actionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
+        case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
             return update(state, {
                 [action.collectionId]: {
                     nodes: { $push: [ action.nodeId ]}
@@ -570,8 +536,8 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
             })
 
         // TODO: just make nodes derived data as well?
-        case actionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
-        case actionTypes.REMOVE_NODE_SUCCESS:
+        case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
             // get the node to be removed and its edges
             // remove the node from all collections that have been fetched as well as the edges
 
@@ -623,7 +589,7 @@ function errors(state = initialErrorState, action) {
 
 // keeps track of the number of calls being made for each request
 // // TODO: Change to tokens? - 2016-05-11
-const initialRequestState = _.chain(actionTypes)
+const initialRequestState = _.chain([ ...nodeActionTypes, ...collectionActionTypes ])
     .pickBy((val, key) => key.endsWith('REQUEST'))
     .map((val, key) => [ key.split('_REQUEST')[0], false ])
     .fromPairs()
@@ -659,30 +625,8 @@ function synced(state=0, action) {
 // TODO: Make this local to the component? - 2016-07-11
 function allSearch(state=[], action) {
     switch(action.type) {
-        case actionTypes.SEARCH_ALL_SUCCESS:
+        case searchActionTypes.SEARCH_ALL_SUCCESS:
             return action.response
-        default:
-            return state
-    }
-}
-
-// TODO: Make this local to the component? - 2016-07-11
-function nodeSearch(state=[], action) {
-    switch(action.type) {
-        case actionTypes.SEARCH_NODE_SUCCESS:
-            return action.response
-        default:
-            return state
-    }
-}
-
-// TODO: Make this local to the component? - 2016-07-11
-function collectionSearch(state=[], action) {
-    switch(action.type) {
-        case actionTypes.SEARCH_COLLECTION_SUCCESS:
-            return action.response
-        case actionTypes.RESET_SEARCH_COLLECTION:
-            return []
         default:
             return state
     }
@@ -901,14 +845,10 @@ function rootReducer(state={}, action) {
         pathL2Cache: pathL2Cache(state.pathL2Cache, action),
         nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
         abstractionDetail: abstractionDetail(state.abstractionDetail, action, (state.entities && state.entities.nodes) || {}, state),
-        inboxNodes: inboxNodes(state.inboxNodes, action),
-        batchNodes: batchNodes(state.batchNodes, action),
         // errorMessage: errorMessage(state.errorMessage, action),
         loadingStates: loadingStates(state.loadingStates, action),
         synced: synced(state.synced, action),
         allSearch: allSearch(state.allSearch, action),
-        nodeSearch: nodeSearch(state.nodeSearch, action),
-        collectionSearch: collectionSearch(state.collectionSearch, action),
         uiState: uiState(state.uiState, action),
         graphUiState: graphUiState(state.graphUiState, action),
         user: user(state.user, action),

@@ -4,7 +4,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { List, ListItem } from 'material-ui/List'
-import { searchAll } from '../../actions/async'
+import { searchAll } from '../../actions/search'
 
 import {HotKeys} from 'react-hotkeys';
 import Portal from 'react-portal'

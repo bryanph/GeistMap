@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 import { TextField } from '../../components/Input'
 import { List, ListItem } from 'material-ui/List'
 
-import { searchCollection, resetSearchCollection } from '../../actions/async'
+import { searchCollection, resetSearchCollection } from '../../actions/search'
 import { showCreateCollectionWindow } from '../../actions/ui'
 
 import './styles.css'

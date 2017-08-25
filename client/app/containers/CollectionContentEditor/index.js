@@ -61,7 +61,11 @@ class RichEditorContainer extends React.Component {
 }
 
 import { hideAddPictureWindow, hideAddVideoWindow, hideAddAudioWindow, hideConnectWindow, showAddRelationWindow } from '../../actions/ui'
-import { addEdge, updateCollection, addFile, removeEdge } from '../../actions/async'
+import { addEdge, removeEdge } from '../../actions/node'
+import { updateCollection } from '../../actions/collection'
+import {
+    addFile
+} from '../../actions/file'
 
 function mapStateToProps(state, props) {
     return {

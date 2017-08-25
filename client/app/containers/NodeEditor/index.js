@@ -66,6 +66,6 @@ function mapStateToProps(state, props) {
     }
 }
 
-import { loadNodeL1 } from '../../actions/async'
+import { loadNodeL1 } from '../../actions/node'
 
 export default connect(mapStateToProps, { loadNodeL1 })(NodeEditor);

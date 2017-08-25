@@ -13,10 +13,12 @@ import {
 } from '../../actions/ui'
 
 import {
-    removeAbstraction,
     fetchNodeL1,
+} from '../../actions/node'
+import {
+    removeAbstraction,
     getCollectionL1,
-} from '../../actions/async'
+} from '../../actions/collection'
 
 import './styles.scss'
 

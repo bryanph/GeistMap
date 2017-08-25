@@ -61,6 +61,57 @@ module.exports = function(db, es) {
             const result = results.records[0]._fields[0]
         },
 
+        getAll: function(user, res) {
+            /*
+             * Get all collections and their abstract relationships
+             */
+
+            // TODO: only get collections reachable from the root node - 2017-07-14
+            Promise.all([
+                // get all the edges between the collections
+                db.run(`
+                    MATCH (u:User)--(c:Collection)
+                    WHERE u.id = {userId}
+                    WITH collect(c) as c2
+                    UNWIND c2 as cu1
+                    UNWIND c2 as cu2
+                    MATCH (cu1)-[e:AbstractEdge]->(cu2)
+                    RETURN collect(properties(e))
+                    `,
+                    {
+                        userId: user._id.toString()
+                    }
+                ),
+                db.run(`
+                    MATCH (u:User)--(c:Collection)
+                    WHERE u.id = {userId}
+                    OPTIONAL MATCH (c)<-[:AbstractEdge*0..5]-(c2:Collection)
+                    OPTIONAL MATCH (c2)--(n:Node)
+                    RETURN properties(c), count(n)
+                    `,
+                    {
+                        userId: user._id.toString()
+                    }
+                )
+            ]).then((results) => {
+                const edges = results[0].records[0]._fields[0]
+                const collections = results[1].records.map(row => (
+                    Object.assign({},
+                        row.get(0),
+                        {
+                            count: row.get(1).toNumber()
+                        }
+                    )
+                ))
+
+                return res(null, {
+                    collections,
+                    edges
+                })
+            })
+                .catch(handleError)
+        },
+
         get: function(user, id, res) {
             /*
              * Get abstraction with id ${id} and its children
@@ -238,57 +289,6 @@ module.exports = function(db, es) {
                 .catch(handleError)
         },
 
-        getAll: function(user, res) {
-            /*
-             * Get all collections and their abstract relationships
-             */
-
-            // TODO: only get collections reachable from the root node - 2017-07-14
-            Promise.all([
-                // get all the edges between the collections
-                db.run(`
-                    MATCH (u:User)--(c:Collection)
-                    WHERE u.id = {userId}
-                    WITH collect(c) as c2
-                    UNWIND c2 as cu1
-                    UNWIND c2 as cu2
-                    MATCH (cu1)-[e:AbstractEdge]->(cu2)
-                    RETURN collect(properties(e))
-                    `,
-                    {
-                        userId: user._id.toString()
-                    }
-                ),
-                db.run(`
-                    MATCH (u:User)--(c:Collection)
-                    WHERE u.id = {userId}
-                    OPTIONAL MATCH (c)<-[:AbstractEdge*0..5]-(c2:Collection)
-                    OPTIONAL MATCH (c2)--(n:Node)
-                    RETURN properties(c), count(n)
-                    `,
-                    {
-                        userId: user._id.toString()
-                    }
-                )
-            ]).then((results) => {
-                const edges = results[0].records[0]._fields[0]
-                const collections = results[1].records.map(row => (
-                    Object.assign({},
-                        row.get(0),
-                        {
-                            count: row.get(1).toNumber()
-                        }
-                    )
-                ))
-
-                return res(null, {
-                    collections,
-                    edges
-                })
-            })
-                .catch(handleError)
-        },
-
         create: function(user, id, parentId, data, res) {
             /*
              * Create a new collection connected to the root collection
@@ -348,6 +348,7 @@ module.exports = function(db, es) {
                 .catch(handleError)
         },
 
+        // TODO: not used at the moment - 2017-08-25
         connect: function(user, sourceId, targetId, id, res) {
             /*
              * Create the edge [sourceId]-[edge]->[targetId]

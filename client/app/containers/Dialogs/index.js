@@ -73,12 +73,14 @@ const mapStateToProps = function(state, props) {
 
 import {
     createNode,
-    createCollection,
     addEdge,
     connectNodes,
+} from '../../actions/node'
+import {
+    createCollection,
     addNodeToCollection,
     connectCollections
-} from '../../actions/async'
+} from '../../actions/collection'
 
 import {
     hideCreateCollectionWindow,

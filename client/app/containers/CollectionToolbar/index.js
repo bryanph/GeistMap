@@ -138,7 +138,8 @@ export class CollectionToolbar extends React.Component { // eslint-disable-line 
 }
 
 import { getCollection } from '../../reducers'
-import { updateCollection, removeCollection, removeEdge } from '../../actions/async'
+import { updateCollection, removeCollection } from '../../actions/collection'
+import { removeEdge } from '../../actions/node'
 import { showAddCollectionRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {

@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import ContentEditor from '../../components/ContentEditor'
 import { convertToRaw } from 'draft-js';
 
-import { addFile } from '../../actions/async'
+import { addFile } from '../../actions/file'
 
 class NodeContentEditor extends React.Component {
     constructor(props) {
@@ -62,7 +62,7 @@ class NodeContentEditor extends React.Component {
 
 import { getNode } from '../../reducers'
 import { hideAddPictureWindow, hideAddVideoWindow, hideAddAudioWindow, hideConnectWindow, showAddRelationWindow } from '../../actions/ui'
-import { addEdge, updateNode, removeEdge } from '../../actions/async'
+import { addEdge, updateNode, removeEdge } from '../../actions/node'
 
 function mapStateToProps(state, props) {
     const id = props.id || (props.match.params && props.match.params.id)

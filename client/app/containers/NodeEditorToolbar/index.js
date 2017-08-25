@@ -117,7 +117,7 @@ export class NodeEditorToolbar extends React.Component {
 }
 
 import { getNode } from '../../reducers'
-import { updateNode, removeNode, removeEdge } from '../../actions/async'
+import { updateNode, removeNode, removeEdge } from '../../actions/node'
 import { showAddRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {

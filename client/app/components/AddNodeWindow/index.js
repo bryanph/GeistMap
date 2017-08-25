@@ -13,7 +13,7 @@ import NodeSearch from '../../containers/NodeSearch'
 import {
     createNode,
     addNodeToCollection,
-} from '../../actions/async'
+} from '../../actions/node'
 
 class AddNodeWindow extends React.Component {
     constructor(props) {

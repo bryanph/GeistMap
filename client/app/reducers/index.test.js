@@ -1,7 +1,8 @@
 import reducer from './index.js'
 
-import * as actionTypes from '../actions/async'
-import * as uiTypes from '../actions/ui'
+import * as nodeActionTypes from '../actions/node'
+import * as collectionActionTypes from '../actions/collection'
+import * as uiActionType from '../actions/ui'
 
 import {
     nodes as nodesReducer,
@@ -15,7 +16,7 @@ describe('nodes', () => {
         const id = uuidV4()
         expect(
             nodesReducer({}, {
-                type: actionTypes.CREATE_NODE_SUCCESS,
+                type: nodeActionTypes.CREATE_NODE_SUCCESS,
                 id: id,
                 response: {
                     entities: {

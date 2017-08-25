@@ -94,7 +94,7 @@ class ContentLink extends React.Component {
     }
 }
 
-import { removeEdge } from '../.././../../actions/async'
+import { removeEdge } from '../.././../../actions/node'
 import { hideInboxSidebar } from '../.././../../actions/ui'
 import { getNode } from '../.././../../reducers'
 

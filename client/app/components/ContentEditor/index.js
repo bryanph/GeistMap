@@ -96,7 +96,7 @@ const toolbarTheme = {
 }
 
 import { Provider, connect } from 'react-redux'
-import { removeEdge } from '../../actions/async'
+import { removeEdge } from '../../actions/node'
 import { showAddRelationWindow } from '../../actions/ui'
 
 import ConnectWindow from '../../components/ConnectWindow'

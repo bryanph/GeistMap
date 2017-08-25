@@ -104,7 +104,7 @@ class Topbar extends React.Component {
     }
 }
 
-import { createNode } from '../../actions/async'
+import { createNode } from '../../actions/node'
 import { showInboxSidebar, hideInboxSidebar } from '../../actions/ui'
 
 function mapStateToProps(state, props) {

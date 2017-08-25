@@ -64,6 +64,6 @@ function mapStateToProps(state, props) {
     }
 }
 
-import { getCollectionL1 } from '../../actions/async'
+import { getCollectionL1 } from '../../actions/collection'
 
 export default connect(mapStateToProps, { getCollectionL1 })(CollectionEditor);

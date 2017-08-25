@@ -1,33 +1,3 @@
-
-/*
- * Async actions
- */
-
-import fetchJSON from '../utils/fetch'
-import { normalize, Schema, arrayOf } from 'normalizr'
-
-import Schemas from '../schemas'
-import { CALL_API } from '../middleware/api'
-
-import {
-    getCollection,
-    getNode,
-    getAbstractionChain,
- } from '../reducers'
-import {
-    getEdge,
-    getCollectionEdge,
- } from '../reducers'
-
-import { batchActions } from '../middleware/batch'
-
-const uuidV4 = require('uuid/v4');
-
-
-
-
-
-
 /*
  * Get all collections
 */
@@ -45,6 +15,28 @@ export function fetchCollections() {
             schema: {
                 collections: Schemas.COLLECTION_ARRAY,
                 edges: arrayOf(Schemas.COLLECTION_EDGE)
+            }
+        }
+    }
+}
+
+
+/*
+ * get the collection and its children
+*/
+export const GET_COLLECTION_REQUEST = 'GET_COLLECTION_REQUEST'
+export const GET_COLLECTION_SUCCESS = 'GET_COLLECTION_SUCCESS'
+export const GET_COLLECTION_FAILURE = 'GET_COLLECTION_FAILURE'
+export function fetchCollection(id) {
+    return {
+        [CALL_API]: {
+            types: [ GET_COLLECTION_REQUEST, GET_COLLECTION_SUCCESS, GET_COLLECTION_FAILURE ],
+            endpoint: 'Collection.get',
+            payload: [ id ],
+            schema: {
+                collection: Schemas.COLLECTION,
+                // nodes: arrayOf(Schemas.NODE),
+                edges: arrayOf(Schemas.EDGE),
             }
         }
     }
@@ -90,27 +82,6 @@ export function getCollectionL1(id, { cache = false } = {}) {
 }
 
 /*
- * get the collection and its children
-*/
-export const GET_COLLECTION_REQUEST = 'GET_COLLECTION_REQUEST'
-export const GET_COLLECTION_SUCCESS = 'GET_COLLECTION_SUCCESS'
-export const GET_COLLECTION_FAILURE = 'GET_COLLECTION_FAILURE'
-export function fetchCollection(id) {
-    return {
-        [CALL_API]: {
-            types: [ GET_COLLECTION_REQUEST, GET_COLLECTION_SUCCESS, GET_COLLECTION_FAILURE ],
-            endpoint: 'Collection.get',
-            payload: [ id ],
-            schema: {
-                collection: Schemas.COLLECTION,
-                // nodes: arrayOf(Schemas.NODE),
-                edges: arrayOf(Schemas.EDGE),
-            }
-        }
-    }
-}
-
-/*
  * Create a collection
 */
 export const CREATE_COLLECTION_REQUEST = 'CREATE_COLLECTION_REQUEST'
@@ -134,42 +105,39 @@ export function createCollection(id, parentId, data) {
     }
 }
 
-
-/*
- * Update a collection
-*/
-export const UPDATE_COLLECTION_REQUEST = 'UPDATE_COLLECTION_REQUEST'
-export const UPDATE_COLLECTION_SUCCESS = 'UPDATE_COLLECTION_SUCCESS'
-export const UPDATE_COLLECTION_FAILURE = 'UPDATE_COLLECTION_FAILURE'
-export function updateCollection(id, properties) {
+export const REMOVE_ABSTRACTION_REQUEST = 'REMOVE_ABSTRACTION_REQUEST'
+export const REMOVE_ABSTRACTION_SUCCESS = 'REMOVE_ABSTRACTION_SUCCESS'
+export const REMOVE_ABSTRACTION_FAILURE = 'REMOVE_ABSTRACTION_FAILURE'
+export function fetchRemoveAbstraction(collectionId) {
+    /*
+     * This converts the abstraction to a node and the edges to normal edges
+    */
     return {
+        sourceCollectionId,
+        collectionId,
         [CALL_API]: {
-            types: [ UPDATE_COLLECTION_REQUEST, UPDATE_COLLECTION_SUCCESS, UPDATE_COLLECTION_FAILURE ],
-            endpoint: 'Collection.update',
-            payload: [ id, properties ],
-            schema: Schemas.COLLECTION
-        }
-    }
-}
-
-/*
- * Remove a collection
-*/
-export const REMOVE_COLLECTION_REQUEST = 'REMOVE_COLLECTION_REQUEST'
-export const REMOVE_COLLECTION_SUCCESS = 'REMOVE_COLLECTION_SUCCESS'
-export const REMOVE_COLLECTION_FAILURE = 'REMOVE_COLLECTION_FAILURE'
-export function removeCollection(id) {
-    return {
-        collectionId: id,
-        [CALL_API]: {
-            types: [ REMOVE_COLLECTION_REQUEST, REMOVE_COLLECTION_SUCCESS, REMOVE_COLLECTION_FAILURE ],
+            types: [ REMOVE_ABSTRACTION_REQUEST, REMOVE_ABSTRACTION_SUCCESS, REMOVE_ABSTRACTION_FAILURE ],
             endpoint: 'Collection.remove',
-            payload: [ id ],
-            // schema: Schemas.COLLECTION
+            payload: [ collectionId ],
         }
     }
 }
-
+export function removeAbstraction(collectionId) {
+    /*
+     * 1. Fetch direct child nodes of ${collectionId}
+     * 2. Move abstraction with ${collectionId} to ${sourceCollectionId}
+    */
+    return (dispatch, getState) => {
+        // get the direct child nodes,
+        // TODO: must be merged with previous
+        // TODO: should be getCollection?
+        console.log(collectionId);
+        return dispatch(getCollectionL1(collectionId))
+            .then(() => {
+                return dispatch(fetchRemoveAbstraction(collectionId))
+            })
+    }
+}
 
 /*
  * add node with id ${nodeId} to collection with id ${collectionId}
@@ -232,25 +200,6 @@ export function removeNodeFromCollection(collectionId, nodeId) {
 }
 
 
-export const CONVERT_NODE_TO_COLLECTION_REQUEST = 'CONVERT_NODE_TO_COLLECTION_REQUEST'
-export const CONVERT_NODE_TO_COLLECTION_SUCCESS = 'CONVERT_NODE_TO_COLLECTION_SUCCESS'
-export const CONVERT_NODE_TO_COLLECTION_FAILURE = 'CONVERT_NODE_TO_COLLECTION_FAILURE'
-export function convertNodeToCollection(id) {
-    /*
-     * Should have some extra
-    */
-
-    return {
-        id,
-        [CALL_API]: {
-            types: [ CONVERT_NODE_TO_COLLECTION_REQUEST, CONVERT_NODE_TO_COLLECTION_SUCCESS, CONVERT_NODE_TO_COLLECTION_FAILURE ],
-            endpoint: 'Node.toCollection',
-            payload: [ id ],
-            schema: Schemas.NODE,
-        }
-    }
-}
-
 export const MOVE_TO_ABSTRACTION_REQUEST = 'MOVE_TO_ABSTRACTION_REQUEST'
 export const MOVE_TO_ABSTRACTION_SUCCESS = 'MOVE_TO_ABSTRACTION_SUCCESS'
 export const MOVE_TO_ABSTRACTION_FAILURE = 'MOVE_TO_ABSTRACTION_FAILURE'
@@ -295,38 +244,4 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId, curren
 }
 
 
-export const REMOVE_ABSTRACTION_REQUEST = 'REMOVE_ABSTRACTION_REQUEST'
-export const REMOVE_ABSTRACTION_SUCCESS = 'REMOVE_ABSTRACTION_SUCCESS'
-export const REMOVE_ABSTRACTION_FAILURE = 'REMOVE_ABSTRACTION_FAILURE'
-export function fetchRemoveAbstraction(collectionId) {
-    /*
-     * This converts the abstraction to a node and the edges to normal edges
-    */
-    return {
-        sourceCollectionId,
-        collectionId,
-        [CALL_API]: {
-            types: [ REMOVE_ABSTRACTION_REQUEST, REMOVE_ABSTRACTION_SUCCESS, REMOVE_ABSTRACTION_FAILURE ],
-            endpoint: 'Collection.remove',
-            payload: [ collectionId ],
-        }
-    }
-}
-export function removeAbstraction(collectionId) {
-    /*
-     * 1. Fetch direct child nodes of ${collectionId}
-     * 2. Move abstraction with ${collectionId} to ${sourceCollectionId}
-    */
-    return (dispatch, getState) => {
-        // get the direct child nodes,
-        // TODO: must be merged with previous
-        // TODO: should be getCollection?
-        console.log(collectionId);
-        return dispatch(getCollectionL1(collectionId))
-            .then(() => {
-                return dispatch(fetchRemoveAbstraction(collectionId))
-            })
-    }
-
-}
 

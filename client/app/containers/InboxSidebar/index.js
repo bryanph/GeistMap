@@ -125,16 +125,15 @@ class InboxItem extends React.Component {
     }
 }
 
-import { getNode, getBatchNodes, getEdgesForNodes } from '../../reducers'
+import { getNode, getEdgesForNodes } from '../../reducers'
 
 
 
 function mapStateToProps(state, props) {
-    const nodes = getBatchNodes(state)
-
+    // TODO: rename to Archive and handle fetching - 2017-08-25
     return {
-        nodes: nodes,
-        links: getEdgesForNodes(state, _.map(nodes, node => node.id)),
+        // nodes: [],
+        // links: getEdgesForNodes(state, _.map(nodes, node => node.id)),
         loadingStates: state.loadingStates,
         inboxSidebarOpened: state.uiState.inboxSidebar.opened
     }
@@ -142,7 +141,7 @@ function mapStateToProps(state, props) {
 
 import {
     removeNode
-} from '../../actions/async'
+} from '../../actions/node'
 
 import {
     hideInboxSidebar
