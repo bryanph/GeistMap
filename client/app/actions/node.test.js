@@ -4,7 +4,9 @@ import * as collectionActionTypes from '../actions/collection'
 import * as uiActionType from '../actions/ui'
 import rootReducer from '../reducers'
 
-import uuidV4 from 'uuid/v4'
+const uuidV4 = require('uuid/v4');
+jest.mock('uuid/v4')
+const uuidV4Actual = require.requireActual('uuid/v4');
 
 import { WebSocket, Server, SocketIO } from 'mock-socket'
 import io from 'socket.io-client'
@@ -16,9 +18,8 @@ import promise from 'redux-promise'
 import createSocketMiddleware from '../middleware/api'
 import restApiMiddleware from '../middleware/restApi'
 
-const createMockStore = (initialState) => {
-    const _socket = SocketIO('http://localhost:8080');
-    const socketMiddleware = createSocketMiddleware(_socket)
+const createMockStore = (socket, initialState) => {
+    const socketMiddleware = createSocketMiddleware(socket)
     return createStore(
         rootReducer,
         initialState,
@@ -26,23 +27,28 @@ const createMockStore = (initialState) => {
     );
 }
 
-let store, mockServer;
+let _socket, store, mockServer;
 
-import {
-    createNode,
-} from './node'
+import * as nodeActions from './node'
 
-mockServer = new Server('http://localhost:8080');
 describe('node actions', () => {
+    beforeAll(() => {
+        mockServer = new Server('foobar');
+        _socket = SocketIO('foobar');
 
-    beforeAll((done) => {
         return new Promise(resolve => {
-            console.log("calling beforeAll()")
-            _socket.on('connection', () => {
-                console.log("connection!")
+            mockServer.on('connect', () => {
                 resolve()
             })
         })
+    })
+
+    beforeEach(() => {
+        store = createMockStore(_socket, {})
+    })
+
+    afterEach(() => {
+        // TODO: remove all events - 2017-08-26
     })
 
     afterAll(() => {
@@ -54,11 +60,10 @@ describe('node actions', () => {
 
     /*
      * Tests the node actions and the reducer reacting on the state changes
-    */
-    test("Test Node.create() passes the correct actions", () => {
+     */
+    test("Test createNode() action", () => {
 
         mockServer.on('Node.create', (id, data, res) => {
-            console.log("Node.create() was called")
             res(null, {
                 name: data.name,
                 type: 'node',
@@ -70,12 +75,13 @@ describe('node actions', () => {
         })
 
         const initialState = {}
-        store = createMockStore()
+        store = createMockStore(_socket, initialState)
 
-        return store.dispatch(createNode("TEST__Node", { name: "Node" }))
+        uuidV4.mockImplementationOnce(() => "TEST__Node")
+
+        return store.dispatch(nodeActions.createNode({ name: "Node" }))
             .then((action) => {
-                console.log(action)
-                console.log(require('util').inspect(store.getState(), false, null))
+                // console.log(require('util').inspect(store.getState(), false, null))
                 expect(store.getState()).toMatchObject({
                     entities: {
                         nodes: {
@@ -91,6 +97,53 @@ describe('node actions', () => {
                     }
                 })
             })
+    })
+
+    test("Test updateNode() action", () => {
+        const node = {
+            name: 'Node',
+            modified: '1501582629992',
+            id: "TEST__Node",
+            type: 'node',
+            created: '1501582629992',
+            collectionChains: [],
+        }
+
+        mockServer.on('Node.update', (id, data, res) => {
+            res(null, { ...node, name: "Node_after" })
+        })
+
+        const initialState = {
+            entities: {
+                nodes: {
+                    ["TEST__Node"]: node
+                }
+            }
+        }
+        store = createMockStore(_socket, initialState)
+
+        return store.dispatch(nodeActions.updateNode("TEST__Node", { name: "Node_after" }))
+            .then((action) => {
+                // console.log(require('util').inspect(store.getState(), false, null))
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        nodes: {
+                            ["TEST__Node"]: {
+                                name: 'Node_after',
+                                modified: '1501582629992',
+                                id: "TEST__Node",
+                                type: 'node',
+                                created: '1501582629992',
+                                collectionChains: [],
+                            }
+                        }
+                    }
+                })
+            })
+    })
+
+    test("Test removeNode() action", () => {
+
     })
 })
 

@@ -101,7 +101,6 @@ import {
     getNode,
     getNodesAndEdgesByCollectionId,
     getNodesByCollectionId,
-    getEdgesByCollectionId,
 } from '../../reducers'
 
 function mapStateToProps(state, props) {
@@ -113,7 +112,6 @@ function mapStateToProps(state, props) {
     if (collectionId) {
         // loading a collection id
         // nodes = getNodesAndEdgesByCollectionId(state, collectionId);
-        // edges = getEdgesByCollectionId(state, collectionId);
         isLoading = state.loadingStates.GET_COLLECTION;
         ({ nodes, collections, visibleCollections, edges, collectionChain } = getNodesAndEdgesByCollectionId(state, collectionId))
         graphType = "collection"

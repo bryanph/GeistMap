@@ -255,6 +255,9 @@ function collections(state={}, action) {
     }
 }
 
+
+// TODO: will i need these adjacency maps? - 2017-08-26
+// TODO: they are not tested - 2017-08-26
 function adjacencyMap(state={}, action) {
     /*
      * To what nodes does this node link?
@@ -290,6 +293,8 @@ function adjacencyMap(state={}, action) {
     }
 }
 
+// TODO: will i need these adjacency maps? - 2017-08-26
+// TODO: they are not tested - 2017-08-26
 function reverseAdjacencyMap(state={}, action) {
     /*
      * What nodes link to this node?
@@ -328,6 +333,7 @@ function reverseAdjacencyMap(state={}, action) {
     }
 }
 
+// TODO: not tested at the moment - 2017-08-26
 function edgeListMap(state={}, action) {
     /*
      * For every node, keep track of the incoming edges and outgoing edges
@@ -377,75 +383,6 @@ function edgeListMap(state={}, action) {
             }
 
             return map
-    }
-}
-
-
-function pathL1Cache(state={}, action) {
-    /*
-     * stores ids involved in L1 paths previously fetched
-     */
-
-    switch(action.type) {
-        // TODO: cleanup differently? - 2016-07-18
-        case nodeActionTypes.REMOVE_NODE_SUCCESS:
-            return _.omit(state, action.nodeId)
-        // TODO: easier to get edges at least in real time? - 2016-07-18
-        // TODO: handle CONNNECT and ADD_EDGE - 2016-07-18
-        case nodeActionTypes.GET_NODE_L1_SUCCESS:
-            return {
-                ...state,
-                [action.response.result.node]: {
-                    nodes: [ action.response.result.node, ...action.response.result.connectedNodes ],
-                    edges: action.response.result.edges,
-                },
-            }
-        default:
-            return state
-    }
-}
-
-function pathL2Cache(state={}, action) {
-    /*
-     * stores ids involved in L2 paths previously fetched
-    */
-
-    switch(action.type) {
-        // TODO: cleanup differently? - 2016-07-18
-        case nodeActionTypes.REMOVE_NODE_SUCCESS:
-            return _.omit(state, action.nodeId)
-        // TODO: handle CONNNECT and ADD_EDGE - 2016-07-18
-        case nodeActionTypes.CONNECT_NODES_SUCCESS:
-        case nodeActionTypes.ADD_EDGE_SUCCESS:
-            // TODO: this only handles direct relations though - 2016-08-25
-            const pathl2Keys = Object.keys(state)
-            const l2Keys = _.intersection(pathl2Keys, [action.start, action.end])
-
-            if (!l2Keys) {
-                return state;
-            }
-
-            return _.reduce(l2Keys, (state, nodeId) => {
-                const otherId = nodeId === action.start ? action.end : action.start
-                return {
-                    ...state,
-                    [nodeId]: {
-                        nodes: [ ...state[nodeId].nodes, otherId ],
-                        edges: [ ...state[nodeId].edges, action.response.result ]
-                    },
-                }
-
-            }, state)
-        case nodeActionTypes.GET_NODE_L2_SUCCESS:
-            return {
-                ...state,
-                [action.response.result.node]: {
-                    nodes: action.response.result.connectedNodes,
-                    edges: action.response.result.edges,
-                },
-            }
-        default:
-            return state
     }
 }
 
@@ -512,7 +449,6 @@ export function abstractionDetail(state={}, action, nodes, globalState) {
     */
 
     switch(action.type) {
-
         // this resets the state
         case collectionActionTypes.GET_COLLECTION_SUCCESS:
             // TODO: here nodes should not include the colleciton itself
@@ -609,7 +545,7 @@ function loadingStates(state=initialRequestState, action) {
 }
 
 // keeps track of whether all entities are synced or not
-// // TODO: Change to tokens? - 2016-05-11
+// TODO: on FAILURE, have a different synced state (failed or something) - 2017-08-26
 function synced(state=0, action) {
     if (action.type.endsWith('REQUEST')) {
         return state + 1
@@ -698,6 +634,7 @@ function graphUiState(state=initialGraphUIState, action) {
 
 
 function uiState(state=initialUiState, action) {
+    // TODO: cleanup - 2017-08-26
     switch(action.type) {
         case uiActionTypes.SHOW_CONNECT_WINDOW:
             return {
@@ -825,6 +762,7 @@ function user(state={}, action) {
     }
 }
 
+// TODO: try to get rid of this, shouldn't be handled globally - 2017-08-26
 function editorState(state=null, action) {
     switch (action.type) {
         case uiActionTypes.SET_EDITOR_STATE:
@@ -840,8 +778,6 @@ function rootReducer(state={}, action) {
         adjacencyMap: adjacencyMap(state.adjacencyMap, action),
         reverseAdjacencyMap: reverseAdjacencyMap(state.reverseAdjacencyMap, action),
         edgeListMap: edgeListMap(state.edgeListMap, action),
-        pathL1Cache: pathL1Cache(state.pathL1Cache, action),
-        pathL2Cache: pathL2Cache(state.pathL2Cache, action),
         nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
         abstractionDetail: abstractionDetail(state.abstractionDetail, action, (state.entities && state.entities.nodes) || {}, state),
         // errorMessage: errorMessage(state.errorMessage, action),
@@ -858,12 +794,6 @@ function rootReducer(state={}, action) {
 
 export default rootReducer
 
-
-
-function memoize() {
-
-}
-
 /*
  * SELECTORS
  * See https://github.com/reactjs/reselect
@@ -873,34 +803,62 @@ import { createSelector } from 'reselect'
 
 export const getNodes = (state, id) => _.map(state.entities.nodes, x => x)
 export const getNode = (state, id) => state.entities.nodes[id]
-
 export const getNodesForIds = (ids) => ids.map(id => getNode(state, id))
 
 export const getEdges = (state, id) => _.map(state.entities.edges, x => x)
 export const getEdge = (state, id) => state.entities.edges[id]
 
+export const getCollections = (state, id) => _.map(state.entities.collections, x => x)
+export const getCollection = (state, id) => state.entities.collections[id]
+
 export const getCollectionEdge = (state, id) => state.entities.collectionEdges[id]
 export const getCollectionEdges = (state, id) => _.map(state.entities.collectionEdges, x => x)
 
-
+export const getL1NodeIds = (state, id) => {
+    return [
+        // id,
+        ...(state.adjacencyMap[id] || []),
+        ...(state.reverseAdjacencyMap[id] || []),
+    ]
+}
 export const getL1Nodes = (state, id) => {
     /*
      * get the directly neighbouring nodes (including the node itself)
-     * // TODO: easier: just get it from the response? - 2016-07-18
     */
-
-    return _([
-        id,
-        ...(state.adjacencyMap[id] || []),
-        ...(state.reverseAdjacencyMap[id] || []),
-    ])
-        .uniq()
-        .map(id => getNode(state, id))
-        .filter(x => typeof x !== 'undefined')
-        .value()
+        return getL1NodeIds(state, id).map(id => getNode(state, id))
 }
 
-export const getEdgeIdsByNodeId = (state, id) => {
+export const getL2NodeIds = (state, id) => {
+    let visitedMap = { id: getNode(state, id) }
+    let nodeIds = []
+    let queue = [ id ]
+    let distanceCurr = 0
+
+    while(distanceCurr > 2 || queue.length !== 0) {
+        const currentId = queue.shift() // TODO: O(N) - 2017-08-26
+        const neighbours = getL1NodeIds(state, currentId)
+        neighbours.forEach(id => {
+            if (visitedMap[id]) {
+                return;
+            }
+            visitedMap[id] = getNode(state, id)
+            nodeIds.push(id)
+            queue.push(id)
+        })
+
+        // TODO: how to keep track of distance? - 2017-08-26
+        distanceCurr++
+    }
+
+    return nodeIds
+}
+
+export const getL2Nodes = (state, id) => {
+    return getL2NodeIds(state, id)
+        .map(id => getNode(id))
+}
+
+export const getL1EdgeIds = (state, id) => {
     /*
      * Direct edges from node
     */
@@ -915,52 +873,19 @@ export const getEdgeIdsByNodeId = (state, id) => {
     ]
 }
 
-// TODO: how can we ensure consistent order? - 2016-06-18
-// TODO: Keep track of an adjacency list in a reducer to make this faster 2016-06-19
-export const getEdgesFromNode = (state, id) => (
-    _(state.entities.edges)
-        .filter(edge => edge.start === id)
-        .map(edge => ({
-            ...edge,
-            start: getNode(state, edge.start),
-            end: getNode(state, edge.end),
-        }))
-        .value()
-)
-
-export const getEdgesToNode = (state, id) => (
-    _(state.entities.edges)
-        .filter(edge => edge.end === id)
-        .map(edge => ({
-            ...edge,
-            start: getNode(state, edge.start),
-            end: getNode(state, edge.end),
-
-        }))
-        .value()
-)
-
-export const getCollections = (state, id) => _.map(state.entities.collections, x => x)
-export const getCollection = (state, id) => state.entities.collections[id]
-//
-// export const getCollectionsByNodeId = (state, id) => {
-//     const node = getNode(state, id)
-//
-//     if (!node) {
-//         return []
-//     }
-//
-//     return (node.collections || []).map(id => getCollection(state, id)).filter(x => x !== undefined)
-// }
-
-
-export const getNodeIdsByCollectionId = (state, id) => (
-    state.nodesByCollectionId[id] || []
-)
+export const getL1Edges = (state, id) => {
+    /*
+     * get the direct neighbouring edges for a node with id ${id}
+    */
+    return getL1EdgeIds(state, id).map(id => getEdge(state, id))
+}
 
 export const getEdgesForNodes = (state, ids) => {
     /*
-     * Gets all edges between [ ids ] (and their neighbours)
+     * Gets all edges between [ ids ] (not including their neighbours)
+     * 1. create a map of the edges
+     * 2. create a list of all L1 edges of { ids }
+     * 3. filter by edge.start and edge.end both being in the edge map
     */
 
     // TODO: make this more efficient
@@ -978,7 +903,21 @@ export const getEdgesForNodes = (state, ids) => {
         .value()
 }
 
+export const getL2Edges = (state, id) => {
+    // TODO: more efficient - 2017-08-26
+    return getEdgesForNodes(getL2NodeIds(state, id))
+}
+
+export const getNodeIdsByCollectionId = (state, id) => (
+    state.nodesByCollectionId[id] || []
+)
+
 export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
+    /*
+     * gets all nodes and edges that are part of the chain of collection with id ${id}
+    */
+    // TODO: test this properly - 2017-08-26
+
     const parentCollection = getCollection(state, id)
 
     if (!parentCollection) {
@@ -1223,52 +1162,6 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
     }
 }
 
-export const getEdgeIdsByCollectionId = (state, id) => (
-    (state.abstractionDetail[id] || { edges: [] }).edges
-)
-
-export const getEdgesByCollectionId = (state, id) => (
-    getEdgeIdsByCollectionId(state, id).map(edgeId => getEdge(state, edgeId))
-)
-
-export const getL2Nodes = (state, id) => (
-    state.pathL2Cache[id] && state.pathL2Cache[id].nodes.map(id => getNode(state, id))
-)
-export const getL1Edges = (state, id) => {
-    /*
-     * get the direct neighbouring edges for a node with id ${id}
-    */
-    return getEdgeIdsByNodeId(state, id).map(id => getEdge(state, id))
-}
-
-export const getL2Edges = (state, id) => (
-    // _(getL2Nodes(state, id))
-    //     // TODO: MUST check whether both edges endpoints are in this path
-    //     .map(node => [ node.start, node.end ])
-    //     .flatMap()
-    //     .uniq()
-    //     .map(id => getEdge(state, id))
-    //     .value()
-    state.pathL2Cache[id] && state.pathL2Cache[id].edges.map(id => getEdge(state, id))
-)
-
-export const getInboxNodes = (state, id) => (
-    state.inboxNodes.map(id => getNode(state, id))
-)
-
-export const getBatchNodes = (state) => (
-    state.batchNodes.map(id => getNode(state, id))
-)
-
+// TODO: more fine-grained syncing information - 2017-08-26
 export const isSynced = (state) => !state.synced
 
-export const getAbstractionChain = (state, id) => {
-    const node = getCollection(state, id) || getNode(state, id)
-
-    if (!node) return null
-
-    return [
-        node.id,
-        ...node.collections
-    ]
-}
