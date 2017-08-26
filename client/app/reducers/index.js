@@ -829,13 +829,26 @@ export const getL1Nodes = (state, id) => {
 }
 
 export const getL2NodeIds = (state, id) => {
+    /*
+     * A simple DFS keeping track of depth
+    */
     let visitedMap = { id: getNode(state, id) }
     let nodeIds = []
     let queue = [ id ]
-    let distanceCurr = 0
 
-    while(distanceCurr > 2 || queue.length !== 0) {
-        const currentId = queue.shift() // TODO: O(N) - 2017-08-26
+    let lastInLevel = id
+    let depth = 0
+    let timeToDepthIncrease = 1
+    let pendingDepthIncrease = true
+
+    while(depth > 2 || queue.length !== 0) {
+        if (--timeToDepthIncrease === 0) {
+            // reached a new depth level
+            depth++;   
+            pendingDepthIncrease = true
+        }
+
+        const currentId = queue.shift() // TODO: O(N), should be constant - 2017-08-26
         const neighbours = getL1NodeIds(state, currentId)
         neighbours.forEach(id => {
             if (visitedMap[id]) {
@@ -844,10 +857,13 @@ export const getL2NodeIds = (state, id) => {
             visitedMap[id] = getNode(state, id)
             nodeIds.push(id)
             queue.push(id)
-        })
 
-        // TODO: how to keep track of distance? - 2017-08-26
-        distanceCurr++
+            if (pendingDepthIncrease) {
+                // this is the first node of the new depth level, hence # nodes in next depth = length of the queue
+                timeToDepthIncrease = queue.length
+                pendingDepthIncrease = false
+            }
+        })
     }
 
     return nodeIds
@@ -888,6 +904,19 @@ export const getEdgesForNodes = (state, ids) => {
      * 3. filter by edge.start and edge.end both being in the edge map
     */
 
+    // all edges containing at least one of ids in start or end
+    const edgeList = _(getL1Edges(state, id))
+        .flatMap()
+        .uniqBy('id')
+        .value()
+
+    const edgeMap = _.keyBy(edgeList, 'id')
+
+    // both start and end should be part of [ ids ]
+    return edgeList.filter(edge => {
+        return _.every([edge.start, edge.end], (id) => edgeMap[id])
+    })
+
     // TODO: make this more efficient
     // filter edges that have start/end not inside this collection of elements
     return _(ids)
@@ -905,6 +934,7 @@ export const getEdgesForNodes = (state, ids) => {
 
 export const getL2Edges = (state, id) => {
     // TODO: more efficient - 2017-08-26
+    // TODO: combine the calls of getL2Nodes and getL2Edges - 2017-08-26
     return getEdgesForNodes(getL2NodeIds(state, id))
 }
 
