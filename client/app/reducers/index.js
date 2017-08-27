@@ -896,37 +896,23 @@ export const getL1Edges = (state, id) => {
     return getL1EdgeIds(state, id).map(id => getEdge(state, id))
 }
 
-export const getEdgesForNodes = (state, ids) => {
+export const getEdgeIdsForNodes = (state, ids) => {
     /*
      * Gets all edges between [ ids ] (not including their neighbours)
-     * 1. create a map of the edges
-     * 2. create a list of all L1 edges of { ids }
-     * 3. filter by edge.start and edge.end both being in the edge map
     */
 
-    // all edges containing at least one of ids in start or end
-    const edgeList = _(getL1Edges(state, id))
-        .flatMap()
-        .uniqBy('id')
-        .value()
+    const nodeMap = _.reduce(ids, (map, id) => {
+        map[id] = true
+        return map
+    }, {})
 
-    const edgeMap = _.keyBy(edgeList, 'id')
-
-    // both start and end should be part of [ ids ]
-    return edgeList.filter(edge => {
-        return _.every([edge.start, edge.end], (id) => edgeMap[id])
-    })
-
-    // TODO: make this more efficient
     // filter edges that have start/end not inside this collection of elements
     return _(ids)
         .map(id => getL1Edges(state, id))
         .flatMap()
         .uniqBy('id')
         .filter(edge => {
-            // must both be in ids[] array, otherwise we get edges pointing to nodes not in ids[]
-            // TODO:can  make this into a _.some to get the neighbouring edges as well
-            return _.every([edge.start, edge.end], (id) => _.includes(ids, id))
+            return _.every([edge.start, edge.end], (id) => nodeMap[id])
         })
         .map(x => x.id)
         .value()
@@ -935,7 +921,7 @@ export const getEdgesForNodes = (state, ids) => {
 export const getL2Edges = (state, id) => {
     // TODO: more efficient - 2017-08-26
     // TODO: combine the calls of getL2Nodes and getL2Edges - 2017-08-26
-    return getEdgesForNodes(getL2NodeIds(state, id))
+    return getEdgeIdsForNodes(getL2NodeIds(state, id))
 }
 
 export const getNodeIdsByCollectionId = (state, id) => (
@@ -968,7 +954,7 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
         ))
         .map(node => node.id)
 
-    const edges = getEdgesForNodes(state, nodes)
+    const edges = getEdgeIdsForNodes(state, nodes)
 
     return {
         nodes,
