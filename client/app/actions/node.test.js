@@ -1,8 +1,5 @@
-
-import * as nodeActionTypes from '../actions/node'
-import * as collectionActionTypes from '../actions/collection'
-import * as uiActionType from '../actions/ui'
-import rootReducer from '../reducers'
+import { createMockStore } from '../test/util'
+import * as nodeActions from './node'
 
 const uuidV4 = require('uuid/v4');
 jest.mock('uuid/v4')
@@ -11,25 +8,7 @@ const uuidV4Actual = require.requireActual('uuid/v4');
 import { WebSocket, Server, SocketIO } from 'mock-socket'
 import io from 'socket.io-client'
 
-import { createStore, applyMiddleware, compose } from 'redux';
-import thunk from 'redux-thunk'
-import promise from 'redux-promise'
-
-import createSocketMiddleware from '../middleware/api'
-import restApiMiddleware from '../middleware/restApi'
-
-const createMockStore = (socket, initialState) => {
-    const socketMiddleware = createSocketMiddleware(socket)
-    return createStore(
-        rootReducer,
-        initialState,
-        applyMiddleware(thunk, promise, socketMiddleware, restApiMiddleware),
-    );
-}
-
 let _socket, store, mockServer;
-
-import * as nodeActions from './node'
 
 describe('node actions', () => {
     beforeAll(() => {
@@ -143,7 +122,410 @@ describe('node actions', () => {
     })
 
     test("Test removeNode() action", () => {
+        mockServer.on('Node.remove', (id, res) => {
+            res(null, true)
+        })
 
+        const initialState = {
+            entities: {
+                nodes: {
+                    ["TEST__Node"]: {
+                        name: 'Node',
+                        modified: '1501582629992',
+                        id: "TEST__Node",
+                        type: 'node',
+                        created: '1501582629992',
+                        collectionChains: [],
+                    },
+                    ["TEST__Node2"]: {
+                        name: 'Node2',
+                        modified: '1501582629992',
+                        id: "TEST__Node2",
+                        type: 'node',
+                        created: '1501582629992',
+                        collectionChains: [],
+                    },
+                },
+                edges: {
+                    ["TEST__Node_Node2"]: {
+                        end: "TEST__Node2",
+                        start: "TEST__Node",
+                        id: "TEST__Node_Node2",
+                    },
+                    ["TEST__Node2_Node"]: {
+                        start: "TEST__Node2",
+                        end: "TEST__Node",
+                        id: "TEST__Node2_Node",
+                    }
+                }
+            },
+            adjacencyMap: {
+                "TEST__Node": [ "TEST__Node2" ],
+                "TEST__Node2": [ "TEST__Node" ],
+            },
+            reverseAdjacencyMap: {
+                "TEST__Node": [ "TEST__Node2" ],
+                "TEST__Node2": [ "TEST__Node" ],
+            },
+            edgeListMap: {
+                "TEST__Node": {
+                    from: [ "TEST__Node_Node2" ],
+                    to: [ "TEST__Node2_Node" ],
+                },
+                "TEST__Node2": {
+                    from: [ "TEST__Node2_Node" ],
+                    to: [ "TEST__Node_Node2" ],
+                }
+            }
+        }
+        store = createMockStore(_socket, initialState)
+
+        return store.dispatch(nodeActions.removeNode("TEST__Node"))
+            .then((action) => {
+                // console.log(require('util').inspect(store.getState(), false, null))
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        nodes: {
+                            ["TEST__Node2"]: {
+                                name: 'Node2',
+                                modified: '1501582629992',
+                                id: "TEST__Node2",
+                                type: 'node',
+                                created: '1501582629992',
+                                collectionChains: [],
+                            },
+                        },
+                        edges: { }
+                    },
+                    adjacencyMap: {
+                        "TEST__Node2": [],
+                    },
+                    reverseAdjacencyMap: {
+                        "TEST__Node2": [],
+                    },
+                    edgeListMap: {
+                        "TEST__Node2": {
+                            from: [],
+                            to: [],
+                        }
+                    }
+                })
+            })
+    })
+
+    test("Test connectNodes() action", () => {
+        mockServer.on('Node.connect', (start, end, id, res) => {
+            res(null, {
+                start,
+                end,
+                id,
+            })
+        })
+
+        const initialState = {
+            entities: {
+                nodes: {
+                    ["TEST__Node"]: {
+                        name: 'Node',
+                        modified: '1501582629992',
+                        id: "TEST__Node",
+                        type: 'node',
+                        created: '1501582629992',
+                        collectionChains: [],
+                    },
+                    ["TEST__Node2"]: {
+                        name: 'Node2',
+                        modified: '1501582629992',
+                        id: "TEST__Node2",
+                        type: 'node',
+                        created: '1501582629992',
+                        collectionChains: [],
+                    }
+                }
+            }
+        }
+        store = createMockStore(_socket, initialState)
+
+        uuidV4.mockImplementationOnce(() => "TEST__Node_Node2")
+
+        return store.dispatch(nodeActions.connectNodes("TEST__Node", "TEST__Node2"))
+            .then((action) => {
+                // console.log(require('util').inspect(store.getState(), false, null))
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        nodes: {
+                            ["TEST__Node"]: {
+                                name: 'Node',
+                                modified: '1501582629992',
+                                id: "TEST__Node",
+                                type: 'node',
+                                created: '1501582629992',
+                                collectionChains: [],
+                            },
+                            ["TEST__Node2"]: {
+                                name: 'Node2',
+                                modified: '1501582629992',
+                                id: "TEST__Node2",
+                                type: 'node',
+                                created: '1501582629992',
+                                collectionChains: [],
+                            },
+                        },
+                        edges: {
+                            ["TEST__Node_Node2"]: {
+                                start: "TEST__Node",
+                                end: "TEST__Node2",
+                                id: "TEST__Node_Node2",
+                            },
+                        }
+                    },
+                    adjacencyMap: {
+                        "TEST__Node": [ "TEST__Node2" ],
+                    },
+                    reverseAdjacencyMap: {
+                        "TEST__Node2": [ "TEST__Node" ],
+                    },
+                    edgeListMap: {
+                        "TEST__Node": {
+                            from: [ "TEST__Node_Node2" ],
+                            to: [],
+                        },
+                        "TEST__Node2": {
+                            from: [],
+                            to: [ "TEST__Node_Node2" ],
+                        }
+                    }
+                })
+            })
+    })
+
+    test('test addEdge() action', function() {
+        // TODO: should be merged with connect() - 2017-08-28
+        mockServer.on('Node.addEdge', (start, end, id, content, res) => {
+            res(null, {
+                start,
+                end,
+                id,
+                content,
+            })
+        })
+
+        const initialState = {
+            entities: {
+                nodes: {
+                    ["TEST__Node"]: {
+                        name: 'Node',
+                        modified: '1501582629992',
+                        id: "TEST__Node",
+                        type: 'node',
+                        created: '1501582629992',
+                        collectionChains: [],
+                    },
+                    ["TEST__Node2"]: {
+                        name: 'Node2',
+                        modified: '1501582629992',
+                        id: "TEST__Node2",
+                        type: 'node',
+                        created: '1501582629992',
+                        collectionChains: [],
+                    }
+                }
+            }
+        }
+        store = createMockStore(_socket, initialState)
+
+        uuidV4.mockImplementationOnce(() => "TEST__Node_Node2")
+
+        return store.dispatch(nodeActions.addEdge("TEST__Node", "TEST__Node2", "some content"))
+            .then((action) => {
+                // console.log(require('util').inspect(store.getState(), false, null))
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        nodes: {
+                            ["TEST__Node"]: {
+                                name: 'Node',
+                                modified: '1501582629992',
+                                id: "TEST__Node",
+                                type: 'node',
+                                created: '1501582629992',
+                                collectionChains: [],
+                            },
+                            ["TEST__Node2"]: {
+                                name: 'Node2',
+                                modified: '1501582629992',
+                                id: "TEST__Node2",
+                                type: 'node',
+                                created: '1501582629992',
+                                collectionChains: [],
+                            },
+                        },
+                        edges: {
+                            ["TEST__Node_Node2"]: {
+                                start: "TEST__Node",
+                                end: "TEST__Node2",
+                                id: "TEST__Node_Node2",
+                                content: "some content",
+                            },
+                        }
+                    },
+                    adjacencyMap: {
+                        "TEST__Node": [ "TEST__Node2" ],
+                    },
+                    reverseAdjacencyMap: {
+                        "TEST__Node2": [ "TEST__Node" ],
+                    },
+                    edgeListMap: {
+                        "TEST__Node": {
+                            from: [ "TEST__Node_Node2" ],
+                            to: [],
+                        },
+                        "TEST__Node2": {
+                            from: [],
+                            to: [ "TEST__Node_Node2" ],
+                        }
+                    }
+                })
+            })
+    })
+
+    test("Test removeEdge() action", function() {
+        mockServer.on('Node.removeEdge', (id, res) => {
+            res(null, true)
+        })
+
+        const initialState = {
+            entities: {
+                nodes: {
+                    ["TEST__Node"]: {
+                        name: 'Node',
+                        modified: '1501582629992',
+                        id: "TEST__Node",
+                        type: 'node',
+                        created: '1501582629992',
+                        collectionChains: [],
+                    },
+                    ["TEST__Node2"]: {
+                        name: 'Node2',
+                        modified: '1501582629992',
+                        id: "TEST__Node2",
+                        type: 'node',
+                        created: '1501582629992',
+                        collectionChains: [],
+                    },
+                },
+                edges: {
+                    ["TEST__Node_Node2"]: {
+                        start: "TEST__Node",
+                        end: "TEST__Node2",
+                        id: "TEST__Node_Node2",
+                    },
+                }
+            },
+            adjacencyMap: {
+                "TEST__Node": [ "TEST__Node2" ],
+            },
+            reverseAdjacencyMap: {
+                "TEST__Node2": [ "TEST__Node" ],
+            },
+            edgeListMap: {
+                "TEST__Node": {
+                    from: [ "TEST__Node_Node2" ],
+                    to: [],
+                },
+                "TEST__Node2": {
+                    from: [],
+                    to: [ "TEST__Node_Node2" ],
+                }
+            }
+        }
+        store = createMockStore(_socket, initialState)
+
+        return store.dispatch(nodeActions.removeEdge("TEST__Node_Node2"))
+            .then((action) => {
+                // console.log(require('util').inspect(store.getState(), false, null))
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        nodes: {
+                            ["TEST__Node"]: {
+                                name: 'Node',
+                                modified: '1501582629992',
+                                id: "TEST__Node",
+                                type: 'node',
+                                created: '1501582629992',
+                                collectionChains: [],
+                            },
+                            ["TEST__Node2"]: {
+                                name: 'Node2',
+                                modified: '1501582629992',
+                                id: "TEST__Node2",
+                                type: 'node',
+                                created: '1501582629992',
+                                collectionChains: [],
+                            },
+                        },
+                        edges: { }
+                    },
+                    adjacencyMap: {
+                        "TEST__Node": [],
+                    },
+                    reverseAdjacencyMap: {
+                        "TEST__Node2": [],
+                    },
+                    edgeListMap: {
+                        "TEST__Node": {
+                            from: [],
+                            to: [],
+                        },
+                        "TEST__Node2": {
+                            from: [],
+                            to: [],
+                        }
+                    }
+                })
+            })
+    })
+
+    test("test convertNodeToCollection() action", function() {
+        const node = {
+            name: 'Node',
+            modified: '1501582629992',
+            id: "TEST__Node",
+            type: 'node',
+            created: '1501582629992',
+            collectionChains: [],
+        }
+
+        mockServer.on('Node.toCollection', (id, res) => {
+            res(null, { ...node, type: "collection" })
+        })
+
+        const initialState = {
+            entities: {
+                nodes: {
+                    ["TEST__Node"]: node
+                }
+            }
+        }
+        store = createMockStore(_socket, initialState)
+
+        return store.dispatch(nodeActions.convertNodeToCollection("TEST__Node"))
+            .then((action) => {
+                // console.log(require('util').inspect(store.getState(), false, null))
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        nodes: {
+                            ["TEST__Node"]: {
+                                name: 'Node',
+                                modified: '1501582629992',
+                                id: "TEST__Node",
+                                type: 'collection',
+                                created: '1501582629992',
+                                collectionChains: [],
+                            }
+                        }
+                    }
+                })
+            })
     })
 })
 

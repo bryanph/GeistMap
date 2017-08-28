@@ -37,7 +37,7 @@ function loadData(props) {
             })
     }
     else {
-        return props.loadNodeL1(props.nodeId)
+        return props.fetchNodeL1(props.nodeId)
     }
 }
 
@@ -145,7 +145,6 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
     getCollectionL1,
-    loadNodeL1,
     addNode,
     connectNodes,
     updateNode,

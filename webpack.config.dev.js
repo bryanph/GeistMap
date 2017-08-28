@@ -41,7 +41,10 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
         new UnusedFilesWebpackPlugin({
-            pattern: 'client/**/*.*'
+            pattern: 'client/**/*.*',
+            globOptions: {
+                ignore: [ "node_modules/**/*","client/**/*.test.js" ]
+            }
         }),
         new webpack.LoaderOptionsPlugin({
             // test: /\.xxx$/, // may apply this only for some modules

@@ -1,3 +1,110 @@
+import { createMockStore } from '../test/util'
+import * as collectionActions from './collection'
+
+const uuidV4 = require('uuid/v4');
+jest.mock('uuid/v4')
+const uuidV4Actual = require.requireActual('uuid/v4');
+
+import { WebSocket, Server, SocketIO } from 'mock-socket'
+import io from 'socket.io-client'
+
+let _socket, store, mockServer;
+
+describe('collection actions', () => {
+    beforeAll(() => {
+        mockServer = new Server('foobar');
+        _socket = SocketIO('foobar');
+
+        return new Promise(resolve => {
+            mockServer.on('connect', () => {
+                resolve()
+            })
+        })
+    })
+
+    beforeEach(() => {
+        store = createMockStore(_socket, {})
+    })
+
+    afterEach(() => {
+        // TODO: remove all events - 2017-08-26
+    })
+
+    afterAll(() => {
+        return new Promise(resolve => {
+            mockServer.stop(resolve)
+        })
+    })
+
+
+    /*
+     * Tests the node actions and the reducer reacting on the state changes
+     */
+    test("Test createCollection() action", () => {
+        mockServer.on('Collection.create', (id, parentId, data, res) => {
+            res(null, {
+                "created": 1503389225848,
+                "name": "Collection",
+                "modified": 1503389225848,
+                "id": "TEST__Collection",
+                "type": "collection",
+            })
+        })
+
+        const initialState = {
+            entities: {
+                collections: {
+                    ["TEST__RootCollection"]: {
+                        "isRootCollection": true,
+                        "created": 1503389225848,
+                        "name": "My Knowledge Base",
+                        "modified": 1503389225848,
+                        "id": "TEST__RootCollection",
+                        "type": "root"
+                    },
+                },
+            },
+        }
+
+        store = createMockStore(_socket, initialState)
+
+        return store.dispatch(collectionActions.createCollection("TEST__Collection", "TEST__RootCollection", { "name": "Collection" }))
+            .then((action) => {
+                // console.log(require('util').inspect(store.getState(), false, null))
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        collections: {
+                            "TEST__RootCollection": {
+                                "isRootCollection": true,
+                                "created": 1503389225848,
+                                "name": "My Knowledge Base",
+                                "modified": 1503389225848,
+                                "id": "TEST__RootCollection",
+                                "type": "root",
+                            },
+                            "TEST__Collection": {
+                                "created": 1503389225848,
+                                "name": "Collection",
+                                "modified": 1503389225848,
+                                "id": "TEST__Collection",
+                                "type": "collection",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection" ]
+                                ]
+                            },
+                        },
+                    },
+                })
+            })
+    })
+
+    test("Test removeCollection action", function() {
+
+    })
+})
+
+
+
 
 describe('abstractions', () => {
 

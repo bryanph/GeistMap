@@ -154,10 +154,9 @@ export function updateNode(id, properties) {
 export const REMOVE_NODE_REQUEST = 'REMOVE_NODE_REQUEST'
 export const REMOVE_NODE_SUCCESS = 'REMOVE_NODE_SUCCESS'
 export const REMOVE_NODE_FAILURE = 'REMOVE_NODE_FAILURE'
-export function removeNode(nodeId, sourceCollectionId) {
+export function removeNode(nodeId) {
     return {
         nodeId,
-        collectionId: sourceCollectionId,
         [CALL_API]: {
             types: [ REMOVE_NODE_REQUEST, REMOVE_NODE_SUCCESS, REMOVE_NODE_FAILURE ],
             endpoint: 'Node.remove',
@@ -175,13 +174,12 @@ export function removeNode(nodeId, sourceCollectionId) {
 export const CONNECT_NODES_REQUEST = 'CONNECT_NODES_REQUEST'
 export const CONNECT_NODES_SUCCESS = 'CONNECT_NODES_SUCCESS'
 export const CONNECT_NODES_FAILURE = 'CONNECT_NODES_FAILURE'
-export function fetchConnectNodes(start, end, sourceCollectionId) {
+export function fetchConnectNodes(start, end) {
     const id = uuidV4();
 
     return {
         start,
         end,
-        sourceCollectionId,
         [CALL_API]: {
             types: [ CONNECT_NODES_REQUEST, CONNECT_NODES_SUCCESS, CONNECT_NODES_FAILURE ],
             endpoint: 'Node.connect',
@@ -190,13 +188,13 @@ export function fetchConnectNodes(start, end, sourceCollectionId) {
         }
     }
 }
-export function connectNodes(start, end, sourceCollectionId) {
+export function connectNodes(start, end) {
     /*
      * we must first fetch the node, so we get its properties and show name and description
     */
     return (dispatch, getState) => {
 
-        return dispatch(fetchConnectNodes(start, end, sourceCollectionId))
+        return dispatch(fetchConnectNodes(start, end))
         // return dispatch(fetchNode(end))
         //     .then(() => dispatch(fetchConnectNodes(start, end)))
     }
@@ -209,7 +207,7 @@ export function connectNodes(start, end, sourceCollectionId) {
 export const ADD_EDGE_REQUEST = 'ADD_EDGE_REQUEST'
 export const ADD_EDGE_SUCCESS = 'ADD_EDGE_SUCCESS'
 export const ADD_EDGE_FAILURE = 'ADD_EDGE_FAILURE'
-export function fetchAddEdge(start, end, content) {
+export function fetchAddEdge(start, end, content=null) {
     // TODO: merge this with connect(), almost identical behaviour - 2017-08-25
     const id = uuidV4();
 
@@ -231,7 +229,7 @@ export function addEdge(start, end, content) {
      *
     */
     return (dispatch) => {
-        dispatch(fetchAddEdge(start, end, content))
+        return dispatch(fetchAddEdge(start, end, content))
         // return dispatch(direction === "to" ? fetchNode(end) : fetchNode(start))
         //     .then(() => dispatch(fetchAddEdge(start, end, content, inGraphView)))
     }

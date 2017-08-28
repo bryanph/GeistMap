@@ -3,7 +3,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { List, ListItem } from 'material-ui/List'
-import { searchNode } from '../../actions/search'
+import { searchAll } from '../../actions/search'
 
 import {HotKeys} from 'react-hotkeys';
 
@@ -95,7 +95,7 @@ class NodeSearch extends React.Component {
         this.onKeyPress = this.onKeyPress.bind(this)
         this.onSearchClick = this.onSearchClick.bind(this)
 
-        this.searchNode = _.debounce(this.props.searchNode, 100).bind(this)
+        this.searchAll = _.debounce(this.props.searchAll, 100).bind(this)
 
         this.state = {
             searchValue: "",
@@ -106,7 +106,7 @@ class NodeSearch extends React.Component {
     onChange(e) {
         this.setState({ searchValue: e.target.value })
 
-        this.searchNode(e.target.value)
+        this.searchAll(e.target.value)
     }
 
     onKeyPress(e) {
@@ -159,4 +159,4 @@ function mapStateToProps(state, props) {
     }
 }
 
-export default connect(mapStateToProps, { searchNode })(NodeSearch)
+export default connect(mapStateToProps, { searchAll })(NodeSearch)

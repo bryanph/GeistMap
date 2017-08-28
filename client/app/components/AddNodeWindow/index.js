@@ -12,8 +12,10 @@ import NodeSearch from '../../containers/NodeSearch'
 
 import {
     createNode,
-    addNodeToCollection,
 } from '../../actions/node'
+import {
+    addNodeToCollection
+} from '../../actions/collection'
 
 class AddNodeWindow extends React.Component {
     constructor(props) {

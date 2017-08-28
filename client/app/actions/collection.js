@@ -1,3 +1,16 @@
+import { normalize, Schema, arrayOf } from 'normalizr'
+import Schemas from '../schemas'
+import { CALL_API } from '../middleware/api'
+
+import {
+    getNode,
+    getCollection,
+ } from '../reducers'
+
+const uuidV4 = require('uuid/v4');
+
+import { convertNodeToCollection } from './node'
+
 /*
  * Get all collections
 */
@@ -97,17 +110,14 @@ export function createCollection(id, parentId, data) {
             types: [ CREATE_COLLECTION_REQUEST, CREATE_COLLECTION_SUCCESS, CREATE_COLLECTION_FAILURE ],
             endpoint: 'Collection.create',
             payload: [ id, parentId, data ],
-            schema: {
-                node: Schemas.COLLECTION,
-                edge: Schemas.COLLECTION_EDGE,
-            }
+            schema: Schemas.COLLECTION
         }
     }
 }
 
-export const REMOVE_ABSTRACTION_REQUEST = 'REMOVE_ABSTRACTION_REQUEST'
-export const REMOVE_ABSTRACTION_SUCCESS = 'REMOVE_ABSTRACTION_SUCCESS'
-export const REMOVE_ABSTRACTION_FAILURE = 'REMOVE_ABSTRACTION_FAILURE'
+export const REMOVE_COLLECTION_REQUEST = 'REMOVE_COLLECTION_REQUEST'
+export const REMOVE_COLLECTION_SUCCESS = 'REMOVE_COLLECTION_SUCCESS'
+export const REMOVE_COLLECTION_FAILURE = 'REMOVE_COLLECTION_FAILURE'
 export function fetchRemoveAbstraction(collectionId) {
     /*
      * This converts the abstraction to a node and the edges to normal edges
@@ -116,7 +126,7 @@ export function fetchRemoveAbstraction(collectionId) {
         sourceCollectionId,
         collectionId,
         [CALL_API]: {
-            types: [ REMOVE_ABSTRACTION_REQUEST, REMOVE_ABSTRACTION_SUCCESS, REMOVE_ABSTRACTION_FAILURE ],
+            types: [ REMOVE_COLLECTION_REQUEST, REMOVE_COLLECTION_SUCCESS, REMOVE_COLLECTION_FAILURE ],
             endpoint: 'Collection.remove',
             payload: [ collectionId ],
         }

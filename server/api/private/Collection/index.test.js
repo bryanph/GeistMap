@@ -121,16 +121,9 @@ describe('collectionApi', () => {
             .then((result) => {
                 // test the immediate result returns the node and edge
                 expect(result).toMatchObject({
-                    node: {
-                        name: "wowzers",
-                        id: id,
-                        type: "collection",
-                    },
-                    edge: {
-                        start: id,
-                        end: parentId,
-                        id: edgeId,
-                    }
+                    name: "wowzers",
+                    id: id,
+                    type: "collection",
                 })
 
                 return getUserGraphData(db, userId)

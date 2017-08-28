@@ -27,6 +27,15 @@ function entities(state={}, action, globalState) {
     }
 }
 
+
+function removeFirstOccurrence(array, elem) {
+    const toRemove = array.indexOf(elem)
+    if (toRemove < 0) {
+        return array
+    }
+    return [ ...array.slice(0, toRemove), ...array.slice(toRemove + 1, -1) ]
+}
+
 export function nodes(state={}, action, collections) {
     /*
      * Handles the non-merging action types
@@ -219,6 +228,17 @@ function collections(state={}, action) {
         case collectionActionTypes.REMOVE_ABSTRACTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
+        case collectionActionTypes.CREATE_COLLECTION_SUCCESS:
+            // TODO: should be handled in server response? - 2017-08-28
+            return {
+                ...state,
+                [action.id]: {
+                    ...action.response.entities.collections[action.id],
+                    collectionChains: [
+                        [ action.parentId ]
+                    ]
+                }
+            }
         case uiActionTypes.TOGGLE_EDIT_MODE:
             if (action.editMode) {
                 // add the addCollectionNodes
@@ -255,20 +275,31 @@ function collections(state={}, action) {
     }
 }
 
-
-// TODO: will i need these adjacency maps? - 2017-08-26
-// TODO: they are not tested - 2017-08-26
+// a trade-off between space and performance for updating
 function adjacencyMap(state={}, action) {
+    // TODO: depend on nodes state - 2017-08-28
     /*
      * To what nodes does this node link?
+     * allow duplicates in adjacency map so that upon removing edge just remove first occurrence of the edge id
     */
     switch(action.type) {
         case nodeActionTypes.REMOVE_NODE_SUCCESS:
-            return _.omit(state, action.nodeId)
-        default:
-            // TODO: only keep track of detail nodes for an adjacency list - 2016-06-19
-            if (action.response && action.response.entities && action.response.entities.edges) {
+            return _(state)
+                .omit(action.nodeId)
+                .mapValues(list => {
+                    // TODO: bad performance
+                    return _.without(list, action.nodeId) 
+                })
+                .value()
 
+        case nodeActionTypes.REMOVE_EDGE_SUCCESS:
+            return update(state, {
+                [action.start]: { $apply: (arr) => removeFirstOccurrence(arr, action.end) }
+            })
+
+        default:
+            // TODO: handle duplicates - 2017-08-27
+            if (action.response && action.response.entities && action.response.entities.edges) {
                 const adjMap = {}
 
                 _.forEach(action.response.entities.edges, edge => {
@@ -293,19 +324,29 @@ function adjacencyMap(state={}, action) {
     }
 }
 
-// TODO: will i need these adjacency maps? - 2017-08-26
-// TODO: they are not tested - 2017-08-26
 function reverseAdjacencyMap(state={}, action) {
+    // TODO: depend on nodes state - 2017-08-28
     /*
      * What nodes link to this node?
     */
     switch(action.type) {
         case nodeActionTypes.REMOVE_NODE_SUCCESS:
-            return _.omit(state, action.nodeId)
+            return _(state)
+                .omit(action.nodeId)
+                .mapValues(list => {
+                    // TODO: bad performance when highly connected - 2017-08-27
+                    return _.without(list, action.nodeId) 
+                })
+                .value()
+
+        case nodeActionTypes.REMOVE_EDGE_SUCCESS:
+            return update(state, {
+                [action.end]: { $apply: (arr) => removeFirstOccurrence(arr, action.start) }
+            })
+
         default:
 
-            // TODO: handle duplicates in the adjacency list - 2016-06-19
-            // or handle this in the selector
+            // TODO: handle duplicates - 2017-08-27
             if (action.response && action.response.entities && action.response.entities.edges) {
 
                 const adjMap = {}
@@ -333,8 +374,8 @@ function reverseAdjacencyMap(state={}, action) {
     }
 }
 
-// TODO: not tested at the moment - 2017-08-26
 function edgeListMap(state={}, action) {
+    // TODO: depend on edge state, (can be derived directly from it, then no need for extra logic) - 2017-08-28
     /*
      * For every node, keep track of the incoming edges and outgoing edges
      * this way we don't have to keep this information up to date explicitly when fetching
@@ -342,7 +383,19 @@ function edgeListMap(state={}, action) {
 
     switch(action.type) {
         case nodeActionTypes.REMOVE_NODE_SUCCESS:
-            return _.omit(state, action.nodeId)
+            const edgeMap = state[action.nodeId]
+            const edgeIds = [ ...edgeMap.from, ...edgeMap.to ]
+
+            // need to get all edges involved with ${action.nodeId}
+            return _(state)
+                .omit(action.nodeId)
+                .mapValues(edgeMap => {
+                    return update(edgeMap, {
+                        from: { $apply: (x) => _.without(x, ...edgeIds) },
+                        to: { $apply: (x) => _.without(x, ...edgeIds) },
+                    })
+                })
+                .value()
         case nodeActionTypes.REMOVE_EDGE_SUCCESS:
             return {
                 ...state,
@@ -356,14 +409,14 @@ function edgeListMap(state={}, action) {
                 }
             }
         default:
-            // TODO: check before here... - 2016-08-12
-            let map = { ...state }
+            // TODO: handle duplicates - 2017-08-28
+            let newState = state
 
             if (action.response && action.response.entities && action.response.entities.nodes) {
                 // add nodes if they are not in the map yet
                 _.forEach(Object.keys(action.response.entities.nodes), (id) => {
-                    if (!map[id]) {
-                        map[id] = {
+                    if (!newState[id]) {
+                        newState[id] = {
                             from: [],
                             to: [],
                         }
@@ -373,16 +426,22 @@ function edgeListMap(state={}, action) {
 
             if (action.response && action.response.entities && action.response.entities.edges) {
                 _.forEach(action.response.entities.edges, edge => {
-                    if (!map[edge.start] || !map[edge.end]) {
-                        return;
+                    // TODO: should be added regardless? - 2017-08-28
+                    if (!newState[edge.start]) {
+                        newState[edge.start] = { from: [], to: [] }
+                    }
+                    if (!newState[edge.end]) {
+                        newState[edge.end] = { from: [], to: [] }
                     }
 
-                    map[edge.start].from.push(edge.id)
-                    map[edge.end].to.push(edge.id)
+                    newState = update(newState, {
+                        [edge.start]: { from: { $push: [ edge.id ] } },
+                        [edge.end]: { to: { $push: [ edge.id ] } }
+                    })
                 })
             }
 
-            return map
+            return newState
     }
 }
 
@@ -436,55 +495,6 @@ function nodesByCollectionId(state={}, action) {
                 [action.targetId]: { $push: [ action.sourceId ]}
             })
         }
-
-        default:
-            return state
-    }
-}
-
-export function abstractionDetail(state={}, action, nodes, globalState) {
-    /*
-     * stores a mapping of collection ids to the contained nodes and edges involved with those nodes
-     * (this is used to compute derived data)
-    */
-
-    switch(action.type) {
-        // this resets the state
-        case collectionActionTypes.GET_COLLECTION_SUCCESS:
-            // TODO: here nodes should not include the colleciton itself
-            return {
-                ...state,
-                [action.response.result.collection]: {
-                    nodes: action.response.entities.collections[action.response.result.collection].nodes,
-                },
-            }
-
-        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
-            return _.omit(state, action.collectionId)
-
-        // TESTED
-        case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            return update(state, {
-                [action.collectionId]: {
-                    nodes: { $push: [ action.nodeId ]}
-                }
-            })
-
-        // TODO: just make nodes derived data as well?
-        case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
-        case nodeActionTypes.REMOVE_NODE_SUCCESS:
-            // get the node to be removed and its edges
-            // remove the node from all collections that have been fetched as well as the edges
-
-            if (action.collectionId) {
-                return update(state, {
-                    [action.collectionId]: {
-                        nodes: { $set: _.without((state[action.collectionId] && state[action.collectionId].nodes) || [], action.nodeId) },
-                    }
-                })
-            }
-
-            return state;
 
         default:
             return state
@@ -779,7 +789,6 @@ function rootReducer(state={}, action) {
         reverseAdjacencyMap: reverseAdjacencyMap(state.reverseAdjacencyMap, action),
         edgeListMap: edgeListMap(state.edgeListMap, action),
         nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
-        abstractionDetail: abstractionDetail(state.abstractionDetail, action, (state.entities && state.entities.nodes) || {}, state),
         // errorMessage: errorMessage(state.errorMessage, action),
         loadingStates: loadingStates(state.loadingStates, action),
         synced: synced(state.synced, action),
@@ -932,6 +941,7 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
     /*
      * gets all nodes and edges that are part of the chain of collection with id ${id}
     */
+    // TODO: memoize - 2017-08-27
     // TODO: test this properly - 2017-08-26
 
     const parentCollection = getCollection(state, id)
@@ -945,7 +955,6 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
 
     const collectionChain = [ parentCollection.id, ...(parentCollection.collectionChain || []) ]
 
-    // const nodes = (state.abstractionDetail[id] && state.abstractionDetail[id].nodes) || []
     const nodes = getNodes(state)
         .filter(node => (
             _.some(node.collectionChains, (chain) =>
@@ -963,7 +972,10 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
 }
 
 export const getNodesAndEdgesByCollectionId = (state, id) => {
-    // this gets the direct nodes including their children
+    /*
+     * This gets the direct nodes including their children
+    */
+    // TODO: memoize - 2017-08-27
 
     const parentCollection = getCollection(state, id)
 

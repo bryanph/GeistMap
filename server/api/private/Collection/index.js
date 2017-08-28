@@ -292,7 +292,6 @@ module.exports = function(db, es) {
         create: function(user, id, parentId, data, res) {
             /*
              * Create a new collection connected to the root collection
-             * TODO this should also include the abstraction it should belong to
              */
 
             if (!id || !parentId) {
@@ -308,7 +307,7 @@ module.exports = function(db, es) {
                 CREATE (c:Node:Collection {
                     id: {id},
                     name: {name},
-                    type: \"collection\",
+                    type: "collection",
                     created: timestamp(),
                     modified: timestamp()
                  })<-[:AUTHOR]-(u)
