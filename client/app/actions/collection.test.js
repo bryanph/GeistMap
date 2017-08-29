@@ -22,10 +22,6 @@ describe('collection actions', () => {
         })
     })
 
-    beforeEach(() => {
-        store = createMockStore(_socket, {})
-    })
-
     afterEach(() => {
         mockServer.listeners = {}
     })

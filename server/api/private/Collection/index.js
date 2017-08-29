@@ -325,14 +325,10 @@ module.exports = function(db, es) {
                 .then((results) => {
                     const node = results.records[0]._fields[0]
                     const edge = results.records[0]._fields[1]
-                    const result = {
-                        node,
-                        edge
-                    }
 
                     // TODO: want socket.io to handle promises
                     if (res) {
-                        res(null, result)
+                        res(null, node)
                     }
 
                     // now update ES indexes
@@ -341,7 +337,7 @@ module.exports = function(db, es) {
                         edge
                     })
 
-                    return result
+                    return node
 
                 })
                 .catch(handleError)

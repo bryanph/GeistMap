@@ -1005,12 +1005,12 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
         }
     }
 
-    const collectionChain = [ parentCollection.id, ...(parentCollection.collectionChain || []) ]
+    const collectionChain = state.activeCollectionChain
 
     const nodes = getNodes(state)
         .filter(node => (
             _.some(node.collectionChains, (chain) =>
-                _.intersection(chain, collectionChain).length === collectionChain.length
+                _.intersection(collectionChain, chain).length === collectionChain.length
             )
         ))
         .map(node => node.id)
@@ -1044,7 +1044,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
 
     // TODO: this won't work when the abstraction belongs to multiple other abstractions
     // instead, need to specify full chain in the URL (or identify each abstraction chain different) => probably better
-    const collectionChain = [ parentCollection.id, ...(parentCollection.collectionChain || []) ]
+    const collectionChain = state.activeCollectionChain
 
     const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
 
@@ -1077,7 +1077,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     })
 
-    console.log(nodes);
+    // console.log(nodes);
 
     // console.log(visibleNodeMap);
 
