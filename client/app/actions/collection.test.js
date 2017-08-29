@@ -53,7 +53,7 @@ describe('collection actions', () => {
 
         const initialState = {
             entities: {
-                collections: {
+                nodes: {
                     ["TEST__RootCollection"]: {
                         "isRootCollection": true,
                         "created": 1503389225848,
@@ -73,7 +73,7 @@ describe('collection actions', () => {
                 // console.log(require('util').inspect(store.getState(), false, null))
                 expect(store.getState()).toMatchObject({
                     entities: {
-                        collections: {
+                        nodes: {
                             "TEST__RootCollection": {
                                 "isRootCollection": true,
                                 "created": 1503389225848,
@@ -99,7 +99,117 @@ describe('collection actions', () => {
     })
 
     test("Test removeCollection action", function() {
+        // TODO: test more cases - 2017-08-29
+        mockServer.on('Collection.remove', (id, res) => {
+            res(null, true)
+        })
 
+        const initialState = {
+            entities: {
+                nodes: {
+                    ["TEST__RootCollection"]: {
+                        "isRootCollection": true,
+                        "created": 1503389225848,
+                        "name": "My Knowledge Base",
+                        "modified": 1503389225848,
+                        "id": "TEST__RootCollection",
+                        "type": "root",
+                        "collectionChains": [
+                        ]
+                    },
+                    "TEST__Collection": {
+                        "created": 1503389225848,
+                        "name": "Collection",
+                        "modified": 1503389225848,
+                        "id": "TEST__Collection",
+                        "type": "collection",
+                        "collectionChains": [
+                            [ "TEST__RootCollection" ]
+                        ]
+                    },
+                    "TEST__Collection_child": {
+                        "created": 1503389225848,
+                        "name": "Collection_child",
+                        "modified": 1503389225848,
+                        "id": "TEST__Collection_child",
+                        "type": "collection",
+                        "collectionChains": [
+                            [ "TEST__RootCollection", "TEST__Collection" ],
+                            [ "TEST__RootCollection" ],
+                        ]
+                    },
+                    "TEST__Node_child": {
+                        "created": 1503389225848,
+                        "name": "Node_child",
+                        "modified": 1503389225848,
+                        "id": "TEST__Node_child",
+                        "type": "node",
+                        "collectionChains": [
+                            [ "TEST__RootCollection", "TEST__Collection", "TEST__Collection_child" ],
+                            [ "TEST__RootCollection", "TEST__Collection" ],
+                        ]
+                    },
+                },
+            },
+        }
+
+        store = createMockStore(_socket, initialState)
+
+        return store.dispatch(collectionActions.fetchRemoveAbstraction("TEST__Collection_child"))
+            .then((action) => {
+                // console.log(require('util').inspect(store.getState(), false, null))
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        nodes: {
+                            ["TEST__RootCollection"]: {
+                                "isRootCollection": true,
+                                "created": 1503389225848,
+                                "name": "My Knowledge Base",
+                                "modified": 1503389225848,
+                                "id": "TEST__RootCollection",
+                                "type": "root",
+                                "collectionChains": [ ]
+                            },
+                            "TEST__Collection": {
+                                "created": 1503389225848,
+                                "name": "Collection",
+                                "modified": 1503389225848,
+                                "id": "TEST__Collection",
+                                "type": "collection",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection" ]
+                                ]
+                            },
+                            "TEST__Collection_child": {
+                                "created": 1503389225848,
+                                "name": "Collection_child",
+                                "modified": 1503389225848,
+                                "id": "TEST__Collection_child",
+                                "type": "node",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection", "TEST__Collection" ],
+                                    [ "TEST__RootCollection" ],
+                                ]
+                            },
+                            "TEST__Node_child": {
+                                "created": 1503389225848,
+                                "name": "Node_child",
+                                "modified": 1503389225848,
+                                "id": "TEST__Node_child",
+                                "type": "node",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection", "TEST__Collection"],
+                                ]
+                            },
+                        },
+                    },
+                })
+            })
+    })
+
+
+    test("Test addNodeToCollection() action", function() {
+        
     })
 })
 
@@ -110,7 +220,7 @@ describe('abstractions', () => {
 
     /*
      * Test manipulating abstractions
-    */
+     */
     test('add node to abstraction', () => {
         const collectionId = uuidV4()
         const id = uuidV4()
@@ -177,7 +287,7 @@ describe('abstractions', () => {
 
         /*
          * adds the node to the nodes that will be considered for the derived data
-        */
+         */
         expect(
             abstractionDetailReducer({
                 [collectionId]: {
@@ -200,7 +310,7 @@ describe('abstractions', () => {
     test('should handle MOVE_TO_ABSTRACTION_SUCCESS', () => {
         /*
          *
-        */
+         */
 
     })
 })

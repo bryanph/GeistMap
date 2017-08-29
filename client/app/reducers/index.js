@@ -22,8 +22,8 @@ function entities(state={}, action, globalState) {
     return {
         nodes: nodes(state.nodes, action, globalState),
         edges: edges(state.edges, action, globalState),
-        collections: collections(state.collections, action, globalState),
-        collectionEdges: collectionEdges(state.collectionEdges, action, globalState),
+        // collections: collections(state.collections, action, globalState),
+        // collectionEdges: collectionEdges(state.collectionEdges, action, globalState),
     }
 }
 
@@ -41,6 +41,19 @@ export function nodes(state={}, action, collections) {
      * Handles the non-merging action types
     */
     switch(action.type) {
+        case collectionActionTypes.CREATE_COLLECTION_SUCCESS:
+            // TODO: this action shouldn't be called directly? - 2017-08-29
+            // TODO: should be handled in server response? - 2017-08-28
+            return {
+                ...state,
+                [action.id]: {
+                    ...action.response.entities.collections[action.id],
+                    collectionChains: [
+                        [ action.parentId ]
+                    ]
+                }
+            }
+
         case nodeActionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
 
@@ -52,14 +65,19 @@ export function nodes(state={}, action, collections) {
                 }
             })
 
-        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
-        case collectionActionTypes.REMOVE_ABSTRACTION_SUCCESS: {
+        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS: {
             let newState = update(state, {
                 [action.collectionId]: { type: { $set: "node"}}
             })
 
+            // TODO: this is very expensive to compute - 2017-08-29
             return _.mapValues(newState, (x) => update(x, {
-                collectionChains: { $apply: (chains) => chains.map(chain => _.without(chain, action.collectionId))}
+                collectionChains: { $apply: (chains) => 
+                    _.uniqBy(
+                        chains.map(chain => _.without(chain, action.collectionId)),
+                        JSON.stringify
+                    )
+                }
             }))
         }
 
@@ -224,9 +242,8 @@ function collections(state={}, action) {
      * Handles the non-merging action types
     */
     switch(action.type) {
-        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
-        case collectionActionTypes.REMOVE_ABSTRACTION_SUCCESS:
-            return _.omit(state, action.collectionId)
+// u       case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
+//             return _.omit(state, action.collectionId)
 
         case collectionActionTypes.CREATE_COLLECTION_SUCCESS:
             // TODO: should be handled in server response? - 2017-08-28
@@ -239,32 +256,33 @@ function collections(state={}, action) {
                     ]
                 }
             }
-        case uiActionTypes.TOGGLE_EDIT_MODE:
-            if (action.editMode) {
-                // add the addCollectionNodes
-                return {
-                    ...state,
-                    ...action.addCollectionNodes
-                }
-            } else {
-                // remove the addCollectionNodes
-                return _.omitBy(state, (e) => e.type === 'addCollection')
-            }
 
-        case uiActionTypes.ADD_COLLECTION:
-            // TODO: should this be done with more of a "sync" behaviour? - 2017-06-14
-            // temporarily add a collection and defer synching with the server
-            return {
-                ...state,
-                [action.id]: {
-                    ...state[action.id],
-                    type: 'node',
-                    isNew: true,
-                    parentId: action.start, // parent node
-                    edgeId: action.edgeId, // id of edge to the parent node
-                    // TODO: created should also be set here - 2017-06-07
-                }
-            }
+//         case uiActionTypes.TOGGLE_EDIT_MODE:
+//             if (action.editMode) {
+//                 // add the addCollectionNodes
+//                 return {
+//                     ...state,
+//                     ...action.addCollectionNodes
+//                 }
+//             } else {
+//                 // remove the addCollectionNodes
+//                 return _.omitBy(state, (e) => e.type === 'addCollection')
+//             }
+
+//         case uiActionTypes.ADD_COLLECTION:
+//             // TODO: should this be done with more of a "sync" behaviour? - 2017-06-14
+//             // temporarily add a collection and defer synching with the server
+//             return {
+//                 ...state,
+//                 [action.id]: {
+//                     ...state[action.id],
+//                     type: 'node',
+//                     isNew: true,
+//                     parentId: action.start, // parent node
+//                     edgeId: action.edgeId, // id of edge to the parent node
+//                     // TODO: created should also be set here - 2017-06-07
+//                 }
+//             }
 
         default:
             if (action.response && action.response.entities && action.response.entities.collections) {
@@ -448,6 +466,7 @@ function edgeListMap(state={}, action) {
 function nodesByCollectionId(state={}, action) {
     /*
      * A mapping of nodes by collection Id
+     * // TODO: this should represent only direct children? - 2017-08-29
      * // TODO: this is for now recomputed on every fetch (no merging) - 2017-07-14
     */
     switch(action.type) {
@@ -471,8 +490,13 @@ function nodesByCollectionId(state={}, action) {
 
             return newState
 
+        case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
+            // TODO: should add it to all collections in the new chain? - 2017-08-29
+            return update(state, {
+                [action.collectionId]: { $push: [ action.nodeId ] }
+            })
+
         case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
-        case collectionActionTypes.REMOVE_ABSTRACTION_SUCCESS:
             return _.omit(state, action.collectionId)
 
         case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
@@ -817,8 +841,8 @@ export const getNodesForIds = (ids) => ids.map(id => getNode(state, id))
 export const getEdges = (state, id) => _.map(state.entities.edges, x => x)
 export const getEdge = (state, id) => state.entities.edges[id]
 
-export const getCollections = (state, id) => _.map(state.entities.collections, x => x)
-export const getCollection = (state, id) => state.entities.collections[id]
+export const getCollections = (state, id) => _.filter(state.entities.nodes, x => x.type === "collection")
+export const getCollection = (state, id) => state.entities.nodes[id]
 
 export const getCollectionEdge = (state, id) => state.entities.collectionEdges[id]
 export const getCollectionEdges = (state, id) => _.map(state.entities.collectionEdges, x => x)

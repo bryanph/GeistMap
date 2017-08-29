@@ -123,7 +123,6 @@ export function fetchRemoveAbstraction(collectionId) {
      * This converts the abstraction to a node and the edges to normal edges
     */
     return {
-        sourceCollectionId,
         collectionId,
         [CALL_API]: {
             types: [ REMOVE_COLLECTION_REQUEST, REMOVE_COLLECTION_SUCCESS, REMOVE_COLLECTION_FAILURE ],
@@ -141,7 +140,6 @@ export function removeAbstraction(collectionId) {
         // get the direct child nodes,
         // TODO: must be merged with previous
         // TODO: should be getCollection?
-        console.log(collectionId);
         return dispatch(getCollectionL1(collectionId))
             .then(() => {
                 return dispatch(fetchRemoveAbstraction(collectionId))
