@@ -57,11 +57,15 @@ export function nodes(state={}, action, collections) {
         case nodeActionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
 
-        // TESTED
         case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
             return update(state, {
                 [action.nodeId]: {
-                    collectionChains: { $push: [ action.abstractionChain ] }
+                    collectionChains: { $apply: (chains) => 
+                        _.uniqBy(
+                            [ ...chains, ...action.collectionChains ],
+                            JSON.stringify
+                        )
+                    }
                 }
             })
 
@@ -83,16 +87,44 @@ export function nodes(state={}, action, collections) {
 
         case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
             /*
-             * Remove node from abstraction x
-             * a -> b -> x => a -> b
+             * remove the collectionChains with ${collectionId} as last in the chain
             */
             return update(state, {
                 [action.nodeId]: {
-                    collectionChains: { $apply: (chains) => chains.map(
-                        chain => _.without(chain, action.collectionId)
+                    collectionChains: { $apply: (chains) => chains.filter(
+                        chain => chain[chain.length-1] !== action.collectionId
                     )}
                 }
             })
+
+        case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
+            const sourceNode = state[action.sourceId]
+
+            let newState = state;
+
+            // must also update the nodes if source is a collection
+            if (sourceNode.type === "collection") {
+                const oldAbstractionChain = [ action.sourceId, ...sourceNode.collections]
+                const newAbstractionChain = [ action.sourceId, action.targetId, ...sourceNode.collections]
+
+                newState = _.mapValues(newState, (n) => update(n, {
+                    collectionChains: { $apply: (chains) => chains.map(
+                        chain => _.isEqual(oldAbstractionChain, chain) ? newAbstractionChain : chain
+                    )}
+                }))
+            }
+
+            return update(newState, {
+                [action.sourceId]: {
+                    collectionChains: { $apply: (chains) => 
+                        [
+                            ...chains.filter(chain => chain[chain.length-1] !== action.sourceCollectionId),
+                            ...action.collectionChains,
+                        ]
+                    }
+                }
+            })
+        }
 
         case nodeActionTypes.REMOVE_EDGE_SUCCESS:
             return {
@@ -114,34 +146,6 @@ export function nodes(state={}, action, collections) {
                     collapsed: !state[action.id].collapsed,
                 }
             }
-
-        case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
-            const sourceNode = state[action.sourceId]
-
-            let newState = state;
-
-            // must also update the nodes if source is a collection
-            if (sourceNode.type === "collection") {
-                const oldAbstractionChain = [ action.sourceId, ...sourceNode.collections]
-                const newAbstractionChain = [ action.sourceId, action.targetId, ...sourceNode.collections]
-
-                newState = _.mapValues(newState, (n) => update(n, {
-                    collectionChains: { $apply: (chains) => chains.map(
-                        chain => _.isEqual(oldAbstractionChain, chain) ? newAbstractionChain : chain
-                    )}
-                }))
-            }
-
-            /*
-             * move the source to the target collection
-             * TODO: should be tested
-            */
-            return update(newState, {
-                [action.sourceId]: { collectionChains: { $apply: (chains) => chains.map(
-                    chain => chain[chain.length - 1] === action.sourceCollectionId ? action.abstractionChain : chain
-                )}}
-            })
-        }
 
         case nodeActionTypes.CONVERT_NODE_TO_COLLECTION_SUCCESS:
             return {
@@ -491,9 +495,17 @@ function nodesByCollectionId(state={}, action) {
             return newState
 
         case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            // TODO: should add it to all collections in the new chain? - 2017-08-29
+            // TODO: should add it to all collections in the new chain(s)? - 2017-08-29
+            if (!state[action.collectionId]) {
+                state[action.collectionId] = []
+            }
             return update(state, {
                 [action.collectionId]: { $push: [ action.nodeId ] }
+            })
+
+        case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
+            return update(state, {
+                [action.collectionId]: { $apply: (nodes) => _.without(nodes, action.nodeId) }
             })
 
         case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:

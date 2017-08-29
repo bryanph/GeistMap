@@ -33,7 +33,6 @@ class AddNodeWindow extends React.Component {
         return this.props.addNodeToCollection(
             collection.id,
             id,
-            [ collection.id, ...collection.collectionChain ],
          )
     }
 
@@ -53,7 +52,6 @@ class AddNodeWindow extends React.Component {
             createPromise.then(id => this.props.addNodeToCollection(
                 collection.id,
                  id,
-                 [ collection.id, ...collection.collectionChain ],
              ))
         }
     }

@@ -153,22 +153,22 @@ export function removeAbstraction(collectionId) {
 export const ADD_NODE_TO_COLLECTION_REQUEST = 'ADD_NODE_TO_COLLECTION_REQUEST'
 export const ADD_NODE_TO_COLLECTION_SUCCESS = 'ADD_NODE_TO_COLLECTION_SUCCESS'
 export const ADD_NODE_TO_COLLECTION_FAILURE = 'ADD_NODE_TO_COLLECTION_FAILURE'
-export function fetchAddNodeToCollection(collectionId, nodeId, abstractionChain) {
+export function fetchAddNodeToCollection(collectionId, nodeId, collectionChains) {
     const id = uuidV4();
 
     return {
         collectionId,
         nodeId,
-        abstractionChain,
+        collectionChains,
         [CALL_API]: {
             types: [ ADD_NODE_TO_COLLECTION_REQUEST, ADD_NODE_TO_COLLECTION_SUCCESS, ADD_NODE_TO_COLLECTION_FAILURE ],
             endpoint: 'Collection.addNode',
             payload: [ collectionId, nodeId, id ],
-            schema: Schemas.COLLECTION_EDGE,
+            // schema: Schemas.COLLECTION_EDGE,
         }
     }
 }
-export function addNodeToCollection(collectionId, nodeId, currentAbstractionChain) {
+export function addNodeToCollection(collectionId, nodeId) {
     /*
      * Check if we have node in cache already, if not, fetch it first
      * case 1: new node, no need to fetch neighbours
@@ -185,7 +185,12 @@ export function addNodeToCollection(collectionId, nodeId, currentAbstractionChai
         const nodePromise = !node ? dispatch(loadNodeL1(nodeId)) : Promise.resolve(node)
 
         return Promise.all([ collectionPromise, nodePromise ])
-            .then(() => dispatch(fetchAddNodeToCollection(collectionId, nodeId, currentAbstractionChain)))
+            .then(() => {
+                const { collectionChains } = getCollection(getState(), collectionId)
+                const newCollectionChains = collectionChains.map(chain => [ ...chain, collectionId ])
+
+                return dispatch(fetchAddNodeToCollection(collectionId, nodeId, newCollectionChains))
+            })
     }
 }
 
@@ -211,14 +216,14 @@ export function removeNodeFromCollection(collectionId, nodeId) {
 export const MOVE_TO_ABSTRACTION_REQUEST = 'MOVE_TO_ABSTRACTION_REQUEST'
 export const MOVE_TO_ABSTRACTION_SUCCESS = 'MOVE_TO_ABSTRACTION_SUCCESS'
 export const MOVE_TO_ABSTRACTION_FAILURE = 'MOVE_TO_ABSTRACTION_FAILURE'
-export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, abstractionChain, sourceNode) {
+export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, sourceNode, collectionChains) {
     return {
         sourceCollectionId,
         sourceId,
         targetId,
         edgeId,
-        abstractionChain,
         sourceNode, // TODO: don't pass down?
+        collectionChains,
         [CALL_API]: {
             types: [ MOVE_TO_ABSTRACTION_REQUEST, MOVE_TO_ABSTRACTION_SUCCESS, MOVE_TO_ABSTRACTION_FAILURE ],
             endpoint: 'Collection.moveNode',
@@ -232,22 +237,23 @@ export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, e
 /*
  * change the abstract edge to point to the given target collection
 */
-export function moveToAbstraction(sourceCollectionId, sourceId, targetId, currentAbstractionChain) {
+export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
     const edgeId = uuidV4()
 
     return (dispatch, getState) => {
         const source = getNode(getState(), sourceId)
         const target = getNode(getState(), targetId)
 
-        // TODO: this should be converted to front-end manipulations with a "sync" method - 2017-07-20
-        if (target.type === "node") {
-            // first need to convert the target to a collection
-            return dispatch(convertNodeToCollection(targetId))
-                .then(() => dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, currentAbstractionChain, source)))
-        } else {
-            // can add node directly to the collection
-            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, currentAbstractionChain, source))
-        }
+        const convertPromise = target.type === "node"
+            ? dispatch(convertNodeToCollection(targetId)) : Promise.resolve()
+
+
+        return convertPromise.then(() => {
+            const { collectionChains } = getCollection(getState(), targetId)
+            const newCollectionChains = collectionChains.map(chain => [ ...chain, targetId ])
+
+            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, source, newCollectionChains))
+        })
     }
 }
 
