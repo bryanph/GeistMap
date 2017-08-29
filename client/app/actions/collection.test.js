@@ -540,14 +540,252 @@ describe('collection actions', () => {
         /*
          * move a node to an abstraction by first converting the target to an abstraction
          */
+        /*
+         * move a node to an abstraction without conversion
+         */
+        mockServer.on('Node.toCollection', (id, res) => {
+            res(null, true)
+        })
+        mockServer.on('Collection.moveNode', (sourceCollectionId, sourceId, targetId, edgeId, res) => {
+            res(null, true)
+        })
 
+        const initialState = {
+            entities: {
+                nodes: {
+                    ["TEST__RootCollection"]: {
+                        "isRootCollection": true,
+                        "created": 1503389225848,
+                        "name": "My Knowledge Base",
+                        "modified": 1503389225848,
+                        "id": "TEST__RootCollection",
+                        "type": "root",
+                        "collectionChains": [
+                        ]
+                    },
+                    "TEST__Collection": {
+                        "created": 1503389225848,
+                        "name": "Collection",
+                        "modified": 1503389225848,
+                        "id": "TEST__Collection",
+                        "type": "collection",
+                        "collectionChains": [
+                            [ "TEST__RootCollection" ]
+                        ]
+                    },
+                    "TEST__Collection_child": { // this is a node
+                        "created": 1503389225848,
+                        "name": "Collection_child",
+                        "modified": 1503389225848,
+                        "id": "TEST__Collection_child",
+                        "type": "node",
+                        "collectionChains": [
+                            [ "TEST__RootCollection", "TEST__Collection" ],
+                            [ "TEST__RootCollection" ],
+                        ]
+                    },
+                    "TEST__Node_child": {
+                        "created": 1503389225848,
+                        "name": "Node_child",
+                        "modified": 1503389225848,
+                        "id": "TEST__Node_child",
+                        "type": "node",
+                        "collectionChains": [
+                            [ "TEST__RootCollection" ],
+                        ]
+                    },
+                },
+            },
+        }
+
+        store = createMockStore(_socket, initialState)
+
+        return store.dispatch(collectionActions.moveToAbstraction("TEST__RootCollection", "TEST__Node_child", "TEST__Collection_child"))
+            .then((action) => {
+                // console.log(require('util').inspect(store.getState(), false, null))
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        nodes: {
+                            ["TEST__RootCollection"]: {
+                                "isRootCollection": true,
+                                "created": 1503389225848,
+                                "name": "My Knowledge Base",
+                                "modified": 1503389225848,
+                                "id": "TEST__RootCollection",
+                                "type": "root",
+                                "collectionChains": [
+                                ]
+                            },
+                            "TEST__Collection": {
+                                "created": 1503389225848,
+                                "name": "Collection",
+                                "modified": 1503389225848,
+                                "id": "TEST__Collection",
+                                "type": "collection",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection" ]
+                                ]
+                            },
+                            "TEST__Collection_child": {
+                                "created": 1503389225848,
+                                "name": "Collection_child",
+                                "modified": 1503389225848,
+                                "id": "TEST__Collection_child",
+                                "type": "collection",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection", "TEST__Collection" ],
+                                    [ "TEST__RootCollection" ],
+                                ]
+                            },
+                            "TEST__Node_child": {
+                                "created": 1503389225848,
+                                "name": "Node_child",
+                                "modified": 1503389225848,
+                                "id": "TEST__Node_child",
+                                "type": "node",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection", "TEST__Collection", "TEST__Collection_child" ],
+                                    [ "TEST__RootCollection", "TEST__Collection_child" ],
+                                ]
+                            },
+                        },
+                    },
+                })
+            })
     })
 
     test("test moveToAbstraction() action move collection to collection", function() {
         /*
          * must also update all collectionChains of children of source collection
-        */
+         */
+        /*
+         * move a node to an abstraction without conversion
+         */
+        mockServer.on('Collection.moveNode', (sourceCollectionId, sourceId, targetId, edgeId, res) => {
+            res(null, true)
+        })
 
+        const initialState = {
+            entities: {
+                nodes: {
+                    ["TEST__RootCollection"]: {
+                        "isRootCollection": true,
+                        "created": 1503389225848,
+                        "name": "My Knowledge Base",
+                        "modified": 1503389225848,
+                        "id": "TEST__RootCollection",
+                        "type": "root",
+                        "collectionChains": [
+                        ]
+                    },
+                    "TEST__Collection": {
+                        "created": 1503389225848,
+                        "name": "Collection",
+                        "modified": 1503389225848,
+                        "id": "TEST__Collection",
+                        "type": "collection",
+                        "collectionChains": [
+                            [ "TEST__RootCollection" ]
+                        ]
+                    },
+                    "TEST__Collection_child": {
+                        "created": 1503389225848,
+                        "name": "Collection_child",
+                        "modified": 1503389225848,
+                        "id": "TEST__Collection_child",
+                        "type": "collection",
+                        "collectionChains": [
+                            [ "TEST__RootCollection", "TEST__Collection" ],
+                            [ "TEST__RootCollection" ],
+                        ]
+                    },
+                    "TEST__Node_child": {
+                        "created": 1503389225848,
+                        "name": "Node_child",
+                        "modified": 1503389225848,
+                        "id": "TEST__Node_child",
+                        "type": "collection",
+                        "collectionChains": [
+                            [ "TEST__RootCollection" ],
+                        ]
+                    },
+                    "TEST__Node_child2": {
+                        "created": 1503389225848,
+                        "name": "Node_child2",
+                        "modified": 1503389225848,
+                        "id": "TEST__Node_child2",
+                        "type": "node",
+                        "collectionChains": [
+                            [ "TEST__RootCollection", "TEST__Node_child" ],
+                        ]
+                    },
+                },
+            },
+        }
 
+        store = createMockStore(_socket, initialState)
+
+        return store.dispatch(collectionActions.moveToAbstraction("TEST__RootCollection", "TEST__Node_child", "TEST__Collection_child"))
+            .then((action) => {
+                expect(store.getState()).toMatchObject({
+                    entities: {
+                        nodes: {
+                            ["TEST__RootCollection"]: {
+                                "isRootCollection": true,
+                                "created": 1503389225848,
+                                "name": "My Knowledge Base",
+                                "modified": 1503389225848,
+                                "id": "TEST__RootCollection",
+                                "type": "root",
+                                "collectionChains": [
+                                ]
+                            },
+                            "TEST__Collection": {
+                                "created": 1503389225848,
+                                "name": "Collection",
+                                "modified": 1503389225848,
+                                "id": "TEST__Collection",
+                                "type": "collection",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection" ]
+                                ]
+                            },
+                            "TEST__Collection_child": {
+                                "created": 1503389225848,
+                                "name": "Collection_child",
+                                "modified": 1503389225848,
+                                "id": "TEST__Collection_child",
+                                "type": "collection",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection", "TEST__Collection" ],
+                                    [ "TEST__RootCollection" ],
+                                ]
+                            },
+                            "TEST__Node_child": {
+                                "created": 1503389225848,
+                                "name": "Node_child",
+                                "modified": 1503389225848,
+                                "id": "TEST__Node_child",
+                                "type": "collection",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection", "TEST__Collection", "TEST__Collection_child" ],
+                                    [ "TEST__RootCollection", "TEST__Collection_child" ],
+                                ]
+                            },
+                            "TEST__Node_child2": {
+                                "created": 1503389225848,
+                                "name": "Node_child2",
+                                "modified": 1503389225848,
+                                "id": "TEST__Node_child2",
+                                "type": "node",
+                                "collectionChains": [
+                                    [ "TEST__RootCollection", "TEST__Collection", "TEST__Collection_child", "TEST__Node_child" ],
+                                    [ "TEST__RootCollection", "TEST__Collection_child", "TEST__Node_child" ],
+                                ]
+                            },
+                        },
+                    },
+                })
+            })
     })
 })

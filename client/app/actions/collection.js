@@ -247,7 +247,6 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
         const convertPromise = target.type === "node"
             ? dispatch(convertNodeToCollection(targetId)) : Promise.resolve()
 
-
         return convertPromise.then(() => {
             const { collectionChains } = getCollection(getState(), targetId)
             const newCollectionChains = collectionChains.map(chain => [ ...chain, targetId ])

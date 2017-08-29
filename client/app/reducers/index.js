@@ -104,13 +104,21 @@ export function nodes(state={}, action, collections) {
 
             // must also update the nodes if source is a collection
             if (sourceNode.type === "collection") {
-                const oldAbstractionChain = [ action.sourceId, ...sourceNode.collections]
-                const newAbstractionChain = [ action.sourceId, action.targetId, ...sourceNode.collections]
+                const newCollectionChains = action.collectionChains.map((chain) =>
+                    [ ...chain, action.sourceId ]
+                )
 
                 newState = _.mapValues(newState, (n) => update(n, {
-                    collectionChains: { $apply: (chains) => chains.map(
-                        chain => _.isEqual(oldAbstractionChain, chain) ? newAbstractionChain : chain
-                    )}
+                    collectionChains: { $apply: (chains) => {
+                        if (!_.some(chains, (chain) => chain[chain.length-1] === action.sourceId)) {
+                            return chains
+                        }
+
+                        return [
+                            ...chains.filter(chain => chain[chain.length-1] !== action.sourceId),
+                            ...newCollectionChains,
+                        ]
+                    }}
                 }))
             }
 
@@ -148,11 +156,19 @@ export function nodes(state={}, action, collections) {
             }
 
         case nodeActionTypes.CONVERT_NODE_TO_COLLECTION_SUCCESS:
+            return update(state, {
+                [action.id]: { $merge: {
+                    type: 'collection',
+                    collapsed: true,
+                }
+                }
+            })
             return {
                 ...state,
                 [action.id]: {
                     ...state[action.id],
                     ...action.response.entities.nodes[action.id],
+                    type: 'collection',
                     collapsed: true,
                 }
             }

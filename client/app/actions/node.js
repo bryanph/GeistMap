@@ -282,7 +282,7 @@ export function convertNodeToCollection(id) {
             types: [ CONVERT_NODE_TO_COLLECTION_REQUEST, CONVERT_NODE_TO_COLLECTION_SUCCESS, CONVERT_NODE_TO_COLLECTION_FAILURE ],
             endpoint: 'Node.toCollection',
             payload: [ id ],
-            schema: Schemas.NODE,
+            // schema: Schemas.NODE,
         }
     }
 }
