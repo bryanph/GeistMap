@@ -198,7 +198,7 @@ module.exports = function(db, es) {
 
             const userId = user._id.toString()
 
-            Promise.all([
+            return Promise.all([
                 /*
                  * Get collection and all collections in the chain to the root collection
                 */
@@ -271,20 +271,26 @@ module.exports = function(db, es) {
                                 row.get(0),
                                 {
                                     collectionChains: row.get(1), // ids for collections
-                                    count: row.get(2).toNumber()
+                                    count: row.get(2)
                                 }
                             )
                         ))
                     // TODO: enforce this in the query
                     nodes = nodes.filter(x => x.id !== id)
 
-                    return res(null, {
+                    const result = {
                         collection: Object.assign({},
                             collection,
                             { nodes } // all direct children
                         ),
                         edges // all edges between the nodes
-                    })
+                    }
+
+                    if (res) {
+                        return res(null, result)
+                    }
+
+                    return result
                 })
                 .catch(handleError)
         },

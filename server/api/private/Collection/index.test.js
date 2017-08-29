@@ -91,6 +91,110 @@ describe('collectionApi', () => {
         })
     })
 
+    test.skip("test Collection.getAll() returns all collections and their connections", function() {
+
+    })
+
+    test.skip("test Collection.get() returns the collection and the direct children with their collectionChains[]", function() {
+
+    })
+
+    test("test Collection.getL1() returns the collection, direct children and their neighbours and their collectionChains[]", function() {
+        return loadFixtures(db, userId.toString(), [
+            {
+                properties: {
+                    name: 'My Knowledge Base',
+                    id: 'TEST__rootCollection',
+                    type: 'root',
+                    isRootCollection: true,
+                },
+                labels: [ 'RootCollection', 'Collection' ]
+            },
+            {
+                labels: [ "Collection", "Node" ],
+                properties: {
+                    "name": "Collection",
+                    "id": "TEST__collection",
+                    "type": "collection"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node",
+                    "id": "TEST__node",
+                    "type": "node"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node2",
+                    "id": "TEST__node2",
+                    "type": "node"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node3",
+                    "id": "TEST__node3",
+                    "type": "node"
+                }
+            }
+        ], [
+            {
+                properties: {
+                    end: "TEST__rootCollection",
+                    start: "TEST__collection",
+                    id: "TEST__collection_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__rootCollection",
+                    start: "TEST__node",
+                    id: "TEST__node_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__collection",
+                    start: "TEST__node2",
+                    id: "TEST__node2_collection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__collection",
+                    start: "TEST__node3",
+                    id: "TEST__node3_collection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__node",
+                    start: "TEST__node3",
+                    id: "TEST__node3_node",
+                },
+                type: "EDGE"
+            },
+        ])
+            .then(() => {
+                return collectionApi.getL1(user, "TEST__rootCollection")
+            })
+            .then((result) => {
+                console.log(require('util').inspect(result, false, null))
+                expect(result).toMatchObject([
+
+                ])
+            })
+    })
+
     test('test Collection.create() correctly creates a collection', () => {
         // TODO: Also test full-text indexing occurs
 
