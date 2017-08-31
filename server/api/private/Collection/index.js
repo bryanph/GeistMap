@@ -198,26 +198,52 @@ module.exports = function(db, es) {
             .catch(handleError)
         },
 
-        getL1: function(user, id, res) {
+        getL1: function(user, id, collectionChain, res) {
             /*
              * Get abstraction with id ${id} including its children and their direct neighbours
              */
-
             const userId = user._id.toString()
+
+            // TODO: do a cut-off at a given abstraction level - 2017-08-31
+            if (collectionChain.length > 50) {
+                return res("collection chain is too long");
+            }
+
+            const chainQuery = "MATCH p=(u:User)--" + [
+                collectionChain.reverse().reduce((acc, val, i) => {
+                    if (i === 0) {
+                        return `(n${i})`
+                    }
+                    return acc + `<-[:AbstractEdge]-(n${i})`
+                }, ""),
+                collectionChain.reverse().reduce((acc, val, i) => {
+                    if (i === 0) {
+                        return `WHERE u.id = {userId} AND n${i}.id = { n${i} }`
+                    }
+                    return acc + ` AND n${i}.id = { n${i} }`
+                }, "")
+            ].join("\n") 
+
+            const nodeParams = _.reduce(collectionChain.reverse(), (obj, id, i) =>  {
+                obj[`n${i}`] = id
+                return obj
+            }, {})
+
+            console.log(id, collectionChain)
+            console.log(chainQuery)
+            console.log(nodeParams)
 
             return Promise.all([
                 /*
                  * Get collection and all collections in the chain to the root collection
                 */
                 db.run(
-                    `MATCH (u:User)--(c:Collection)
-                    WHERE u.id = {userId} AND c.id = {id}
-                    OPTIONAL MATCH (c)-[:AbstractEdge*1..]->(c2:Collection)
-                    RETURN properties(c) as collection, collect(distinct properties(c2)) as collections`,
-                    {
-                        id,
+                    `${chainQuery}
+                    UNWIND nodes(p) AS n
+                    RETURN collect(properties(n))`,
+                    Object.assign({
                         userId,
-                    }
+                    }, nodeParams)
                 ),
                 // get all edges in the collection
                 // TODO: should also filter out edges between parent collections and the nodes
@@ -258,18 +284,16 @@ module.exports = function(db, es) {
                 ),
             ])
                 .then((results) => {
-                    if (results[0].records.length === 0) {
+                    let collectionChain = results[0].records[0].get(0)
+
+                    if (collectionChain.length === 0) {
                         console.log("collection not found..");
                         return res(new Error(`Collection with id ${id} was not found`))
                     }
 
-                    const collection = Object.assign(
-                        results[0].records[0].get(0),
-                        { collectionChain: results[0].records[0].get(1) }
-                    )
+                    collectionChain.shift() // remove userId
 
                     const edges = results[1].records.map(record => record.get('edge'))
-
                     let nodes = !results[2].records.length  ?
                         [] :
                         results[2].records.map(row => (
@@ -285,11 +309,14 @@ module.exports = function(db, es) {
                     // TODO: enforce this in the query
                     nodes = nodes.filter(x => x.id !== id)
 
+                    console.log(nodes)
+
                     const result = {
-                        collection: Object.assign({},
-                            collection,
-                            { nodes } // all direct children
-                        ),
+                        collectionChain,
+                        nodes: [
+                            // collection,
+                            ...nodes
+                        ],
                         edges // all edges between the nodes
                     }
 

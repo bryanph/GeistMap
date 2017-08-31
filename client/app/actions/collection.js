@@ -26,7 +26,7 @@ export function fetchCollections() {
             types: [ GET_COLLECTIONS_REQUEST, GET_COLLECTIONS_SUCCESS, GET_COLLECTIONS_FAILURE ],
             endpoint: 'Collection.getAll',
             schema: {
-                collections: Schemas.COLLECTION_ARRAY,
+                collections: Schemas.NODE_ARRAY,
                 edges: arrayOf(Schemas.COLLECTION_EDGE)
             }
         }
@@ -61,28 +61,29 @@ export function fetchCollection(id) {
 export const GET_COLLECTIONL1_REQUEST = 'GET_COLLECTIONL1_REQUEST'
 export const GET_COLLECTIONL1_SUCCESS = 'GET_COLLECTIONL1_SUCCESS'
 export const GET_COLLECTIONL1_FAILURE = 'GET_COLLECTIONL1_FAILURE'
-export function fetchCollectionL1(id) {
+export function fetchCollectionL1(id, collectionChainIds) {
+    console.log(collectionChainIds)
     return {
         [CALL_API]: {
-            types: [ GET_COLLECTION_REQUEST, GET_COLLECTION_SUCCESS, GET_COLLECTION_FAILURE ],
+            types: [ GET_COLLECTIONL1_REQUEST, GET_COLLECTIONL1_SUCCESS, GET_COLLECTIONL1_FAILURE ],
             endpoint: 'Collection.getL1',
-            payload: [ id ],
+            payload: [ id, collectionChainIds ],
             schema: {
-                collection: Schemas.COLLECTION,
-                // nodes: arrayOf(Schemas.NODE),
+                collectionChain: arrayOf(Schemas.NODE),
+                nodes: arrayOf(Schemas.NODE),
                 edges: arrayOf(Schemas.EDGE),
             }
         }
     }
 }
-export function getCollectionL1(id, { cache = false } = {}) {
+export function getCollectionL1(id, collectionChainIds) {
     /*
      * Check if we have node in cache already, if not, fetch it first
      * case 1: new node, no need to fetch neighbours
      * case 2: existing node, need to add neighbours
     */
     return (dispatch, getState) => {
-        return dispatch(fetchCollectionL1(id))
+        return dispatch(fetchCollectionL1(id, collectionChainIds))
         // const collection = getCollection(getState(), id)
         //
         // if (cache) {
@@ -180,7 +181,9 @@ export function addNodeToCollection(collectionId, nodeId) {
         const collection = getCollection(getState(), collectionId)
         const node = getNode(getState(), nodeId)
 
+        // TODO just use fetchNode()
         const collectionPromise = !collection ? dispatch(fetchCollectionL1(collectionId)) : Promise.resolve(collection)
+        // const collectionPromise = dispatch(fetchCollectionL1(collectionId))
         // this fetches the neighbours as well (why?)
         const nodePromise = !node ? dispatch(loadNodeL1(nodeId)) : Promise.resolve(node)
 

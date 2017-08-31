@@ -26,9 +26,8 @@ import NodeView from '../../components/NodeView'
 
 function loadData(props) {
     if (props.collectionId) {
-        return props.getCollectionL1(props.collectionId)
+        return props.getCollectionL1(props.collectionId, props.collectionChainIds)
             .then((action) => {
-                // TODO: not necessary? - 2017-08-25
                 if (props.nodeId) {
                     props.loadNode(props.nodeId)
                     return action
@@ -48,7 +47,6 @@ export class NodeViewContainer extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("loading data!!!!!");
         if (nextProps.collectionId !== this.props.collectionId || nextProps.nodeId !== this.props.nodeId) {
             loadData(nextProps)
         }
@@ -104,19 +102,17 @@ import {
 } from '../../reducers'
 
 function mapStateToProps(state, props) {
-    const collectionId = props.match.params && props.match.params.collectionId
+    const collectionChainIds = props.match.params.collectionChain && props.match.params.collectionChain.split('/')
+    const collectionId = collectionChainIds && collectionChainIds[collectionChainIds.length-1]
     const nodeId = props.match.params && props.match.params.nodeId
 
     let nodes, edges, collections, visibleCollections, isLoading, graphType, collectionChain;
 
-    if (collectionId) {
-        // loading a collection id
-        // nodes = getNodesAndEdgesByCollectionId(state, collectionId);
+    if (collectionChainIds) {
         isLoading = state.loadingStates.GET_COLLECTION;
-        ({ nodes, collections, visibleCollections, edges, collectionChain } = getNodesAndEdgesByCollectionId(state, collectionId))
+        ({ nodes, collections, visibleCollections, edges, collectionChain } = getNodesAndEdgesByCollectionId(state, collectionId, collectionChainIds))
         graphType = "collection"
 
-        console.log(isLoading, nodes, edges, visibleCollections);
     } else {
         isLoading = state.loadingStates.GET_NODE_L1
         nodes = getL1Nodes(state, nodeId);
@@ -140,6 +136,7 @@ function mapStateToProps(state, props) {
         isLoading,
         graphType,
         collectionChain,
+        collectionChainIds,
     };
 }
 

@@ -869,7 +869,7 @@ export const getNodesForIds = (ids) => ids.map(id => getNode(state, id))
 export const getEdges = (state, id) => _.map(state.entities.edges, x => x)
 export const getEdge = (state, id) => state.entities.edges[id]
 
-export const getCollections = (state, id) => _.filter(state.entities.nodes, x => x.type === "collection")
+export const getCollections = (state, id) => _.filter(state.entities.nodes, x => ["root", "collection"].includes(x.type))
 export const getCollection = (state, id) => state.entities.nodes[id]
 
 export const getCollectionEdge = (state, id) => state.entities.collectionEdges[id]
@@ -1023,7 +1023,7 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
     }
 }
 
-export const getNodesAndEdgesByCollectionId = (state, id) => {
+export const getNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
     /*
      * This gets the direct nodes including their children
     */
@@ -1042,9 +1042,7 @@ export const getNodesAndEdgesByCollectionId = (state, id) => {
         }
     }
 
-    // TODO: this won't work when the abstraction belongs to multiple other abstractions
-    // instead, need to specify full chain in the URL (or identify each abstraction chain different) => probably better
-    const collectionChain = state.activeCollectionChain
+    console.log(id, collectionChain)
 
     const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
 

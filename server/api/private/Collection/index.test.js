@@ -335,21 +335,21 @@ describe('collectionApi', () => {
             .then((result) => {
                 expect(result).toMatchObject(
                     {
-                        collection:
-                        {
-                            type: 'collection',
-                            name: 'Collection',
-                            id: 'TEST__collection',
-                            collectionChain: [
-                                {
-                                    name: 'My Knowledge Base',
-                                    isRootCollection: true,
-                                    id: 'TEST__rootCollection',
-                                    type: 'root'
-                                }],
-                            nodes: [
-                                {
-                                    collapsed: true,
+                        collectionChain: [
+                            {
+                                name: 'My Knowledge Base',
+                                isRootCollection: true,
+                                id: 'TEST__rootCollection',
+                                type: 'root'
+                            }],
+                        nodes: [
+                            {
+                                type: 'collection',
+                                name: 'Collection',
+                                id: 'TEST__collection',
+                            },
+                            {
+                                collapsed: true,
                                     id: 'TEST__node',
                                     type: 'node',
                                     name: 'Node',
@@ -357,28 +357,27 @@ describe('collectionApi', () => {
                                         ['TEST__rootCollection']
                                     ],
                                     count: '0'
-                                },
-                                {
-                                    collapsed: true,
-                                    name: 'Node3',
-                                    id: 'TEST__node3',
-                                    type: 'node',
-                                    collectionChains: [
-                                        ['TEST__collection', 'TEST__rootCollection']
-                                    ],
-                                    count: '0'
-                                },
-                                {
-                                    collapsed: true,
-                                    name: 'Node2',
-                                    id: 'TEST__node2',
-                                    type: 'node',
-                                    collectionChains: [
-                                        ['TEST__collection', 'TEST__rootCollection']
-                                    ],
-                                    count: '0'
-                                }]
-                        },
+                            },
+                            {
+                                collapsed: true,
+                                name: 'Node3',
+                                id: 'TEST__node3',
+                                type: 'node',
+                                collectionChains: [
+                                    ['TEST__collection', 'TEST__rootCollection']
+                                ],
+                                count: '0'
+                            },
+                            {
+                                collapsed: true,
+                                name: 'Node2',
+                                id: 'TEST__node2',
+                                type: 'node',
+                                collectionChains: [
+                                    ['TEST__collection', 'TEST__rootCollection']
+                                ],
+                                count: '0'
+                            }],
                         edges: [
                             {
                                 start: 'TEST__node3',

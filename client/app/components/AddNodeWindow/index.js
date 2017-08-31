@@ -44,6 +44,8 @@ class AddNodeWindow extends React.Component {
 
         const { collection } = this.props
 
+        console.log("adding new node", collection)
+
         const createPromise = this.props.createNode({ name: label })
             .then(action => action.response.result)
 
