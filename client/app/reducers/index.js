@@ -23,7 +23,7 @@ function entities(state={}, action, globalState) {
         nodes: nodes(state.nodes, action, globalState),
         edges: edges(state.edges, action, globalState),
         // collections: collections(state.collections, action, globalState),
-        // collectionEdges: collectionEdges(state.collectionEdges, action, globalState),
+        collectionEdges: collectionEdges(state.collectionEdges, action, globalState),
     }
 }
 

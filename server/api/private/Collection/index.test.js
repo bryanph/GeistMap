@@ -12,6 +12,7 @@ const config = require('../../../config/test.config.js')
 const {
     sortById,
     sortByStart,
+    sortByIdFlat,
     getUserGraphData,
     loadFixtures,
 } = require('../../test/util')
@@ -91,8 +92,136 @@ describe('collectionApi', () => {
         })
     })
 
-    test.skip("test Collection.getAll() returns all collections and their connections", function() {
+    test("test Collection.getAll() returns all collections and their connections", function() {
+        return loadFixtures(db, userId.toString(), [
+            {
+                properties: {
+                    name: 'My Knowledge Base',
+                    id: 'TEST__rootCollection',
+                    type: 'root',
+                    isRootCollection: true,
+                },
+                labels: [ 'RootCollection', 'Collection' ]
+            },
+            {
+                labels: [ "Collection", "Node" ],
+                properties: {
+                    "name": "Collection",
+                    "id": "TEST__collection",
+                    "type": "collection"
+                }
+            },
+            {
+                labels: [ "Collection", "Node" ],
+                properties: {
+                    "name": "Collection2",
+                    "id": "TEST__collection2",
+                    "type": "collection"
+                }
+            },
+            {
+                labels: [ "Collection", "Node" ],
+                properties: {
+                    "name": "Collection3",
+                    "id": "TEST__collection3",
+                    "type": "collection"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node",
+                    "id": "TEST__node",
+                    "type": "node"
+                }
+            },
+        ], [
+            {
+                properties: {
+                    end: "TEST__rootCollection",
+                    start: "TEST__collection",
+                    id: "TEST__collection_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__collection",
+                    start: "TEST__collection2",
+                    id: "TEST__collection2_collection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__collection2",
+                    start: "TEST__node",
+                    id: "TEST__node_collection2",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__rootCollection",
+                    start: "TEST__collection3",
+                    id: "TEST__node3_collection",
+                },
+                type: "AbstractEdge"
+            },
+        ])
+            .then(() => {
+                return collectionApi.getAll(user)
+            })
+            .then((result) => {
+                expect(sortByIdFlat(result.collections)).toMatchObject(
+                    sortByIdFlat([
+                        {
+                            name: 'My Knowledge Base',
+                            isRootCollection: true,
+                            id: 'TEST__rootCollection',
+                            type: 'root',
+                            count: 3
+                        },
+                        {
+                            type: 'collection',
+                            name: 'Collection3',
+                            id: 'TEST__collection3',
+                            count: 0
+                        },
+                        {
+                            type: 'collection',
+                            name: 'Collection2',
+                            id: 'TEST__collection2',
+                            count: 0
+                        },
+                        {
+                            type: 'collection',
+                            name: 'Collection',
+                            id: 'TEST__collection',
+                            count: 2
+                        }])
+                )
 
+
+                expect(sortByIdFlat(result.edges)).toMatchObject(
+                    sortByIdFlat([
+                        {
+                            end: 'TEST__rootCollection',
+                            start: 'TEST__collection',
+                            id: 'TEST__collection_rootCollection'
+                        },
+                        {
+                            end: 'TEST__collection',
+                            start: 'TEST__collection2',
+                            id: 'TEST__collection2_collection'
+                        },
+                        {
+                            end: 'TEST__rootCollection',
+                            start: 'TEST__collection3',
+                            id: 'TEST__node3_collection'
+                        }])
+                )
+            })
     })
 
     test.skip("test Collection.get() returns the collection and the direct children with their collectionChains[]", function() {
@@ -141,6 +270,14 @@ describe('collectionApi', () => {
                     "id": "TEST__node3",
                     "type": "node"
                 }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node4",
+                    "id": "TEST__node4",
+                    "type": "node"
+                }
             }
         ], [
             {
@@ -156,6 +293,14 @@ describe('collectionApi', () => {
                     end: "TEST__rootCollection",
                     start: "TEST__node",
                     id: "TEST__node_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__rootCollection",
+                    start: "TEST__node4",
+                    id: "TEST__node4_rootCollection",
                 },
                 type: "AbstractEdge"
             },
@@ -185,13 +330,63 @@ describe('collectionApi', () => {
             },
         ])
             .then(() => {
-                return collectionApi.getL1(user, "TEST__rootCollection")
+                return collectionApi.getL1(user, "TEST__collection")
             })
             .then((result) => {
-                console.log(require('util').inspect(result, false, null))
-                expect(result).toMatchObject([
-
-                ])
+                expect(result).toMatchObject(
+                    {
+                        collection:
+                        {
+                            type: 'collection',
+                            name: 'Collection',
+                            id: 'TEST__collection',
+                            collectionChain: [
+                                {
+                                    name: 'My Knowledge Base',
+                                    isRootCollection: true,
+                                    id: 'TEST__rootCollection',
+                                    type: 'root'
+                                }],
+                            nodes: [
+                                {
+                                    collapsed: true,
+                                    id: 'TEST__node',
+                                    type: 'node',
+                                    name: 'Node',
+                                    collectionChains: [
+                                        ['TEST__rootCollection']
+                                    ],
+                                    count: '0'
+                                },
+                                {
+                                    collapsed: true,
+                                    name: 'Node3',
+                                    id: 'TEST__node3',
+                                    type: 'node',
+                                    collectionChains: [
+                                        ['TEST__collection', 'TEST__rootCollection']
+                                    ],
+                                    count: '0'
+                                },
+                                {
+                                    collapsed: true,
+                                    name: 'Node2',
+                                    id: 'TEST__node2',
+                                    type: 'node',
+                                    collectionChains: [
+                                        ['TEST__collection', 'TEST__rootCollection']
+                                    ],
+                                    count: '0'
+                                }]
+                        },
+                        edges: [
+                            {
+                                start: 'TEST__node3',
+                                end: 'TEST__node',
+                                id: 'TEST__node3_node'
+                            }]
+                    }
+                )
             })
     })
 

@@ -67,7 +67,7 @@ module.exports = function(db, es) {
              */
 
             // TODO: only get collections reachable from the root node - 2017-07-14
-            Promise.all([
+            return Promise.all([
                 // get all the edges between the collections
                 db.run(`
                     MATCH (u:User)--(c:Collection)
@@ -82,10 +82,11 @@ module.exports = function(db, es) {
                         userId: user._id.toString()
                     }
                 ),
+                // get all collections
                 db.run(`
                     MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId}
-                    OPTIONAL MATCH (c)<-[:AbstractEdge*0..5]-(c2:Collection)
+                    OPTIONAL MATCH (c)<-[:AbstractEdge*]-(c2:Collection)
                     OPTIONAL MATCH (c2)--(n:Node)
                     RETURN properties(c), count(n)
                     `,
@@ -99,15 +100,21 @@ module.exports = function(db, es) {
                     Object.assign({},
                         row.get(0),
                         {
-                            count: row.get(1).toNumber()
+                            count: parseInt(row.get(1))
                         }
                     )
                 ))
 
-                return res(null, {
+                const result = {
                     collections,
                     edges
-                })
+                }
+
+                if (res) {
+                    res(null, result)
+                }
+
+                return result
             })
                 .catch(handleError)
         },

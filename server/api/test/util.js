@@ -4,6 +4,8 @@ const sortBy = require('lodash/sortBy')
 const sortById = (x) => sortBy(x, (o) => o.properties.id)
 const sortByStart = (x) => sortBy(x, (o) => o.properties.start)
 
+const sortByIdFlat = (x) => sortBy(x, (o) => o.id)
+
 async function getUserGraphData(db, userId) {
     /*
      * Gets the full graph data for the user in JSON format
@@ -78,6 +80,7 @@ function loadFixtures(db, userId, nodes=[], edges=[]) {
 module.exports = {
     sortById,
     sortByStart,
+    sortByIdFlat,
     getUserGraphData,
     loadFixtures,
 }
