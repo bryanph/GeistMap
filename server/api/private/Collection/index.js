@@ -264,13 +264,13 @@ module.exports = function(db, es) {
                  * Get every direct child
                  * Including their top-level abstractions in a list (ids)
                 */
-                db.run( `
+                db.run(`
                     MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
-                    MATCH (c)<-[:AbstractEdge]-(n) // children of this collection
+                    MATCH (c)<-[:AbstractEdge*0..1]-(n) // children of this collection
                     OPTIONAL MATCH (n)-[e:EDGE]-(n2) // get neighbours
-                    WITH collect(n) as nodes1, collect(n2) as nodes2
-                    UNWIND nodes1 + nodes2 as nodes
+                    WITH c + collect(n) + collect(n2) as nodelist
+                    UNWIND nodelist as nodes
                     WITH DISTINCT nodes
                     MATCH p=(nodes)-[:AbstractEdge*0..]->(:RootCollection)
                     WITH nodes, collect(extract(c IN tail(nodes(p)) | c.id)) as collections
@@ -294,6 +294,7 @@ module.exports = function(db, es) {
                     collectionChain.shift() // remove userId
 
                     const edges = results[1].records.map(record => record.get('edge'))
+                    console.log(require('util').inspect(results[2].records, false, null))
                     let nodes = !results[2].records.length  ?
                         [] :
                         results[2].records.map(row => (
@@ -306,10 +307,8 @@ module.exports = function(db, es) {
                                 }
                             )
                         ))
-                    // TODO: enforce this in the query
-                    nodes = nodes.filter(x => x.id !== id)
 
-                    console.log(nodes)
+                    console.log(require('util').inspect(nodes, false, null))
 
                     const result = {
                         collectionChain,

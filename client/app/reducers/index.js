@@ -989,7 +989,7 @@ export const getNodeIdsByCollectionId = (state, id) => (
     state.nodesByCollectionId[id] || []
 )
 
-export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
+export const getNeighbouringNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
     /*
      * gets all nodes and edges that are part of the chain of collection with id ${id}
     */
@@ -1004,8 +1004,6 @@ export const getNeighbouringNodesAndEdgesByCollectionId = (state, id) => {
             edges: []
         }
     }
-
-    const collectionChain = state.activeCollectionChain
 
     const nodes = getNodes(state)
         .filter(node => (
@@ -1042,9 +1040,7 @@ export const getNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
         }
     }
 
-    console.log(id, collectionChain)
-
-    const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id)
+    const nodesAndEdges = getNeighbouringNodesAndEdgesByCollectionId(state, id, collectionChain)
 
     // nodes includes both nodes and collections
     const nodesAndCollections = nodesAndEdges.nodes.map(id => getNode(state, id))
