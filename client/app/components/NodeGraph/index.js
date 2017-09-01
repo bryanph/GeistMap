@@ -504,14 +504,16 @@ class NodeGraph extends React.PureComponent {
         const maxRadiusDomain = maxCount > 10 ? maxCount : 10
         const radiusScale = scaleLinear().domain([0, maxRadiusDomain]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
 
+        console.log(nodes, collections, links)
+
         // make sure there are no duplicates in nodes, edges
         // TODO: shouldn't be nescessary - 2017-06-21
-        nodes = _.uniqBy(nodes, (node) => node.id)
-        collections = _.uniqBy(collections, (node) => node.id)
-        links = _.uniqBy(links, (link) => link.id)
+        // nodes = _.uniqBy(nodes, (node) => node.id)
+        // collections = _.uniqBy(collections, (node) => node.id)
+        // links = _.uniqBy(links, (link) => link.id)
 
         // TODO: shouldn't have to happen here - 2017-07-14
-        collections = collections.filter(c => c.collapsed)
+        // collections = collections.filter(c => c.collapsed)
         collections.forEach(c => {
             nodeById[c.id] = c
 

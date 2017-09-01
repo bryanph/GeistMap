@@ -170,7 +170,6 @@ export default (simulation) => (actions) => {
                             this.props.activeCollection.id,
                              d.id,
                              node.id,
-                             [ this.props.activeCollection.id, ...this.props.activeCollection.collectionChain ]
                          )
                     }
                 })

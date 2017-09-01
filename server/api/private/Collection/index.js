@@ -204,19 +204,24 @@ module.exports = function(db, es) {
              */
             const userId = user._id.toString()
 
+            if (!Array.isArray(collectionChain)) {
+                console.log(collectionChain)
+                return res("collection chain must be passed")
+            }
+
             // TODO: do a cut-off at a given abstraction level - 2017-08-31
             if (collectionChain.length > 50) {
                 return res("collection chain is too long");
             }
 
             const chainQuery = "MATCH p=(u:User)--" + [
-                collectionChain.reverse().reduce((acc, val, i) => {
+                collectionChain.reduce((acc, val, i) => {
                     if (i === 0) {
                         return `(n${i})`
                     }
                     return acc + `<-[:AbstractEdge]-(n${i})`
                 }, ""),
-                collectionChain.reverse().reduce((acc, val, i) => {
+                collectionChain.reduce((acc, val, i) => {
                     if (i === 0) {
                         return `WHERE u.id = {userId} AND n${i}.id = { n${i} }`
                     }
@@ -224,14 +229,14 @@ module.exports = function(db, es) {
                 }, "")
             ].join("\n") 
 
-            const nodeParams = _.reduce(collectionChain.reverse(), (obj, id, i) =>  {
+            const nodeParams = _.reduce(collectionChain, (obj, id, i) =>  {
                 obj[`n${i}`] = id
                 return obj
             }, {})
 
-            console.log(id, collectionChain)
-            console.log(chainQuery)
-            console.log(nodeParams)
+            // console.log(id, collectionChain)
+            // console.log(chainQuery)
+            // console.log(nodeParams)
 
             return Promise.all([
                 /*
@@ -272,10 +277,12 @@ module.exports = function(db, es) {
                     WITH c + collect(n) + collect(n2) as nodelist
                     UNWIND nodelist as nodes
                     WITH DISTINCT nodes
-                    MATCH p=(nodes)-[:AbstractEdge*0..]->(:RootCollection)
-                    WITH nodes, collect(extract(c IN tail(nodes(p)) | c.id)) as collections
+                    MATCH p=(:RootCollection)<-[:AbstractEdge*0..]-(nodes)
+                    WITH nodes, collect(extract(c IN (nodes(p)[0..length(p)]) | c.id)) as collections
                     OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
                     RETURN properties(nodes) as node, collections, COUNT(children)
+                    ORDER BY node.id
+
                     `,
                     {
                         id,
@@ -294,7 +301,6 @@ module.exports = function(db, es) {
                     collectionChain.shift() // remove userId
 
                     const edges = results[1].records.map(record => record.get('edge'))
-                    console.log(require('util').inspect(results[2].records, false, null))
                     let nodes = !results[2].records.length  ?
                         [] :
                         results[2].records.map(row => (
@@ -307,8 +313,6 @@ module.exports = function(db, es) {
                                 }
                             )
                         ))
-
-                    console.log(require('util').inspect(nodes, false, null))
 
                     const result = {
                         collectionChain,

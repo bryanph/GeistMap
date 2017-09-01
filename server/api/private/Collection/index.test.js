@@ -330,9 +330,10 @@ describe('collectionApi', () => {
             },
         ])
             .then(() => {
-                return collectionApi.getL1(user, "TEST__collection")
+                return collectionApi.getL1(user, "TEST__collection", [ "TEST__rootCollection", "TEST__collection" ])
             })
             .then((result) => {
+                console.log(require('util').inspect(result, false, null))
                 expect(result).toMatchObject(
                     {
                         collectionChain: [
@@ -341,12 +342,23 @@ describe('collectionApi', () => {
                                 isRootCollection: true,
                                 id: 'TEST__rootCollection',
                                 type: 'root'
-                            }],
+                            },
+                            { 
+                                type: 'collection',
+                                name: 'Collection',
+                                id: 'TEST__collection' 
+                            }
+                        ],
                         nodes: [
-                            {
+                            { 
+                                collapsed: true,
                                 type: 'collection',
                                 name: 'Collection',
                                 id: 'TEST__collection',
+                                collectionChains: [ 
+                                    [ 'TEST__rootCollection' ]
+                                ],
+                                count: '2' 
                             },
                             {
                                 collapsed: true,
@@ -360,24 +372,25 @@ describe('collectionApi', () => {
                             },
                             {
                                 collapsed: true,
-                                name: 'Node3',
-                                id: 'TEST__node3',
+                                name: 'Node2',
+                                id: 'TEST__node2',
                                 type: 'node',
                                 collectionChains: [
-                                    ['TEST__collection', 'TEST__rootCollection']
+                                    ['TEST__rootCollection', 'TEST__collection']
                                 ],
                                 count: '0'
                             },
                             {
                                 collapsed: true,
-                                name: 'Node2',
-                                id: 'TEST__node2',
+                                name: 'Node3',
+                                id: 'TEST__node3',
                                 type: 'node',
                                 collectionChains: [
-                                    ['TEST__collection', 'TEST__rootCollection']
+                                    ['TEST__rootCollection', 'TEST__collection']
                                 ],
                                 count: '0'
-                            }],
+                            },
+                        ],
                         edges: [
                             {
                                 start: 'TEST__node3',

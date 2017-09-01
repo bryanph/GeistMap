@@ -1071,10 +1071,6 @@ export const getNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
         }
     })
 
-    // console.log(nodes);
-
-    // console.log(visibleNodeMap);
-
     // TODO: need to filter edges that go outside the collection
     transformedEdges = transformedEdges.filter(e => {
         /*
@@ -1226,6 +1222,8 @@ export const getNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
     const visibleNodes = nodes
         .filter(n => !!visibleNodeMap[n.id])
         .map(n => getNode(state, n.id))
+
+    console.log(visibleNodes, visibleCollections, transformedEdges)
 
     return {
         nodes: visibleNodes,

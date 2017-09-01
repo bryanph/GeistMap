@@ -12,7 +12,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
     test('Test a complex example', () => {
 
         const initialState = {
-            activeCollectionChain: [ "TEST__RootParent", "TEST__Root" ],
             entities: {
                 nodes: {
                     ["TEST__RootParent"]: {
@@ -140,7 +139,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
             }
         }
 
-        const result = getNodesAndEdgesByCollectionId(initialState, "TEST__Root")
+        const result = getNodesAndEdgesByCollectionId(initialState, "TEST__Root", [ "TEST__RootParent", "TEST__Root" ])
 
         expect(result).toMatchObject({
             nodes: [ 
@@ -243,7 +242,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
             }}
         })
 
-        const result2 = getNodesAndEdgesByCollectionId(withExpandedA, "TEST__Root")
+        const result2 = getNodesAndEdgesByCollectionId(withExpandedA, "TEST__Root", [ "TEST__RootParent", "TEST__Root" ])
 
         expect(result2).toMatchObject({
             nodes: [
@@ -362,7 +361,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
             }}
         })
 
-        const result3 = getNodesAndEdgesByCollectionId(withExpandedB, "TEST__Root")
+        const result3 = getNodesAndEdgesByCollectionId(withExpandedB, "TEST__Root", [ "TEST__RootParent", "TEST__Root" ])
 
         expect(result3).toMatchObject({
             nodes: [
@@ -461,7 +460,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
             }}
         })
 
-        const result4 = getNodesAndEdgesByCollectionId(withExpandedAB, "TEST__Root")
+        const result4 = getNodesAndEdgesByCollectionId(withExpandedAB, "TEST__Root", [ "TEST__RootParent", "TEST__Root" ])
 
         expect(result4).toMatchObject({
             nodes: [
