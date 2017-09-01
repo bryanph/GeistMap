@@ -1130,11 +1130,13 @@ export const getNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
             // case 3: combination of external collections and child collections
 
             // check if the direct parent is collapsed or not
-            // TODO: there can be multiple parent collections
-            // TODO: must be consistent with ordering of collections
+            // TODO: this would be a lot easier with a data structure created from abstraction edges - 2017-09-01
             const parentCollections = c.collectionChains
-                .filter(list => _.difference(collectionChain, list).length === 0) // filter out chains that go outside of this collection
-                .map(list => nodeMap[list[0]])
+                .filter(chain => _.intersection(collectionChain, chain).length === collectionChain.length)
+                .map(list => nodeMap[list[list.length-1]])
+
+            console.log("LOGGING PARENT COLLECIONS")
+            console.log(c.id, c.collectionChains, collectionChain, parentCollections)
 
             // console.log("parent collections", c, parentCollections);
             if (_.every(parentCollections, (c) => !c || c.collapsed)) {
@@ -1150,6 +1152,8 @@ export const getNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
             return true;
         })
         .value()
+
+    console.log(collections, filteredCollections)
 
     filteredCollections.forEach(c => {
 
@@ -1168,6 +1172,7 @@ export const getNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
                 }
                 hiddenNodeMap[n] = n
             })
+
 
             // visibleCollections.push(c)
             visibleCollections.push({
@@ -1243,7 +1248,7 @@ export const getNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
         .filter(n => !!visibleNodeMap[n.id])
         .map(n => getNode(state, n.id))
 
-    // console.log(visibleNodes, visibleCollections, transformedEdges)
+    console.log(visibleNodes, visibleCollections, transformedEdges)
 
     return {
         nodes: visibleNodes,

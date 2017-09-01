@@ -19,7 +19,7 @@ class AbstractionNavigator extends React.Component {
     render() {
         const { collectionChain } = this.props
 
-        const abstractionItems = collectionChain.reverse().map((c, i) => (
+        const abstractionItems = collectionChain.map((c, i) => (
             <AbstractionItem
                 key={c.id}
                 id={c.id}
