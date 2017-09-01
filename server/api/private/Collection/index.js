@@ -305,7 +305,6 @@ module.exports = function(db, es) {
                         [] :
                         results[2].records.map(row => (
                             Object.assign({},
-                                { collapsed: true },
                                 row.get(0),
                                 {
                                     collectionChains: row.get(1), // ids for collections
@@ -316,10 +315,7 @@ module.exports = function(db, es) {
 
                     const result = {
                         collectionChain,
-                        nodes: [
-                            // collection,
-                            ...nodes
-                        ],
+                        nodes,
                         edges // all edges between the nodes
                     }
 

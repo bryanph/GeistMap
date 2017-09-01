@@ -333,8 +333,7 @@ describe('collectionApi', () => {
                 return collectionApi.getL1(user, "TEST__collection", [ "TEST__rootCollection", "TEST__collection" ])
             })
             .then((result) => {
-                console.log(require('util').inspect(result, false, null))
-                expect(result).toMatchObject(
+                expect(result).toEqual(
                     {
                         collectionChain: [
                             {
@@ -351,7 +350,6 @@ describe('collectionApi', () => {
                         ],
                         nodes: [
                             { 
-                                collapsed: true,
                                 type: 'collection',
                                 name: 'Collection',
                                 id: 'TEST__collection',
@@ -361,7 +359,6 @@ describe('collectionApi', () => {
                                 count: '2' 
                             },
                             {
-                                collapsed: true,
                                     id: 'TEST__node',
                                     type: 'node',
                                     name: 'Node',
@@ -371,7 +368,6 @@ describe('collectionApi', () => {
                                     count: '0'
                             },
                             {
-                                collapsed: true,
                                 name: 'Node2',
                                 id: 'TEST__node2',
                                 type: 'node',
@@ -381,7 +377,6 @@ describe('collectionApi', () => {
                                 count: '0'
                             },
                             {
-                                collapsed: true,
                                 name: 'Node3',
                                 id: 'TEST__node3',
                                 type: 'node',

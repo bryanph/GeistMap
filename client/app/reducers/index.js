@@ -175,7 +175,27 @@ export function nodes(state={}, action, collections) {
 
         default:
             if (action.response && action.response.entities && action.response.entities.nodes) {
-                return _.merge({}, state, action.response.entities.nodes)
+                // TODO: probably useful to use models with something like redux-orm - 2017-09-01
+                // merge, if the object already exists, keep the collapsed value
+                // otherwise, set the collapsed value
+                // return _.merge({}, state, action.response.entities.nodes)
+
+                const newState = {}
+                _.forEach(action.response.entities.nodes, node => {
+                    if (!state[node.id]) {
+                        // create, set some default values
+                        newState[node.id] = {
+                            ...node,
+                            collapsed: true,
+                        }
+                    }
+                    else {
+                        // update, merge
+                        newState[node.id] = _.merge({}, state[node.id], node)
+                    }
+                })
+
+                return newState
             }
 
             return state
@@ -1223,7 +1243,7 @@ export const getNodesAndEdgesByCollectionId = (state, id, collectionChain) => {
         .filter(n => !!visibleNodeMap[n.id])
         .map(n => getNode(state, n.id))
 
-    console.log(visibleNodes, visibleCollections, transformedEdges)
+    // console.log(visibleNodes, visibleCollections, transformedEdges)
 
     return {
         nodes: visibleNodes,

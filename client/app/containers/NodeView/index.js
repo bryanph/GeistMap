@@ -53,39 +53,9 @@ export class NodeViewContainer extends React.Component {
     }
 
     render() {
-        const {
-            collection,
-            nodes,
-            edges,
-            focus,
-            mode,
-        } = this.props
-
         return (
             <NodeView
-                graphType={ this.props.graphType }
-                isLoading={ this.props.isLoading }
-                nodes={nodes}
-                collections={this.props.collections}
-                visibleCollections={this.props.visibleCollections}
-                links={edges}
-                mode={mode}
-                focus={focus}
-                activeNode={this.props.activeNode}
-                activeCollection={this.props.activeCollection}
-
-                addNode={this.props.addNode}
-                connectNodes={this.props.connectNodes}
-                updateNode={this.props.updateNode}
-                removeNode={this.props.removeNode}
-                removeAbstraction={this.props.removeAbstraction}
-                setActiveNode={this.props.setActiveNode}
-                toggleCollapse={this.props.toggleCollapse}
-                moveToAbstraction={this.props.moveToAbstraction}
-                collectionChain={this.props.collectionChain}
-                fetchNodeL1={this.props.fetchNodeL1}
-                removeEdge={this.props.removeEdge}
-                setGraphMode={this.props.setGraphMode}
+                { ...this.props }
             />
         );
     }
@@ -105,6 +75,8 @@ function mapStateToProps(state, props) {
     const collectionChainIds = props.match.params.collectionChain && props.match.params.collectionChain.split('/')
     const collectionId = collectionChainIds && collectionChainIds[collectionChainIds.length-1]
     const nodeId = props.match.params && props.match.params.nodeId
+
+    console.log("called", collectionChainIds)
 
     let nodes, edges, collections, visibleCollections, isLoading, graphType, collectionChain;
 
@@ -130,7 +102,7 @@ function mapStateToProps(state, props) {
         mode: state.graphUiState.mode,
         focus: state.graphUiState.focus,
         nodes,
-        edges,
+        links: edges,
         collections,
         visibleCollections,
         isLoading,

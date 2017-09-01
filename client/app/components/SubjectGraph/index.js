@@ -327,7 +327,11 @@ const createCollectionOverviewEvents = function(simulation, actions) {
      * Afterwards, can be called with node an link DOM nodes
      */
     const onCollectionClick = (d) => {
+        // TODO: should navigate to the right collection chain - 2017-09-01
         actions.history.push(`/app/collections/${d.id}/nodes`)
+
+        // const newCollectionChain = [ ...this.props.collectionChainIds, d.id ]
+        // actions.history.push(`/app/collections/${newCollectionChain.split('/')}/nodes`)
     }
 
     const onConnect = (from, to) => {

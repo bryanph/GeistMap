@@ -50,7 +50,8 @@ class AbstractionList extends React.Component {
          * 1. change node type to 'node'
          * 2. all edges from this collection to its nodes should become normal
         */
-        this.props.history.push(`/app/collections/${id}/nodes`)
+        const newCollectionChain = [ ...this.props.collectionChainIds, id ]
+        this.props.history.push(`/app/collections/${newCollectionChain.join('/')}/nodes`)
     }
 
     toggleCollapse(id) {
@@ -58,7 +59,8 @@ class AbstractionList extends React.Component {
          * 1. fetch the collection to collapse if it hasn't been fetched yet
          * 2. toggle the collapse
         */
-        this.props.getCollectionL1(id, { cache: true })
+        const newCollectionChain = [ ...this.props.collectionChainIds, id ]
+        this.props.getCollectionL1(id, newCollectionChain)
             .then(() => this.props.toggleCollapse(id))
     }
 

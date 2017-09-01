@@ -56,6 +56,7 @@ export class NodeView extends React.PureComponent {
                     collection={this.props.activeCollection}
                 />
                 <AbstractionList
+                    collectionChainIds={this.props.collectionChainIds}
                     activeCollection={this.props.activeCollection}
                     collections={this.props.collections}
                 />
@@ -64,7 +65,7 @@ export class NodeView extends React.PureComponent {
                     activeNode={this.props.activeNode}
                     activeCollection={this.props.activeCollection}
                     nodes={nodes}
-                    collections={this.props.collections}
+                    collections={this.props.visibleCollections}
                     links={links}
                     graphType={ graphType }
                     mode={mode}

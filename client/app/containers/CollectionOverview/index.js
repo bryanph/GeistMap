@@ -75,6 +75,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
             <div className='appContainer'>
                 <SubjectGraph
                     selectedId={this.props.id}
+                    collectionChainIds={this.props.collectionChainIds}
                     nodes={collections || []}
                     links={collectionLinks || []}
                     connectCollections={this.props.connectCollections}
@@ -98,9 +99,11 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
 import { getCollection, getCollections, getCollectionEdges } from '../../reducers'
 
 function mapStateToProps(state, props) {
-    const id = (props.match.params && props.match.params.id) || props.id
+    const collectionChainIds = props.match.params.collectionChain && props.match.params.collectionChain.split('/')
+    const id = collectionChainIds && collectionChainIds[collectionChainIds.length-1]
 
     return {
+        collectionChainIds,
         id,
         collections: getCollections(state),
         collectionLinks: getCollectionEdges(state), // links between collections
