@@ -19,12 +19,15 @@ import './styles.scss'
 
 import {
     createCollection,
-    updateCollection,
     fetchCollections,
     getCollectionL1,
     connectCollections,
     removeCollection,
 } from '../../actions/collection'
+
+import {
+    updateNode,
+} from '../../actions/node'
 
 import {
     showCreateCollectionWindow,
@@ -38,7 +41,6 @@ export const AddCollectionShootButton = (props) => (
         onTouchTap={() => props.showCreateCollectionWindow()}
     />
 )
-
 
 
 function loadData(props) {
@@ -82,7 +84,7 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                     setActiveCollection={this.props.setActiveCollection}
                     addCollection={this.props.addCollection}
                     createCollection={this.props.createCollection}
-                    updateCollection={this.props.updateCollection}
+                    updateNode={this.props.updateNode}
                     graphType={'collectionOverview'}
                     mode={mode}
                     focus={this.props.focus}
@@ -116,7 +118,7 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, {
-    updateCollection,
+    updateNode,
     createCollection,
     showCreateCollectionWindow,
     fetchCollections,

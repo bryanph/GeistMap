@@ -270,7 +270,7 @@ const createUpdateCollection = function(actions) {
                             actions.setActiveCollection(null)
                         }
                         // save the node, we changed it
-                        return actions.updateCollection(data.id, { name: value })
+                        return actions.updateNode(data.id, { name: value })
                             .then(() => actions.setActiveCollection(null))
 
                     }
@@ -359,7 +359,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         zoomToNode: actions.zoomToNode,
         zoomFit: actions.zoomFit,
         createCollection: actions.createCollection,
-        updateCollection: actions.updateCollection,
+        updateNode: actions.updateNode,
         setActiveCollection: actions.setActiveCollection,
         connectCollections: actions.connectCollections,
         stopSimulation: actions.stopSimulation,
@@ -589,7 +589,7 @@ class SubjectGraph extends React.Component {
             connectCollections: this.props.connectCollections,
             setActiveCollection: this.props.setActiveCollection,
             createCollection: this.props.createCollection,
-            updateCollection: this.props.updateCollection,
+            updateNode: this.props.updateNode,
             addCollection: this.props.addCollection,
             zoomToNode: this.zoom.zoomToNode,
             zoomFit: this.zoom.zoomFit,

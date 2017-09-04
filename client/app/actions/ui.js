@@ -144,8 +144,8 @@ export function toggleEditMode(id) {
         return dispatch({
             type: TOGGLE_EDIT_MODE,
             editMode,
-            addCollectionNodes,
-            addCollectionEdges,
+            // addCollectionNodes,
+            // addCollectionEdges,
         })
     }
 }
