@@ -82,9 +82,10 @@ class App extends React.Component {
                             <Route exact path={'/app/nodes/:nodeId?'} component={NodeView}/>
                             <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId?'} component={NodeView}/>
 
-                            <Route path={'/app/collections/:id/edit'} component={CollectionOverviewEditor}/>
-                            <Route path={'/app/nodes/:id/edit'} component={NodeExploreEditor}/>
-                            <Route path={'/app/collections/:id/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
+                            <Route exact path={'/app/collections/:id/edit'} component={CollectionOverviewEditor}/>
+                            <Route exact path={'/app/nodes/:id/edit'} component={NodeExploreEditor}/>
+                            <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
+
                             <Redirect from={'/app/'} to={'/app/collections'}/>
                         </Switch>
                         {

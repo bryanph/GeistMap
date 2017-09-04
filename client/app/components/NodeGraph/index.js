@@ -149,12 +149,7 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
     }
     // insert an editable text field at the bottom
     else if (mode === 'focus') {
-        selection.on('click', (d) => {
-            // go to NodeExplore, which will transition node to center and perform the fetching and filtering
-            if (d.type === "node") {
-                actions.history.push(`/app/nodes/${d.id}`)
-            }
-        })
+        selection.on('click', actions.onNodeClick)
     }
     else if (mode === 'delete') {
         selection.on('click', (d) => {
@@ -168,7 +163,7 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
     return selection
 }
 
-const createEnterCollection = function(actions: { click: Function }) {
+const createEnterCollection = function(actions) {
     /*
      * HOF for enterNode
     */
@@ -178,7 +173,7 @@ const createEnterCollection = function(actions: { click: Function }) {
             .attr('id', (d) => `node-${d.id}`)
             .attr('r', (d) => d.radius)
 
-        selection.on('click', actions.click)
+        selection.on('click', actions.onNodeClick)
 
         selection
             .append('circle')
@@ -206,9 +201,7 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
 
     if (mode === 'view') {
         // make click go to editor
-        selection.on('click', (d) => {
-            actions.history.push(`/app/collections/${d.id}/edit`)
-        })
+        selection.on('click', actions.onNodeClick)
     }
     else if (mode === 'edit') {
         if (focus.id) {
@@ -255,9 +248,7 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
     }
     else if (mode === 'focus') {
         selection.on('click', (d) => {
-            if (d.type === "collection") {
-                actions.history.push(`/app/collections/${d.id}/nodes`)
-            }
+            actions.history.push(`/app/nodes/${d.id}/`)
         })
     }
     else if (mode === 'expand') {
@@ -377,7 +368,8 @@ const createCollectionDetailEvents = function(simulation, actions) {
      * Afterwards, can be called with node an link DOM nodes
      */
     const onNodeClick = (d) => {
-        actions.history.push(`/app/collections/${this.props.activeCollection.id}/nodes/${d.id}/edit`)
+        const baseUrl = this.props.collectionChain.map(x => x.id).join('/')
+        actions.history.push(`/app/collections/${baseUrl}/nodes/${d.id}/edit`)
     }
 
     const onConnect = (from, to) => {
@@ -420,8 +412,8 @@ const createCollectionDetailEvents = function(simulation, actions) {
     })
 
     const updateCollection = createUpdateCollection({
+        onNodeClick,
         toggleCollapse: actions.toggleCollapse,
-        // onNodeClick,
         updateNode: actions.updateNode,
         removeAbstraction: removeAbstraction,
         history: actions.history,
@@ -437,13 +429,8 @@ const createCollectionDetailEvents = function(simulation, actions) {
     })
 
     return (nodeSelection, collectionSelection, link, mode, focus) => {
-        // TODO: if the mode changed, all nodes need to be updated - 2017-07-08
-        // one way is to just set a flag on the data
-
         // if mode changed, update everything
-        // TODO: find a different way to achieve this
         if (this.props.mode !== mode) {
-            console.log("mode has changed")
             nodeSelection.call((selection) => updateNode(selection, mode, focus))
             collectionSelection.call((selection) => updateCollection(selection, mode, focus))
             link.call((selection) => updateLink(selection, mode))
@@ -661,7 +648,6 @@ class NodeGraph extends React.PureComponent {
     }
 
     shouldComponentUpdate(nextProps) {
-
         if (this.props !== nextProps) {
             this.update(nextProps)
         }
