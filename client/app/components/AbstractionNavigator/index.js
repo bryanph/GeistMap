@@ -19,10 +19,12 @@ class AbstractionNavigator extends React.Component {
     render() {
         const { collectionChain } = this.props
 
+        const collectionChainIds = collectionChain.map(x => x.id)
+
         const abstractionItems = collectionChain.map((c, i) => (
             <AbstractionItem
                 key={c.id}
-                id={c.id}
+                url={`/app/collections/${collectionChainIds.slice(0, i+1).join('/')}/nodes`}
                 name={c.name}
                 hasNext={ i < (collectionChain.length - 1) }
             />
@@ -36,9 +38,9 @@ class AbstractionNavigator extends React.Component {
     }
 }
 
-const AbstractionItem = ({ id, name, hasNext }) => (
+const AbstractionItem = ({ url, name, hasNext }) => (
     <div className="AbstractionNavigator-item">
-        <Link to={`/app/collections/${id}/nodes`}>{ name }</Link>
+        <Link to={url}>{ name }</Link>
         {
             hasNext ? <Icon name="angle right" /> : null
         }

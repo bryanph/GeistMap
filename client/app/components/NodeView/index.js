@@ -69,6 +69,7 @@ export class NodeView extends React.PureComponent {
                     nodes={nodes}
                     collections={this.props.visibleCollections}
                     links={links}
+                    collectionChain={this.props.collectionChain}
                     graphType={ graphType }
                     mode={mode}
                     focus={focus}

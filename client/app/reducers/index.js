@@ -507,7 +507,6 @@ function nodesByCollectionId(state={}, action) {
     /*
      * A mapping of nodes by collection Id
      * // TODO: this should represent only direct children? - 2017-08-29
-     * // TODO: this is for now recomputed on every fetch (no merging) - 2017-07-14
      */
     switch(action.type) {
         case collectionActionTypes.GET_COLLECTION_SUCCESS:
@@ -523,7 +522,8 @@ function nodesByCollectionId(state={}, action) {
                     if (!newState[c]) {
                         newState[c] = [ node.id ]
                     } else {
-                        newState[c] = [ ...newState[c], node.id ]
+                        // TODO: terrible performance on this - 2017-09-04
+                        newState[c] = _.union( newState[c], [ node.id ])
                     }
                 })
             })
@@ -1162,10 +1162,6 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                     .filter(chain => _.intersection(collectionChainIds, chain).length === collectionChainIds.length)
                     .map(list => nodeMap[list[list.length-1]])
 
-                console.log("LOGGING PARENT COLLECIONS")
-                console.log(c.id, c.collectionChains, collectionChainIds, parentCollections)
-
-                // console.log("parent collections", c, parentCollections);
                 if (_.every(parentCollections, (c) => !c || c.collapsed)) {
                     return false
                 }

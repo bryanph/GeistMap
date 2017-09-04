@@ -98,6 +98,8 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
     selection.selectAll('.editMode').remove()
     selection.on('click', null)
 
+    console.log("in node update", mode)
+
     if (mode === 'view') {
         // make click go to editor
         selection.on('click', actions.onNodeClick)
@@ -441,6 +443,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
         // if mode changed, update everything
         // TODO: find a different way to achieve this
         if (this.props.mode !== mode) {
+            console.log("mode has changed")
             nodeSelection.call((selection) => updateNode(selection, mode, focus))
             collectionSelection.call((selection) => updateCollection(selection, mode, focus))
             link.call((selection) => updateLink(selection, mode))
@@ -504,14 +507,6 @@ class NodeGraph extends React.PureComponent {
         const maxRadiusDomain = maxCount > 10 ? maxCount : 10
         const radiusScale = scaleLinear().domain([0, maxRadiusDomain]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
 
-        // make sure there are no duplicates in nodes, edges
-        // TODO: shouldn't be nescessary - 2017-06-21
-        // nodes = _.uniqBy(nodes, (node) => node.id)
-        // collections = _.uniqBy(collections, (node) => node.id)
-        // links = _.uniqBy(links, (link) => link.id)
-
-        // TODO: shouldn't have to happen here - 2017-07-14
-        // collections = collections.filter(c => c.collapsed)
         collections.forEach(c => {
             nodeById[c.id] = c
 
@@ -666,7 +661,8 @@ class NodeGraph extends React.PureComponent {
     }
 
     shouldComponentUpdate(nextProps) {
-        if (nextProps.nodes !== this.props.nodes || nextProps.links !== this.props.links) {
+
+        if (this.props !== nextProps) {
             this.update(nextProps)
         }
 

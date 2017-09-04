@@ -55,6 +55,7 @@ export class NodeViewContainer extends React.PureComponent {
         }
     }
 
+
     render() {
         return (
             <NodeView
@@ -94,6 +95,8 @@ function mapStateToProps(state, props) {
         edges = getL1Edges(state, nodeId);
         graphType = "node"
     }
+
+    console.log('re-rendering?')
 
     return {
         activeNode: getNode(state, props.nodeId),
