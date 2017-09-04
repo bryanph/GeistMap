@@ -471,8 +471,6 @@ module.exports = function(db, es) {
              * Create the edge (collection)<-[:AbstractEdge]-(node)
              */
 
-             // TODO: this results in node duplicated in Collection tree branch
-
             if (!collectionId || !nodeId) {
                 return res("Set both node ids")
             }
@@ -487,6 +485,7 @@ module.exports = function(db, es) {
                 MATCH (u:User)--(c:Collection), (u:User)--(n:Node)
                 WHERE u.id = {userId}
                 AND c.id = {collectionId} AND n.id = {nodeId}
+                AND NOT (c)-[:AbstractEdge*0..]->(n)
                 MERGE (n)-[e:AbstractEdge { id: {id}, start: n.id, end: c.id }]->(c)
                 RETURN properties(e) as edge, properties(n) as node, properties(c) as collection
                 `,
@@ -498,6 +497,14 @@ module.exports = function(db, es) {
                 }
             )
                 .then(results => {
+                    if (!results.records.length) {
+                        if (res) {
+                            res("Loop in path to root abstraction")
+                        }
+
+                        return "Loop in path to root abstraction"
+                    }
+
                     const edge = results.records[0]._fields[0]
                     const node = results.records[0]._fields[1]
                     const collection = results.records[0]._fields[2]
@@ -545,6 +552,9 @@ module.exports = function(db, es) {
         moveNode: function(user, sourceCollectionId, sourceId, targetId, edgeId, res) {
             /*
              * move the source to be in the target abstraction
+             *
+             * must make sure there can be no duplicates in path to root (no loops)
+             * in practice, only moved to parent or to child so not an issue
             */
 
             return Promise.all([

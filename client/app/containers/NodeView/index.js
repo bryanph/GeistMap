@@ -1,6 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import compose from 'recompose/compose'
+import withProps from 'recompose/withProps'
+
 import {
     loadNode,
     connectNodes,
@@ -41,7 +44,7 @@ function loadData(props) {
 }
 
 
-export class NodeViewContainer extends React.Component {
+export class NodeViewContainer extends React.PureComponent {
     componentWillMount() {
         loadData(this.props)
     }
@@ -66,23 +69,21 @@ import {
     getL1Nodes,
     getL1Edges,
     getCollection,
+    getCollections,
     getNode,
     getNodesAndEdgesByCollectionId,
-    getNodesByCollectionId,
+    getCollectionChain,
 } from '../../reducers'
 
 function mapStateToProps(state, props) {
-    const collectionChainIds = props.match.params.collectionChain && props.match.params.collectionChain.split('/')
-    const collectionId = collectionChainIds && collectionChainIds[collectionChainIds.length-1]
-    const nodeId = props.match.params && props.match.params.nodeId
-
-    console.log("called", collectionChainIds)
 
     let nodes, edges, collections, visibleCollections, isLoading, graphType, collectionChain;
 
-    if (collectionChainIds) {
-        isLoading = state.loadingStates.GET_COLLECTION;
-        ({ nodes, collections, visibleCollections, edges, collectionChain } = getNodesAndEdgesByCollectionId(state, collectionId, collectionChainIds))
+    if (props.collectionChainIds) {
+        isLoading = state.loadingStates.GET_COLLECTIONL1;
+
+        collectionChain = getCollectionChain(state, props);
+        ({ nodes, collections, visibleCollections, edges} = getNodesAndEdgesByCollectionId(state, props));
         graphType = "collection"
 
     } else {
@@ -95,10 +96,8 @@ function mapStateToProps(state, props) {
     }
 
     return {
-        collectionId,
-        nodeId,
-        activeNode: getNode(state, nodeId),
-        activeCollection: getCollection(state, collectionId),
+        activeNode: getNode(state, props.nodeId),
+        activeCollection: getCollection(state, props.collectionId),
         mode: state.graphUiState.mode,
         focus: state.graphUiState.focus,
         nodes,
@@ -108,21 +107,35 @@ function mapStateToProps(state, props) {
         isLoading,
         graphType,
         collectionChain,
-        collectionChainIds,
     };
 }
 
-export default connect(mapStateToProps, {
-    getCollectionL1,
-    addNode,
-    connectNodes,
-    updateNode,
-    removeNode,
-    removeAbstraction,
-    setActiveNode,
-    toggleCollapse,
-    moveToAbstraction,
-    fetchNodeL1,
-    removeEdge,
-    setGraphMode,
-})(NodeViewContainer)
+const addProps = withProps(props => {
+    const collectionChainIds = props.match.params.collectionChain && props.match.params.collectionChain.split('/')
+    const collectionId = collectionChainIds && collectionChainIds[collectionChainIds.length-1]
+    const nodeId = props.match.params && props.match.params.nodeId
+
+    return {
+        collectionChainIds,
+        collectionId,
+        nodeId,
+    }
+})
+
+export default compose(
+    addProps,
+    connect(mapStateToProps, {
+        getCollectionL1,
+        addNode,
+        connectNodes,
+        updateNode,
+        removeNode,
+        removeAbstraction,
+        setActiveNode,
+        toggleCollapse,
+        moveToAbstraction,
+        fetchNodeL1,
+        removeEdge,
+        setGraphMode,
+    })
+)(NodeViewContainer)

@@ -962,6 +962,61 @@ describe('collectionApi', () => {
             })
     })
 
+    test("test Collection.addNode() no duplicates in path to parent (no loops)", function() {
+        return loadFixtures(db, userId.toString(), [
+            {
+                properties: {
+                    name: 'My Knowledge Base',
+                    id: 'TEST__rootCollection',
+                    type: 'root',
+                    isRootCollection: true,
+                },
+                labels: [ 'RootCollection', 'Collection' ]
+            },
+            {
+                labels: [ "Collection", "Node" ],
+                properties: {
+                    "name": "Collection",
+                    "id": "TEST__collection",
+                    "type": "collection"
+                }
+            },
+            {
+                labels: [ "Collection", "Node" ],
+                properties: {
+                    "name": "Collection2",
+                    "id": "TEST__collection2",
+                    "type": "collection"
+                }
+            }
+        ], [
+            {
+                properties: {
+                    start: "TEST__collection",
+                    end: "TEST__rootCollection",
+                    id: "TEST__collection_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    start: "TEST__collection2",
+                    end: "TEST__collection",
+                    id: "TEST__collection2_collection",
+                },
+                type: "AbstractEdge"
+            },
+        ])
+            .then(() => {
+                return collectionApi.addNode(user, "TEST__collection2", "TEST__collection", "TEST__collection_collection2")
+            })
+            .then((result) => {
+                // expect result to return true
+                expect(result).toBe( "Loop in path to root abstraction")
+                return getUserGraphData(db, userId)
+            })
+    })
+
 
     test("test Collection.removeNode() correctly called", () => {
         return loadFixtures(db, userId.toString(), [

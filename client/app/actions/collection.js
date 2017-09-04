@@ -189,6 +189,7 @@ export function addNodeToCollection(collectionId, nodeId) {
 
         return Promise.all([ collectionPromise, nodePromise ])
             .then(() => {
+                console.log(collectionId, getCollection(getState(), collectionId))
                 const { collectionChains } = getCollection(getState(), collectionId)
                 const newCollectionChains = collectionChains.map(chain => [ ...chain, collectionId ])
 

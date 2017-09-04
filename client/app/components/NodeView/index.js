@@ -44,6 +44,8 @@ export class NodeView extends React.PureComponent {
             'deleteMode': () => this.props.setGraphMode("delete"),
         }
 
+        // TODO: handle loading state - 2017-09-04
+
         return (
             <HotKeys handlers={handlers} className='appContainer'>
                 <AddNodeWindow

@@ -139,7 +139,10 @@ describe('getNodesAndEdgesByCollectionId', () => {
             }
         }
 
-        const result = getNodesAndEdgesByCollectionId(initialState, "TEST__Root", [ "TEST__RootParent", "TEST__Root" ])
+        const result = getNodesAndEdgesByCollectionId(initialState, {
+            collectionId: "TEST__Root",
+            collectionChainIds: [ "TEST__RootParent", "TEST__Root" ],
+        })
 
         expect(result).toMatchObject({
             nodes: [ 
@@ -213,27 +216,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
                 { end: 'TEST__B', start: 'TEST__A', id: 'TEST__A_y-B' },
                 { end: 'TEST__B', start: 'TEST__A', id: 'TEST__A_x-B_x' } 
             ],
-            collectionChain: [
-                {
-                    isRootCollection: true,
-                    created: 1503389225848,
-                    name: 'My Knowledge Base',
-                    modified: 1503389225848,
-                    id: 'TEST__RootParent',
-                    type: 'root',
-                    collectionChains: [] 
-                },
-                {
-                    created: 1503389225848,
-                    name: 'My Knowledge Base',
-                    modified: 1503389225848,
-                    id: 'TEST__Root',
-                    type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent" ],
-                    ] 
-                } 
-            ] 
         })
 
         const withExpandedA = update(initialState, {
@@ -242,7 +224,10 @@ describe('getNodesAndEdgesByCollectionId', () => {
             }}
         })
 
-        const result2 = getNodesAndEdgesByCollectionId(withExpandedA, "TEST__Root", [ "TEST__RootParent", "TEST__Root" ])
+        const result2 = getNodesAndEdgesByCollectionId(withExpandedA, {
+            collectionId: "TEST__Root",
+            collectionChainIds: [ "TEST__RootParent", "TEST__Root" ],
+        })
 
         expect(result2).toMatchObject({
             nodes: [
@@ -331,27 +316,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     id: 'TEST__A_x-B_x'
                 }
             ],
-            collectionChain: [
-                {
-                    isRootCollection: true,
-                    created: 1503389225848,
-                    name: 'My Knowledge Base',
-                    modified: 1503389225848,
-                    id: 'TEST__RootParent',
-                    type: 'root',
-                    collectionChains: [] 
-                },
-                {
-                    created: 1503389225848,
-                    name: 'My Knowledge Base',
-                    modified: 1503389225848,
-                    id: 'TEST__Root',
-                    type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent" ],
-                    ] 
-                } 
-            ]
         })
 
 
@@ -361,7 +325,11 @@ describe('getNodesAndEdgesByCollectionId', () => {
             }}
         })
 
-        const result3 = getNodesAndEdgesByCollectionId(withExpandedB, "TEST__Root", [ "TEST__RootParent", "TEST__Root" ])
+        const result3 = getNodesAndEdgesByCollectionId(withExpandedB, {
+            collectionId: "TEST__Root",
+            collectionChainIds: [ "TEST__RootParent", "TEST__Root" ],
+        })
+
 
         expect(result3).toMatchObject({
             nodes: [
@@ -429,27 +397,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     start: 'TEST__A',
                     id: 'TEST__A_x-B_x'
                 }],
-            collectionChain: [
-                {
-                    isRootCollection: true,
-                    created: 1503389225848,
-                    name: 'My Knowledge Base',
-                    modified: 1503389225848,
-                    id: 'TEST__RootParent',
-                    type: 'root',
-                    collectionChains: [] 
-                },
-                {
-                    created: 1503389225848,
-                    name: 'My Knowledge Base',
-                    modified: 1503389225848,
-                    id: 'TEST__Root',
-                    type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent" ],
-                    ] 
-                }
-            ]
         })
 
 
@@ -460,7 +407,11 @@ describe('getNodesAndEdgesByCollectionId', () => {
             }}
         })
 
-        const result4 = getNodesAndEdgesByCollectionId(withExpandedAB, "TEST__Root", [ "TEST__RootParent", "TEST__Root" ])
+        const result4 = getNodesAndEdgesByCollectionId(withExpandedAB, {
+            collectionId: "TEST__Root",
+            collectionChainIds: [ "TEST__RootParent", "TEST__Root" ],
+        })
+
 
         expect(result4).toMatchObject({
             nodes: [
@@ -538,37 +489,16 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     id: 'TEST__A_x-B_x'
                 }
             ],
-            collectionChain: [
-                {
-                    isRootCollection: true,
-                    created: 1503389225848,
-                    name: 'My Knowledge Base',
-                    modified: 1503389225848,
-                    id: 'TEST__RootParent',
-                    type: 'root',
-                    collectionChains: [] 
-                },
-                {
-                    created: 1503389225848,
-                    name: 'My Knowledge Base',
-                    modified: 1503389225848,
-                    id: 'TEST__Root',
-                    type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent" ],
-                    ] 
-                }
-            ]
         })
     })
 
-    test('Given one node abstraction with one node in it and explicit links, give the desired state', () => {
+//     test('Given one node abstraction with one node in it and explicit links, give the desired state', () => {
 
-    })
+//     })
 
-    test('Given one node abstraction with implicit links, give the desired state', () => {
+//     test('Given one node abstraction with implicit links, give the desired state', () => {
 
-    })
+//     })
 
     // test('Given one node abstraction with implicit links, give the desired state', () => {
 
