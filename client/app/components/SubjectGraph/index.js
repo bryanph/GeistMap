@@ -146,12 +146,15 @@ const createUpdateCollection = function(actions) {
         selection
             .attr("class", "node subject-node")
 
+        console.log(mode)
         if (mode === 'edit') {
-            selection.on('click', function(d) {
-                actions.stopSimulation()
-                actions.zoomToNode(d3Select(this), d)
-            })
+            selection.on('click', null)
+            // selection.on('click', function(d) {
+            //     actions.stopSimulation()
+            //     actions.zoomToNode(d3Select(this), d)
+            // })
         } else {
+
             selection.on('click', actions.click)
         }
 
@@ -246,7 +249,36 @@ const createUpdateCollection = function(actions) {
                     .attr('maxLength', 50)
                     .attr('autofocus', true)
                     .text(data.name)
+                    .on("keypress", (d) => {
+                        if (currentEvent.keyCode === 13) {
+                            currentEvent.preventDefault()
+                            if (focus.id === data.id) {
+                                const value = editMode.select('textarea').node().value
+
+                                if (data.isNew) {
+                                    // TODO: should be combined
+                                    actions.createCollection(data.id, data.parentId, { name: value })
+                                    // .then(() => actions.connectCollections(data.id, data.parentId, data.edgeId))
+                                    actions.setActiveCollection(null)
+                                }
+                                // save the node, we changed it
+                                actions.updateNode(data.id, { name: value })
+                                    .then(() => actions.setActiveCollection(null))
+                                    .then(() => {
+                                        console.log("calling zoom..")
+                                        actions.zoomFit()
+                                    })
+                            }
+
+                            return false
+                        }
+
+                        return false
+                    })
                 // .style("height", sqLen)
+
+                // TODO: shouldn't be necessary - 2017-09-05
+                setTimeout(() => textarea.node().focus(), 10)
             }
 
             const buttonHeight = data.radius * 0.3
@@ -257,11 +289,9 @@ const createUpdateCollection = function(actions) {
                 .attr('transform', (d) => `translate(0, ${d.radius - buttonHeight / 1.4})`)
             // .style('font-size', (d) => d.radius / 4.5)
                 .on('click', (d) => {
+                    currentEvent.preventDefault()
                     if (focus.id === data.id) {
                         const value = editMode.select('textarea').node().value
-
-                        console.log('calling zoomfit!');
-                        actions.zoomFit()
 
                         if (data.isNew) {
                             // TODO: should be combined
@@ -272,7 +302,10 @@ const createUpdateCollection = function(actions) {
                         // save the node, we changed it
                         return actions.updateNode(data.id, { name: value })
                             .then(() => actions.setActiveCollection(null))
-
+                            .then(() => {
+                                console.log("calling zoom..")
+                                actions.zoomFit()
+                            })
                     }
                     // set node in edit mode
                     actions.editNode(d, selection)
@@ -328,7 +361,11 @@ const createCollectionOverviewEvents = function(simulation, actions) {
      */
     const onCollectionClick = (d) => {
         // TODO: should navigate to the right collection chain - 2017-09-01
-        actions.history.push(`/app/collections/${d.id}/nodes`)
+        // TODO: this is a temporary solution - 2017-09-05
+        const chain = (d.collectionChains[0] || []).join('/')
+
+        console.log(chain)
+        actions.history.push(`/app/collections/${chain ? chain + '/' : ''}${d.id}/nodes`)
 
         // const newCollectionChain = [ ...this.props.collectionChainIds, d.id ]
         // actions.history.push(`/app/collections/${newCollectionChain.split('/')}/nodes`)
@@ -562,13 +599,16 @@ class SubjectGraph extends React.Component {
 
     restartSimulation() {
         // TODO: do two zooms, an initial "guess" zoom and another for accuracy - 2017-06-07
-        console.log('restarting simulation...');
-        this.zoomed = false;
-        this.simulation.alpha(0.8).restart()
+        if (this.simulation.alpha() < 0.6) {
+            console.log('restarting simulation...');
+            this.zoomed = false;
+            this.simulation.alpha(0.8).restart()
+        }
     }
 
     stopSimulation() {
         console.log('stopping simulation...');
+        console.trace()
         this.simulation.stop()
     }
 
@@ -598,7 +638,7 @@ class SubjectGraph extends React.Component {
         })
 
         //TODO: set to true on initial tick
-        this.zoomed = false
+        this.zoomed = true
 
         const ticked = (selection) => {
             if (!this.zoomed && this.simulation.alpha() < 0.6) {

@@ -12,8 +12,14 @@ export default (root, container, fullWidth, fullHeight) => {
 
     const zoom = d3Zoom()
         .scaleExtent([1/2, 8])
-        .on('start', () => zoomInProgress = true)
-        .on('end', () => zoomInProgress = false)
+        .on('start', () => {
+            console.log("zoom start!!!")
+            zoomInProgress = true
+        })
+        .on('end', () => {
+            console.log("zoom end!!!")
+            zoomInProgress = false
+        })
         .on('zoom', function () {
             container.attr("transform", currentEvent.transform)
         })
@@ -22,8 +28,6 @@ export default (root, container, fullWidth, fullHeight) => {
     root.call(zoom)
 
     function getTranslate(node) {
-        console.log(node)
-        console.log(node.attr("transform").split(' '))
         const transs = node.attr("transform").split(' ');
 
         const translate = transs[0].substring(transs[0].indexOf("(")+1, transs[0].indexOf(")")).split(",").map(parseFloat);
@@ -80,10 +84,11 @@ export default (root, container, fullWidth, fullHeight) => {
         zoomClick(-1)
     }
 
-    function zoomFit() {
+    function zoomFit(allowZoomIn=true) {
         /*
          * Zoom to fit to the root node
         */
+        console.log("called zoomFit...", zoomInProgress)
         if (zoomInProgress) {
             return;
         }
@@ -105,10 +110,12 @@ export default (root, container, fullWidth, fullHeight) => {
 
         let scale = paddingPercent * Math.min(fullWidth / width, fullHeight / height)
 
-        if (scale > 1) {
-            // scale = 1;
-            return;
-        }
+        console.log(allowZoomIn, scale)
+        // console.log(!allowZoomIn && scale)
+        // if (!allowZoomIn && scale > 1) {
+        //     // scale = 1;
+        //     return;
+        // }
 
         const translate = [ -(midX*scale - fullWidth/2), -(midY*scale - fullHeight/2)];
 

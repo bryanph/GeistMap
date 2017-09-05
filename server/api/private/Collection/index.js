@@ -86,9 +86,13 @@ module.exports = function(db, es) {
                 db.run(`
                     MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId}
-                    OPTIONAL MATCH (c)<-[:AbstractEdge*]-(c2:Collection)
-                    OPTIONAL MATCH (c2)--(n:Node)
-                    RETURN properties(c), count(n)
+                    MATCH (c)<-[:AbstractEdge*0..]-(c2:Collection) // all collections
+                    WITH DISTINCT c2 as nodes
+                    MATCH p=(:RootCollection)<-[:AbstractEdge*0..]-(nodes)
+                    WITH nodes, collect(extract(c IN (nodes(p)[0..length(p)]) | c.id)) as collections
+                    OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
+                    RETURN properties(nodes) as node, collections, COUNT(children)
+                    ORDER BY node.id
                     `,
                     {
                         userId: user._id.toString()
@@ -100,7 +104,8 @@ module.exports = function(db, es) {
                     Object.assign({},
                         row.get(0),
                         {
-                            count: parseInt(row.get(1))
+                            collectionChains: row.get(1), // ids for collections
+                            count: parseInt(row.get(2))
                         }
                     )
                 ))
@@ -282,7 +287,6 @@ module.exports = function(db, es) {
                     OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
                     RETURN properties(nodes) as node, collections, COUNT(children)
                     ORDER BY node.id
-
                     `,
                     {
                         id,
@@ -308,7 +312,7 @@ module.exports = function(db, es) {
                                 row.get(0),
                                 {
                                     collectionChains: row.get(1), // ids for collections
-                                    count: row.get(2)
+                                    count: parseInt(row.get(2))
                                 }
                             )
                         ))
