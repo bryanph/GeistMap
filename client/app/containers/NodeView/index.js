@@ -16,6 +16,7 @@ import {
     getCollectionL1,
     removeAbstraction,
     moveToAbstraction,
+    removeNodeFromCollection,
 } from '../../actions/collection'
 
 import {
@@ -133,6 +134,7 @@ export default compose(
         connectNodes,
         updateNode,
         removeNode,
+        removeNodeFromCollection,
         removeAbstraction,
         setActiveNode,
         toggleCollapse,

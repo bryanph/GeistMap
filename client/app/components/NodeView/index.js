@@ -78,6 +78,7 @@ export class NodeView extends React.PureComponent {
                     connectNodes={this.props.connectNodes}
                     updateNode={this.props.updateNode}
                     removeNode={this.props.removeNode}
+                    removeNodeFromCollection={this.props.removeNodeFromCollection}
                     removeAbstraction={this.props.removeAbstraction}
                     setActiveNode={this.props.setActiveNode}
                     toggleCollapse={this.props.toggleCollapse}

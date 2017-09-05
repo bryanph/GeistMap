@@ -13,11 +13,9 @@ export default (root, container, fullWidth, fullHeight) => {
     const zoom = d3Zoom()
         .scaleExtent([1/2, 8])
         .on('start', () => {
-            console.log("zoom start!!!")
             zoomInProgress = true
         })
         .on('end', () => {
-            console.log("zoom end!!!")
             zoomInProgress = false
         })
         .on('zoom', function () {
@@ -88,7 +86,6 @@ export default (root, container, fullWidth, fullHeight) => {
         /*
          * Zoom to fit to the root node
         */
-        console.log("called zoomFit...", zoomInProgress)
         if (zoomInProgress) {
             return;
         }
@@ -110,8 +107,6 @@ export default (root, container, fullWidth, fullHeight) => {
 
         let scale = paddingPercent * Math.min(fullWidth / width, fullHeight / height)
 
-        console.log(allowZoomIn, scale)
-        // console.log(!allowZoomIn && scale)
         // if (!allowZoomIn && scale > 1) {
         //     // scale = 1;
         //     return;

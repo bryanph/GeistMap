@@ -146,7 +146,6 @@ const createUpdateCollection = function(actions) {
         selection
             .attr("class", "node subject-node")
 
-        console.log(mode)
         if (mode === 'edit') {
             selection.on('click', null)
             // selection.on('click', function(d) {
@@ -265,7 +264,6 @@ const createUpdateCollection = function(actions) {
                                 actions.updateNode(data.id, { name: value })
                                     .then(() => actions.setActiveCollection(null))
                                     .then(() => {
-                                        console.log("calling zoom..")
                                         actions.zoomFit()
                                     })
                             }
@@ -303,7 +301,6 @@ const createUpdateCollection = function(actions) {
                         return actions.updateNode(data.id, { name: value })
                             .then(() => actions.setActiveCollection(null))
                             .then(() => {
-                                console.log("calling zoom..")
                                 actions.zoomFit()
                             })
                     }
@@ -364,7 +361,6 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         // TODO: this is a temporary solution - 2017-09-05
         const chain = (d.collectionChains[0] || []).join('/')
 
-        console.log(chain)
         actions.history.push(`/app/collections/${chain ? chain + '/' : ''}${d.id}/nodes`)
 
         // const newCollectionChain = [ ...this.props.collectionChainIds, d.id ]
@@ -600,15 +596,12 @@ class SubjectGraph extends React.Component {
     restartSimulation() {
         // TODO: do two zooms, an initial "guess" zoom and another for accuracy - 2017-06-07
         if (this.simulation.alpha() < 0.6) {
-            console.log('restarting simulation...');
             this.zoomed = false;
             this.simulation.alpha(0.8).restart()
         }
     }
 
     stopSimulation() {
-        console.log('stopping simulation...');
-        console.trace()
         this.simulation.stop()
     }
 

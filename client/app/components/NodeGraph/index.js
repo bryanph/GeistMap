@@ -60,7 +60,7 @@ function getLabelText(text) {
     return text.slice(0, 15) + '...'
 }
 
-const createEnterNode = function(actions: { click: Function }) {
+const createEnterNode = function(actions) {
     /*
      * HOF for enterNode
     */
@@ -71,8 +71,6 @@ const createEnterNode = function(actions: { click: Function }) {
                 return `node-${d.id}`
             })
             .attr('r', (d) => d.radius)
-
-        selection.on('click', actions.click)
 
         selection
             .append('circle')
@@ -98,11 +96,9 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
     selection.selectAll('.editMode').remove()
     selection.on('click', null)
 
-    console.log("in node update", mode)
-
     if (mode === 'view') {
         // make click go to editor
-        selection.on('click', actions.onNodeClick)
+        selection.on('click', actions.onViewClick)
     }
     else if (mode === 'edit') {
         if (focus.id) {
@@ -130,10 +126,9 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
 
                     if (e.which === 13) {
                         e.stopPropagation()
-                        // on enter, update node
                         const value = editMode.select('textarea').node().value
-                        actions.updateNode(d.id, { name: value })
-                        actions.setActiveNode(null)
+
+                        actions.onEditSave(d, value)
                     }
                 })
             // .style("height", sqLen)
@@ -141,23 +136,18 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
         }
         else {
             // change click to edit node
-            selection.on('click', (d) => {
-                actions.setActiveNode(d.id)
-            })
+            selection.on('click', actions.onEditClick)
         }
-
     }
-    // insert an editable text field at the bottom
+    else if (mode === 'abstract') {
+        // TODO: move up in abstraction? - 2017-09-05
+        // selection.on('click', actions.onAbstractClick)
+    }
     else if (mode === 'focus') {
-        selection.on('click', actions.onNodeClick)
+        selection.on('click', actions.onFocusClick)
     }
     else if (mode === 'delete') {
-        selection.on('click', (d) => {
-            if (d.type === "node") {
-                // TODO: ask for a confirmation
-                actions.removeNode(d.id)
-            }
-        })
+        selection.on('click', actions.onDeleteClick)
     }
 
     return selection
@@ -172,8 +162,6 @@ const createEnterCollection = function(actions) {
             .attr("class", "collectionSelection node")
             .attr('id', (d) => `node-${d.id}`)
             .attr('r', (d) => d.radius)
-
-        selection.on('click', actions.onNodeClick)
 
         selection
             .append('circle')
@@ -201,7 +189,7 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
 
     if (mode === 'view') {
         // make click go to editor
-        selection.on('click', actions.onNodeClick)
+        selection.on('click', actions.onViewClick)
     }
     else if (mode === 'edit') {
         if (focus.id) {
@@ -231,9 +219,9 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
                     if (e.which === 13) {
                         e.stopPropagation()
                         // on enter, update node
+
                         const value = editMode.select('textarea').node().value
-                        actions.updateNode(d.id, { name: value })
-                        actions.setActiveNode(null)
+                        actions.onEditSave(d, value)
                     }
                 })
             // .style("height", sqLen)
@@ -241,31 +229,17 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
         }
         else {
             // change click to edit node
-            selection.on('click', (d) => {
-                actions.setActiveNode(d.id)
-            })
+            selection.on('click', actions.onEditClick)
         }
     }
-    else if (mode === 'focus') {
-        selection.on('click', (d) => {
-            actions.history.push(`/app/nodes/${d.id}/`)
-        })
+    else if (mode === 'abstract') {
+        selection.on('click', actions.onAbstractClick)
     }
-    else if (mode === 'expand') {
-        /*
-         * Expand the collection
-        */
-        selection.on('click', function(d) {
-            actions.toggleCollapse(d.id)
-        })
+    else if (mode === 'focus') {
+        selection.on('click', actions.onFocusClick)
     }
     else if (mode === 'delete') {
-        selection.on('click', (d) => {
-            if (d.type === "collection") {
-                // TODO: ask for a confirmation
-                actions.removeAbstraction(d.id)
-            }
-        })
+        selection.on('click', actions.onDeleteClick)
     }
 
     return selection
@@ -293,12 +267,12 @@ const createEnterLink = function(actions) {
     }
 }
 
-const createUpdateLink = function({ onClick }) {
+const createUpdateLink = function({ onDeleteClick }) {
     return (selection, mode) => {
         selection.on('click', null)
 
         if (mode === 'delete') {
-            selection.on('click', onClick)
+            selection.on('click', onDeleteClick)
         }
     }
 }
@@ -367,22 +341,39 @@ const createCollectionDetailEvents = function(simulation, actions) {
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
      */
-    const onNodeClick = (d) => {
+
+    const onViewClick = (d) => {
+        // click in view mode
         const baseUrl = this.props.collectionChain.map(x => x.id).join('/')
         actions.history.push(`/app/collections/${baseUrl}/nodes/${d.id}/edit`)
+    }
+
+    const onEditClick = (d) => {
+        actions.setActiveNode(d.id)
+    }
+
+    const onAbstractClick = (d) => {
+        if (d.type === "collection") {
+            actions.removeAbstraction(d.id)
+        }
+    }
+
+    const onFocusClick = (d) => {
+        actions.history.push(`/app/nodes/${d.id}/`)
+    }
+
+    const onDeleteClick = (d) => {
+        actions.removeNodeFromCollection(this.props.activeCollection.id, d.id)
+    }
+
+    const onEditSave = (d, value) => {
+        actions.updateNode(d.id, { name: value })
+        actions.setActiveNode(null)
     }
 
     const onConnect = (from, to) => {
         // this call is done from the abstractiondetail graph
         return actions.connectNodes(from, to, this.props.activeCollection.id)
-    }
-
-    const removeAbstraction = (id) => {
-        return actions.removeAbstraction(id)
-    }
-
-    const removeNode = (id) => {
-        return actions.removeNode(id, this.props.activeCollection.id)
     }
 
     const drag = createDrag(simulation)({
@@ -395,37 +386,32 @@ const createCollectionDetailEvents = function(simulation, actions) {
         .on('start', drag.dragstart.bind(this))
         .on('end', drag.dragend.bind(this))
 
-    const enterNode = createEnterNode({
-        onNodeClick
-    })
+    const enterNode = createEnterNode()
 
     const updateNode = createUpdateNode({
-        onNodeClick,
-        updateNode: actions.updateNode,
-        removeNode: removeNode,
-        history: actions.history,
-        setActiveNode: actions.setActiveNode,
+        onViewClick,
+        onEditClick,
+        onEditSave,
+        onAbstractClick,
+        onFocusClick,
+        onDeleteClick,
     })
 
-    const enterCollection = createEnterCollection({
-        onNodeClick
-    })
+    const enterCollection = createEnterCollection()
 
     const updateCollection = createUpdateCollection({
-        onNodeClick,
-        toggleCollapse: actions.toggleCollapse,
-        updateNode: actions.updateNode,
-        removeAbstraction: removeAbstraction,
-        history: actions.history,
-        setActiveNode: actions.setActiveNode,
+        onViewClick,
+        onEditClick,
+        onEditSave,
+        onAbstractClick,
+        onFocusClick,
+        onDeleteClick,
     })
 
-    const enterLink = createEnterLink({
-        doubleClick: (d) => actions.removeEdge(d.id)
-    })
+    const enterLink = createEnterLink()
 
     const updateLink = createUpdateLink({
-        onClick: (d) => actions.removeEdge(d.id)
+        onDeleteClick: (d) => actions.removeEdge(d.id)
     })
 
     return (nodeSelection, collectionSelection, link, mode, focus) => {
@@ -550,12 +536,10 @@ class NodeGraph extends React.PureComponent {
     restartSimulation() {
         // TODO: do two zooms, an initial "guess" zoom and another for accuracy - 2017-06-07
         // this.zoomed = false;
-        console.log('calling restartSimulation...');
         this.simulation.alpha(0.8).restart()
     }
 
     stopSimulation() {
-        console.log('stopping simulation...');
         this.simulation.stop()
     }
 
@@ -613,6 +597,7 @@ class NodeGraph extends React.PureComponent {
             setActiveNode: this.props.setActiveNode,
             updateNode: this.props.updateNode,
             removeNode: this.props.removeNode,
+            removeNodeFromCollection: this.props.removeNodeFromCollection,
             removeAbstraction: this.props.removeAbstraction,
             toggleCollapse: this.props.toggleCollapse,
             moveToAbstraction: this.props.moveToAbstraction,

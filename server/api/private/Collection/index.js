@@ -210,7 +210,6 @@ module.exports = function(db, es) {
             const userId = user._id.toString()
 
             if (!Array.isArray(collectionChain)) {
-                console.log(collectionChain)
                 return res("collection chain must be passed")
             }
 
