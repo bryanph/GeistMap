@@ -97,8 +97,6 @@ function mapStateToProps(state, props) {
         graphType = "node"
     }
 
-    console.log('re-rendering?')
-
     return {
         activeNode: getNode(state, props.nodeId),
         activeCollection: getCollection(state, props.collectionId),

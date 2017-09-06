@@ -40,7 +40,7 @@ class AbstractionList extends React.Component {
          * 2. all edges from this collection to its nodes should become normal
         */
 
-        this.props.removeAbstraction(id)
+        this.props.removeAbstraction(id, this.props.collectionChainIds)
     }
 
     focusAbstraction(id) {

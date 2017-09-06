@@ -354,7 +354,8 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onAbstractClick = (d) => {
         if (d.type === "collection") {
-            actions.removeAbstraction(d.id)
+            const collectionChainIds = this.props.collectionChain.map(x => x.id)
+            actions.removeAbstraction(d.id, collectionChainIds)
         }
     }
 
@@ -485,6 +486,8 @@ class NodeGraph extends React.PureComponent {
 
             c.radius = radiusScale(c.count || 0)
         })
+
+        console.log(nodes, collections, links)
 
         // set extra properties here
         nodes.forEach(node => {

@@ -132,7 +132,7 @@ export function fetchRemoveAbstraction(collectionId) {
         }
     }
 }
-export function removeAbstraction(collectionId) {
+export function removeAbstraction(collectionId, collectionChainIds) {
     /*
      * 1. Fetch direct child nodes of ${collectionId}
      * 2. Move abstraction with ${collectionId} to ${sourceCollectionId}
@@ -141,7 +141,7 @@ export function removeAbstraction(collectionId) {
         // get the direct child nodes,
         // TODO: must be merged with previous
         // TODO: should be getCollection?
-        return dispatch(getCollectionL1(collectionId))
+        return dispatch(fetchCollectionL1(collectionId, collectionChainIds))
             .then(() => {
                 return dispatch(fetchRemoveAbstraction(collectionId))
             })

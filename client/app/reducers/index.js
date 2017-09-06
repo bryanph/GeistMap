@@ -74,11 +74,12 @@ export function nodes(state={}, action, collections) {
                 [action.collectionId]: { type: { $set: "node"}}
             })
 
+            // console.log(_.map(newSt))
             // TODO: this is very expensive to compute - 2017-08-29
             return _.mapValues(newState, (x) => update(x, {
                 collectionChains: { $apply: (chains) => 
                     _.uniqBy(
-                        chains.map(chain => _.without(chain, action.collectionId)),
+                        (chains || []).map(chain => _.without(chain, action.collectionId)),
                         JSON.stringify
                     )
                 }
