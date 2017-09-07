@@ -487,8 +487,6 @@ class NodeGraph extends React.PureComponent {
             c.radius = radiusScale(c.count || 0)
         })
 
-        console.log(nodes, collections, links)
-
         // set extra properties here
         nodes.forEach(node => {
             nodeById[node.id] = node
@@ -507,7 +505,7 @@ class NodeGraph extends React.PureComponent {
             .data(nodes, x => x.id)
 
         var collectionSelection = this.container.selectAll('.collectionSelection')
-            .data(collections, x => x.id)
+            .data(collections, x => x.id + x.count)
 
         var link = this.container.selectAll('.link')
             .data(links, link => link.id)
