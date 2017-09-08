@@ -79,7 +79,6 @@ const App = (props) => (
         <Footer />
         <FollowOnTwitter />
     </div>
-    </div>
 )
 
 function createElement(Component, props) {

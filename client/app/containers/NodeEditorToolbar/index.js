@@ -90,15 +90,15 @@ export class NodeEditorToolbar extends React.Component {
                         {
                             this.props.page !== "nodes" ?
                                 <ExploreButton
-                                    onTouchTap={this.exploreNode}
+                                    onClick={this.exploreNode}
                                 />
                                 : null
                         }
                         <AddRelationButton
-                            onTouchTap={this.addRelation}
+                            onClick={this.addRelation}
                         />
                         <TrashButton
-                            onTouchTap={this.removeNode}
+                            onClick={this.removeNode}
                         />
                     </div>
                 </div>

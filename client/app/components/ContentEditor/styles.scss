@@ -83,10 +83,6 @@
     margin-bottom: 20px;
     user-select: none;
 
-    &.phantom {
-        visibility: hidden;
-    }
-
     &.fixed {
         position: fixed;
         top: $topbar-height;

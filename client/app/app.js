@@ -9,9 +9,6 @@ import { AppContainer } from 'react-hot-loader'
 
 import Root from './containers/Root'
 
-import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin();
-
 // disable redbox-react
 delete AppContainer.prototype.unstable_handleError
 

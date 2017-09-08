@@ -145,7 +145,7 @@ function myBlockStyleFn(contentBlock) {
     }
 }
 
-class RichEditor extends React.Component {
+class ContentEditor extends React.Component {
     constructor(props) {
         super(props)
 
@@ -505,11 +505,11 @@ class RichEditor extends React.Component {
         );
     }
 }
-RichEditor.defaultProps = {
+ContentEditor.defaultProps = {
     withToolbar: true,
 }
-RichEditor.contextTypes = {
+ContentEditor.contextTypes = {
     store: PropTypes.object.isRequired
 }
 
-export default enhanceWithClickOutside(RichEditor)
+export default enhanceWithClickOutside(ContentEditor)
