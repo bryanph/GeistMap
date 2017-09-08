@@ -168,7 +168,7 @@ class PluginEditor extends Component {
                     styles = (styles ? (`${styles} `) : '') + result;
                 }
             }
-            return styles || false;
+            return styles || '';
         }
 
         for (const plugin of plugins) {
@@ -284,6 +284,7 @@ class PluginEditor extends Component {
         const pluginHooks = this.createPluginHooks();
         const customStyleMap = this.resolveCustomStyleMap();
         const accessibilityProps = this.resolveAccessibilityProps();
+
         return (
             <Editor
                 { ...this.props }

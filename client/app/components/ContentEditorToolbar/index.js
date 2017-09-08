@@ -53,17 +53,17 @@ import EditorCode from 'material-ui/svg-icons/action/code';
 import EditorFunctions from 'material-ui/svg-icons/editor/functions';
 
 const TexIcon = (props) => <img src="/static/TeX_logo.svg" style={ texIconStyle } />
-    const TexIcon2 = (props) => <img src="/static/TeX_logo2.svg" style={ blockTexIconStyle } />
+const TexIcon2 = (props) => <img src="/static/TeX_logo2.svg" style={ blockTexIconStyle } />
 
-    const IconButton = (props) => {
-        const { theme, label, ...rest } = props
+const IconButton = (props) => {
+    const { theme, label, ...rest } = props
 
-        return (
-            <button className={theme.button} {...rest}>
-                { props.label }
-            </button>
-        )
-    }
+    return (
+        <button className={theme.button} {...rest}>
+            { props.label }
+        </button>
+    )
+}
 
 import { showAddPictureWindow } from '../../actions/ui'
 const AddPictureButton = connect(null, { showAddPictureWindow })((props) => {
@@ -143,86 +143,73 @@ class ContentEditorToolbar extends React.Component {
         })
 
         return (
-            [
-                <div className={ toolbarClass }>
-                    <div className={'ContentEditor-group'}>
-                        <H3Button getEditorState={getEditorState} setEditorState={setEditorState} 
-                            theme={blockHeaderTheme}
-                            label={'H1'}
+            <div className={ toolbarClass }>
+                <div className={'ContentEditor-group'}>
+                    <H3Button getEditorState={getEditorState} setEditorState={setEditorState} 
+                        theme={blockHeaderTheme}
+                        label={'H1'}
+                    />
+                    <H4Button getEditorState={getEditorState} setEditorState={setEditorState}
+                        theme={blockHeaderTheme}
+                        label={'H2'}
+                    />
+                    <H5Button getEditorState={getEditorState} setEditorState={setEditorState}
+                        theme={blockHeaderTheme}
+                        label={'H3'}
+                    />
+                </div>
+                <div className={'ContentEditor-group'}>
+                    <BlockquoteButton getEditorState={getEditorState} setEditorState={setEditorState}
+                        theme={blockTheme}
+                        label={
+                            <EditorQuote 
+                                style={iconStyle} 
+                                hoverColor={'#5890ff'}
+                            />}
                         />
-                        <H4Button getEditorState={getEditorState} setEditorState={setEditorState}
-                            theme={blockHeaderTheme}
-                            label={'H2'}
-                        />
-                        <H5Button getEditorState={getEditorState} setEditorState={setEditorState}
-                            theme={blockHeaderTheme}
-                            label={'H3'}
-                        />
-                    </div>
-                    <div className={'ContentEditor-group'}>
-                        <BlockquoteButton getEditorState={getEditorState} setEditorState={setEditorState}
+                        <CodeblockButton getEditorState={getEditorState} setEditorState={setEditorState} 
                             theme={blockTheme}
                             label={
-                                <EditorQuote 
+                                <EditorCode 
                                     style={iconStyle} 
                                     hoverColor={'#5890ff'}
                                 />}
                             />
-                            <CodeblockButton getEditorState={getEditorState} setEditorState={setEditorState} 
+                        </div>
+                        <div className={'ContentEditor-group'}>
+                            <UlButton getEditorState={getEditorState} setEditorState={setEditorState}
                                 theme={blockTheme}
                                 label={
-                                    <EditorCode 
+                                    <EditorUnorderedList 
                                         style={iconStyle} 
                                         hoverColor={'#5890ff'}
                                     />}
                                 />
-                            </div>
-                            <div className={'ContentEditor-group'}>
-                                <UlButton getEditorState={getEditorState} setEditorState={setEditorState}
+                                <OlButton getEditorState={getEditorState} setEditorState={setEditorState}
                                     theme={blockTheme}
                                     label={
-                                        <EditorUnorderedList 
+                                        <EditorOrderedList 
                                             style={iconStyle} 
                                             hoverColor={'#5890ff'}
                                         />}
                                     />
-                                    <OlButton getEditorState={getEditorState} setEditorState={setEditorState}
-                                        theme={blockTheme}
-                                        label={
-                                            <EditorOrderedList 
-                                                style={iconStyle} 
-                                                hoverColor={'#5890ff'}
-                                            />}
-                                        />
-                                    </div>
-                                    <div className={'ContentEditor-group'}>
-                                        {
-                                            /*
-                    <AddMediaButton editorState={getEditorState()} setEditorState={setEditorState}
-                        label={
-                            <EditorAttachFile 
-                                style={iconStyle} 
-                                hoverColor={'#5890ff'}
-                        />}
-                    />
-                    */
-                                        }
-                                        <AddPictureButton />
-                                        <AddVideoButton />
-                                        <AddAudioButton />
-                                    </div>
-                                    <div className={'ContentEditor-group'}>
-                                        <InsertInlineTeXButton editorState={getEditorState()} setEditorState={setEditorState}
-                                            setReadOnly={this.props.setReadOnly}
-                                            label={<TexIcon />}
-                                        />
-                                        <InsertTeXButton editorState={getEditorState()} setEditorState={setEditorState}
-                                            setReadOnly={this.props.setReadOnly}
-                                            label={<TexIcon2 />}
-                                        />
-                                    </div>
                                 </div>
-            ]
+                                <div className={'ContentEditor-group'}>
+                                    <AddPictureButton />
+                                    <AddVideoButton />
+                                    <AddAudioButton />
+                                </div>
+                                <div className={'ContentEditor-group'}>
+                                    <InsertInlineTeXButton editorState={getEditorState()} setEditorState={setEditorState}
+                                        setReadOnly={this.props.setReadOnly}
+                                        label={<TexIcon />}
+                                    />
+                                    <InsertTeXButton editorState={getEditorState()} setEditorState={setEditorState}
+                                        setReadOnly={this.props.setReadOnly}
+                                        label={<TexIcon2 />}
+                                    />
+                                </div>
+                            </div>
         );
     }
 }

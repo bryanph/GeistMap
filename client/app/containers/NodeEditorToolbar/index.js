@@ -71,8 +71,7 @@ export class NodeEditorToolbar extends React.Component {
         }
 
         return (
-            <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} style={{ width: '100%' }}>
-                <div className="nodeToolbar">
+            <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} className="nodeToolbar">
                     <div className="nodeToolbar-loadingState">
                         <SavedState />
                         { loadingStates.GET_NODE ? <InlineSpinner size={1} /> : null }
@@ -101,7 +100,6 @@ export class NodeEditorToolbar extends React.Component {
                             onClick={this.removeNode}
                         />
                     </div>
-                </div>
             </HotKeys>
         );
     }

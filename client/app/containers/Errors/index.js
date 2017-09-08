@@ -20,7 +20,7 @@ class Errors extends React.Component {
         }
     }
 
-    handleActionTouchTap = () => {
+    handleActionClick = () => {
         this.setState({
             open: false,
         });
@@ -46,7 +46,7 @@ class Errors extends React.Component {
                     message={error && error.message}
                     action="close"
                     autoHideDuration={5000}
-                    onActionTouchTap={this.handleActionTouchTap}
+                    onActionClick={this.handleActionClick}
                     onRequestClose={this.handleRequestClose}
                 />
             </div>

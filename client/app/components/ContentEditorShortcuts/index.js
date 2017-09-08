@@ -75,7 +75,7 @@ const styles = {
 const CollapseShortcuts = (props) => (
     <div style={styles.collapseButton}>
         <CollapseButton 
-            onTouchTap={props.hideShortcutWindow} 
+            onClick={props.hideShortcutWindow} 
         />
     </div>
 )

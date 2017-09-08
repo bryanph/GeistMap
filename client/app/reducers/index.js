@@ -655,6 +655,9 @@ const initialUiState = {
     connectWindowOpened: false,
     addRelationWindowOpened: false,
     addRelationCollectionWindowOpened: false,
+    addPictureWindowOpened: false,
+    addVideoWindowOpened: false,
+    addAudioWindowOpened: false,
     createCollectionWindowOpened: false,
     createCollectionWindowState: {
         title: "",

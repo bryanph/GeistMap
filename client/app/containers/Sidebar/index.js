@@ -72,12 +72,12 @@ class Sidebar extends React.Component {
                 onRequestChange={this.toggleNav}
                 containerStyle={styles.drawer}
             >
-                <Link style={styles.link} to="/app/inbox"><MenuItem style={styles.menuItem} onTouchTap={this.toggleNav}>Inbox</MenuItem></Link>
-                <Link style={styles.link} to="/app/nodes"><MenuItem style={styles.menuItem} onTouchTap={this.toggleNav}>Nodes</MenuItem></Link>
-                <Link style={styles.link} to="/app/collections"><MenuItem style={styles.menuItem} onTouchTap={this.toggleNav}>Collections</MenuItem></Link>
-                <MenuItem style={styles.menuItem} onTouchTap={this.createNode} leftIcon={<ContentAdd color='white' />}>Create Node</MenuItem>
-                <MenuItem style={styles.menuItem} onTouchTap={this.createCollection} leftIcon={<ActionGroupWork color='white' />}>Create Collection</MenuItem>
-                { /* <Link style={styles.link} to="/app/explore/collections"><MenuItem style={styles.menuItem} onTouchTap={this.toggleNav}>Explore collections</MenuItem></Link> */ }
+                <Link style={styles.link} to="/app/inbox"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Inbox</MenuItem></Link>
+                <Link style={styles.link} to="/app/nodes"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Nodes</MenuItem></Link>
+                <Link style={styles.link} to="/app/collections"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Collections</MenuItem></Link>
+                <MenuItem style={styles.menuItem} onClick={this.createNode} leftIcon={<ContentAdd color='white' />}>Create Node</MenuItem>
+                <MenuItem style={styles.menuItem} onClick={this.createCollection} leftIcon={<ActionGroupWork color='white' />}>Create Collection</MenuItem>
+                { /* <Link style={styles.link} to="/app/explore/collections"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Explore collections</MenuItem></Link> */ }
             </Drawer>
             
         )

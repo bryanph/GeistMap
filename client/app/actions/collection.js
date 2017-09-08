@@ -62,7 +62,6 @@ export const GET_COLLECTIONL1_REQUEST = 'GET_COLLECTIONL1_REQUEST'
 export const GET_COLLECTIONL1_SUCCESS = 'GET_COLLECTIONL1_SUCCESS'
 export const GET_COLLECTIONL1_FAILURE = 'GET_COLLECTIONL1_FAILURE'
 export function fetchCollectionL1(id, collectionChainIds) {
-    console.log(collectionChainIds)
     return {
         [CALL_API]: {
             types: [ GET_COLLECTIONL1_REQUEST, GET_COLLECTIONL1_SUCCESS, GET_COLLECTIONL1_FAILURE ],

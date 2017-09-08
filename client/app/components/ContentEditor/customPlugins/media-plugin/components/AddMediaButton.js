@@ -67,7 +67,7 @@ export class AddMediaInput extends React.Component {
                 <RaisedButton
                     label="Confirm"
                     primary={true}
-                    onTouchTap={this.addMediaFromSrc}
+                    onClick={this.addMediaFromSrc}
                     style={{marginLeft: '15px'}}
                 />
             </div>

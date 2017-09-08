@@ -28,7 +28,7 @@ class NodeSearchList extends React.Component {
 
         const listItems = _.map(searchResults, result => (
             <ListItem
-                onTouchTap={() => this.onClick(result)}
+                onClick={() => this.onClick(result)}
                 primaryText={result._source.title || result._source.name}
                 secondaryText={"Node"}
             />

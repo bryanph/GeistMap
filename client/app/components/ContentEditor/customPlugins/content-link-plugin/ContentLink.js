@@ -45,11 +45,11 @@ class ContentLink extends React.Component {
                             { node && node.name }
                             <div className="contentLinkDiv-buttons">
                                 <EditButton
-                                    onTouchTap={() => history.push(href)}
+                                    onClick={() => history.push(href)}
                                 />
                                 <TrashButton
                                     label={"Remove"}
-                                    onTouchTap={() => {
+                                    onClick={() => {
                                         // TODO: get selection here - 2016-10-20
                                         const entityKey = this.props.entityKey
 

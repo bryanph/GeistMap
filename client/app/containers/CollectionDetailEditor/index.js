@@ -65,6 +65,7 @@ export class CollectionDetailEditor extends React.Component {
                     <div className="contentContainer-inner">
                         <NodeEditor 
                             page={`collections/${this.props.collectionId}/nodes`}
+                            id={this.props.nodeId}
                             { ...this.props }
                         />
                     </div>

@@ -143,6 +143,9 @@ function myBlockStyleFn(contentBlock) {
     if (type === 'unordered-list-item') {
         return 'ContentEditor-unorderedListItem';
     }
+    else {
+        return ''
+    }
 }
 
 class ContentEditor extends React.Component {
@@ -444,6 +447,8 @@ class ContentEditor extends React.Component {
             'ContentEditor-hidePlaceholder':  hidePlaceholder
         })
 
+
+        console.log(this.props.id)
         return (
             <div className={ rootClass }>
                 { !this.props.readOnly ?

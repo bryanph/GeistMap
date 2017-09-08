@@ -79,8 +79,12 @@
 .ContentEditor-toolbar {
     // font-size: 14px;
     // margin: 10px 0 20px 10px;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    background: $background-content;
+    z-index: 99;
+    width: 100%;
+
+    padding-top: 10px;
+    padding-bottom: 10px;
     user-select: none;
 
     &.fixed {

@@ -20,8 +20,6 @@ import {
     createCollection,
     fetchCollections,
     loadCollectionL1,
-    connectCollections,
-    removeCollection,
 } from '../../actions/collection'
 
 import {
@@ -37,7 +35,7 @@ import {
 
 export const AddCollectionShootButton = (props) => (
     <AddButton
-        onTouchTap={() => props.showCreateCollectionWindow()}
+        onClick={() => props.showCreateCollectionWindow()}
     />
 )
 
@@ -79,7 +77,6 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                     collectionChainIds={this.props.collectionChainIds}
                     nodes={collections || []}
                     links={collectionLinks || []}
-                    connectCollections={this.props.connectCollections}
                     setActiveCollection={this.props.setActiveCollection}
                     addCollection={this.props.addCollection}
                     createCollection={this.props.createCollection}
@@ -122,8 +119,6 @@ export default connect(mapStateToProps, {
     showCreateCollectionWindow,
     fetchCollections,
     loadCollectionL1,
-    connectCollections,
-    removeCollection,
     setActiveCollection,
     addCollection
 })(CollectionOverview);

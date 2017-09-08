@@ -61,7 +61,7 @@ class AddVideoWindow extends React.Component {
             <FlatButton
                 label="Cancel"
                 primary={true}
-                onTouchTap={this.handleCancel}
+                onClick={this.handleCancel}
             />,
         ];
 

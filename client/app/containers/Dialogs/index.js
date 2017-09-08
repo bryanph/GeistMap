@@ -8,11 +8,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
 
-import CollectionCreateWindow from '../../components/CollectionCreateWindow'
 import AddRelationWindow from '../../components/AddRelationWindow'
-import AddCollectionRelationWindow from '../../components/AddCollectionRelationWindow'
-import AddNodeToCollectionWindow from '../../components/AddNodeToCollectionWindow'
-
 
 export class Dialogs extends React.Component { // eslint-disable-line react/prefer-stateless-function
     render() {
@@ -23,13 +19,6 @@ export class Dialogs extends React.Component { // eslint-disable-line react/pref
         // TODO: this module is overly generic
         return (
             <div>
-                <CollectionCreateWindow
-                    defaultValues={uiState.createCollectionWindowState}
-                    open={uiState.createCollectionWindowOpened}
-                    createCollection={this.props.createCollection}
-                    hideWindow={this.props.hideCreateCollectionWindow}
-                    onCompleted={(action) => this.props.history.push(`/app/collections/${action.response.result}`)}
-                />
                 <AddRelationWindow
                     id={uiState.windowProps.nodeId}
                     open={uiState.addRelationWindowOpened}
@@ -43,22 +32,6 @@ export class Dialogs extends React.Component { // eslint-disable-line react/pref
 
                     editorState={uiState.windowProps.editorState}
                     setEditorState={this.props.setEditorState}
-                />
-                <AddCollectionRelationWindow
-                    id={uiState.windowProps.collectionId}
-                    open={uiState.addCollectionRelationWindowOpened}
-                    createCollection={this.props.createCollection}
-                    connectCollections={this.props.connectCollections}
-                    hideWindow={this.props.hideAddRelationWindow}
-                    addNodeToCollection={this.props.addNodeToCollection}
-                />
-                <AddNodeToCollectionWindow
-                    collection={uiState.addNodeToCollectionWindowState.collection}
-                    open={uiState.addNodeToCollectionWindowState.opened}
-                    createNode={this.props.createNode}
-                    addNodeToCollection={this.props.addNodeToCollection}
-                    connectNodes={this.props.connectNodes}
-                    hideWindow={this.props.hideAddNodeToCollectionWindow}
                 />
             </div>
         );
@@ -79,7 +52,6 @@ import {
 import {
     createCollection,
     addNodeToCollection,
-    connectCollections
 } from '../../actions/collection'
 
 import {
@@ -95,7 +67,6 @@ export default connect(mapStateToProps, {
     connectNodes,
     addNodeToCollection,
     addEdge,
-    connectCollections,
     hideCreateCollectionWindow,
     hideAddRelationWindow,
     hideAddNodeToCollectionWindow,

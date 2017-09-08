@@ -150,7 +150,7 @@ class AddRelationWindow extends React.Component {
             <FlatButton
                 label="Cancel"
                 primary={true}
-                onTouchTap={this.handleCancel}
+                onClick={this.handleCancel}
             />,
         ];
 
@@ -179,7 +179,7 @@ class AddRelationWindow extends React.Component {
                     </div>
                     <OrDivider />
                     <h3>To a new node</h3>
-                    <AddNodeWithRelationButton onTouchTap={() => this.addNodeWithRelation(selectedText)} />
+                    <AddNodeWithRelationButton onClick={() => this.addNodeWithRelation(selectedText)} />
                 </div>
             </Dialog>
         );
