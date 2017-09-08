@@ -76,7 +76,7 @@ export function fetchCollectionL1(id, collectionChainIds) {
         }
     }
 }
-export function getCollectionL1(id, collectionChainIds) {
+export function loadCollectionL1(id, collectionChainIds) {
     /*
      * Check if we have node in cache already, if not, fetch it first
      * case 1: new node, no need to fetch neighbours

@@ -13,7 +13,7 @@ import {
     removeEdge,
 } from '../../actions/node'
 import {
-    getCollectionL1,
+    loadCollectionL1,
     removeAbstraction,
     moveToAbstraction,
     removeNodeFromCollection,
@@ -30,7 +30,7 @@ import NodeView from '../../components/NodeView'
 
 function loadData(props) {
     if (props.collectionId) {
-        return props.getCollectionL1(props.collectionId, props.collectionChainIds)
+        return props.loadCollectionL1(props.collectionId, props.collectionChainIds)
             .then((action) => {
                 if (props.nodeId) {
                     props.loadNode(props.nodeId)
@@ -127,7 +127,7 @@ const addProps = withProps(props => {
 export default compose(
     addProps,
     connect(mapStateToProps, {
-        getCollectionL1,
+        loadCollectionL1,
         addNode,
         connectNodes,
         updateNode,

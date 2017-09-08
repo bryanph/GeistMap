@@ -17,7 +17,7 @@ import {
 } from '../../actions/node'
 import {
     removeAbstraction,
-    getCollectionL1,
+    loadCollectionL1,
 } from '../../actions/collection'
 
 import './styles.scss'
@@ -60,7 +60,7 @@ class AbstractionList extends React.Component {
          * 2. toggle the collapse
         */
         const newCollectionChain = [ ...this.props.collectionChainIds, id ]
-        this.props.getCollectionL1(id, newCollectionChain)
+        this.props.loadCollectionL1(id, newCollectionChain)
             .then(() => this.props.toggleCollapse(id))
     }
 
@@ -123,5 +123,5 @@ export default connect(null, {
     toggleCollapse,
     removeAbstraction,
     fetchNodeL1,
-    getCollectionL1,
+    loadCollectionL1,
 })(withRouter(AbstractionList))

@@ -28,31 +28,6 @@ export const CollectionDetailButton = (props) => (
     </Link>
 )
 
-const styles = {
-    cardTitle: {
-        textAlign: 'center',
-    },
-    cardActions: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-        maxWidth: '1000px',
-        marginTop: '10px',
-        marginRight: '10px',
-    },
-    collapseButton: {
-        zIndex: 99,
-        position: 'absolute',
-        right: 0,
-        top: 0,
-    },
-    leftBottom: {
-        display: 'inline',
-        position: 'absolute',
-        bottom: '0px',
-        left: '30px',
-    },
-}
-
 export class CollectionToolbar extends React.Component { // eslint-disable-line react/prefer-stateless-function
     constructor(props) {
         super(props)

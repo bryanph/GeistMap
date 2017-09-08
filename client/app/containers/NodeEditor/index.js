@@ -17,13 +17,13 @@ import './styles.css'
 class NodeEditor extends React.Component {
 
     componentWillMount() {
-        this.props.loadNodeL1(this.props.id)
+        this.props.loadNodeL1(this.props.nodeId)
     }
 
     componentWillReceiveProps(nextProps) {
         // TODO: set active node if id is set - 2016-10-05
-        if (nextProps.id && this.props.id !== nextProps.id) {
-            this.props.loadNodeL1(nextProps.id)
+        if (nextProps.nodeId && this.props.nodeId !== nextProps.nodeId) {
+            this.props.loadNodeL1(nextProps.nodeId)
         }
     }
 
@@ -34,17 +34,14 @@ class NodeEditor extends React.Component {
             return <Spinner />
         }
 
+        console.log(this.props.nodeId)
+
         return (
             <div className='appContainer'>
-                <NodeEditorToolbar
-                    id={this.props.id}
-                    collectionId={this.props.collectionId}
-                    page={this.props.page}
-                />
                 <div className="contentContainer">
                     <div className="contentContainer-inner">
                         <ContentEditor
-                            id={this.props.id} 
+                            id={this.props.nodeId} 
                             withToolbar={false}
                         />
                     </div>
@@ -57,10 +54,7 @@ class NodeEditor extends React.Component {
 import { getNode } from '../../reducers'
 
 function mapStateToProps(state, props) {
-    const id = props.id || (props.match.params && props.match.params.id)
-
     return {
-        id,
         node: getNode(state, id),
         loadingStates: state.loadingStates,
     }

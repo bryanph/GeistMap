@@ -1,8 +1,6 @@
 import React from 'react'
 import ReactDom from 'react-dom'
 
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
 import "../scss/landing.scss"
 
 // TODO: set from within settings - 2017-07-04
@@ -55,36 +53,33 @@ import getMuiTheme from '../app/containers/App/muitheme';
 
 const initialState = window.INITIAL_STATE || {}
 const App = (props) => (
-    <MuiThemeProvider muiTheme={getMuiTheme()}>
-        <div>
-            <div className="wrapper">
-                <Navigation title={title} />
-                <MainSection
-                    header={mainSection.header}
-                    content={mainSection.content}
-                    {...initialState}
-                />
-                <FeatureRow 
-                    header={rows.connections.header}
-                    content={rows.connections.content}
-                    imageSrc={rows.connections.imageSrc}
-                />
-                <FeatureRow 
-                    header={rows.explore.header}
-                    content={rows.explore.content}
-                    imageSrc={rows.explore.imageSrc}
-                />
-                <FeatureRow 
-                    header={rows.collections.header}
-                    content={rows.collections.content}
-                    imageSrc={rows.collections.imageSrc}
-                />
-                <EndSection {...initialState} header={endSection.header} />
-                <Footer />
-                <FollowOnTwitter />
-            </div>
-        </div>
-    </MuiThemeProvider>
+    <div className="wrapper">
+        <Navigation title={title} />
+        <MainSection
+            header={mainSection.header}
+            content={mainSection.content}
+            {...initialState}
+        />
+        <FeatureRow 
+            header={rows.connections.header}
+            content={rows.connections.content}
+            imageSrc={rows.connections.imageSrc}
+        />
+        <FeatureRow 
+            header={rows.explore.header}
+            content={rows.explore.content}
+            imageSrc={rows.explore.imageSrc}
+        />
+        <FeatureRow 
+            header={rows.collections.header}
+            content={rows.collections.content}
+            imageSrc={rows.collections.imageSrc}
+        />
+        <EndSection {...initialState} header={endSection.header} />
+        <Footer />
+        <FollowOnTwitter />
+    </div>
+    </div>
 )
 
 function createElement(Component, props) {

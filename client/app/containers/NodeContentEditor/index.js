@@ -60,26 +60,18 @@ class NodeContentEditor extends React.Component {
     }
 }
 
-import { getNode } from '../../reducers'
 import { hideAddPictureWindow, hideAddVideoWindow, hideAddAudioWindow, hideConnectWindow, showAddRelationWindow } from '../../actions/ui'
 import { addEdge, updateNode, removeEdge } from '../../actions/node'
 
-function mapStateToProps(state, props) {
-    const id = props.id || (props.match.params && props.match.params.id)
-
-    const node = getNode(state, id)
-
+function mapStateToProps(state) {
     return {
-        id,
-        node,
         uiState: state.uiState,
         globalEditorState: state.editorState,
-        ...props,
     }
 }
 import { withRouter } from 'react-router-dom'
 
-export default withRouter(connect(mapStateToProps, { 
+export default connect(mapStateToProps, { 
     addEdge,
     hideConnectWindow,
     hideAddPictureWindow,
@@ -89,5 +81,5 @@ export default withRouter(connect(mapStateToProps, {
     removeEdge,
     showAddRelationWindow,
     addFile,
-})(NodeContentEditor))
+})(NodeContentEditor)
 

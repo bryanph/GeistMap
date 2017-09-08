@@ -12,7 +12,6 @@ import { accentColor } from '../App/muitheme.js'
 
 import { AddButton } from '../../components/Buttons'
 import Spinner from '../../components/Spinner'
-import CollectionToolbar from '../../containers/CollectionToolbar'
 import EditModeButton from '../../components/EditModeButton'
 
 import './styles.scss'
@@ -20,7 +19,7 @@ import './styles.scss'
 import {
     createCollection,
     fetchCollections,
-    getCollectionL1,
+    loadCollectionL1,
     connectCollections,
     removeCollection,
 } from '../../actions/collection'
@@ -45,7 +44,7 @@ export const AddCollectionShootButton = (props) => (
 
 function loadData(props) {
     if (props.id) {
-        props.getCollectionL1(props.id)
+        props.loadCollectionL1(props.id)
     }
 }
 
@@ -122,7 +121,7 @@ export default connect(mapStateToProps, {
     createCollection,
     showCreateCollectionWindow,
     fetchCollections,
-    getCollectionL1,
+    loadCollectionL1,
     connectCollections,
     removeCollection,
     setActiveCollection,

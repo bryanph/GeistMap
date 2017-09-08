@@ -1,3 +1,4 @@
+@import '~styles/settings';
 
 .ContentEditor-root {
     display: flex;
@@ -77,10 +78,19 @@
 
 .ContentEditor-toolbar {
     // font-size: 14px;
-    margin: 10px 0 20px 10px;
+    // margin: 10px 0 20px 10px;
     margin-top: 10px;
     margin-bottom: 20px;
     user-select: none;
+
+    &.phantom {
+        visibility: hidden;
+    }
+
+    &.fixed {
+        position: fixed;
+        top: $topbar-height;
+    }
 }
 
 .ContentEditor-group {
@@ -90,7 +100,7 @@
 .ContentEditor-group:not(:first-child) {
     margin-left: 1.3rem;
 }
-.ContentEditor-group > button {
+.ContentEditor-group > button:not(:first-child) {
     margin-left: 0.2rem;
 }
 
@@ -100,7 +110,7 @@
     height: 2rem;
     line-height: 2rem;
     /* vertical-align: middle; */
-    margin-left: 10px;
+    // margin-left: 10px;
 }
 .ContentEditor-blockButtonActive > svg {
     fill: #5890ff !important;

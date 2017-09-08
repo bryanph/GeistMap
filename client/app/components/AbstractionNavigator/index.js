@@ -26,13 +26,14 @@ class AbstractionNavigator extends React.Component {
                 key={c.id}
                 url={`/app/collections/${collectionChainIds.slice(0, i+1).join('/')}/nodes`}
                 name={c.name}
-                hasNext={ i < (collectionChain.length - 1) }
+                hasNext={ this.props.extra || (i < (collectionChain.length - 1)) }
             />
         ))
 
         return (
             <div className="AbstractionNavigator">
                 { abstractionItems }
+
             </div>
         );
     }

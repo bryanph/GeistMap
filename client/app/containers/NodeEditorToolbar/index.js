@@ -9,39 +9,36 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
 import {HotKeys} from 'react-hotkeys';
 
-import { NodeTitle, NodeSubtitle } from '../../components/NodeToolbar'
-import NodeCollectionList from '../../containers/NodeCollectionListContainer'
 import { EditButton, GraphButton, ExploreButton, CollectionGraphButton, TrashButton, DuplicateButton, AddRelationButton } from '../../components/Buttons'
 import SavedState from '../../containers/SavedState'
 import Spinner, { InlineSpinner } from '../../components/Spinner'
 
 import { accentColor } from '../../containers/App/muitheme'
 
+import './styles.scss'
+
+import EditableTitle from '../../components/EditableTitle'
+import moment from 'moment'
+
+const NodeTitle = ({ title, updateNode }) => (
+    <EditableTitle 
+        title={title}
+        updateNode={updateNode}
+    />
+)
+const NodeSubtitle = ({ node }) => (
+    <span className="nodeToolbar-subtitle">
+        { moment.unix(node.modified / 1000).fromNow() } 
+    </span>   
+)
+
 export class NodeEditorToolbar extends React.Component {
     constructor(props) {
         super(props)
 
-        this.editNode = this.editNode.bind(this)
-        this.editCollection = this.editCollection.bind(this)
-        this.toGraphView = this.toGraphView.bind(this)
         this.removeNode = this.removeNode.bind(this)
         this.exploreNode = this.exploreNode.bind(this)
         this.addRelation = this.addRelation.bind(this)
-    }
-
-    editNode() {
-        const { history, page, id } = this.props
-        history.push(`/app/${page}/${id}/edit`)
-    }
-
-    editCollection() {
-        const { history, page, collectionId } = this.props
-        history.push(`/app/collections/${collectionId}/`)
-    }
-
-    toGraphView() {
-        const { history, page, id } = this.props
-        history.push(`/app/${page}/${id}/`)
     }
 
     removeNode() {
@@ -86,12 +83,6 @@ export class NodeEditorToolbar extends React.Component {
                             updateNode={this.props.updateNode.bind(this, this.props.node.id)}
                         />
                         <NodeSubtitle
-                            node={this.props.node}
-                        />
-                    </div>
-                    <div className="nodeToolbar-collectionList">
-                        <NodeCollectionList 
-                            id={this.props.node.id}
                             node={this.props.node}
                         />
                     </div>

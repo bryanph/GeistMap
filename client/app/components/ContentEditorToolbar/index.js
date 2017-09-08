@@ -7,6 +7,8 @@
 import React from 'react';
 import { connect } from 'react-redux'
 
+import classNames from 'classnames'
+
 // import { H1Button, H2Button, H3Button, H4Button, H5Button, H6Button, BlockquoteButton, UlButton, OlButton, CodeblockButton } from 'draft-js-block-plugin'
 import { H1Button, H2Button, H3Button, H4Button, H5Button, H6Button, BlockquoteButton, UlButton, OlButton, CodeblockButton } from '../ContentEditor/customPlugins/block-plugin'
 import { AddMediaButton } from '../ContentEditor/customPlugins/media-plugin'
@@ -111,13 +113,38 @@ class ContentEditorToolbar extends React.Component {
     constructor(props) {
         super(props)
 
+        this.determinePosition = this.determinePosition.bind(this)
+
+        this.state = {
+            fixed: false,
+        }
+    }
+
+    determinePosition(e) {
+        const distanceY = window.scrollY;
+        console.log(distanceY)
+        this.setState({
+            fixed: distanceY > 180
+        })
+    }
+
+    componentDidMount() {
+        window.addEventListener('scroll', this.determinePosition)
+    }
+
+    componentDidUnmount() {
+        window.removeEventListener("scroll", this.determinePosition)
     }
 
     render() {
         const { getEditorState, setEditorState } = this.props
 
+        const toolbarClass = classNames('ContentEditor-toolbar', {
+            fixed: this.state.fixed
+        })
+
         return (
-            <div className={'ContentEditor-toolbar'}>
+            <div className={ toolbarClass }>
                 <div className={'ContentEditor-group'}>
                     <H3Button getEditorState={getEditorState} setEditorState={setEditorState} 
                         theme={blockHeaderTheme}

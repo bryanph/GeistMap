@@ -3,14 +3,13 @@
 .AbstractionNavigator {
     display: inline-block;
     z-index: 10;
-    margin-top: 10px;
-    margin-left: 10px;
+    margin: 0.8rem 0.8rem 0;
 }
 
 .AbstractionNavigator-item {
     display: inline-block;
 
-    font-size: 3rem;
+    font-size: 1.5rem;
 
     a {
         font-weight: bold;

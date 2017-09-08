@@ -17,7 +17,6 @@ import { HotKeys } from 'react-hotkeys'
 
 
 import CollectionOverview from "../CollectionOverview"
-import CollectionOverviewEditor from "../CollectionOverviewEditor"
 import NodeView from '../NodeView'
 import CollectionDetailEditor from '../CollectionDetailEditor'
 import NodeExploreEditor from '../NodeExploreEditor'
@@ -44,7 +43,6 @@ class App extends React.Component {
 
     constructor(props) {
         super(props)
-
     }
 
     componentWillMount() {
@@ -82,7 +80,6 @@ class App extends React.Component {
                             <Route exact path={'/app/nodes/:nodeId?'} component={NodeView}/>
                             <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId?'} component={NodeView}/>
 
-                            <Route exact path={'/app/collections/:id/edit'} component={CollectionOverviewEditor}/>
                             <Route exact path={'/app/nodes/:id/edit'} component={NodeExploreEditor}/>
                             <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
 

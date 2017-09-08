@@ -16,13 +16,13 @@ import Spinner from '../../components/Spinner'
 class CollectionEditor extends React.Component {
 
     componentWillMount() {
-        this.props.getCollectionL1(this.props.id)
+        this.props.loadCollectionL1(this.props.id)
     }
 
     componentWillReceiveProps(nextProps) {
         // TODO: set active collection if id is set - 2016-10-05
         if (nextProps.id && this.props.id !== nextProps.id) {
-            this.props.getCollectionL1(nextProps.id)
+            this.props.loadCollectionL1(nextProps.id)
         }
     }
 
@@ -64,6 +64,6 @@ function mapStateToProps(state, props) {
     }
 }
 
-import { getCollectionL1 } from '../../actions/collection'
+import { loadCollectionL1 } from '../../actions/collection'
 
-export default connect(mapStateToProps, { getCollectionL1 })(CollectionEditor);
+export default connect(mapStateToProps, { loadCollectionL1 })(CollectionEditor);

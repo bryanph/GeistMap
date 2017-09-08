@@ -54,6 +54,12 @@ $node-subject-stroke: #D6DADC;
     padding: 0 16px;
 }
 
+.contentContainer-inner {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
 @media only screen and (max-width: $max-screen-width + 32px) {
     .contentContainer-inner {
         width: 100%;
@@ -122,6 +128,7 @@ h2,
 h3,
 h4 {
     font-size: inherit;
+    font-family: $font-family-text;
 }
 strong {
     font-weight: bold;

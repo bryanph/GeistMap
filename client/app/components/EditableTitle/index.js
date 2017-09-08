@@ -9,20 +9,9 @@ import enhanceWithClickOutside from 'react-onclickoutside'
 import { DebouncedTextField } from '../../components/Input'
 
 import { controlled, debounced } from '../../components/Input'
-import TextareaAutosize from 'react-autosize-textarea'
 
 import './styles.css'
-// export const InputText = (props) => (
-//     <Textarea 
-//         type='text' {...props} 
-//         ref={(input) => {
-//             if (input) {
-//                 input.refs.textarea.select()
-//             }
-//         }}
-//         className="EditableTitle-input" 
-//     />
-// )
+
 class InputText extends React.Component {
     constructor(props) {
         super(props)
@@ -33,16 +22,13 @@ class InputText extends React.Component {
     }
 
     render() {
-        const {  } = this.props
-
         return (
-            // TODO: why does this ref callback keep getting called? - 2016-08-23
-            <TextareaAutosize
-                type='text' {...this.props} 
-                innerRef={(ref) => { this.textarea = ref }}
+            <textarea
+                {...this.props}
+                rows="1"
+                ref={(ref) => { this.textarea = ref }}
                 className="EditableTitle-input" 
             />
-            
         )
     }
 }
@@ -122,13 +108,12 @@ class EditableTitle extends React.Component {
                         <DebouncedInput
                             ref="input"
                             value={this.state.value.name}
-                            style={{width: '100%', fontWeight: 700}}
                             onChange={this.onChange}
                             debouncedOnChange={this.onDebouncedChange}
                             onKeyDown={this.onKeyPress}
                             autoFocus
                         />
-                        : <h1 style={{wordWrap: 'break-word'}}>{this.state.value.name}</h1>
+                        : <h1 className="EditableTitle-h1">{this.state.value.name}</h1>
                 }
 
             </div>
