@@ -74,6 +74,7 @@
 
 .ContentEditor-unorderedListItem {
     margin: 16px 0;
+    display: list-item;
 }
 
 .ContentEditor-toolbar {
@@ -128,6 +129,10 @@
 }
 .ContentEditor-headerButtonActive {
     color: #5890ff;
+}
+
+.ContentEditor-editor {
+    margin-top: 10px;
 }
 
 .ContentEditor-editor .public-DraftEditorPlaceholder-root,

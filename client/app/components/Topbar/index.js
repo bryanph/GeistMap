@@ -19,9 +19,9 @@ export const Logo = (props) => (
 
 
 import { Button, Icon } from 'semantic-ui-react'
-const InboxButton = (props) => (
-    <button className="topbar-inboxButton" {...props}>
-        <Icon name="inbox" size="large" /> <span>Inbox</span>
+const ArchiveButton = (props) => (
+    <button className="topbar-archiveButton" {...props}>
+        <Icon name="archive" size="large" /> <span>Archive</span>
     </button>
 )
 
@@ -73,14 +73,14 @@ class Topbar extends React.Component {
 
 
     render() {
-        const { inboxSidebarOpened, showInboxSidebar, hideInboxSidebar } = this.props
+        const { archiveSidebarOpened, showArchiveSidebar, hideArchiveSidebar } = this.props
 
         return (
             <div className="topbar">
                 <div className="topbar-left">
-                    <div className="topbar-inbox">
-                        <InboxButton onClick={() => 
-                                !inboxSidebarOpened ? showInboxSidebar() : hideInboxSidebar()
+                    <div className="topbar-archive">
+                        <ArchiveButton onClick={() => 
+                                !archiveSidebarOpened ? showArchiveSidebar() : hideArchiveSidebar()
                         }
                             />
                     </div>
@@ -105,17 +105,17 @@ class Topbar extends React.Component {
 }
 
 import { createNode } from '../../actions/node'
-import { showInboxSidebar, hideInboxSidebar } from '../../actions/ui'
+import { showArchiveSidebar, hideArchiveSidebar } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
     return {
         user: state.user,
-        inboxSidebarOpened: state.uiState.inboxSidebar.opened
+        archiveSidebarOpened: state.uiState.archiveSidebar.opened
     }
 }
 
 export default connect(mapStateToProps, {
     createNode,
-    showInboxSidebar,
-    hideInboxSidebar,
+    showArchiveSidebar,
+    hideArchiveSidebar,
 })(withRouter(Topbar));

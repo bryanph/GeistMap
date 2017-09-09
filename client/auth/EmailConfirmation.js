@@ -11,7 +11,9 @@ import { RenderErrors, ValidationErrors } from './Error'
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 
-const EmailConfirmation  = React.createClass({
+import createClass from 'create-react-class'
+
+const EmailConfirmation  = createClass({
 
     handleResponse: function(json, response) {
         if (Object.keys(json.errfor).length) {
@@ -73,7 +75,7 @@ export const ForgotPassword = (props) => (
     <Link to='/login/forgot'>Forgot your password?</Link>
 )
 
-export const EmailConfirmationForm = React.createClass({
+export const EmailConfirmationForm = createClass({
 
     handleSubmit: function(e) {
         e.preventDefault()

@@ -14,7 +14,9 @@ import { ForgotPassword } from './Forgot'
 import TextField from 'material-ui/TextField';
 import FlatButton from 'material-ui/FlatButton';
 
-const AccountVerification  = React.createClass({
+import createClass from 'create-react-class'
+
+const AccountVerification  = createClass({
 
     handleResponse: function(json, response) {
         if (Object.keys(json.errfor).length) {
@@ -77,7 +79,7 @@ const AccountVerification  = React.createClass({
 
 export default withRouter(AccountVerification)
 
-export const VerificationForm = React.createClass({
+export const VerificationForm = createClass({
 
     getInitialState: function() {
         return {

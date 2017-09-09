@@ -10,7 +10,9 @@ import getHeaders from './headers'
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 
-const Forgot = React.createClass({
+import createClass from 'create-react-class'
+
+const Forgot = createClass({
 
     handleResponse: function(json, response) {
         if (Object.keys(json.errfor).length) {
@@ -76,7 +78,7 @@ const styles = {
     }
 }
 
-export const ForgotForm = React.createClass({
+export const ForgotForm = createClass({
 
     getInitialState: function() {
         return {

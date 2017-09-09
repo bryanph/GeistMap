@@ -574,6 +574,21 @@ function nodesByCollectionId(state={}, action) {
     }
 }
 
+function archive(state=[], action) {
+    switch(action.type) {
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
+            return _.without(state, action.nodeId)
+        case nodeActionTypes.GET_ARCHIVE_SUCCESS:
+            return action.response.result
+        case nodeActionTypes.CREATE_NODE_SUCCESS:
+            return [ ...state, action.response.result ]
+        case nodeActionTypes.CLEAR_ARCHIVE_SUCCESS:
+            return []
+        default:
+            return state
+    }
+}
+
 const initialErrorState = {
     errors: [],
     lastError: null,
@@ -671,7 +686,7 @@ const initialUiState = {
 
     activeCollections: [],
 
-    inboxSidebar: {
+    archiveSidebar: {
         opened: false,
     },
 }
@@ -810,19 +825,35 @@ function uiState(state=initialUiState, action) {
                     opened: false,
                 }
             }
-        case uiActionTypes.SHOW_INBOX_SIDEBAR:
+        case uiActionTypes.SHOW_ADD_AUDIO_WINDOW:
             return {
                 ...state,
-                inboxSidebar: {
+                addAudioWindowOpened: {
                     ...action.payload,
                     opened: true,
                 }
             }
-        case uiActionTypes.HIDE_INBOX_SIDEBAR:
+        case uiActionTypes.HIDE_ADD_AUDIO_WINDOW:
             return {
                 ...state,
-                inboxSidebar: {
-                    ...state.inboxSidebar,
+                addAudioWindowOpened: {
+                    ...state.addVideoWindowOpened,
+                    opened: false,
+                }
+            }
+        case uiActionTypes.SHOW_ARCHIVE_SIDEBAR:
+            return {
+                ...state,
+                archiveSidebar: {
+                    ...action.payload,
+                    opened: true,
+                }
+            }
+        case uiActionTypes.HIDE_ARCHIVE_SIDEBAR:
+            return {
+                ...state,
+                archiveSidebar: {
+                    ...state.archiveSidebar,
                     opened: false,
                 }
             }
@@ -865,6 +896,7 @@ function rootReducer(state={}, action) {
         reverseAdjacencyMap: reverseAdjacencyMap(state.reverseAdjacencyMap, action),
         edgeListMap: edgeListMap(state.edgeListMap, action),
         nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
+        archive: archive(state.archive, action),
         // errorMessage: errorMessage(state.errorMessage, action),
         loadingStates: loadingStates(state.loadingStates, action),
         synced: synced(state.synced, action),
@@ -900,6 +932,8 @@ export const getCollectionEdge = (state, id) => state.entities.collectionEdges[i
 export const getCollectionEdges = (state, id) => _.map(state.entities.collectionEdges, x => x)
 
 export const getEdgeListMap = (state) => state.edgeListMap
+
+export const getArchiveNodes = (state) => state.archive.map(id => getNode(state, id))
 
 export const getL1NodeIds = (state, id) => {
     return [

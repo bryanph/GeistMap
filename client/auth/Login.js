@@ -10,7 +10,9 @@ import { ForgotPassword } from './Forgot'
 import Divider from './Divider'
 import LoginForm from './LoginForm'
 
-export const Login = React.createClass({
+import createClass from 'create-react-class'
+
+export const Login = createClass({
 
     getInitialState: function() {
             return {

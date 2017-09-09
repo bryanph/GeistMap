@@ -85,11 +85,11 @@ export function setActiveCollections(collectionIds) {
     }
 }
 
-export const SHOW_INBOX_SIDEBAR = 'SHOW_INBOX_SIDEBAR'
-export const showInboxSidebar = createAction(SHOW_INBOX_SIDEBAR)
+export const SHOW_ARCHIVE_SIDEBAR = 'SHOW_ARCHIVE_SIDEBAR'
+export const showArchiveSidebar = createAction(SHOW_ARCHIVE_SIDEBAR)
 
-export const HIDE_INBOX_SIDEBAR = 'HIDE_INBOX_SIDEBAR'
-export const hideInboxSidebar = createAction(HIDE_INBOX_SIDEBAR)
+export const HIDE_ARCHIVE_SIDEBAR = 'HIDE_ARCHIVE_SIDEBAR'
+export const hideArchiveSidebar = createAction(HIDE_ARCHIVE_SIDEBAR)
 
 
 /*

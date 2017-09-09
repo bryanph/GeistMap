@@ -7,7 +7,9 @@ import { withRouter, Link } from "react-router-dom"
 import { RenderErrors, ValidationErrors } from './Error'
 import getHeaders from './headers'
 
-const Reset = React.createClass({
+import createClass from 'create-react-class'
+
+const Reset = createClass({
 
   handleResponse: function(json, response) {
       if (Object.keys(json.errfor).length) {
@@ -64,7 +66,7 @@ const Reset = React.createClass({
 
 export default withRouter(Reset)
 
-export const ResetForm = React.createClass({
+export const ResetForm = createClass({
 
   handleSubmit: function(e) {
       e.preventDefault()

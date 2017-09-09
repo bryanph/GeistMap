@@ -13,10 +13,10 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 
-
+import createClass from 'create-react-class'
 import Divider from './Divider'
 
-const Signup  = React.createClass({
+const Signup = createClass({
 
     handleResponse: function(json, response) {
             if (Object.keys(json.errfor).length) {
@@ -95,7 +95,7 @@ const styles = {
     }
 }
 
-export const SignupForm = React.createClass({
+export const SignupForm = createClass({
 
     getInitialState: function() {
             return {

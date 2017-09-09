@@ -164,6 +164,7 @@ io.on('connection', function(socket) {
 
     socket.on('Node.get', NodeAPI.get.bind(null, user));
     // TODO: rename to getL1 - 2016-08-01
+    socket.on('Node.getArchive', NodeAPI.getArchive.bind(null, user));
     socket.on('Node.getL1', NodeAPI.getL1.bind(null, user));
     socket.on('Node.getL2', NodeAPI.getL2.bind(null, user));
     socket.on('Node.create', NodeAPI.create.bind(null, user));

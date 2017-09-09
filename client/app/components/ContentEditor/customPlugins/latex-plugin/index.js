@@ -18,6 +18,7 @@ import { convertBlocksToRaw, convertRawToBlocks } from '../../../../components/C
 import styles from './styles.css'
 
 // import './katex.min.css'
+import 'katex/dist/katex.min.css'
 
 
 function findTex(contentBlock, callback) {

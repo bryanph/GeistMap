@@ -20,7 +20,7 @@ import CollectionOverview from "../CollectionOverview"
 import NodeView from '../NodeView'
 import CollectionDetailEditor from '../CollectionDetailEditor'
 import NodeExploreEditor from '../NodeExploreEditor'
-import InboxSidebar from '../InboxSidebar'
+import ArchiveSidebar from '../ArchiveSidebar'
 
 import EditCollectionOverlay from '../EditCollectionOverlay'
 
@@ -69,7 +69,7 @@ class App extends React.Component {
                         <Errors />
                         <Topbar />
 
-                        { /* <InboxSidebar /> */ }
+                        <ArchiveSidebar />
 
                         <Switch>
 

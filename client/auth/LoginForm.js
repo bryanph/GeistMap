@@ -6,6 +6,7 @@ import TextField from 'material-ui/TextField';
 
 import fetchJSON from './utils/fetch'
 import getHeaders from './headers'
+import createClass from 'create-react-class'
 
 const styles = {
     container: {
@@ -19,7 +20,7 @@ const styles = {
     },
 }
 
-export const LoginForm = React.createClass({
+export const LoginForm = createClass({
 
     getInitialState: function() {
         return {

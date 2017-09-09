@@ -62,6 +62,33 @@ module.exports = function(db, es) {
             .catch(handleError)
         },
 
+        getArchive: function(user, res) {
+            /*
+             * Nodes without collections assigned to them
+             * // TODO: Check this call's performance - 2016-07-11
+             */
+
+            db.run(
+                "MATCH (u:User)--(n:Node) " +
+                "WHERE u.id = {userId} " +
+                "AND NOT (n)-[:IN]-(:Collection) " +
+                "RETURN collect(properties(n)) as nodes",
+                {
+                    userId: user._id.toString()
+                }
+            )
+            .then((results) => {
+                if (results.records.length === 0) {
+                    return res(null, [])
+                }
+
+                console.log(results.records[0]._fields[0])
+
+                res(null, results.records[0]._fields[0])
+            })
+            .catch(handleError)
+        },
+
         getL1: function(user, id, res) {
             /*
              * Get node with id ${id} (including its neightbours)

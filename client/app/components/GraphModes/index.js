@@ -38,25 +38,25 @@ class GraphModes extends React.Component {
         return (
                 <Button.Group className="graphMode">
                     <Button
-                        size="big" className={ viewClass }
+                        size="medium" className={ viewClass }
                         onClick={ () => this.props.setGraphMode("view") }
                         >
                         <Icon name="eye" /> <span>Navigate (n)</span>
                     </Button>
                     <Button
-                        size="big" className={ editClass }
+                        size="medium" className={ editClass }
                         onClick={ () => this.props.setGraphMode("edit") }
                         >
                         <Icon name="edit" /> <span>Edit (e)</span>
                     </Button>
                     <Button
-                        size="big" className={ abstractClass }
+                        size="medium" className={ abstractClass }
                         onClick={ () => this.props.setGraphMode("abstract") }
                         >
                         <Icon name="object group" /> <span>Abstract (a)</span>
                     </Button>
                     <Button
-                        size="big" className={ focusClass }
+                        size="medium" className={ focusClass }
                         onClick={ () => this.props.setGraphMode("focus") }
                         >
                         <Icon name="crosshairs" /> <span>Focus (f)</span>
@@ -64,7 +64,7 @@ class GraphModes extends React.Component {
                     {
                         /*
                         <Button
-                        size="big" className={ expandClass }
+                        size="medium" className={ expandClass }
                         onClick={ () => this.props.setGraphMode("expand") }
                         >
                         <Icon name="expand" /> <span>Expand (x)</span>
@@ -72,7 +72,7 @@ class GraphModes extends React.Component {
                         */
                     }
                     <Button
-                        size="big" className={ deleteClass }
+                        size="medium" className={ deleteClass }
                         onClick={ () => this.props.setGraphMode("delete") }
                         >
                         <Icon name="trash" /> <span>Delete (d)</span>

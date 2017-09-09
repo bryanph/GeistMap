@@ -287,3 +287,18 @@ export function convertNodeToCollection(id) {
     }
 }
 
+/*
+ * Get a node by id
+*/
+export const GET_ARCHIVE_REQUEST = 'GET_ARCHIVE_REQUEST'
+export const GET_ARCHIVE_SUCCESS = 'GET_ARCHIVE_SUCCESS'
+export const GET_ARCHIVE_FAILURE = 'GET_ARCHIVE_FAILURE'
+export function loadArchive() {
+    return {
+        [CALL_API]: {
+            types: [ GET_ARCHIVE_REQUEST, GET_ARCHIVE_SUCCESS, GET_ARCHIVE_FAILURE ],
+            endpoint: 'Node.getArchive',
+            schema: arrayOf(Schemas.NODE),
+        }
+    }
+}

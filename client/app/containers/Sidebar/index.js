@@ -53,7 +53,7 @@ class Sidebar extends React.Component {
     createNode() {
         this.props.createNode(defaultNode)
             .then(action => action.response.result)
-            .then(id => this.props.history.push(`/app/inbox/${id}/edit`))
+            .then(id => this.props.history.push(`/app/archive/${id}/edit`))
 
         this.props.toggleNav()
     }
@@ -72,7 +72,7 @@ class Sidebar extends React.Component {
                 onRequestChange={this.toggleNav}
                 containerStyle={styles.drawer}
             >
-                <Link style={styles.link} to="/app/inbox"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Inbox</MenuItem></Link>
+                <Link style={styles.link} to="/app/archive"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Archive</MenuItem></Link>
                 <Link style={styles.link} to="/app/nodes"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Nodes</MenuItem></Link>
                 <Link style={styles.link} to="/app/collections"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Collections</MenuItem></Link>
                 <MenuItem style={styles.menuItem} onClick={this.createNode} leftIcon={<ContentAdd color='white' />}>Create Node</MenuItem>

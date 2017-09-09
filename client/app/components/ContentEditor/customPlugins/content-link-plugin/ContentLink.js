@@ -19,10 +19,10 @@ class ContentLink extends React.Component {
 
     onNavigate(e) {
         // TODO: can this always be done? - 2017-06-01
-        const { getReadOnly, hideInboxSidebar } = this.props
+        const { getReadOnly, hideArchiveSidebar } = this.props
 
         if (getReadOnly()) {
-            hideInboxSidebar()
+            hideArchiveSidebar()
         }
     }
 
@@ -95,7 +95,7 @@ class ContentLink extends React.Component {
 }
 
 import { removeEdge } from '../.././../../actions/node'
-import { hideInboxSidebar } from '../.././../../actions/ui'
+import { hideArchiveSidebar } from '../.././../../actions/ui'
 import { getNode } from '../.././../../reducers'
 
 // TODO: shouldn't connect here - 2017-06-01
@@ -112,5 +112,5 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
     removeEdge,
-    hideInboxSidebar,
+    hideArchiveSidebar,
 })(withRouter(ContentLink));
