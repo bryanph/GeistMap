@@ -1,8 +1,0 @@
- {
-      path: '{{ path }}',
-      getComponent(location, cb) {
-        System.import('components/{{ properCase component }}')
-          .then(loadModule(cb))
-          .catch(errorLoading);
-      },
-    },$1
