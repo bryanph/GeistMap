@@ -6,6 +6,7 @@ import withProps from 'recompose/withProps'
 
 import {
     loadNode,
+    loadNodeL2,
     connectNodes,
     updateNode,
     removeNode,
@@ -40,7 +41,7 @@ function loadData(props) {
             })
     }
     else {
-        return props.fetchNodeL1(props.nodeId)
+        return props.loadNodeL2(props.nodeId)
     }
 }
 
@@ -69,7 +70,8 @@ export class NodeViewContainer extends React.PureComponent {
 
 import {
     getL1Nodes,
-    getL1Edges,
+    getL2Nodes,
+    getL2Edges,
     getCollection,
     getCollections,
     getNode,
@@ -89,11 +91,12 @@ function mapStateToProps(state, props) {
         graphType = "collection"
 
     } else {
-        isLoading = state.loadingStates.GET_NODE_L1
-        nodes = getL1Nodes(state, nodeId);
+        isLoading = state.loadingStates.GET_NODE_L1 || state.loadingStates.GET_NODE_L2
+        nodes = getL2Nodes(state, props.nodeId);
         collections = []
         visibleCollections = []
-        edges = getL1Edges(state, nodeId);
+        collectionChain = []
+        edges = getL2Edges(state, props.nodeId);
         graphType = "node"
     }
 
@@ -137,7 +140,8 @@ export default compose(
         setActiveNode,
         toggleCollapse,
         moveToAbstraction,
-        fetchNodeL1,
+        loadNode,
+        loadNodeL2,
         removeEdge,
         setGraphMode,
     })

@@ -155,7 +155,7 @@ class NodeSearch extends React.Component {
 
 function mapStateToProps(state, props) {
     return {
-        searchResults: state.nodeSearch
+        searchResults: state.allSearch
     }
 }
 

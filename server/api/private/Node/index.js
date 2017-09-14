@@ -131,6 +131,8 @@ module.exports = function(db, es) {
              * Get node with id ${id} (including adjacent nodes distance of max 2 away)
              */
 
+            console.log("called getL2")
+
             Promise.all([
                 // get this node and its collections
                 db.run(
@@ -190,11 +192,15 @@ module.exports = function(db, es) {
                 })
                 const otherEdges = results[2].records.map(row => row.get(0))
 
-                res(null, {
+                const result = {
                     node,
                     connectedNodes: otherNodes,
                     edges: otherEdges,
-                })
+                }
+
+                console.log(result)
+
+                res(null, result)
             })
             .catch(handleError)
         },

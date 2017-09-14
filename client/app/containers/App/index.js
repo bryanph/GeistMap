@@ -80,7 +80,7 @@ class App extends React.Component {
                             <Route exact path={'/app/nodes/:nodeId?'} component={NodeView}/>
                             <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId?'} component={NodeView}/>
 
-                            <Route exact path={'/app/nodes/:id/edit'} component={NodeExploreEditor}/>
+                            <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>
                             <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
 
                             <Redirect from={'/app/'} to={'/app/collections'}/>

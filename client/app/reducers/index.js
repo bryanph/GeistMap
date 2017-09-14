@@ -962,17 +962,23 @@ export const getL2NodeIds = (state, id) => {
     let timeToDepthIncrease = 1
     let pendingDepthIncrease = true
 
-    while(depth > 2 || queue.length !== 0) {
+    while(queue.length !== 0) {
         if (--timeToDepthIncrease === 0) {
             // reached a new depth level
             depth++;   
             pendingDepthIncrease = true
         }
 
+        if (depth > 2) {
+            break;
+        }
+
         const currentId = queue.shift() // TODO: O(N), should be constant - 2017-08-26
         const neighbours = getL1NodeIds(state, currentId)
+
         neighbours.forEach(id => {
             if (visitedMap[id]) {
+
                 return;
             }
             visitedMap[id] = getNode(state, id)
@@ -992,7 +998,7 @@ export const getL2NodeIds = (state, id) => {
 
 export const getL2Nodes = (state, id) => {
     return getL2NodeIds(state, id)
-        .map(id => getNode(id))
+        .map(id => getNode(state, id))
 }
 
 export const getL1EdgeIds = (edgeListMap, id) => {
@@ -1010,6 +1016,16 @@ export const getL1EdgeIds = (edgeListMap, id) => {
     ]
 }
 
+export const getL1Edges = (state, id) => {
+    // TODO: not correct - 2017-09-13
+
+    console.log(getEdgeListMap(state))
+    console.log(getL1EdgeIds(getEdgeListMap(state), id))
+
+    return getL1EdgeIds(getEdgeListMap(state), id)
+        .map(x => getEdge(state, x))
+}
+
 export const getEdgeIdsForNodes = (state, ids) => {
     /*
      * Gets all edges between [ ids ] (not including their neighbours)
@@ -1019,6 +1035,8 @@ export const getEdgeIdsForNodes = (state, ids) => {
         map[id] = true
         return map
     }, {})
+
+    console.log(ids)
 
     // filter edges that have start/end not inside this collection of elements
     return _(ids)
@@ -1035,7 +1053,8 @@ export const getEdgeIdsForNodes = (state, ids) => {
 export const getL2Edges = (state, id) => {
     // TODO: more efficient - 2017-08-26
     // TODO: combine the calls of getL2Nodes and getL2Edges - 2017-08-26
-    return getEdgeIdsForNodes(getL2NodeIds(state, id))
+    return getEdgeIdsForNodes(state, getL2NodeIds(state, id))
+        .map(id => getEdge(state, id))
 }
 
 export const getCollectionChain = createSelector(

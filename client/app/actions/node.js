@@ -91,20 +91,12 @@ export function fetchNodeL2(id) {
                 node: Schemas.NODE,
                 connectedNodes: arrayOf(Schemas.NODE),
                 edges: arrayOf(Schemas.EDGE),
-                collections: arrayOf(Schemas.COLLECTION),
             },
         }
     }
 }
 export function loadNodeL2(id, refresh=true) {
     return (dispatch, getState) => {
-        const node = getNode(getState())
-
-        // TODO: handle the case when we got this node earlier as a neighbouring edge - 2016-06-19
-        // if (node && !refresh) {
-        //     return null
-        // }
-
         return dispatch(fetchNodeL2(id))
     }
 }
