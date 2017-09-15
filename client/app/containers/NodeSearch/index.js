@@ -11,7 +11,6 @@ import './styles.scss'
 
 import compose from 'recompose/compose'
 
-// TODO: this can be factored out or the different Search components... - 2016-08-01
 class NodeSearchList extends React.Component {
     constructor(props) {
         super(props)
@@ -28,6 +27,7 @@ class NodeSearchList extends React.Component {
 
         const listItems = _.map(searchResults, result => (
             <ListItem
+                key={result._source.id}
                 onClick={() => this.onClick(result)}
                 primaryText={result._source.title || result._source.name}
                 secondaryText={"Node"}

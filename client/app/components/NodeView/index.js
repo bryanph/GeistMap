@@ -47,7 +47,7 @@ export class NodeView extends React.PureComponent {
         // TODO: handle loading state - 2017-09-04
 
         return (
-            <HotKeys handlers={handlers} className='appContainer'>
+            <HotKeys className='appContainer'>
                 <AddNodeWindow
                     graphType={graphType}
                     opened={mode === 'edit'}

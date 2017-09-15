@@ -41,13 +41,13 @@ class GraphModes extends React.Component {
                         size="medium" className={ viewClass }
                         onClick={ () => this.props.setGraphMode("view") }
                         >
-                        <Icon name="eye" /> <span>Navigate (n)</span>
+                        <Icon name="eye" /> <span>Navigate</span>
                     </Button>
                     <Button
                         size="medium" className={ editClass }
                         onClick={ () => this.props.setGraphMode("edit") }
                         >
-                        <Icon name="edit" /> <span>Edit (e)</span>
+                        <Icon name="edit" /> <span>Edit</span>
                     </Button>
                     {
                         this.props.graphType === "collection" ?
@@ -55,7 +55,7 @@ class GraphModes extends React.Component {
                                 size="medium" className={ abstractClass }
                                 onClick={ () => this.props.setGraphMode("abstract") }
                                 >
-                                <Icon name="object group" /> <span>Abstract (a)</span>
+                                <Icon name="object group" /> <span>Abstract</span>
                             </Button>
                             :
                             null
@@ -64,7 +64,7 @@ class GraphModes extends React.Component {
                         size="medium" className={ focusClass }
                         onClick={ () => this.props.setGraphMode("focus") }
                         >
-                        <Icon name="crosshairs" /> <span>Focus (f)</span>
+                        <Icon name="crosshairs" /> <span>Focus</span>
                     </Button>
                     {
                         /*
@@ -80,7 +80,7 @@ class GraphModes extends React.Component {
                         size="medium" className={ deleteClass }
                         onClick={ () => this.props.setGraphMode("delete") }
                         >
-                        <Icon name="trash" /> <span>Delete (d)</span>
+                        <Icon name="trash" /> <span>Delete</span>
                     </Button>
                 </Button.Group>
         )

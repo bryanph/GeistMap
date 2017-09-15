@@ -77,8 +77,9 @@ export function debounced(Component, timeout=1000) {
         }
     
         render() {
+            const { debouncedOnChange, ...restProps } = this.props
             return (
-                <Component {...this.props} onChange={this.onChange} />
+                <Component {...restProps} onChange={this.onChange} />
             )
         }
     }

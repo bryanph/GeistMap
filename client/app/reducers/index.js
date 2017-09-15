@@ -935,6 +935,19 @@ export const getEdgeListMap = (state) => state.edgeListMap
 
 export const getArchiveNodes = (state) => state.archive.map(id => getNode(state, id))
 
+
+export const getCollectionsByNodeId = (state, id) => {
+    const node = getNode(state, id)
+
+    if (!node) {
+        return []
+    }
+
+    console.log("ASDKSADS", node.collections, getCollections(state))
+    return (node.collections || []).map(id => getCollection(state, id))
+    // return (node.properties.collections || []).map(id => getCollection(state, id))
+}
+
 export const getL1NodeIds = (state, id) => {
     return [
         // id,

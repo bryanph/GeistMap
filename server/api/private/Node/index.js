@@ -131,14 +131,12 @@ module.exports = function(db, es) {
              * Get node with id ${id} (including adjacent nodes distance of max 2 away)
              */
 
-            console.log("called getL2")
-
             Promise.all([
                 // get this node and its collections
                 db.run(
                     `MATCH (u:User)--(n:Node)
                     WHERE u.id = {userId} AND n.id = {id}
-                    OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection)
+                    OPTIONAL MATCH (n)-[:AbstractEdge]->(c:Collection)
                     RETURN properties(n), collect(distinct properties(c))`,
                     {
                         id,
@@ -151,7 +149,7 @@ module.exports = function(db, es) {
                     WHERE u.id = {userId} AND n.id = {id}
                     OPTIONAL MATCH (n)-[:EDGE*0..2]-(n2:Node)
                     WITH distinct n2
-                    OPTIONAL MATCH (n2)-[:AbstractEdge*0..]->(c:Collection)
+                    OPTIONAL MATCH (n2)-[:AbstractEdge]->(c:Collection)
                     RETURN properties(n2), collect(distinct c.id)`,
                     // ORDER BY n2.id`,
                     {

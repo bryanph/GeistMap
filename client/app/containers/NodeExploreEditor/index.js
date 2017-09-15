@@ -15,29 +15,29 @@ import NodeEditor from '../../containers/NodeContentEditor'
 import NodeEditorToolbar from '../../containers/NodeEditorToolbar'
 
 import {
-    loadNodeL1
+    loadNodeL2,
 } from '../../actions/node'
 
 import {
     getNode,
+    getCollectionsByNodeId,
 } from '../../reducers'
-
 
 export class NodeExploreEditor extends React.Component { // eslint-disable-line react/prefer-stateless-function
     componentWillMount() {
-        this.props.loadNodeL1(this.props.nodeId)
+        this.props.loadNodeL2(this.props.nodeId)
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.nodeId && this.props.nodeId !== nextProps.nodeId) {
-            this.props.loadNodeL1(nextProps.nodeId)
+            this.props.loadNodeL2(nextProps.nodeId)
         }
     }
     render() {
         if (!this.props.node) {
             return null
         }
-
+        
         return (
             <div className="appContainer">
                 <NodeEditorToolbar
@@ -69,6 +69,7 @@ const addProps = withProps(props => {
 function mapStateToProps(state, props) {
     return {
         node: getNode(state, props.nodeId),
+        collections: getCollectionsByNodeId(state, props.nodeId)
     }
 }
 
@@ -76,6 +77,6 @@ export default compose(
     addProps,
     withRouter,
     connect(mapStateToProps, { 
-        loadNodeL1,
+        loadNodeL2,
     })
 )(NodeExploreEditor)

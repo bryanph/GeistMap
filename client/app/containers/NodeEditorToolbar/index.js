@@ -8,17 +8,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
 import {HotKeys} from 'react-hotkeys';
+import moment from 'moment'
 
 import { EditButton, GraphButton, ExploreButton, CollectionGraphButton, TrashButton, DuplicateButton, AddRelationButton } from '../../components/Buttons'
 import SavedState from '../../containers/SavedState'
 import Spinner, { InlineSpinner } from '../../components/Spinner'
 
-import { accentColor } from '../../containers/App/muitheme'
-
 import './styles.scss'
 
 import EditableTitle from '../../components/EditableTitle'
-import moment from 'moment'
+import NodeCollectionList from '../../containers/NodeCollectionList'
+
 
 const NodeTitle = ({ title, updateNode }) => (
     <EditableTitle 
@@ -85,6 +85,13 @@ export class NodeEditorToolbar extends React.Component {
                             node={this.props.node}
                         />
                     </div>
+                    <div>
+                        <NodeCollectionList
+                            node={this.props.node}
+                            collections={this.props.collections}
+                        />
+
+                    </div>
                     <div className="nodeToolbar-cardActions">
                         {
                             this.props.page !== "nodes" ?
@@ -105,18 +112,17 @@ export class NodeEditorToolbar extends React.Component {
     }
 }
 
-import { getNode } from '../../reducers'
+import { getNode, getCollectionsByNodeId } from '../../reducers'
 import { updateNode, removeNode, removeEdge } from '../../actions/node'
 import { showAddRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
-    const id = props.id || (props.match.params && props.match.params.id)
-
-    const selectedNode = getNode(state, id)
+    const id = props.id
 
     return {
         opened: state.uiState.showGraphSideBarOpened,
-        node: selectedNode,
+        node: getNode(state, id),
+        collections: getCollectionsByNodeId(state, id),
         loadingStates: state.loadingStates,
     }
 }
