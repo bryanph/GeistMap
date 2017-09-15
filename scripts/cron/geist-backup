@@ -1,0 +1,5 @@
+# runs a simple backup script, should be improved later.
+
+GEIST_HOME=/home/bryan/projects/Geist
+* 3 * * * root cd $GEIST_HOME && ./backup_schedule.sh
+* * * * * root crontest --bashdb $cd $GEIST_HOME && ./backup_schedule.sh
