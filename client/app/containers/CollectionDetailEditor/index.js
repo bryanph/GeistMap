@@ -20,10 +20,6 @@ import {
 } from '../../reducers'
 
 import {
-    loadNodeL1
-} from '../../actions/node'
-
-import {
     loadCollectionL1
 } from '../../actions/collection'
 
@@ -99,7 +95,6 @@ export default compose(
     addProps,
     withRouter,
     connect(mapStateToProps, { 
-        loadNodeL1,
         loadCollectionL1,
     })
 )(CollectionDetailEditor)

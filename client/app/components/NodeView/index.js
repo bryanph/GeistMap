@@ -59,10 +59,12 @@ export class NodeView extends React.PureComponent {
                     graphType === "collection" ?
                         [
                         <AbstractionNavigator
+                            key="1"
                             collectionChain={this.props.collectionChain}
                             collection={this.props.activeCollection}
                         />,
                         <AbstractionList
+                            key="2"
                             collectionChainIds={this.props.collectionChainIds}
                             activeCollection={this.props.activeCollection}
                             collections={this.props.collections}
