@@ -27,16 +27,16 @@ import {
     schemeCategory20c
 } from 'd3-scale'
 
-export const colora = scaleOrdinal(schemeCategory20)
-export const colorb = scaleOrdinal(schemeCategory20b)
-export const colorc = scaleOrdinal(schemeCategory20c)
+const colora = scaleOrdinal(schemeCategory20)
+const colorb = scaleOrdinal(schemeCategory20b)
+const colorc = scaleOrdinal(schemeCategory20c)
 
 // work around for now to make sure collections have a fixed color
 colora(undefined)
 colorb(undefined)
 colorc(undefined)
 
-export function colorNode(d) {
+function colorNode(d) {
     /*
      * Assign a color to a node based on its collections
     */
@@ -48,6 +48,11 @@ export function colorNode(d) {
     }
 }
 
+function colorActiveNode(node) {
+    d3Select(".nodeActive").classed("nodeActive", false)
+    node.classed("nodeActive", true)
+}
+
 function getLabelText(text) {
     /*
      * Max length for label text
@@ -57,7 +62,7 @@ function getLabelText(text) {
     }
 
     return text
-    return text.slice(0, 15) + '...'
+    // return text.slice(0, 15) + '...'
 }
 
 const createEnterNode = function(actions) {
@@ -67,9 +72,7 @@ const createEnterNode = function(actions) {
     return (selection, click) => {
         selection
             .attr("class", "nodeSelection node")
-            .attr('id', (d) => {
-                return `node-${d.id}`
-            })
+            .attr('id', (d) => `node-${d.id}`)
             .attr('r', (d) => d.radius)
 
         selection
@@ -282,57 +285,79 @@ const createExploreEvents = function(simulation, actions) {
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
      */
-    const onNodeClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}`)
+    const onViewClick = (d) => {
+        actions.history.push(`/app/nodes/${d.id}/edit`)
+    }
+
+    const onEditClick = (d) => {
+        actions.setActiveNode(d.id)
+    }
+
+    const onFocusClick = (d) => {
+        actions.history.push(`/app/nodes/${d.id}/`)
+    }
+
+    const onDeleteClick = (d) => {
+        // TODO: confirmation - 2017-09-15
+        actions.removeNode(d.id)
+    }
+
+    const onEditSave = (d, value) => {
+        actions.updateNode(d.id, { name: value })
+        actions.setActiveNode(null)
     }
 
     const onConnect = (from, to) => {
-        // TODO: make sure this change is represented in the graph
+        // this call is done from the abstractiondetail graph
         return actions.connectNodes(from, to)
     }
 
     const drag = createDrag(simulation)({
         connect: onConnect,
-        moveToAbstraction: actions.moveToAbstraction,
     })
 
-    // TODO: find a way to not have to bind with this here
-    // problem is that in the drag event require the actual 'nodes'
     const nodeDrag = d3Drag()
         .on('drag', drag.drag.bind(this))
         .on('start', drag.dragstart.bind(this))
         .on('end', drag.dragend.bind(this))
 
-    const enterNode = createEnterNode({
-        onNodeClick
-    })
+    const enterNode = createEnterNode()
 
     const updateNode = createUpdateNode({
-        onNodeClick,
-        updateNode: actions.updateNode,
-        removeNode: actions.removeNode,
-        history: actions.history,
-        setActiveNode: actions.setActiveNode,
+        onViewClick,
+        onEditClick,
+        onEditSave,
+        onFocusClick,
+        onDeleteClick,
     })
 
-    const enterLink = createEnterLink({
-        doubleClick: (d) => actions.removeEdge(d.id)
+    const enterLink = createEnterLink()
+
+    const updateLink = createUpdateLink({
+        onDeleteClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (node, link, mode, focus) => {
+    return (nodeId, nodeSelection, collectionSelection, link, mode, focus) => {
+
+        collectionSelection.exit().remove()
+
         // EXIT selection
-        node.exit().remove()
+        nodeSelection.exit().remove()
         // ENTER selection
-        node.enter().append('g').call(enterNode).call(nodeDrag)
+        nodeSelection.enter().append('g').call(enterNode).call(nodeDrag)
         // ENTER + UPDATE selection
-            .merge(node).call((selection) => updateNode(selection, mode, focus))
+            .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
 
         // EXIT selection
         link.exit().remove()
         // ENTER selection
         link.enter().call(enterLink)
         // ENTER + UPDATE selection
-        // .merge(link).call(updateLink)
+        .merge(link).call(updateLink)
+
+        // color node
+        colorActiveNode(d3Select(`#node-${nodeId}`))
+
     }
 }
 
@@ -417,6 +442,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     return (nodeSelection, collectionSelection, link, mode, focus) => {
         // if mode changed, update everything
+
         if (this.props.mode !== mode) {
             nodeSelection.call((selection) => updateNode(selection, mode, focus))
             collectionSelection.call((selection) => updateCollection(selection, mode, focus))
@@ -466,8 +492,6 @@ class NodeGraph extends React.Component {
             graphType,
             mode, // mode of the graph
             focus, // is a single node being edited?
-            activeNode, // if a single node is focused
-            activeCollection,
         } = nextProps
 
         if (isLoading) {
@@ -512,7 +536,7 @@ class NodeGraph extends React.Component {
 
         // enter-update-exit cycle depending on type of graph
         if (graphType === 'node') {
-            this.exploreEvents(nodeSelection, link, mode, focus)
+            this.exploreEvents(nextProps.activeNodeId, nodeSelection, collectionSelection, link, mode, focus)
         } else if (graphType === 'collection') {
             this.collectionDetailEvents(nodeSelection, collectionSelection, link, mode, focus)
         } else {
@@ -552,7 +576,6 @@ class NodeGraph extends React.Component {
             removeEdge,
             connectNodes,
             connectCollections,
-            activeCollection,
         } = this.props
 
         const domNode = ReactDOM.findDOMNode(this.refs.graph)

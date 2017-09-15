@@ -953,11 +953,17 @@ export const getL2NodeIds = (state, id) => {
     /*
      * A simple DFS keeping track of depth
      */
-    let visitedMap = { id: getNode(state, id) }
-    let nodeIds = []
+    const node = getNode(state, id)
+
+    if (!node) {
+        return []
+    }
+
+
+    let visitedMap = { [id]: node }
+    let nodeIds = [ id ]
     let queue = [ id ]
 
-    let lastInLevel = id
     let depth = 0
     let timeToDepthIncrease = 1
     let pendingDepthIncrease = true
@@ -1019,9 +1025,6 @@ export const getL1EdgeIds = (edgeListMap, id) => {
 export const getL1Edges = (state, id) => {
     // TODO: not correct - 2017-09-13
 
-    console.log(getEdgeListMap(state))
-    console.log(getL1EdgeIds(getEdgeListMap(state), id))
-
     return getL1EdgeIds(getEdgeListMap(state), id)
         .map(x => getEdge(state, x))
 }
@@ -1035,8 +1038,6 @@ export const getEdgeIdsForNodes = (state, ids) => {
         map[id] = true
         return map
     }, {})
-
-    console.log(ids)
 
     // filter edges that have start/end not inside this collection of elements
     return _(ids)
@@ -1326,7 +1327,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
             .filter(n => !!visibleNodeMap[n.id])
             .map(n => nodeMap[n.id])
 
-        console.log(visibleNodes, visibleCollections, transformedEdges)
+        // console.log(visibleNodes, visibleCollections, transformedEdges)
 
         return {
             nodes: visibleNodes,

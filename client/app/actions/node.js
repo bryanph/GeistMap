@@ -200,7 +200,6 @@ export const ADD_EDGE_REQUEST = 'ADD_EDGE_REQUEST'
 export const ADD_EDGE_SUCCESS = 'ADD_EDGE_SUCCESS'
 export const ADD_EDGE_FAILURE = 'ADD_EDGE_FAILURE'
 export function fetchAddEdge(start, end, content=null) {
-    // TODO: merge this with connect(), almost identical behaviour - 2017-08-25
     const id = uuidV4();
 
     return {

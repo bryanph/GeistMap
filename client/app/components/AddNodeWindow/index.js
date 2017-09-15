@@ -12,6 +12,8 @@ import NodeSearch from '../../containers/NodeSearch'
 
 import {
     createNode,
+    addEdge,
+    loadNodeL2,
 } from '../../actions/node'
 import {
     addNodeToCollection
@@ -28,12 +30,23 @@ class AddNodeWindow extends React.Component {
     addExistingNode(esResult) {
         // add existing node to the graph
         const id = esResult._id
-        const { collection } = this.props
+        const { graphType, activeCollectionId, activeNodeId } = this.props
 
-        return this.props.addNodeToCollection(
-            collection.id,
-            id,
-         )
+        if (graphType === "collection") {
+            return this.props.addNodeToCollection(
+                activeCollectionId,
+                id,
+            )
+        } else {
+            return this.props.loadNodeL2(id)
+                .then(() =>
+                    this.props.addEdge(
+                        activeNodeId,
+                        id
+                    )
+                )
+        }
+
     }
 
     addNewNode(label) {
@@ -42,17 +55,19 @@ class AddNodeWindow extends React.Component {
             return;
         }
 
-        const { collection } = this.props
-
-        console.log("adding new node", collection)
+        const { graphType, activeCollectionId, activeNodeId } = this.props
 
         const createPromise = this.props.createNode({ name: label })
             .then(action => action.response.result)
 
-        if (collection) {
-            // TODO: need to keep track of current abstraction chain somewhere (in URL?)
+        if (graphType === "collection") {
             createPromise.then(id => this.props.addNodeToCollection(
-                collection.id,
+                activeCollectionId,
+                 id,
+             ))
+        } else {
+            createPromise.then(id => this.props.addEdge(
+                activeNodeId,
                  id,
              ))
         }
@@ -86,4 +101,6 @@ class AddNodeWindow extends React.Component {
 export default connect(null, {
     createNode,
     addNodeToCollection,
+    addEdge,
+    loadNodeL2,
 })(AddNodeWindow);

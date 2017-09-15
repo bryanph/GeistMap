@@ -27,6 +27,12 @@
     }
 }
 
+.nodeActive {
+    circle {
+        fill: $light-accent-color !important;
+    }
+}
+
 .node text {
     fill: #0F073B;
     stroke: none;

@@ -49,12 +49,17 @@ class GraphModes extends React.Component {
                         >
                         <Icon name="edit" /> <span>Edit (e)</span>
                     </Button>
-                    <Button
-                        size="medium" className={ abstractClass }
-                        onClick={ () => this.props.setGraphMode("abstract") }
-                        >
-                        <Icon name="object group" /> <span>Abstract (a)</span>
-                    </Button>
+                    {
+                        this.props.graphType === "collection" ?
+                            <Button
+                                size="medium" className={ abstractClass }
+                                onClick={ () => this.props.setGraphMode("abstract") }
+                                >
+                                <Icon name="object group" /> <span>Abstract (a)</span>
+                            </Button>
+                            :
+                            null
+                    }
                     <Button
                         size="medium" className={ focusClass }
                         onClick={ () => this.props.setGraphMode("focus") }

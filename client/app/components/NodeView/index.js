@@ -49,23 +49,34 @@ export class NodeView extends React.PureComponent {
         return (
             <HotKeys handlers={handlers} className='appContainer'>
                 <AddNodeWindow
+                    graphType={graphType}
                     opened={mode === 'edit'}
-                    collection={this.props.activeCollection}
+                    activeNodeId={this.props.activeNodeId}
+                    activeCollectionId={this.props.activeCollectionId}
                     disabled={isLoading}
                 />
-                <AbstractionNavigator
-                    collectionChain={this.props.collectionChain}
-                    collection={this.props.activeCollection}
-                />
-                <AbstractionList
-                    collectionChainIds={this.props.collectionChainIds}
-                    activeCollection={this.props.activeCollection}
-                    collections={this.props.collections}
-                />
+                {
+                    graphType === "collection" ?
+                        [
+                        <AbstractionNavigator
+                            collectionChain={this.props.collectionChain}
+                            collection={this.props.activeCollection}
+                        />,
+                        <AbstractionList
+                            collectionChainIds={this.props.collectionChainIds}
+                            activeCollection={this.props.activeCollection}
+                            collections={this.props.collections}
+                        />
+                        ]
+                    :
+                        null
+                }
                 <NodeGraph
                     isLoading={isLoading}
+                    activeNodeId={this.props.activeNodeId}
                     activeNode={this.props.activeNode}
                     activeCollection={this.props.activeCollection}
+                    activeCollectionId={this.props.activeCollectionId}
                     nodes={nodes}
                     collections={this.props.visibleCollections}
                     links={links}
@@ -89,6 +100,7 @@ export class NodeView extends React.PureComponent {
                 { /* // TODO: combine this into one mode button - 2017-06-28 */ }
                 <div className="graphActions">
                     <GraphModes
+                        graphType={graphType}
                     />
                 </div>
             </HotKeys>

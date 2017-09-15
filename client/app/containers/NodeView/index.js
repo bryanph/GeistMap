@@ -101,7 +101,9 @@ function mapStateToProps(state, props) {
     }
 
     return {
+        activeNodeId: props.nodeId,
         activeNode: getNode(state, props.nodeId),
+        activeCollectionId: props.collectionId,
         activeCollection: getCollection(state, props.collectionId),
         mode: state.graphUiState.mode,
         focus: state.graphUiState.focus,
