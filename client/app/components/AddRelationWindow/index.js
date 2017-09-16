@@ -88,7 +88,7 @@ class AddRelationWindow extends React.Component {
 
     addRelation(nodeId) {
         // a shallow relation
-        return this.props.connectNodes(this.props.id, nodeId, "to", this.props.fromBatch)
+        return this.props.addEdge(this.props.id, nodeId)
         // this.props.hideWindow()
     }
 
@@ -113,7 +113,7 @@ class AddRelationWindow extends React.Component {
         }
 
         // TODO: use another approach for this - 2017-08-25
-        if (this.props.fromCollectionDetail) {
+        if (this.props.type === "collection") {
             const { collectionId } = this.props
             this.props.createNode(nodeToCreate)
                 .then(action => action.response.entities.nodes[action.response.result])

@@ -1,9 +1,6 @@
 /* @flow */
 import { createAction } from 'redux-actions'
 
-export const SET_EDITOR_STATE = 'SET_EDITOR_STATE'
-export const setEditorState = createAction('SET_EDITOR_STATE')
-
 export const RESET_ERROR_MESSAGE = 'RESET_ERROR_MESSAGE'
 export const resetErrorMessage = createAction('RESET_ERROR_MESSAGE')
 

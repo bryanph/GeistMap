@@ -99,10 +99,12 @@ import { Provider, connect } from 'react-redux'
 import { removeEdge } from '../../actions/node'
 import { showAddRelationWindow } from '../../actions/ui'
 
+// TODO: set these in a container component - 2017-09-16
 import ConnectWindow from '../../components/ConnectWindow'
 import AddPictureWindow from '../../components/AddPictureWindow'
 import AddVideoWindow from '../../components/AddVideoWindow'
 import AddAudioWindow from '../../components/AddAudioWindow'
+import AddRelationWindow from '../../components/AddRelationWindow'
 import ContentEditorToolbar from '../../components/ContentEditorToolbar'
 
 function createInitialEditorState(initialEditorState) {
@@ -273,12 +275,6 @@ class ContentEditor extends React.Component {
             return this.setState({
                 editorState: createInitialEditorState(nextProps.editorState),
             })
-        }
-
-        // editorState set globally
-        // by default, force this state transition
-        if (!this.props.readOnly && this.props.globalEditorState !== nextProps.globalEditorState) {
-            this.onChange(nextProps.globalEditorState, null, true)
         }
     }
 
@@ -451,6 +447,19 @@ class ContentEditor extends React.Component {
             <div className={ rootClass }>
                 { !this.props.readOnly ?
                     <div>
+                        <AddRelationWindow
+                            id={uiState.windowProps.nodeId}
+                            open={this.props.uiState.addRelationWindowOpened}
+                            createNode={this.props.createNode}
+                            addEdge={this.props.addEdge}
+                            hideWindow={this.props.hideAddRelationWindow}
+                            type={this.props.type}
+                            collectionId={this.props.collectionId}
+                            addNodeToCollection={this.props.addNodeToCollection}
+
+                            editorState={this.state.editorState}
+                            setEditorState={this.onChange}
+                        />
                         <ConnectWindow
                             id={this.props.id}
                             open={this.props.uiState.connectWindowOpened}

@@ -53,20 +53,35 @@ class NodeContentEditor extends React.Component {
                 handleDefaultData={this.defaultData}
                 persistState={this.persistState}
                 editorState={this.props.node.editorState}
-                globalEditorState={this.props.globalEditorState}
                 {...this.props}
             />
         );
     }
 }
 
-import { hideAddPictureWindow, hideAddVideoWindow, hideAddAudioWindow, hideConnectWindow, showAddRelationWindow } from '../../actions/ui'
-import { addEdge, updateNode, removeEdge } from '../../actions/node'
+import {
+    hideAddPictureWindow,
+    hideAddVideoWindow,
+    hideAddAudioWindow,
+    hideConnectWindow,
+    showAddRelationWindow,
+    hideAddRelationWindow,
+} from '../../actions/ui'
+
+import {
+    createNode,
+    addEdge,
+    updateNode,
+    removeEdge,
+} from '../../actions/node'
+
+import {
+    addNodeToCollection,
+} from '../../actions/collection'
 
 function mapStateToProps(state) {
     return {
         uiState: state.uiState,
-        globalEditorState: state.editorState,
     }
 }
 import { withRouter } from 'react-router-dom'
@@ -77,9 +92,12 @@ export default connect(mapStateToProps, {
     hideAddPictureWindow,
     hideAddVideoWindow,
     hideAddAudioWindow,
+    hideAddRelationWindow,
     updateNode,
     removeEdge,
     showAddRelationWindow,
     addFile,
+    createNode,
+    addNodeToCollection,
 })(NodeContentEditor)
 

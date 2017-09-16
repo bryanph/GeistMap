@@ -47,7 +47,7 @@ class ContentLinkButton extends React.Component {
 
         return (
             <button className={className.join(' ')} onClick={this.confirmContentLink}>
-                {this.props.label || "Link"}
+                {this.props.label || "Link to node"}
             </button>
         );
     }

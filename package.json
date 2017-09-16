@@ -115,7 +115,6 @@
     "watch:client": "webpack --progress --colors --watch",
     "watch:server": "NODE_ENV=development nodemon --watch server index.js",
     "webpack-dev-server": "NODE_ENV=development node webpack-dev-server",
-    "dev": "parallelshell 'npm run webpack-dev-server' 'npm run watch:server'",
-    "generate": "plop --plopfile tools/generators/index.js"
+    "dev": "parallelshell 'npm run webpack-dev-server' 'npm run watch:server'"
   }
 }

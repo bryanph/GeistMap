@@ -740,7 +740,6 @@ function uiState(state=initialUiState, action) {
             return {
                 ...state,
                 connectWindowOpened: true,
-                editorState: action.editorState,
             }
         case uiActionTypes.HIDE_CONNECT_WINDOW:
             return {
@@ -878,16 +877,6 @@ function user(state={}, action) {
     }
 }
 
-// TODO: try to get rid of this, shouldn't be handled globally - 2017-08-26
-function editorState(state=null, action) {
-    switch (action.type) {
-        case uiActionTypes.SET_EDITOR_STATE:
-            return action.payload
-        default:
-            return state
-    }
-}
-
 function rootReducer(state={}, action) {
     return {
         entities: entities(state.entities, action, state),
@@ -903,7 +892,6 @@ function rootReducer(state={}, action) {
         uiState: uiState(state.uiState, action),
         graphUiState: graphUiState(state.graphUiState, action),
         user: user(state.user, action),
-        editorState: editorState(state.editorState, action),
         errors: errors(state.errors, action),
     }
 }

@@ -1,0 +1,20 @@
+
+@mixin gradient($color) { 
+    $from: lighten($color, 5%);
+    $to: darken($color, 5%);
+    background-color: $color;
+    background-image: -moz-linear-gradient($from, $to);
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($from), to($to));
+    background-image: -webkit-linear-gradient($from, $to);
+    background-image: -o-linear-gradient($from, $to);
+    &:hover {
+        $hover_color: darken($color, 5%);
+        $from: lighten($hover_color, 5%);
+        $to: darken($hover_color, 5%);
+        background-color: $hover_color;
+        background-image: -moz-linear-gradient($from, $to);
+        background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from($from), to($to));
+        background-image: -webkit-linear-gradient($from, $to);
+        background-image: -o-linear-gradient($from, $to);
+    }
+}

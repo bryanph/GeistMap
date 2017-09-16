@@ -80,10 +80,10 @@ module.exports = {
 
         ]
     },
-    // TODO: get rid of this shit - 2016-08-09
     resolve: {
         alias: {
-            styles: path.join(__dirname, './client/scss') 
+            styles: path.join(__dirname, './client/scss'),
+            // 'draft-js': path.resolve(__dirname, './repos/draft-js')
         },
     },
 }

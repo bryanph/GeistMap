@@ -87,9 +87,11 @@ const addProps = withProps(props => {
 
 function mapStateToProps(state, props) {
     return {
+        collectionId: props.collectionId,
         collection: getNode(state, props.collectionId),
         collectionChain: getCollectionChain(state, props),
         collectionChainIds: props.collectionChainIds,
+        nodeId: props.nodeId,
         node: getNode(state, props.nodeId),
     }
 }

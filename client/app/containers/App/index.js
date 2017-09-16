@@ -6,7 +6,6 @@ import { isLoggedIn } from '../../utils/login.js'
 
 import Topbar from "../../components/Topbar";
 
-import Dialogs from '../../containers/Dialogs'
 import Errors from '../../containers/Errors'
 
 // import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -63,10 +62,6 @@ class App extends React.Component {
                 <MuiThemeProvider muiTheme={getMuiTheme()}>
                     <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
                         <div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-                            <Dialogs
-                                params={match.params}
-                                location={location}
-                            />
                             <EditCollectionOverlay />
                             <Errors />
                             <Topbar />
