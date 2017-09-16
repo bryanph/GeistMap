@@ -37,18 +37,18 @@ export class NodeExploreEditor extends React.Component { // eslint-disable-line 
         if (!this.props.node) {
             return null
         }
-        
+
         return (
             <div className="appContainer">
                 <NodeEditorToolbar
                     id={this.props.nodeId}
-                    page="nodes"
+                    page="node"
                 />
                 <div className="contentContainer">
                     <div className="contentContainer-inner">
                         <NodeEditor 
                             id={this.props.nodeId}
-                            page="nodes"
+                            page="node"
                             { ...this.props }
                         />
                     </div>

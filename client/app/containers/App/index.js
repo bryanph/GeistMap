@@ -23,6 +23,7 @@ import NodeExploreEditor from '../NodeExploreEditor'
 import ArchiveSidebar from '../ArchiveSidebar'
 
 import EditCollectionOverlay from '../EditCollectionOverlay'
+import ErrorBoundary from '../ErrorPage'
 
 const keyMapping = {
     'escape': 'esc',
@@ -58,42 +59,44 @@ class App extends React.Component {
         const { match, location, isLoggedIn } = this.props
 
         return (
-            <MuiThemeProvider muiTheme={getMuiTheme()}>
-                <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
-                    <div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-                        <Dialogs
-                            params={match.params}
-                            location={location}
-                        />
-                        <EditCollectionOverlay />
-                        <Errors />
-                        <Topbar />
+            <ErrorBoundary>
+                <MuiThemeProvider muiTheme={getMuiTheme()}>
+                    <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
+                        <div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
+                            <Dialogs
+                                params={match.params}
+                                location={location}
+                            />
+                            <EditCollectionOverlay />
+                            <Errors />
+                            <Topbar />
 
-                        <ArchiveSidebar />
+                            <ArchiveSidebar />
 
-                        <Switch>
+                            <Switch>
 
-                            { /* The overview graph showing explicit collection links */ }
-                            <Route exact path={'/app/collections/:id?'} component={CollectionOverview}/>
+                                { /* The overview graph showing explicit collection links */ }
+                                <Route exact path={'/app/collections/:id?'} component={CollectionOverview}/>
 
-                            { /* same component to allow for smooth transitions */ }
-                            <Route exact path={'/app/nodes/:nodeId?'} component={NodeView}/>
-                            <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId?'} component={NodeView}/>
+                                { /* same component to allow for smooth transitions */ }
+                                <Route exact path={'/app/nodes/:nodeId?'} component={NodeView}/>
+                                <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId?'} component={NodeView}/>
 
-                            <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>
-                            <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
+                                <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>
+                                <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
 
-                            <Redirect from={'/app/'} to={'/app/collections'}/>
-                        </Switch>
-                        {
-                            /*
+                                <Redirect from={'/app/'} to={'/app/collections'}/>
+                            </Switch>
+                            {
+                                /*
                     <Route path="explore/collections" component={CollectionExplore}/>
                     <Route path="explore/collections/:id" component={CollectionExplore}/>
                     */
-                        }
-                    </div>
-                </HotKeys>
-            </MuiThemeProvider>
+                            }
+                        </div>
+                    </HotKeys>
+                </MuiThemeProvider>
+            </ErrorBoundary>
         )
     }
 }

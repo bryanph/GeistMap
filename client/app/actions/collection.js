@@ -9,7 +9,7 @@ import {
 
 const uuidV4 = require('uuid/v4');
 
-import { convertNodeToCollection } from './node'
+import { convertNodeToCollection, loadNodeL1 } from './node'
 
 /*
  * Get all collections

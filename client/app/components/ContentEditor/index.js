@@ -253,7 +253,7 @@ class ContentEditor extends React.Component {
                         })
                     },
                     components: !this.props.withoutContentLink ?
-                        [ContentLinkButtonContainerProvider, LinkButton, Separator, BoldButtonWIcon, ItalicButtonWIcon, UnderlineButtonWIcon ]
+                        [ContentLinkButtonContainerProvider, Separator, BoldButtonWIcon, ItalicButtonWIcon, UnderlineButtonWIcon ]
                         : [LinkButton, Separator, BoldButtonWIcon, ItalicButtonWIcon, UnderlineButtonWIcon ],
                     // components: [LinkButton, Separator, BoldButtonWIcon, ItalicButtonWIcon, UnderlineButtonWIcon ],
                 }

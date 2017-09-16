@@ -82,8 +82,6 @@ module.exports = function(db, es) {
                     return res(null, [])
                 }
 
-                console.log(results.records[0]._fields[0])
-
                 res(null, results.records[0]._fields[0])
             })
             .catch(handleError)
@@ -195,8 +193,6 @@ module.exports = function(db, es) {
                     connectedNodes: otherNodes,
                     edges: otherEdges,
                 }
-
-                console.log(result)
 
                 res(null, result)
             })

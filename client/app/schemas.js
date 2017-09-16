@@ -18,7 +18,7 @@ const NodeSchema = new Schema('nodes', {
 NodeSchema.define({
     // from: arrayOf(RelationSchema),
     // to: arrayOf(RelationSchema),
-    collections: arrayOf(CollectionSchema),
+    collections: arrayOf(NodeSchema),
     edges: arrayOf(RelationSchema), // edges going out from this node
 })
 

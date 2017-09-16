@@ -40,7 +40,7 @@ class ContentLink extends React.Component {
                 {this.props.children}
                 {
                     readOnly ? null :
-                    <div className="contentLinkDiv" contenteditable="false">
+                    <div className="contentLinkDiv" contentEditable="true">
                         <div className="contentLinkDiv-container">
                             { node && node.name }
                             <div className="contentLinkDiv-buttons">
@@ -52,6 +52,8 @@ class ContentLink extends React.Component {
                                     onClick={() => {
                                         // TODO: get selection here - 2016-10-20
                                         const entityKey = this.props.entityKey
+
+                                        console.log("called trash!")
 
                                         const blockKey = this.props.offsetKey.split('-')[0]
                                         const editorState = getEditorState()

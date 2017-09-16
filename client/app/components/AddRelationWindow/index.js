@@ -167,19 +167,15 @@ class AddRelationWindow extends React.Component {
                 bodyStyle={{ overflowY: 'visible' }}
             >
                 <div className={"addRelationWindow"}>
-
-
-                    <h3>To an existing node</h3>
+                    <h3>Search for a node or create a new one</h3>
                     <div className={"addRelationWindow-nodeSearch"}>
                         <NodeSearch
                             id={this.props.id}
+                            onClick={ (value) => this.addNodeWithRelation(value) }
                             onSearchClick={(ESNode) => this.addOnlyRelation(ESNode, ESNode._id)}
                             initialValue={selectedText}
                         />
                     </div>
-                    <OrDivider />
-                    <h3>To a new node</h3>
-                    <AddNodeWithRelationButton onClick={() => this.addNodeWithRelation(selectedText)} />
                 </div>
             </Dialog>
         );

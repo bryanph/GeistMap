@@ -36,26 +36,27 @@ class AllSearchList extends React.Component {
 
         let content = null
         if (searchValue.length === 0){
-            content = <span className="allSearch-no-result">Try a search term</span>
+            // content = <span className="allSearch-no-result">Try a search term</span>
+            content = null
         }
         else if (searchResults.length === 0) {
-            content = <span className="allSearch-no-result">No results. Try another search term</span>
+            content = 
+            <div className='allSearch-list'>
+                <span className="allSearch-no-result">No results. Try another search term</span>
+            </div>
         }
         else {
             content = (
+            <div className='allSearch-list'>
                 <List>
                     { listItems }
                 </List>
+            </div>
             )
 
         }
 
-        return (
-            <div className='allSearch-list'>
-                { content }
-            </div>
-            
-        )
+        return content
     }
 }
 

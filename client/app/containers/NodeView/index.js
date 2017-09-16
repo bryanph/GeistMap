@@ -47,21 +47,32 @@ function loadData(props) {
 
 
 export class NodeViewContainer extends React.PureComponent {
-    componentWillMount() {
-        loadData(this.props)
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            hasLoaded: false
+        }
+        loadData(props)
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.collectionId !== this.props.collectionId || nextProps.nodeId !== this.props.nodeId) {
             loadData(nextProps)
         }
+
+        // TODO: solve this more general, with a hoc or something - 2017-09-16
+        if (!nextProps.isLoading) {
+            this.setState({ hasLoaded: true })
+        }
     }
 
-
     render() {
+        console.log("rendering?", !this.state.hasLoaded || this.props.isLoading)
         return (
             <NodeView
                 { ...this.props }
+                isLoading={!this.state.hasLoaded || this.props.isLoading}
             />
         );
     }

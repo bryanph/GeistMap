@@ -79,10 +79,14 @@ class Topbar extends React.Component {
             <div className="topbar">
                 <div className="topbar-left">
                     <div className="topbar-archive">
+                        {
+                            /*
                         <ArchiveButton onClick={() => 
                                 !archiveSidebarOpened ? showArchiveSidebar() : hideArchiveSidebar()
                         }
                             />
+                            */
+                        }
                     </div>
                     <div className="topbar-search">
                         <AllSearch 

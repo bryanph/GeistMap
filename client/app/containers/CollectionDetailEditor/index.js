@@ -54,13 +54,15 @@ export class CollectionDetailEditor extends React.Component {
                 />
                 <NodeEditorToolbar
                     id={this.props.nodeId}
+                    node={this.props.node}
                     collectionId={this.props.collectionId}
-                    page={this.props.page}
+                    collectionChainIds={this.props.collectionChainIds}
+                    page="collection"
                 />
                 <div className="contentContainer">
                     <div className="contentContainer-inner">
                         <NodeEditor 
-                            page={`collections/${this.props.collectionId}/nodes`}
+                            page="collection"
                             id={this.props.nodeId}
                             { ...this.props }
                         />
@@ -87,6 +89,7 @@ function mapStateToProps(state, props) {
     return {
         collection: getNode(state, props.collectionId),
         collectionChain: getCollectionChain(state, props),
+        collectionChainIds: props.collectionChainIds,
         node: getNode(state, props.nodeId),
     }
 }

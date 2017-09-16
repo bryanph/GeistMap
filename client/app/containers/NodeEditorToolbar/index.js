@@ -39,6 +39,7 @@ export class NodeEditorToolbar extends React.Component {
         this.removeNode = this.removeNode.bind(this)
         this.exploreNode = this.exploreNode.bind(this)
         this.addRelation = this.addRelation.bind(this)
+        this.toGraphView = this.toGraphView.bind(this)
     }
 
     removeNode() {
@@ -53,15 +54,29 @@ export class NodeEditorToolbar extends React.Component {
     }
 
     exploreNode() {
-        this.props.history.push(`/app/nodes/${this.props.node.id}`)
+        this.props.history.push(`/app/nodes/${this.props.id}`)
+    }
+
+    toGraphView() {
+        const { history, page, id } = this.props
+        if (page === "node") {
+            // explore mode
+            history.push(`/app/nodes/${id}`)
+
+        }
+        else if (page === "collection") {
+            // collection mode
+            console.log(this.props.collectionChainIds)
+            history.push(`/app/collections/${this.props.collectionChainIds.join('/')}/nodes`)
+        }
     }
 
     render() {
         const { node, loadingStates } = this.props
 
-        // if (loadingStates.GET_NODE || !node) {
-        //     return <Spinner />
-        // }
+        if (loadingStates.GET_NODE_L2 || !node) {
+            return <Spinner />
+        }
 
         // keymapping handlers, see App.js
         const handlers = {
@@ -73,8 +88,10 @@ export class NodeEditorToolbar extends React.Component {
         return (
             <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} className="nodeToolbar">
                     <div className="nodeToolbar-loadingState">
-                        <SavedState />
-                        { loadingStates.GET_NODE ? <InlineSpinner size={1} /> : null }
+                        <GraphButton
+                            onClick={this.toGraphView}
+                        />
+                        { /* <SavedState /> */ }
                     </div>
                     <div className="nodeToolbar-title">
                         <NodeTitle
@@ -94,7 +111,7 @@ export class NodeEditorToolbar extends React.Component {
                     </div>
                     <div className="nodeToolbar-cardActions">
                         {
-                            this.props.page !== "nodes" ?
+                            this.props.page !== "node" ?
                                 <ExploreButton
                                     onClick={this.exploreNode}
                                 />

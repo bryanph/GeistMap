@@ -74,7 +74,6 @@ export function nodes(state={}, action, collections) {
                 [action.collectionId]: { type: { $set: "node"}}
             })
 
-            // console.log(_.map(newSt))
             // TODO: this is very expensive to compute - 2017-08-29
             return _.mapValues(newState, (x) => update(x, {
                 collectionChains: { $apply: (chains) => 
@@ -192,7 +191,7 @@ export function nodes(state={}, action, collections) {
                     }
                     else {
                         // update, merge
-                        newState[node.id] = _.merge({}, state[node.id], node)
+                        newState[node.id] = _.extend({}, state[node.id], node)
                     }
                 })
 
@@ -943,7 +942,6 @@ export const getCollectionsByNodeId = (state, id) => {
         return []
     }
 
-    console.log("ASDKSADS", node.collections, getCollections(state))
     return (node.collections || []).map(id => getCollection(state, id))
     // return (node.properties.collections || []).map(id => getCollection(state, id))
 }

@@ -1,5 +1,4 @@
 import React from 'react';
-// import InsertAtomicBlockCustomType from '../../../utils/insertAtomicBlockCustomType'
 import { insertDataBlock } from '../../../utils/block'
 import { Entity } from 'draft-js'
 

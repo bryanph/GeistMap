@@ -69,7 +69,7 @@ class SearchInput extends React.Component {
         return (
             <Input
                 size='large'
-                action={<Button content="Add" onClick={this.props.onClick} />}
+                action={<Button content="Create" onClick={this.props.onClick} />}
                 placeholder="Label"
                 className="nodeSearch-input"
                 ref={(input) => this.input = input}

@@ -7,6 +7,7 @@ import IconButton from 'material-ui/IconButton';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import Delete from 'material-ui/svg-icons/action/delete';
 import Edit from 'material-ui/svg-icons/editor/mode-edit';
+import ArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
 import ActionExplore from 'material-ui/svg-icons/action/explore';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentClear from 'material-ui/svg-icons/content/clear';
@@ -42,8 +43,8 @@ export const EditButton = (props) => (
 
 export const GraphButton = (props) => (
     <FlatButton
-        label={"To Graph" || props.label}
-        icon={<Edit />}
+        label={"Back To Graph" || props.label}
+        icon={<ArrowBack />}
         secondary={true}
         labelStyle={styles.labelStyle}
         {...props}

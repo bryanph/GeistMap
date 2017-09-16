@@ -12,7 +12,14 @@ import Chip from 'material-ui/Chip';
 import NodeSearch from '../../containers/NodeSearch'
 import { primaryColor, secondaryColor } from '../../containers/App/muitheme'
 
+import {
+    addNodeToCollection,
+    removeNodeFromCollection,
+    createCollection,
+} from '../../actions/collection'
+
 import './styles.scss';
+
 const styles = {
     chip: {
         margin: 4,
@@ -22,12 +29,6 @@ const styles = {
         flexWrap: 'wrap',
     },
 };
-
-import {
-    addNodeToCollection,
-    removeNodeFromCollection,
-    createCollection,
-} from '../../actions/collection'
 
 class NodeCollectionList extends React.Component {
 
@@ -97,6 +98,8 @@ class NodeCollectionList extends React.Component {
             'addCollection': this.toggleSearch
         }
 
+        console.log(collections)
+
         return (
             <div className='nodeCollectionList'>
                 { _.map(collections, col => (
@@ -110,6 +113,7 @@ class NodeCollectionList extends React.Component {
                 )}
 
                 {
+                    /*
                     !this.state.searchToggle ?
                         <Chip
                             backgroundColor={secondaryColor}
@@ -118,12 +122,12 @@ class NodeCollectionList extends React.Component {
                         >Add Collection
                         </Chip>
                         : 
-                        /* Style this like the hrefs above */
                         <NodeSearch 
                             floatingLabel={"Search for a collection..."}
                             onSearchClick={this.addNodeToCollection} 
                             createCollection={this.openWindow}
                         />
+                    */
                 }
             </div>
         );
@@ -133,17 +137,17 @@ class NodeCollectionList extends React.Component {
 import { withRouter } from 'react-router-dom'
 
 // TODO: change to Link components - 2016-07-12
-export const NodeCollectionItem = withRouter(({ id, nodeId, name, onDelete, history }) => {
+export const NodeCollectionItem = withRouter((props) => {
     // {/* 
     //     <a href={`/app/collections/${id}`} className='collection-item'>{ name }</a>
     // */} 
     return (
         <Chip
-            onRequestDelete={() => onDelete(id)}
-            onClick={() => history.push(`/app/collections/${id}/nodes/${nodeId}`)}
+            onRequestDelete={() => props.onDelete(props.id)}
+            onClick={() => props.history.push(`/app/collections/${props.id}/nodes/${props.nodeId}`)}
             style={styles.chip}
         >
-            { name }
+            { props.name }
         </Chip>
     )
 
