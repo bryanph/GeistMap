@@ -54,14 +54,17 @@ class AbstractionList extends React.Component {
         this.props.history.push(`/app/collections/${newCollectionChain.join('/')}/nodes`)
     }
 
-    toggleCollapse(id) {
+    toggleCollapse(collection) {
         /*
          * 1. fetch the collection to collapse if it hasn't been fetched yet
          * 2. toggle the collapse
         */
-        const newCollectionChain = [ ...this.props.collectionChainIds, id ]
-        this.props.loadCollectionL1(id, newCollectionChain)
-            .then(() => this.props.toggleCollapse(id))
+
+        // TODO: separate fetching the chain and L1 collection - 2017-09-17
+        const newCollectionChain = collection.collectionChains[0]
+
+        this.props.loadCollectionL1(collection.id, newCollectionChain)
+            .then(() => this.props.toggleCollapse(collection.id))
     }
 
 
@@ -103,7 +106,7 @@ class AbstractionItem extends React.Component {
                 <Checkbox
                     toggle
                     checked={collection.collapsed}
-                    onChange={() => onToggleCollapse(collection.id)}
+                    onChange={() => onToggleCollapse(collection)}
                 />
                 <Button onClick={() => focusAbstraction(collection.id)} icon>
                     <Icon name='crosshairs' />

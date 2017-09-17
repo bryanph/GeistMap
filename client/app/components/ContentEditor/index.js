@@ -9,6 +9,7 @@ import PropTypes from 'prop-types'
 import classNames from 'classnames'
 import enhanceWithClickOutside from 'react-onclickoutside'
 import { Map } from 'immutable';
+import { Prompt } from 'react-router-dom'
 import blockContainsEntityType from './utils/blockContainsEntityType'
 
 // TODO: is this nescessary here? - 2016-08-02
@@ -447,6 +448,12 @@ class ContentEditor extends React.Component {
             <div className={ rootClass }>
                 { !this.props.readOnly ?
                     <div>
+                        <Prompt
+                            when={!this.props.saved}
+                            message={location => (
+                                `Saving is in progress, are you sure you want to leave the page?`
+                            )}
+                        />
                         <AddRelationWindow
                             id={uiState.windowProps.nodeId}
                             open={this.props.uiState.addRelationWindowOpened}

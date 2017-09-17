@@ -107,10 +107,10 @@ export default (root, container, fullWidth, fullHeight) => {
 
         let scale = paddingPercent * Math.min(fullWidth / width, fullHeight / height)
 
-        // if (!allowZoomIn && scale > 1) {
-        //     // scale = 1;
-        //     return;
-        // }
+        if (width < fullWidth && height < fullHeight) {
+            // don't zoom in beyond the full width
+            return;
+        }
 
         const translate = [ -(midX*scale - fullWidth/2), -(midY*scale - fullHeight/2)];
 

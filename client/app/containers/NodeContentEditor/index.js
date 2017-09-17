@@ -79,9 +79,12 @@ import {
     addNodeToCollection,
 } from '../../actions/collection'
 
+import { isSynced } from '../../reducers'
+
 function mapStateToProps(state) {
     return {
         uiState: state.uiState,
+        saved: isSynced(state),
     }
 }
 import { withRouter } from 'react-router-dom'
@@ -99,5 +102,5 @@ export default connect(mapStateToProps, {
     addFile,
     createNode,
     addNodeToCollection,
-})(NodeContentEditor)
+})(withRouter(NodeContentEditor))
 

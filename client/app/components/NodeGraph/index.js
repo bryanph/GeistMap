@@ -511,8 +511,6 @@ class NodeGraph extends React.Component {
             c.radius = radiusScale(c.count || 0)
         })
 
-        console.log(nodes)
-
         // set extra properties here
         nodes.forEach(node => {
             nodeById[node.id] = node
@@ -522,8 +520,6 @@ class NodeGraph extends React.Component {
         links.forEach(link => {
             link.source = nodeById[link.start]
             link.target = nodeById[link.end]
-
-            // console.log(link.start, link.source, link.target);
         })
 
         // set data
@@ -553,6 +549,7 @@ class NodeGraph extends React.Component {
             collections.length !== (this.prevProps && this.prevProps.collections.length) ||
             links.length !== (this.prevProps && this.prevProps.links.length))
         {
+            this.zoomed = false
             this.restartSimulation()
         }
 
@@ -629,7 +626,6 @@ class NodeGraph extends React.Component {
             moveToAbstraction: this.props.moveToAbstraction,
         })
 
-        //TODO: set to true on initial tick
         this.zoomed = false
 
         const ticked = (selection) => {
