@@ -31,8 +31,10 @@ import NodeView from '../../components/NodeView'
 
 function loadData(props) {
     if (props.collectionId) {
+        console.log("loading collection", props.collectionId)
         return props.loadCollectionL1(props.collectionId, props.collectionChainIds)
             .then((action) => {
+                console.log("loading node", props.nodeId)
                 if (props.nodeId) {
                     props.loadNode(props.nodeId)
                     return action
@@ -68,7 +70,6 @@ export class NodeViewContainer extends React.PureComponent {
     }
 
     render() {
-        console.log("rendering?", !this.state.hasLoaded || this.props.isLoading)
         return (
             <NodeView
                 { ...this.props }

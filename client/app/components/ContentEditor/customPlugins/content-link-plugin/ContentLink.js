@@ -33,7 +33,7 @@ class ContentLink extends React.Component {
 
         const readOnly = getReadOnly()
 
-        const href = `/app/nodes/${nodeId}/edit`
+        const href = path.resolve(window.location.pathname, `../../${nodeId}/edit`)
 
         return (
             <Link to={ href } onClick={this.onNavigate} className="contentLink">

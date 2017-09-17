@@ -98,8 +98,6 @@ class NodeCollectionList extends React.Component {
             'addCollection': this.toggleSearch
         }
 
-        console.log(collections)
-
         return (
             <div className='nodeCollectionList'>
                 { _.map(collections, col => (

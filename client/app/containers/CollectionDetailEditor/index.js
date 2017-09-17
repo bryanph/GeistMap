@@ -23,10 +23,14 @@ import {
     loadCollectionL1
 } from '../../actions/collection'
 
+import {
+    loadNodeL1
+} from '../../actions/node'
+
 export class CollectionDetailEditor extends React.Component {
     componentWillMount() {
-        // this.props.loadNodeL1(this.props.nodeId)
         this.props.loadCollectionL1(this.props.collectionId, this.props.collectionChainIds)
+        this.props.loadNodeL1(this.props.nodeId)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -35,6 +39,9 @@ export class CollectionDetailEditor extends React.Component {
         // }
         if (nextProps.collectionId && this.props.collectionId !== nextProps.collectionId) {
             this.props.loadCollectionL1(nextProps.collectionId, nextProps.collectionChainIds)
+        }
+        if (nextProps.nodeId && this.props.nodeId !== nextProps.nodeId) {
+            this.props.loadNodeL1(nextProps.nodeId)
         }
     }
 
@@ -101,5 +108,6 @@ export default compose(
     withRouter,
     connect(mapStateToProps, { 
         loadCollectionL1,
+        loadNodeL1,
     })
 )(CollectionDetailEditor)
