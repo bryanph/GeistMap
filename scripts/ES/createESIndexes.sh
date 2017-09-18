@@ -93,23 +93,3 @@ curl -XPUT '127.0.0.1:9200/collections2/_mapping/collection_type?pretty' -H 'Con
 }
 '
 
-curl -XPOST 'localhost:9200/_reindex?pretty' -H 'Content-Type: application/json' -d'
-{
-  "source": {
-    "index": "nodes"
-  },
-  "dest": {
-    "index": "nodes2"
-  }
-}
-'
-curl -XPOST 'localhost:9200/_reindex?pretty' -H 'Content-Type: application/json' -d'
-{
-  "source": {
-    "index": "collections"
-  },
-  "dest": {
-    "index": "collections2"
-  }
-}
-'

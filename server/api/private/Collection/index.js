@@ -8,7 +8,7 @@ const config = require('../../../config/config')
 const { print, printTrace } = require('../../../utils/dev')
 
 const {
-    updateCollectionIndex,
+    updateIndex,
     removeCollectionDocument,
 } = require('../../../fulltext')
 
@@ -374,10 +374,7 @@ module.exports = function(db, es) {
                     }
 
                     // now update ES indexes
-                    updateCollectionIndex(es, user, {
-                        node,
-                        edge
-                    })
+                    updateIndex(es, user._id.toString(), node)
 
                     return node
 
