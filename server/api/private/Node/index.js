@@ -65,7 +65,6 @@ module.exports = function(db, es) {
         getArchive: function(user, res) {
             /*
              * Nodes without collections assigned to them
-             * // TODO: Check this call's performance - 2016-07-11
              */
 
             db.run(
@@ -284,7 +283,6 @@ module.exports = function(db, es) {
             /*
              * Permanently delete node with id #{id}
              */
-            // TODO: also prompt user to remove collections if they aren't referenced by any other nodes? - 2016-07-18
             return db.run(`
                 MATCH (u:User)--(n:Node)
                 WHERE u.id = {userId}

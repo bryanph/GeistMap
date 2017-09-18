@@ -25,11 +25,11 @@ const session2 = driver.session();
 const session3 = driver.session();
 
 const es = elasticsearch.Client({
-  host: 'localhost:9200',
-  log: [{
-      type: 'stdio',
-      levels: ['error', 'warning']
-  }]
+    host: 'localhost:9200',
+    log: [{
+        type: 'stdio',
+        levels: ['error', 'warning']
+    }]
 })
 
 const {
@@ -43,7 +43,9 @@ const {
 const createNodeApi = require('../../server/api/private/Node')
 
 mongoDb.on('error', (error) => console.error('mongoose connection error: ' + error.message));
-mongoDb.once('open', () => {
+mongoDb.once('open', () => start().catch(e => console.log(e)))
+
+async function start() {
 
     require('full-auth-middleware/schema/Note')(app, mongoose, authConfig);
     require('full-auth-middleware/schema/Status')(app, mongoose, authConfig);
@@ -58,174 +60,177 @@ mongoDb.once('open', () => {
 
     const nodeApi = createNodeApi(session2, es)
 
-//     // create a root collection for every user
-//     await session.run(`
-//         MATCH (u:User)
-//         CREATE (r:RootCollection {
-//             id: apoc.create.uuid(),
-//             name: "My Knowledge Base",
-//             isRootCollection: true,
-//             type: "root",
-//             created: timestamp(),
-//             modified: timestamp()
-//         })<-[:AUTHOR]-(u)
-//         RETURN properties(c) as collection
-//     `)
+        // create a root collection for every user
+        await session.run(`
+            MATCH (u:User)
+            CREATE (r:RootCollection {
+                id: apoc.create.uuid(),
+                name: "My Knowledge Base",
+                isRootCollection: true,
+                type: "root",
+                created: timestamp(),
+                modified: timestamp()
+            })<-[:AUTHOR]-(u)
+        `)
 
-//     // set an id for every node and collection
-//     await session.run(`
-//         MATCH (n)
-//         WHERE n:Node OR n:Collection
-//         SET n.id = apoc.create.uuid()
-//     `)
+        // set an id for every node and collection
+        await session.run(`
+            MATCH (n)
+            WHERE n:Node OR n:Collection
+            SET n.id = apoc.create.uuid()
+        `)
 
-//     // set the type to "node"
-//     await session.run(`
-//         MATCH (n)
-//         WHERE n:Node
-//         SET n.type = "node"
-//     `)
+        // set the type to "node"
+        await session.run(`
+            MATCH (n)
+            WHERE n:Node
+            SET n.type = "node"
+        `)
 
-//     // set the type to "collection"
-//     await session.run(`
-//         MATCH (n)
-//         WHERE n:Collection
-//         SET n.type = "collection"
-//     `)
+        // set the type to "collection"
+        await session.run(`
+            MATCH (n)
+            WHERE n:Collection
+            SET n.type = "collection"
+        `)
 
-//     // for every edge, set an id, start and end
-//     await session.run(`
-//         MATCH (n1)-[e]->(n2)
-//         SET e.id = apoc.create.uuid()
-//         SET e.start = n1.id
-//         SET e.end = n2.id
-//     `)
+        // for every edge, set an id, start and end
+        await session.run(`
+            MATCH (n1)-[e]->(n2)
+            SET e.id = apoc.create.uuid()
+            SET e.start = n1.id
+            SET e.end = n2.id
+        `)
 
-//     // rename all :PARENT labels to :AbstractEdge
-//     await session.run(`
-//         MATCH (n1)-[e:PARENT]->(n2)
-//         CREATE (n1)-[e2:AbstractEdge]->(n2)
-//         SET e2 = e
-//         WITH e
-//         DELETE e
-//     `)
+        // rename all :PARENT labels to :AbstractEdge
+        await session.run(`
+            MATCH (n1)-[e:PARENT]->(n2)
+            CREATE (n1)-[e2:AbstractEdge]->(n2)
+            SET e2 = e
+            WITH e
+            DELETE e
+        `)
 
-//     // rename all :IN labels to :AbstractEdge
-//     await session.run(`
-//         MATCH (n1)-[e:IN]->(n2)
-//         CREATE (n1)-[e2:AbstractEdge]->(n2)
-//         SET e2 = e
-//         WITH e
-//         DELETE e
-//     `)
+        // rename all :IN labels to :AbstractEdge
+        await session.run(`
+            MATCH (n1)-[e:IN]->(n2)
+            CREATE (n1)-[e2:AbstractEdge]->(n2)
+            SET e2 = e
+            WITH e
+            DELETE e
+        `)
 
-//     // connect all collections that are not connected to a collection to the root collection
-//     await session.run(`
-//         MATCH (rc:RootCollection)--(u:User)--(c:Collection)
-//         WHERE NOT (c)-[:AbstractEdge]->(:Collection)
-//         CREATE (c)-[e:AbstractEdge {
-//             id: apoc.create.uuid(),
-//             start: c.id,
-//             end: rc.id
-//         }]->(rc)
-//     `)
+        // connect all collections that are not connected to a collection to the root collection
+        await session.run(`
+            MATCH (rc:RootCollection)--(u:User)--(c:Collection)
+            WHERE NOT (c)-[:AbstractEdge]->(:Collection)
+            CREATE (c)-[e:AbstractEdge {
+                id: apoc.create.uuid(),
+                start: c.id,
+                end: rc.id
+            }]->(rc)
+        `)
 
-//     // set the correct labels on the root node
-//     await session.run(`
-//         MATCH (n)
-//         WHERE n:RootCollection
-//         SET n:Collection:RootCollection
-//     `)
+        // set the correct labels on the root node
+        await session.run(`
+            MATCH (n)
+            WHERE n:RootCollection
+            SET n:Collection:RootCollection
+        `)
 
 
-    session.run(`
+    const results = await session.run(`
         MATCH (u:User)--(n:Node) RETURN u.id as userId, n.id as nodeId, n.editorState as editorState
     `)
-    .subscribe({
-        onNext: (record) => {
-            const userId = record.get('userId')
-            const nodeId = record.get('nodeId')
-            const rawEditorState = record.get('editorState')
 
-            if (!rawEditorState) {
-                return;
-            }
+    console.log(`got ${results.records.length} results, starting...`)
+    let count = 0
 
-            const editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(rawEditorState)))
-            let contentState = editorState.getCurrentContent()
-            const entityMap = editorState.getCurrentContent().getEntityMap().getMap()
+    for (let row of results.records) {
+        const userId = row.get('userId')
+        const nodeId = row.get('nodeId')
+        const rawEditorState = row.get('editorState')
 
-            entityMap.entrySeq().forEach(async ([ key, obj ]) => {
-                if (obj.type === "CONTENT_LINK") {
-                    const { nodeId, edgeId, text } = obj.data
+        if (!rawEditorState) {
+            continue;
+        }
 
-                    if (nodeId === undefined || edgeId === undefined) {
-                        return
-                    }
+        const editorState = EditorState.createWithContent(convertFromRaw(JSON.parse(rawEditorState)))
+        const contentState = editorState.getCurrentContent()
+        const entityMap = editorState.getCurrentContent().getEntityMap().getMap()
 
-                    let newNodeId, newEdgeId;
-                    try {
-                        const result = await session2.run(
-                            `MATCH (n:Node) WHERE id(n) = { id } RETURN n.id as id`,
-                            { id: neo4j.int(nodeId) }
-                        )
-                        newNodeId = result.records[0].get('id')
+        let newContentState = contentState;
 
-                    }
-                    catch (e) {
-                        newNodeId = nodeId
-                    }
+        for (let [key, obj] of entityMap) {
+            if (obj.type === "CONTENT_LINK") {
+                const { nodeId, edgeId, text } = obj.data
 
-                    try {
-                        const result = await session2.run(
-                            `MATCH ()-[e:EDGE]->() WHERE id(e) = { id } RETURN e.id as id`,
-                            { id: neo4j.int(edgeId) }
-                        )
-                        newEdgeId = result.records[0].get('id')
-                    }
-                    catch (e) {
-                        newEdgeId = edgeId
-                    }
-
-                    const newData = {
-                        nodeId: newNodeId,
-                        edgeId: newEdgeId,
-                        text: text,
-                    }
-
-                    contentState = replaceEntityData(key, newData)
+                if (nodeId === undefined || edgeId === undefined) {
+                    continue;
                 }
 
-                const newProperties = Object.assign({
-                    editorPlainText: contentState.getPlainText(),
-                    editorState: JSON.stringify(convertToRaw(contentState))
-                })
+                let newNodeId, newEdgeId;
+                try {
+                    const result = await session.run(
+                        `MATCH (n:Node) WHERE id(n) = { id } RETURN n.id as id`,
+                        { id: neo4j.int(nodeId) }
+                    )
+                    newNodeId = result.records[0].get('id')
 
-                return session3.run(`
-                    MATCH (u:User)--(n)
-                    WHERE u.id = {userId} AND (n:Node OR n:Collection)
-                    AND n.id = {id}
-                    SET n += { data }
-                `,
-                    {
-                        userId: userId,
-                        id: nodeId,
-                        data: newProperties,
-                    }
-                )
+                }
+                catch (e) {
+                    newNodeId = nodeId
+                }
 
-                // this.props.updateNode(id, newProperties)
-                console.log("completed one...")
-            })
-        },
-        onCompleted: () => {
-            console.log("DONE!")
+                try {
+                    const result = await session.run(
+                        `MATCH ()-[e:EDGE]->() WHERE id(e) = { id } RETURN e.id as id`,
+                        { id: neo4j.int(edgeId) }
+                    )
+                    newEdgeId = result.records[0].get('id')
+                }
+                catch (e) {
+                    newEdgeId = edgeId
+                }
 
-        },
-        onError: (error) => {
-            console.error(error)
+                const newData = {
+                    nodeId: newNodeId,
+                    edgeId: newEdgeId,
+                    text: text,
+                }
+
+                newContentState = contentState.replaceEntityData(key, newData)
+            }
         }
-    })
 
-})
+
+        const newProperties = {
+            editorPlainText: newContentState.getPlainText(),
+            editorState: JSON.stringify(convertToRaw(newContentState))
+        }
+
+        try {
+            await session.run(`
+                        MATCH (u:User)--(n)
+                        WHERE u.id = {userId} AND (n:Node OR n:Collection)
+                        AND n.id = {id}
+                        SET n += { data }
+                    `,
+                {
+                    userId: userId,
+                    id: nodeId,
+                    data: newProperties,
+                }
+            )
+        } catch (e) {
+            console.log(e)
+        }
+
+        editorState.getCurrentContent().getEntityMap().clearMap()
+    }
+
+    console.log("DONE!")
+    process.exit(0)
+}
+
 
