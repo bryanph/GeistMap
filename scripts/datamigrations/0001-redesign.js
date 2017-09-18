@@ -91,6 +91,7 @@ async function start() {
         await session.run(`
             MATCH (n)
             WHERE n:Collection
+            SET n:Node:Collection
             SET n.type = "collection"
         `)
 
