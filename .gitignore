@@ -6,6 +6,8 @@
 /public/css/*
 /public/bower_components/
 /public/bundle.js
+/public/fonts/
+/public/images
 
 **/*.swp
 
