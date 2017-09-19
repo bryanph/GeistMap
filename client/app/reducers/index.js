@@ -522,7 +522,6 @@ function nodesByCollectionId(state={}, action) {
                 const uniqueCollections = _.uniq(_.flatten(node.collectionChains))
 
                 _.forEach(uniqueCollections, c => {
-                    // TODO: this causes duplicates in this list, should - 2017-09-04
                     if (!newState[c]) {
                         newState[c] = [ node.id ]
                     } else {
@@ -540,7 +539,6 @@ function nodesByCollectionId(state={}, action) {
             const uniqueCollections = _.uniq(_.flatten(action.collectionChains))
 
             _.forEach(uniqueCollections, c => {
-                // TODO: this causes duplicates in this list, should - 2017-09-04
                 if (!newState[c]) {
                     newState[c] = [ action.nodeId ]
                 } else {
@@ -1307,7 +1305,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                  * 2. Show the nodes that are not hidden
                  */
                 // TODO: this should only get the direct children - 2017-08-03
-                nodesByCollectionId[c.id].forEach(n => {
+                (nodesByCollectionId[c.id] || []).forEach(n => {
                     visibleNodeMap[n] = n
 
                     // we want to show this node even if it was hidden by another collection
