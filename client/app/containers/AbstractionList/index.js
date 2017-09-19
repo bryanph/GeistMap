@@ -63,8 +63,12 @@ class AbstractionList extends React.Component {
         // TODO: separate fetching the chain and L1 collection - 2017-09-17
         const newCollectionChain = collection.collectionChains[0]
 
-        this.props.loadCollectionL1(collection.id, newCollectionChain)
-            .then(() => this.props.toggleCollapse(collection.id))
+        if (collection.collapsed) {
+            this.props.loadCollectionL1(collection.id, newCollectionChain)
+                .then(() => this.props.toggleCollapse(collection.id))
+        } else {
+            this.props.toggleCollapse(collection.id)
+        }
     }
 
 
