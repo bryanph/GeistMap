@@ -9,11 +9,17 @@ import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
 
 import { browserHistory } from 'react-router-dom'
 
-import createZoom from '../../graph/zoom'
 import { createNodeSimulation, transformNode, transformLink } from './simulation'
 import createDrag from './drag'
+import createZoom from '../../graph/zoom'
 import { arrowHead } from '../../graph/svgdefs.js'
-import { MIN_NODE_RADIUS, MAX_NODE_RADIUS, NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
+import {
+    MIN_NODE_RADIUS,
+    MAX_NODE_RADIUS,
+    NODE_RADIUS,
+    WIDTH,
+    HEIGHT,
+} from '../../graph/constants'
 
 import ZoomButtons from '../ZoomButtons'
 

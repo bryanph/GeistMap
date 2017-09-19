@@ -6,7 +6,6 @@ import {
     forceLink,
     forceCenter
 } from 'd3-force'
-import { NODE_RADIUS, WIDTH, HEIGHT } from './constants'
 
 export const createCollectionSimulation = function(WIDTH, HEIGHT, simulation) {
 

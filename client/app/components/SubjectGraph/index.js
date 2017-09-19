@@ -14,15 +14,25 @@ import './styles.scss'
 import { browserHistory } from 'react-router-dom'
 
 import createZoom from '../../graph/zoom'
-import { createNodeSimulation, createCollectionSimulation, transformNode, transformLink } from '../../graph/simulation'
-import createDrag from '../../graph/drag'
+import {
+    createNodeSimulation,
+    createCollectionSimulation,
+    transformNode,
+    transformLink
+} from './simulation'
+import createDrag from './drag'
+
 import { arrowHead } from '../../graph/svgdefs.js'
-import { MIN_NODE_RADIUS, MAX_NODE_RADIUS, NODE_RADIUS, WIDTH, HEIGHT } from '../../graph/constants'
+import {
+    MIN_NODE_RADIUS,
+    MAX_NODE_RADIUS,
+    NODE_RADIUS,
+    WIDTH,
+    HEIGHT
+} from '../../graph/constants'
 import {colorActiveNode } from '../../graph/util'
 
 import ZoomButtons from '../ZoomButtons'
-
-
 
 function getLabelText(text) {
     /*
@@ -33,7 +43,7 @@ function getLabelText(text) {
     }
 
     return text
-    return text.slice(0, 15) + '...'
+    // return text.slice(0, 15) + '...'
 }
 
 import { colorNode } from '../../graph/util'
@@ -630,8 +640,7 @@ class SubjectGraph extends React.Component {
             stopSimulation: this.stopSimulation,
         })
 
-        //TODO: set to true on initial tick
-        this.zoomed = true
+        this.zoomed = false
 
         const ticked = (selection) => {
             if (!this.zoomed && this.simulation.alpha() < 0.6) {

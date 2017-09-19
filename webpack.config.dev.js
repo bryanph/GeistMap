@@ -43,7 +43,7 @@ module.exports = {
         new UnusedFilesWebpackPlugin({
             pattern: 'client/**/*.*',
             globOptions: {
-                ignore: [ "node_modules/**/*","client/**/*.test.js" ]
+                ignore: [ "node_modules/**/*","client/**/*.test.js", '**/test/*' ]
             }
         }),
         new webpack.LoaderOptionsPlugin({
