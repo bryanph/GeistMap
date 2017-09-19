@@ -36,3 +36,6 @@ htmlcov/
 server/config/auth.js
 server/config/config.js
 stats.json
+
+# vim files
+tags
