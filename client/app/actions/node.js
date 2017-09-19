@@ -52,10 +52,9 @@ export function loadNode(id, refresh=true) {
 export const GET_NODE_L1_REQUEST = 'GET_NODE_L1_REQUEST'
 export const GET_NODE_L1_SUCCESS = 'GET_NODE_L1_SUCCESS'
 export const GET_NODE_L1_FAILURE = 'GET_NODE_L1_FAILURE'
-export function fetchNodeL1(id, collectionId) {
+export function fetchNodeL1(id) {
     return {
         id,
-        sourceCollectionId: collectionId,
         [CALL_API]: {
             types: [ GET_NODE_L1_REQUEST, GET_NODE_L1_SUCCESS, GET_NODE_L1_FAILURE ],
             endpoint: 'Node.getL1',

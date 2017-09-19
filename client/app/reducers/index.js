@@ -58,6 +58,10 @@ export function nodes(state={}, action, collections) {
             return _.omit(state, action.nodeId)
 
         case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
+            if (!state[action.nodeId].collectionChains) {
+                state[action.nodeId].collectionChains = []
+            }
+
             return update(state, {
                 [action.nodeId]: {
                     collectionChains: { $apply: (chains) => 
@@ -510,7 +514,7 @@ function nodesByCollectionId(state={}, action) {
      */
     switch(action.type) {
         case collectionActionTypes.GET_COLLECTION_SUCCESS:
-        case collectionActionTypes.GET_COLLECTIONL1_SUCCESS:
+        case collectionActionTypes.GET_COLLECTIONL1_SUCCESS: {
             let newState = { ...state }
             // for every node, add them to the corresponding collection list
 
@@ -529,15 +533,24 @@ function nodesByCollectionId(state={}, action) {
             })
 
             return newState
+        }
 
-        case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            // TODO: should add it to all collections in the new chain(s)? - 2017-08-29
-            if (!state[action.collectionId]) {
-                state[action.collectionId] = []
-            }
-            return update(state, {
-                [action.collectionId]: { $push: [ action.nodeId ] }
+        case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS: {
+            let newState = { ...state }
+            const uniqueCollections = _.uniq(_.flatten(action.collectionChains))
+
+            _.forEach(uniqueCollections, c => {
+                // TODO: this causes duplicates in this list, should - 2017-09-04
+                if (!newState[c]) {
+                    newState[c] = [ action.nodeId ]
+                } else {
+                    // TODO: terrible performance on this - 2017-09-04
+                    newState[c] = _.union( newState[c], [ action.nodeId ])
+                }
             })
+
+            return newState
+        }
 
         case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
             return update(state, {
