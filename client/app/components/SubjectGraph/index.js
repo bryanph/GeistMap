@@ -15,8 +15,7 @@ import { browserHistory } from 'react-router-dom'
 
 import createZoom from '../../graph/zoom'
 import {
-    createNodeSimulation,
-    createCollectionSimulation,
+    createSimulation,
     transformNode,
     transformLink
 } from './simulation'
@@ -100,12 +99,6 @@ const createEnterLink = function(actions) {
             .attr("class", "node-link")
             .attr("marker-end", "url(#Triangle)")
             .on('dblclick', actions.doubleClick)
-        // .append("path")
-        // .attr('id', (d) => `link-${d.id}`) // for later reference from data
-        // .attr('fill', (d) => lightAccentColor)
-        // .attr("class", "node-link")
-        // .on('dblclick', events.linkDoubleClick)
-        // .attr("marker-mid", "url(#Triangle)")
     }
 }
 
@@ -622,7 +615,7 @@ class SubjectGraph extends React.Component {
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
         this.container.append('defs').call(arrowHead)
 
-        this.simulation = createCollectionSimulation(WIDTH, HEIGHT)
+        this.simulation = createSimulation(WIDTH, HEIGHT)
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
 

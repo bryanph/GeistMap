@@ -11,7 +11,7 @@ export default (root, container, fullWidth, fullHeight) => {
     let zoomInProgress = false
 
     const zoom = d3Zoom()
-        .scaleExtent([1/2, 8])
+        .scaleExtent([1/4, 8])
         .on('start', () => {
             zoomInProgress = true
         })

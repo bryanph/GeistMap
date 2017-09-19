@@ -7,22 +7,29 @@ import {
     forceCenter
 } from 'd3-force'
 
-export const createCollectionSimulation = function(WIDTH, HEIGHT, simulation) {
+export const createSimulation = function(WIDTH, HEIGHT, simulation) {
 
     return (simulation ? simulation : forceSimulation())
         // .alphaTarget(0.01)
         .alphaDecay(1 - Math.pow(0.001, 1/400))
         .velocityDecay(0.2)
-        .force("charge", forceManyBody().strength(-300))
+        .force("charge", forceManyBody().strength((node) => {
+            // TODO: based on distance to the root collection- 2017-09-19
+            // TODO: easier to implement when we have the parent datastructure - 2017-09-19
+            // nodes with the same parent should have a separate strength pushing them away from each other
+            // different levels should have enough repulsion to visually separate the different layers
+            return -400
+        }))
         .force("link",
+            // TODO: add collision force - 2017-09-19
             forceLink()
                 .id(d => d.id)
                 .distance((link) => {
-                    // TODO: based on node radius - 2017-06-06
                     if (link.type === 'addCollection') {
                         return link.source.radius + 15;
                     }
 
+                    // TODO: based on distance to the root collection- 2017-09-19
                     return link.source.radius + link.target.radius + 40;
                 })
             .strength((link) => {
@@ -30,31 +37,14 @@ export const createCollectionSimulation = function(WIDTH, HEIGHT, simulation) {
                     return 1;
                 }
 
-                // TODO: based on number of links of source or target - 2017-06-14
+                // TODO: based on how many nodes there are in the current "level" - 2017-09-19
                 // see https://github.com/d3/d3-force#link_strength
-                return 0.6;
+                return 0.4;
             })
         )
         // .force("x", forceX().strength(0.05))
         // .force("y", forceY().strength(0.05))
         // .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
-}
-
-export const createNodeSimulation = function(WIDTH, HEIGHT, simulation) {
-    return (simulation ? simulation : forceSimulation())
-        // .alphaTarget(0.01)
-        .alphaDecay(1 - Math.pow(0.001, 1/400))
-        .velocityDecay(0.2)
-        .force("charge", forceManyBody().strength(-300))
-        .force("link",
-            forceLink()
-                .id(d => d.id)
-                .distance(100)
-                .strength(0.1)
-        )
-        .force("x", forceX().strength(0.05))
-        .force("y", forceY().strength(0.05))
-        .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
 }
 
 export const transformNode = (selection) => {
