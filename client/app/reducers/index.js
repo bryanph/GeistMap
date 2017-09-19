@@ -1307,11 +1307,6 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 // TODO: this should only get the direct children - 2017-08-03
                 (nodesByCollectionId[c.id] || []).forEach(n => {
                     visibleNodeMap[n] = n
-
-                    // we want to show this node even if it was hidden by another collection
-                    // if (hiddenNodeMap[n]) {
-                    //     delete hiddenNodeMap[n]
-                    // }
                 })
 
                 // hide direct edges from/to this collection
