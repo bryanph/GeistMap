@@ -45,6 +45,10 @@
     font-weight: bold;
 }
 
+.link {
+    fill: transparent;
+}
+
 .node-link {
     stroke: $accent-color;
     stroke-width: 3px;
@@ -61,6 +65,7 @@
 .node-link-transparent {
     stroke: transparent;
     stroke-width: 10px;
+    fill: transparent;
     
     &:hover {
         cursor: pointer;

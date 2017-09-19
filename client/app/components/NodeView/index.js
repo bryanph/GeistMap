@@ -87,6 +87,8 @@ export class NodeView extends React.PureComponent {
                     mode={mode}
                     focus={focus}
 
+                    adjacencyMap={this.props.adjacencyMap}
+
                     addNode={this.props.addNode}
                     connectNodes={this.props.connectNodes}
                     updateNode={this.props.updateNode}

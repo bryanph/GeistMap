@@ -523,9 +523,19 @@ class NodeGraph extends React.Component {
             node.radius = NODE_RADIUS
         })
 
+        const adjacencyMap = nextProps.adjacencyMap
+        const reverseAdjacencyMap = nextProps.reverseAdjacencyMap
         links.forEach(link => {
             link.source = nodeById[link.start]
             link.target = nodeById[link.end]
+
+            if (adjacencyMap[link.end] && adjacencyMap[link.end].includes(link.start)) {
+                console.log("setting curved to true")
+                link.curved = true
+            } else {
+                link.curved = false
+            }
+
         })
 
         // set data
