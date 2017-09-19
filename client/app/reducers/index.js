@@ -1266,8 +1266,6 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 // visibleCollections.push(c)
                 visibleCollections.push({
                     ...c,
-                    // TODO: this count won't work - 2017-08-02
-                    count: nodeIds.length
                 })
 
                 // TODO: more performant - 2017-07-13

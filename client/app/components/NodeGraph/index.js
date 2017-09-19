@@ -517,6 +517,8 @@ class NodeGraph extends React.Component {
             c.radius = radiusScale(c.count || 0)
         })
 
+        console.log(collections.map(c => [c.id, c.count]))
+
         // set extra properties here
         nodes.forEach(node => {
             nodeById[node.id] = node

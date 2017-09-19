@@ -194,7 +194,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         [ "TEST__RootParent", "TEST__Root" ],
                     ],
                     collapsed: true,
-                    count: 1 
 
                 },
                 { 
@@ -208,7 +207,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         [ "TEST__RootParent", "TEST__Root", "TEST__B" ],
                     ],
                     collapsed: true,
-                    count: 2 
 
                 } 
             ],
@@ -300,7 +298,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         [ "TEST__RootParent", "TEST__Root"]
                     ],
                     collapsed: true,
-                    count: 1
                 }
 
             ],
@@ -389,7 +386,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         [ "TEST__RootParent", "TEST__Root", 'TEST__B']
                     ],
                     collapsed: true,
-                    count: 2
                 }],
             edges: [
                 {

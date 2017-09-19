@@ -180,7 +180,7 @@ describe('collectionApi', () => {
                             isRootCollection: true,
                             id: 'TEST__rootCollection',
                             type: 'root',
-                            count: 3
+                            count: 4
                         },
                         {
                             type: 'collection',
@@ -192,7 +192,7 @@ describe('collectionApi', () => {
                             type: 'collection',
                             name: 'Collection2',
                             id: 'TEST__collection2',
-                            count: 0
+                            count: 1
                         },
                         {
                             type: 'collection',
@@ -356,7 +356,7 @@ describe('collectionApi', () => {
                                 collectionChains: [ 
                                     [ 'TEST__rootCollection' ]
                                 ],
-                                count: '2' 
+                                count: 2 
                             },
                             {
                                     id: 'TEST__node',
@@ -365,7 +365,7 @@ describe('collectionApi', () => {
                                     collectionChains: [
                                         ['TEST__rootCollection']
                                     ],
-                                    count: '0'
+                                    count: 0
                             },
                             {
                                 name: 'Node2',
@@ -374,7 +374,7 @@ describe('collectionApi', () => {
                                 collectionChains: [
                                     ['TEST__rootCollection', 'TEST__collection']
                                 ],
-                                count: '0'
+                                count: 0
                             },
                             {
                                 name: 'Node3',
@@ -383,7 +383,7 @@ describe('collectionApi', () => {
                                 collectionChains: [
                                     ['TEST__rootCollection', 'TEST__collection']
                                 ],
-                                count: '0'
+                                count: 0
                             },
                         ],
                         edges: [

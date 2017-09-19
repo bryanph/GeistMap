@@ -90,7 +90,7 @@ module.exports = function(db, es) {
                     WITH DISTINCT c2 as nodes
                     MATCH p=(:RootCollection)<-[:AbstractEdge*0..]-(nodes)
                     WITH nodes, collect(extract(c IN (nodes(p)[0..length(p)]) | c.id)) as collections
-                    OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
+                    OPTIONAL MATCH (nodes)<-[:AbstractEdge*1..]-(children)
                     RETURN properties(nodes) as node, collections, COUNT(children)
                     ORDER BY node.id
                     `,
