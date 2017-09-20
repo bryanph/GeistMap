@@ -242,7 +242,7 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
         }
     }
     else if (mode === 'abstract') {
-        selection.on('click', actions.onAbstractClick)
+        // selection.on('click', actions.onAbstractClick)
     }
     else if (mode === 'focus') {
         selection.on('click', actions.onFocusClick)
