@@ -68,6 +68,7 @@ export class NodeView extends React.PureComponent {
                             collectionChainIds={this.props.collectionChainIds}
                             activeCollection={this.props.activeCollection}
                             collections={this.props.collections}
+                            nodeTree={this.props.nodeTree}
                         />
                         ]
                     :

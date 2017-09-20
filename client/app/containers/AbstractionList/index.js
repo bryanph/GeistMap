@@ -22,6 +22,9 @@ import {
 
 import './styles.scss'
 
+
+import AbstractionTree from './components/root'
+
 class AbstractionList extends React.Component {
 
     constructor(props) {
@@ -54,11 +57,13 @@ class AbstractionList extends React.Component {
         this.props.history.push(`/app/collections/${newCollectionChain.join('/')}/nodes`)
     }
 
-    toggleCollapse(collection) {
+    toggleCollapse(collection, collapsed) {
         /*
          * 1. fetch the collection to collapse if it hasn't been fetched yet
          * 2. toggle the collapse
         */
+
+        console.log(collection)
 
         // TODO: separate fetching the chain and L1 collection - 2017-09-17
         const newCollectionChain = collection.collectionChains[0]
@@ -87,7 +92,10 @@ class AbstractionList extends React.Component {
 
         return (
             <div className="abstractionList">
-                { collectionItems }
+                <AbstractionTree 
+                    data={this.props.nodeTree}
+                    onToggle={this.toggleCollapse}
+                />
             </div>
         );
     }

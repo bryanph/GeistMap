@@ -10,6 +10,8 @@ import io from 'socket.io-client'
 
 let _socket, store, mockServer;
 
+// TODO: should also test nodesByCollectionId state is set properly - 2017-09-20
+
 describe('node actions', () => {
     beforeAll(() => {
         mockServer = new Server('foobar');

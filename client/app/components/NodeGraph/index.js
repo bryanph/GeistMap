@@ -517,8 +517,6 @@ class NodeGraph extends React.Component {
             c.radius = radiusScale(c.count || 0)
         })
 
-        console.log(collections.map(c => [c.id, c.count]))
-
         // set extra properties here
         nodes.forEach(node => {
             nodeById[node.id] = node
@@ -532,7 +530,6 @@ class NodeGraph extends React.Component {
             link.target = nodeById[link.end]
 
             if (adjacencyMap[link.end] && adjacencyMap[link.end].includes(link.start)) {
-                console.log("setting curved to true")
                 link.curved = true
             } else {
                 link.curved = false

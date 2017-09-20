@@ -91,13 +91,13 @@ import {
 
 function mapStateToProps(state, props) {
 
-    let nodes, edges, collections, visibleCollections, isLoading, graphType, collectionChain;
+    let nodes, edges, collections, visibleCollections, nodeTree, isLoading, graphType, collectionChain;
 
     if (props.collectionChainIds) {
         isLoading = state.loadingStates.GET_COLLECTIONL1;
 
         collectionChain = getCollectionChain(state, props);
-        ({ nodes, collections, visibleCollections, edges} = getNodesAndEdgesByCollectionId(state, props));
+        ({ nodes, collections, visibleCollections, nodeTree, edges} = getNodesAndEdgesByCollectionId(state, props));
         graphType = "collection"
 
     } else {
@@ -121,6 +121,7 @@ function mapStateToProps(state, props) {
         links: edges,
         collections,
         visibleCollections,
+        nodeTree,
         isLoading,
         graphType,
         collectionChain,
