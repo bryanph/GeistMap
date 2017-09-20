@@ -259,7 +259,9 @@ module.exports = function(db, es) {
                 db.run(
                     `MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
-                    MATCH (c)<-[:AbstractEdge]-(n)-[e:EDGE]-(n2)
+                    MATCH (c)<-[:AbstractEdge*1..]-(n)-[e:EDGE]-(n2)
+                    WITH DISTINCT n, c
+                    MATCH (n)-[e:EDGE]-(n2)
                     WHERE c <> n2
                     RETURN distinct(properties(e)) as edge`,
                     {
@@ -276,9 +278,9 @@ module.exports = function(db, es) {
                 db.run(`
                     MATCH (u:User)--(c:Collection)
                     WHERE u.id = {userId} AND c.id = {id}
-                    MATCH (c)<-[:AbstractEdge*0..1]-(n) // children of this collection
+                    MATCH (c)<-[:AbstractEdge*0..]-(n) // children of this collection
                     OPTIONAL MATCH (n)-[e:EDGE]-(n2) // get neighbours
-                    WITH c + collect(n) + collect(n2) as nodelist
+                    WITH c + collect(distinct n) + collect(distinct n2) as nodelist
                     UNWIND nodelist as nodes
                     WITH DISTINCT nodes
                     MATCH p=(:RootCollection)<-[:AbstractEdge*0..]-(nodes)

@@ -24,6 +24,8 @@ const createCollectionAPI = require("./api/private/Collection")
 const createNodeAPI = require('./api/private/Node')
 const createUserAPI = require('./api/private/User')
 
+const moment = require('moment')
+
 /*
  * setup handlebars with express
 */
@@ -159,6 +161,8 @@ io.on('connection', function(socket) {
     socket.emit('connected', 'connected');
 
     const user = socket.request.user;
+
+    console.log(user.email, user._id, "just connected,", moment().format('MMMM Do YYYY, h:mm:ss a'))
 
     socket.on('User.generateMobileUploadToken', UserAPI.generateMobileUploadToken.bind(null, socket, user));
 
