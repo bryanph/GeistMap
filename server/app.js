@@ -114,7 +114,7 @@ const CollectionAPI = createCollectionAPI(db, es)
 const UserAPI = createUserAPI(app, db, redisClient, es)
 
 const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, Object.assign(authConfig, {
-        onSignup: function(user, account) {
+        onSignup: function(user) {
             console.log("new signup", user);
             CollectionAPI.createRootCollection(user)
         }
