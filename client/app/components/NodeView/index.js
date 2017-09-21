@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import classNames from 'classnames'
 
 import NodeGraph from '../../components/NodeGraph'
 import AddButton from '../../components/AddButton'
@@ -46,8 +47,12 @@ export class NodeView extends React.PureComponent {
 
         // TODO: handle loading state - 2017-09-04
 
+        const appContainerClass = classNames("appContainer",
+            "abstractionList-pusher": true
+        )
+
         return (
-            <HotKeys className='appContainer'>
+            <HotKeys className={appContainerClass}>
                 <AddNodeWindow
                     graphType={graphType}
                     opened={mode === 'edit'}
@@ -103,11 +108,9 @@ export class NodeView extends React.PureComponent {
                     removeEdge={this.props.removeEdge}
                 />
                 { /* // TODO: combine this into one mode button - 2017-06-28 */ }
-                <div className="graphActions">
-                    <GraphModes
-                        graphType={graphType}
-                    />
-                </div>
+                <GraphModes
+                    graphType={graphType}
+                />
             </HotKeys>
 
         );

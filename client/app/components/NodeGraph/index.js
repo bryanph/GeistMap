@@ -681,23 +681,23 @@ class NodeGraph extends React.Component {
         // TODO: should be set somewhere up high so shouldComponentUpdate can return false - 2017-06-21
         // const className = 'svg-content' + (this.props.editMode ? ' editMode' : '')
 
-        return (
-            <div>
+        return [
                 <ZoomButtons
                     zoomIn={() => this.zoom.zoomIn()}
                     zoomOut={() => this.zoom.zoomOut()}
                     zoomFit={() => this.zoom.zoomFit()}
-                />
+                    key="1"
+                />,
                 <svg
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                     preserveAspectRatio="xMidYMid meet"
                     className="svg-content"
                     ref="graph"
+                    key="1"
                 >
                     <g ref="container" />
                 </svg>
-            </div>
-        )
+        ]
     }
 }
 

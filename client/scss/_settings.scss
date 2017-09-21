@@ -3,7 +3,7 @@
 //
 $max-screen-width: 750px;
 $topbar-height: 56px;
-
+$bottombar-height: 36px;
 
 $sidebar-width: 500px;
 $sidebar-item-height: 400px;
@@ -41,6 +41,8 @@ $node-subject-stroke: #D6DADC;
     margin-top: $topbar-height;
 
     position: relative;
+
+    min-width: 320px;
 }
 
 .contentContainer {

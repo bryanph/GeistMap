@@ -7,6 +7,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router'
+import classNames from 'classnames'
 
 import {
     toggleCollapse
@@ -90,8 +91,12 @@ class AbstractionList extends React.Component {
             />
         ))
 
+        const containerClass = classNames("abstractionList-container",
+            "abstractionList-show": true
+        )
+
         return (
-            <div className="abstractionList">
+            <div className={ containerClass }>
                 <AbstractionTree 
                     data={this.props.nodeTree}
                     onToggle={this.toggleCollapse}

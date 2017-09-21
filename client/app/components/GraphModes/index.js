@@ -36,7 +36,7 @@ class GraphModes extends React.Component {
         })
 
         return (
-                <Button.Group className="graphMode">
+                <Button.Group className="graphModes">
                     <Button
                         size="medium" className={ viewClass }
                         onClick={ () => this.props.setGraphMode("view") }

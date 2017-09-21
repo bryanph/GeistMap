@@ -21,9 +21,6 @@ export default {
                 padding: '0px 5px',
                 display: 'block'
             },
-            activeLink: {
-                background: '#31363F'
-            },
             toggle: {
                 base: {
                     position: 'relative',
@@ -47,33 +44,10 @@ export default {
                     strokeWidth: 0
                 }
             },
-            header: {
-                base: {
-                    display: 'inline-block',
-                    verticalAlign: 'top',
-                    color: '#9DA5AB'
-                },
-                connector: {
-                    width: '2px',
-                    height: '12px',
-                    borderLeft: 'solid 2px black',
-                    borderBottom: 'solid 2px black',
-                    position: 'absolute',
-                    top: '0px',
-                    left: '-21px'
-                },
-                title: {
-                    lineHeight: '24px',
-                    verticalAlign: 'middle'
-                }
-            },
             subtree: {
                 listStyle: 'none',
                 paddingLeft: '19px'
             },
-            loading: {
-                color: '#E2C089'
-            }
         }
     }
 };
