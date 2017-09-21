@@ -286,7 +286,7 @@ module.exports = function(db, es) {
                     MATCH p=(:RootCollection)<-[:AbstractEdge*0..]-(nodes)
                     WITH nodes, collect(extract(c IN (nodes(p)[0..length(p)]) | c.id)) as collections
                     OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
-                    RETURN properties(nodes) as node, collections, COUNT(children)
+                    RETURN { id: nodes.id, name: nodes.name, type: nodes.type } as node, collections, COUNT(children)
                     ORDER BY node.id
                     `,
                     {

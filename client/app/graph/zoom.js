@@ -90,7 +90,7 @@ export default (root, container, fullWidth, fullHeight) => {
             return;
         }
 
-        const paddingPercent = 0.8
+        const paddingPercent = 0.9
         const transitionDuration = 1000
 
         const bbox = container.node().getBBox();

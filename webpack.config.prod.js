@@ -49,7 +49,7 @@ module.exports = {
             sourceMap: true
         }),
         new webpack.optimize.AggressiveMergingPlugin(),
-        new BundleAnalyzerPlugin()
+        // new BundleAnalyzerPlugin()
     ],
     module: {
         loaders: [

@@ -506,11 +506,10 @@ function edgeListMap(state={}, action) {
             return newState
     }
 }
-
-function nodesByCollectionId(state={}, action) {
+function allNodesByCollectionId(state={}, action) {
     /*
-     * A mapping of nodes by collection Id
-     * // TODO: this should represent only direct children? - 2017-08-29
+     * this represents all children recursively
+     * // TODO: a more generic tree datastructure - 2017-09-20
      */
     switch(action.type) {
         case collectionActionTypes.GET_COLLECTION_SUCCESS:
@@ -539,6 +538,88 @@ function nodesByCollectionId(state={}, action) {
             const uniqueCollections = _.uniq(_.flatten(action.collectionChains))
 
             _.forEach(uniqueCollections, c => {
+                if (!newState[c]) {
+                    newState[c] = [ action.nodeId ]
+                } else {
+                    // TODO: terrible performance on this - 2017-09-04
+                    newState[c] = _.union( newState[c], [ action.nodeId ])
+                }
+            })
+
+            return newState
+        }
+
+        case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
+            return update(state, {
+                [action.collectionId]: { $apply: (nodes) => _.without(nodes, action.nodeId) }
+            })
+
+        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
+            return _.omit(state, action.collectionId)
+
+        case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
+            let newState = state;
+
+            if (!newState[action.targetId]) {
+                newState[action.targetId] = []
+            }
+
+            if (action.sourceNode.type === "collection") {
+                /*
+                 * Add nodes from source to target collection as well
+                 */
+                newState = update(state, {
+                    [action.targetId]: { $set: _.union(state[action.targetId], state[action.sourceId]) }
+                })
+            }
+
+            return update(newState, {
+                [action.targetId]: { $push: [ action.sourceId ]}
+            })
+        }
+
+        default:
+            return state
+    }
+}
+
+function nodesByCollectionId(state={}, action) {
+    /*
+     * this represents only direct children
+     * // TODO: a more generic tree datastructure - 2017-09-20
+     */
+
+    switch(action.type) {
+        case collectionActionTypes.GET_COLLECTION_SUCCESS:
+        case collectionActionTypes.GET_COLLECTIONL1_SUCCESS: {
+            // TODO: only direct children - 2017-09-20
+
+            let newState = { ...state }
+            // for every node, add them to the corresponding collection list
+
+            _.forEach(action.response.entities.nodes, node => {
+                // TODO: this shouldn't include the root collection - 2017-09-20
+                const collections = _.flatten((node.collectionChains || []).map(chain => chain[chain.length - 1]))
+
+                _.forEach(collections, c => {
+                    if (!newState[c]) {
+                        newState[c] = [ node.id ]
+                    } else {
+                        // TODO: terrible performance on this - 2017-09-04
+                        newState[c] = _.union( newState[c], [ node.id ])
+                    }
+                })
+            })
+
+            return newState
+        }
+
+        case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS: {
+            let newState = { ...state }
+
+            const collections = _.flatten(action.collectionChains.map(chain => chain[chain.length - 1]))
+
+            _.forEach(collections, c => {
                 if (!newState[c]) {
                     newState[c] = [ action.nodeId ]
                 } else {
@@ -698,6 +779,9 @@ const initialUiState = {
 
     archiveSidebar: {
         opened: false,
+    },
+    abstractionSidebar: {
+        opened: true,
     },
 }
 
@@ -866,12 +950,24 @@ function uiState(state=initialUiState, action) {
                     opened: false,
                 }
             }
-            // used with CollectionExploreGraph
-        case uiActionTypes.SET_ACTIVE_COLLECTIONS:
+
+        case uiActionTypes.SHOW_ABSTRACTION_SIDEBAR:
             return {
                 ...state,
-                activeCollections: action.collectionIds,
+                abstractionSidebar: {
+                    ...action.payload,
+                    opened: true,
+                }
             }
+        case uiActionTypes.HIDE_ABSTRACTION_SIDEBAR:
+            return {
+                ...state,
+                abstractionSidebar: {
+                    ...state.abstractionSidebar,
+                    opened: false,
+                }
+            }
+
         default:
             return state
     }
@@ -895,6 +991,7 @@ function rootReducer(state={}, action) {
         reverseAdjacencyMap: reverseAdjacencyMap(state.reverseAdjacencyMap, action),
         edgeListMap: edgeListMap(state.edgeListMap, action),
         nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
+        allNodesByCollectionId: allNodesByCollectionId(state.allNodesByCollectionId, action),
         archive: archive(state.archive, action),
         // errorMessage: errorMessage(state.errorMessage, action),
         loadingStates: loadingStates(state.loadingStates, action),
@@ -1147,9 +1244,10 @@ export const getNodesAndEdgesByCollectionId = createSelector(
     (state, { collectionId }) => getCollection(state, collectionId),
     getNodesBelowAbstraction,
     getEdgesBelowAbstraction,
-    (state) => state.nodesByCollectionId,
+    (state) => state.nodesByCollectionId, // direct children
+    (state) => state.allNodesByCollectionId, // all children
     (_, { collectionChainIds }) => collectionChainIds,
-    (parentCollection, nodeMap, edgeMap, nodesByCollectionId, collectionChainIds) => {
+    (parentCollection, nodeMap, edgeMap, nodesByCollectionId, allNodesByCollectionId, collectionChainIds) => {
         /*
          * This gets the direct nodes including their children
          */
@@ -1162,6 +1260,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 visibleCollections: [],
                 edges: [],
                 collectionChain: [],
+                nodeTree: [],
             }
         }
 
@@ -1245,6 +1344,22 @@ export const getNodesAndEdgesByCollectionId = createSelector(
             .value()
 
         filteredCollections.forEach(c => {
+            // TODO: improved performance by implementing the algorithm below , requires ability get all edges below a collection - 2017-09-20
+            // instead of iterating through all edges
+            /*
+             * Collapsed x => 
+             * 1. Hide all nodes under x
+             * 2. Show x
+             * 3. For every edge e with e.start below x OR e.end below x =>
+             *    * If only e.start below x => update e.start to x.id
+             *    * If only e.end below x => update e.end to x.id
+             *    * If both e.start, e.end below x => hide e
+             *
+             * Expanded x => 
+             * 1. Show direct children
+             * 2. hide x
+             * 3. continue with children
+            */
 
             if (c.collapsed) {
                 /*
@@ -1252,7 +1367,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                  */
 
                 // returns node ids for this collection (not all, just the ones that were fetched)
-                const nodeIds = nodesByCollectionId[c.id] || []
+                const nodeIds = allNodesByCollectionId[c.id] || []
 
                 nodeIds.forEach(n => {
                     // TODO: need to account for case where node is part of two collections and hidden by one, shown by the other
@@ -1262,11 +1377,11 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                     hiddenNodeMap[n] = n
                 })
 
+                // collapsed, no children
+                c.children = []
 
                 // visibleCollections.push(c)
-                visibleCollections.push({
-                    ...c,
-                })
+                visibleCollections.push(c)
 
                 // TODO: more performant - 2017-07-13
                 transformedEdges = _(transformedEdges)
@@ -1302,10 +1417,16 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                  * 1. Determine which nodes should be hidden
                  * 2. Show the nodes that are not hidden
                  */
-                // TODO: this should only get the direct children - 2017-08-03
-                (nodesByCollectionId[c.id] || []).forEach(n => {
+
+                const allChildNodes = allNodesByCollectionId[c.id] || []
+                allChildNodes.forEach(n => {
                     visibleNodeMap[n] = n
                 })
+                c.children = _(nodesByCollectionId[c.id] || [])
+                    .map(id => nodeMap[id])
+                    .orderBy(n => n.name.toLowerCase())
+                    .orderBy(n => n.type)
+                    .value()
 
                 // hide direct edges from/to this collection
                 transformedEdges = _(transformedEdges)
@@ -1326,6 +1447,17 @@ export const getNodesAndEdgesByCollectionId = createSelector(
             }
         })
 
+        const nodeTree = {
+            ...parentCollection,
+            children: _(nodesByCollectionId[parentCollection.id] || [])
+                .map(id => nodeMap[id])
+                .orderBy(n => n.name.toLowerCase())
+                .orderBy(n => n.type)
+                .value()
+        }
+
+        console.log(nodeTree)
+
         const visibleNodes = nodes
             .filter(n => !!visibleNodeMap[n.id])
             .map(n => nodeMap[n.id])
@@ -1337,6 +1469,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
             collections: filteredCollections,
             visibleCollections,
             edges: transformedEdges,
+            nodeTree: nodeTree.children,
         }
     }
 )

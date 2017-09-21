@@ -517,8 +517,6 @@ class NodeGraph extends React.Component {
             c.radius = radiusScale(c.count || 0)
         })
 
-        console.log(collections.map(c => [c.id, c.count]))
-
         // set extra properties here
         nodes.forEach(node => {
             nodeById[node.id] = node
@@ -532,7 +530,6 @@ class NodeGraph extends React.Component {
             link.target = nodeById[link.end]
 
             if (adjacencyMap[link.end] && adjacencyMap[link.end].includes(link.start)) {
-                console.log("setting curved to true")
                 link.curved = true
             } else {
                 link.curved = false
@@ -684,23 +681,23 @@ class NodeGraph extends React.Component {
         // TODO: should be set somewhere up high so shouldComponentUpdate can return false - 2017-06-21
         // const className = 'svg-content' + (this.props.editMode ? ' editMode' : '')
 
-        return (
-            <div>
+        return [
                 <ZoomButtons
                     zoomIn={() => this.zoom.zoomIn()}
                     zoomOut={() => this.zoom.zoomOut()}
                     zoomFit={() => this.zoom.zoomFit()}
-                />
+                    key="1"
+                />,
                 <svg
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                     preserveAspectRatio="xMidYMid meet"
                     className="svg-content"
                     ref="graph"
+                    key="2"
                 >
                     <g ref="container" />
                 </svg>
-            </div>
-        )
+        ]
     }
 }
 

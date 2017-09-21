@@ -5,11 +5,15 @@
  */
 
 import React from 'react';
+import Portal from 'react-portal'
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router'
+import classNames from 'classnames'
 
 import {
-    toggleCollapse
+    toggleCollapse,
+    showAbstractionSidebar,
+    hideAbstractionSidebar,
 } from '../../actions/ui'
 
 import {
@@ -22,6 +26,9 @@ import {
 
 import './styles.scss'
 
+
+import AbstractionTree from './components/root'
+
 class AbstractionList extends React.Component {
 
     constructor(props) {
@@ -30,6 +37,14 @@ class AbstractionList extends React.Component {
         this.focusAbstraction = this.focusAbstraction.bind(this)
         this.removeAbstraction = this.removeAbstraction.bind(this)
         this.toggleCollapse = this.toggleCollapse.bind(this)
+        this.expandClick = this.expandClick.bind(this)
+        this.onFocusClick = this.onFocusClick.bind(this)
+    }
+
+    expandClick() {
+        console.log("called expandclick")
+        const opened = this.props.opened
+        return opened ? this.props.hideAbstractionSidebar() : this.props.showAbstractionSidebar()
     }
 
     removeAbstraction(id) {
@@ -54,11 +69,13 @@ class AbstractionList extends React.Component {
         this.props.history.push(`/app/collections/${newCollectionChain.join('/')}/nodes`)
     }
 
-    toggleCollapse(collection) {
+    toggleCollapse(collection, collapsed) {
         /*
          * 1. fetch the collection to collapse if it hasn't been fetched yet
          * 2. toggle the collapse
         */
+
+        console.log(collection)
 
         // TODO: separate fetching the chain and L1 collection - 2017-09-17
         const newCollectionChain = collection.collectionChains[0]
@@ -71,9 +88,20 @@ class AbstractionList extends React.Component {
         }
     }
 
+    onFocusClick(collection) {
+        console.log("called focus click")
+        // TODO: should follow the correct abstraction chain - 2017-09-21
+
+        const newCollectionChain = [ ...this.props.collectionChainIds, collection.id ]
+        this.props.history.push(`/app/collections/${newCollectionChain.join('/')}/nodes`)
+    }
+
+    shouldComponentUpdate(nextProps) {
+        return nextProps.isLoading ? false : true
+    }
 
     render() {
-        const { collections } = this.props
+        const { collections, opened } = this.props
 
         const collectionItems = collections.map(c => (
             <AbstractionItem
@@ -85,16 +113,68 @@ class AbstractionList extends React.Component {
             />
         ))
 
+        const containerClass = classNames("abstractionList-container", {
+            "abstractionList-show": opened
+        })
+
+        console.log(containerClass)
+        if (this.props.isLoading) {
+            return null;
+        }
+
         return (
-            <div className="abstractionList">
-                { collectionItems }
+            <div className={ containerClass }>
+                <Portal isOpened={true}>
+                    <ExpandButton 
+                        expanded={opened}
+                        onClick={this.expandClick}
+                    />
+                </Portal>
+                <AbstractionHeading
+                    title={this.props.activeCollection.name}
+                    onToggle={this.props.toggleAbstractionSidebar}
+                />
+                <AbstractionTree 
+                    data={this.props.nodeTree}
+                    onToggle={this.toggleCollapse}
+                    onToggleExpand={this.toggleCollapse}
+                    onFocusClick={this.onFocusClick}
+                />
             </div>
         );
     }
 }
 
-import { Checkbox } from 'semantic-ui-react'
 import { Button, Icon } from 'semantic-ui-react'
+
+export const ExpandButton = ({ expanded, onClick }) => {
+
+    const icon = expanded ? "chevron left" : "chevron right"
+    const className = classNames({
+        "abstractionList-expandButton-expanded": expanded,
+        "abstractionList-expandButton-collapsed": !expanded,
+
+    })
+
+    return (
+        <div className={className}>
+            <Button size="mini" icon onClick={onClick}>
+                <Icon name={ icon } />
+            </Button>
+        </div>
+    )
+}
+
+export const AbstractionHeading = (props) => {
+    return (
+        <div className="abstractionList-heading">
+            <div className="title">
+                { props.title }
+            </div>
+        </div>
+    )
+}
+
 
 class AbstractionItem extends React.Component {
     constructor(props) {
@@ -125,10 +205,17 @@ class AbstractionItem extends React.Component {
 }
 
 // export default AbstractionList
+function mapStateToProps(state) {
+    return {
+        opened: state.uiState.abstractionSidebar.opened
+    }
+}
 
-export default connect(null, {
+export default connect(mapStateToProps, {
     toggleCollapse,
     removeAbstraction,
     fetchNodeL1,
     loadCollectionL1,
+    showAbstractionSidebar,
+    hideAbstractionSidebar,
 })(withRouter(AbstractionList))

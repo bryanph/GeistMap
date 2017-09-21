@@ -74,19 +74,17 @@ export const showAddAudioWindow = createAction(SHOW_ADD_AUDIO_WINDOW)
 export const HIDE_ADD_AUDIO_WINDOW = 'HIDE_ADD_AUDIO_WINDOW'
 export const hideAddAudioWindow = createAction(HIDE_ADD_AUDIO_WINDOW)
 
-export const SET_ACTIVE_COLLECTIONS = 'SET_ACTIVE_COLLECTIONS'
-export function setActiveCollections(collectionIds) {
-    return {
-        type: SET_ACTIVE_COLLECTIONS,
-        collectionIds
-    }
-}
-
 export const SHOW_ARCHIVE_SIDEBAR = 'SHOW_ARCHIVE_SIDEBAR'
 export const showArchiveSidebar = createAction(SHOW_ARCHIVE_SIDEBAR)
 
 export const HIDE_ARCHIVE_SIDEBAR = 'HIDE_ARCHIVE_SIDEBAR'
 export const hideArchiveSidebar = createAction(HIDE_ARCHIVE_SIDEBAR)
+
+export const SHOW_ABSTRACTION_SIDEBAR = 'SHOW_ABSTRACTION_SIDEBAR'
+export const showAbstractionSidebar = createAction(SHOW_ABSTRACTION_SIDEBAR)
+
+export const HIDE_ABSTRACTION_SIDEBAR = 'HIDE_ABSTRACTION_SIDEBAR'
+export const hideAbstractionSidebar = createAction(HIDE_ABSTRACTION_SIDEBAR)
 
 
 /*
