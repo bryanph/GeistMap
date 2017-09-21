@@ -7,13 +7,6 @@ export const Loading = () => (
     <div className={'abstractionList-loading'}>loading...</div>
 );
 
-export const Toggle = () => {
-    return (
-        <span>></span>
-    );
-};
-
-
 export const Header = ({node}) => {
     return (
         <div className="abstractionList-header">

@@ -1,6 +1,37 @@
 @import '~styles/settings';
 
 $abstractionList-width: 300px;
+$abstractionList-heading-height: 40px;
+
+.abstractionList-heading {
+    height: $abstractionList-heading-height;
+    background: $abstractionSidebar-heading-background;
+
+    border-right: 1px solid rgb(255, 228, 232);
+    border-bottom: 1px solid rgb(225, 228, 232);
+
+    color: white;
+
+    .title {
+        font-size: 13px;
+        line-height: $abstractionList-heading-height;
+        font-weight: bold;
+        margin-left: 10px;
+    }
+}
+
+.abstractionList-expandButton-expanded {
+    position: absolute;
+    top: calc(#{$topbar-height} + 5px);
+    left: calc(#{$abstractionList-width} - 45px);
+    z-index: 1000;
+}
+.abstractionList-expandButton-collapsed {
+    position: fixed;
+    top: calc(#{$topbar-height} + 5px);
+    left: 10px;
+    z-index: 1000;
+}
 
 .abstractionList-container {
     position: fixed;

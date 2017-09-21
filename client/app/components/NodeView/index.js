@@ -45,11 +45,9 @@ export class NodeView extends React.PureComponent {
             'deleteMode': () => this.props.setGraphMode("delete"),
         }
 
-        // TODO: handle loading state - 2017-09-04
-
-        const appContainerClass = classNames("appContainer",
-            "abstractionList-pusher": true
-        )
+        const appContainerClass = classNames("appContainer", {
+            "abstractionList-pusher": this.props.abstractionSidebarOpened
+        })
 
         return (
             <HotKeys className={appContainerClass}>
@@ -67,8 +65,10 @@ export class NodeView extends React.PureComponent {
                             key="1"
                             collectionChain={this.props.collectionChain}
                             collection={this.props.activeCollection}
+                            isLoading={isLoading}
                         />,
                         <AbstractionList
+                            isLoading={isLoading}
                             key="2"
                             collectionChainIds={this.props.collectionChainIds}
                             activeCollection={this.props.activeCollection}

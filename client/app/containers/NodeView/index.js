@@ -125,8 +125,8 @@ function mapStateToProps(state, props) {
         isLoading,
         graphType,
         collectionChain,
-
         adjacencyMap: state.adjacencyMap, // TODO: should this be passed down? - 2017-09-19
+        abstractionSidebarOpened: state.uiState.abstractionSidebar.opened,
     };
 }
 

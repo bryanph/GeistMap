@@ -693,7 +693,7 @@ class NodeGraph extends React.Component {
                     preserveAspectRatio="xMidYMid meet"
                     className="svg-content"
                     ref="graph"
-                    key="1"
+                    key="2"
                 >
                     <g ref="container" />
                 </svg>

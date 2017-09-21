@@ -780,6 +780,9 @@ const initialUiState = {
     archiveSidebar: {
         opened: false,
     },
+    abstractionSidebar: {
+        opened: true,
+    },
 }
 
 const initialGraphUIState = {
@@ -947,12 +950,24 @@ function uiState(state=initialUiState, action) {
                     opened: false,
                 }
             }
-            // used with CollectionExploreGraph
-        case uiActionTypes.SET_ACTIVE_COLLECTIONS:
+
+        case uiActionTypes.SHOW_ABSTRACTION_SIDEBAR:
             return {
                 ...state,
-                activeCollections: action.collectionIds,
+                abstractionSidebar: {
+                    ...action.payload,
+                    opened: true,
+                }
             }
+        case uiActionTypes.HIDE_ABSTRACTION_SIDEBAR:
+            return {
+                ...state,
+                abstractionSidebar: {
+                    ...state.abstractionSidebar,
+                    opened: false,
+                }
+            }
+
         default:
             return state
     }

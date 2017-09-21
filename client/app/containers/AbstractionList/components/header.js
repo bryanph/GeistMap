@@ -4,9 +4,28 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import deepEqual from 'lodash/isEqual'
 
-import { Toggle, Header } from './decorators.js'
+import { Header } from './decorators.js'
 import classNames from 'classnames'
 import { VelocityComponent } from 'velocity-react';
+
+import { Icon } from 'semantic-ui-react'
+export const Toggle = ({ expanded, terminal, onClick}) => {
+    const icon = expanded ? "minus": "plus"
+
+    return (
+        <Icon 
+            style={{ visibility: terminal ? "hidden" : "visible" }}
+            name={ icon }
+            onClick={onClick} 
+        />
+    );
+};
+
+export const FocusButton = (props) => {
+    return (
+        <Icon name="circle" onClick={props.onClick} />
+    );
+};
 
 class NodeHeader extends React.Component {
     shouldComponentUpdate(nextProps) {
@@ -15,52 +34,30 @@ class NodeHeader extends React.Component {
 
         for (let i = 0; i < nextPropKeys.length; i++) {
             const key = nextPropKeys[i];
-            if (key === 'animations') {
-                continue;
-            }
-
             if (props[key] !== nextProps[key]) {
                 return true;
             }
         }
-
-        return !deepEqual(props.animations, nextProps.animations, {strict: true});
     }
 
     render() {
-        const {animations, node, onClick} = this.props;
+        const {animations, node, onToggleExpand, onFocusClick} = this.props;
         const {active, children} = node;
         const terminal = !children;
         const containerClass = classNames('link', {
             active: active
         })
 
+        console.log(node)
+
         return (
             <div 
-                onClick={onClick}
                 className={containerClass}
             >
-                 {!terminal ? this.renderToggle() : null}
-
+                 <Toggle terminal={terminal} expanded={!node.collapsed} onClick={onToggleExpand}/>
+                 <FocusButton onClick={onFocusClick}/>
                  <Header node={node} />
             </div>
-        );
-    }
-
-    renderToggle() {
-        const {animations} = this.props;
-
-        if (!animations) {
-            return <Toggle />
-        }
-
-        return (
-            <VelocityComponent
-                animation={animations.toggle.animation}
-                duration={animations.toggle.duration}
-            >
-                <Toggle />
-            </VelocityComponent>
         );
     }
 }

@@ -12,16 +12,23 @@ class TreeNode extends React.Component {
     constructor() {
         super();
 
-        this.onClick = this.onClick.bind(this);
+        this.onToggleExpand = this.onToggleExpand.bind(this);
+        this.onFocusClick = this.onFocusClick.bind(this);
+
     }
 
-    onClick() {
-        const {node, onToggle} = this.props;
+
+    onToggleExpand() {
+        const {node} = this.props;
         const { collapsed } = node;
 
-        if (onToggle) {
-            onToggle(node, collapsed);
-        }
+        this.props.onToggleExpand(node, collapsed)
+    }
+
+    onFocusClick() {
+        const {node} = this.props;
+
+        this.props.onFocusClick(node)
     }
 
     animations() {
@@ -75,6 +82,8 @@ class TreeNode extends React.Component {
                 animations={animations}
                 node={Object.assign({}, node)}
                 onClick={this.onClick}
+                onToggleExpand={this.onToggleExpand}
+                onFocusClick={this.onFocusClick}
             />
         );
     }
@@ -116,10 +125,11 @@ class TreeNode extends React.Component {
     }
 
     _eventBubbles() {
-        const {onToggle} = this.props;
+        const { onFocusClick, onToggleExpand } = this.props;
 
         return {
-            onToggle
+            onFocusClick,
+            onToggleExpand,
         };
     }
 }
