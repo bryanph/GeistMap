@@ -1422,11 +1422,11 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 allChildNodes.forEach(n => {
                     visibleNodeMap[n] = n
                 })
-                c.children = _.sortBy(allChildNodes
+                c.children = _(nodesByCollectionId[c.id] || [])
                     .map(id => nodeMap[id])
-                    .filter(n => n.type === "collection"),
-                    (n) => n.name.toLowerCase()
-                )
+                    .orderBy(n => n.name.toLowerCase())
+                    .orderBy(n => n.type)
+                    .value()
 
                 // hide direct edges from/to this collection
                 transformedEdges = _(transformedEdges)
@@ -1449,10 +1449,11 @@ export const getNodesAndEdgesByCollectionId = createSelector(
 
         const nodeTree = {
             ...parentCollection,
-            children: _.sortBy(
-                nodesByCollectionId[parentCollection.id].map(id => nodeMap[id]),
-                (c) => c.name.toLocaleLowerCase()
-            )
+            children: _(nodesByCollectionId[parentCollection.id] || [])
+                .map(id => nodeMap[id])
+                .orderBy(n => n.name.toLowerCase())
+                .orderBy(n => n.type)
+                .value()
         }
 
         console.log(nodeTree)
