@@ -180,6 +180,8 @@ class ContentEditor extends React.Component {
     componentWillMount() {
         const { showAddRelationWindow, removeEdge } = this.props
 
+        console.log("called componentWillMount")
+
         const linkifyPlugin = createLinkifyPlugin()
         const linkPlugin = createLinkPlugin()
         const blockPlugin = createBlockPlugin()
@@ -273,8 +275,11 @@ class ContentEditor extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (this.props.id !== nextProps.id) {
+            const newEditorState = createInitialEditorState(nextProps.editorState)
             return this.setState({
-                editorState: createInitialEditorState(nextProps.editorState),
+                editorState: newEditorState,
+                entities: getAllEntities(newEditorState.getCurrentContent().getBlockMap()),
+                collapsed: !nextProps.withToolbar, // without toolbar we start collapsed
             })
         }
     }
