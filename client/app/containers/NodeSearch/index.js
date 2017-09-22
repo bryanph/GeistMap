@@ -25,9 +25,11 @@ class NodeSearchList extends React.Component {
     render() {
         const { searchResults, searchValue } = this.props
 
+        console.log(searchResults)
+
         const listItems = _.map(searchResults, result => (
             <ListItem
-                key={result._source.id}
+                key={result._id}
                 onClick={() => this.onClick(result)}
                 primaryText={result._source.title || result._source.name}
                 secondaryText={"Node"}
@@ -98,8 +100,12 @@ class NodeSearch extends React.Component {
         this.searchAll = _.debounce(this.props.searchAll, 100).bind(this)
 
         this.state = {
-            searchValue: "",
+            searchValue: props.initialValue || "",
             opened: false,
+        }
+
+        if (props.initialValue) {
+            this.searchAll(props.initialValue)
         }
     }
 
@@ -130,7 +136,7 @@ class NodeSearch extends React.Component {
     }
 
     render() {
-        const { searchResults } = this.props
+        const { intialValue, searchResults } = this.props
         const { searchValue } = this.state
 
         return (
@@ -140,7 +146,7 @@ class NodeSearch extends React.Component {
                     onKeyPress={this.onKeyPress}
                     onClick={this.onSubmit}
                     onFocus={ (e) => { this.setState({opened: true}) }}
-                    value={this.state.searchValue}
+                    value={searchValue}
                     disabled={this.props.disabled}
                 />
                 <NodeSearchList
