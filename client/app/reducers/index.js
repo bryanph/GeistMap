@@ -756,35 +756,6 @@ function allSearch(state=[], action) {
     }
 }
 
-const initialUiState = {
-    windowProps: {},
-    connectWindowOpened: false,
-    addRelationWindowOpened: false,
-    addRelationCollectionWindowOpened: false,
-    addPictureWindowOpened: false,
-    addVideoWindowOpened: false,
-    addAudioWindowOpened: false,
-    createCollectionWindowOpened: false,
-    createCollectionWindowState: {
-        title: "",
-        description: "",
-    },
-
-    addNodeToCollectionWindowState: {
-        opened: false,
-        collection: null,
-    },
-
-    activeCollections: [],
-
-    archiveSidebar: {
-        opened: false,
-    },
-    abstractionSidebar: {
-        opened: true,
-    },
-}
-
 const initialGraphUIState = {
     // can be "view", "edit", "focus" or "expand"
     mode: "view",
@@ -827,6 +798,35 @@ function graphUiState(state=initialGraphUIState, action) {
     }
 }
 
+
+const initialUiState = {
+    windowProps: {},
+    connectWindowOpened: false,
+    addRelationWindowOpened: false,
+    addRelationCollectionWindowOpened: false,
+    addPictureWindowOpened: false,
+    addVideoWindowOpened: false,
+    addAudioWindowOpened: false,
+    createCollectionWindowOpened: false,
+    createCollectionWindowState: {
+        title: "",
+        description: "",
+    },
+
+    addNodeToCollectionWindowState: {
+        opened: false,
+        collection: null,
+    },
+
+    activeCollections: [],
+
+    archiveSidebar: {
+        opened: false,
+    },
+    abstractionSidebar: {
+        opened: false,
+    },
+}
 
 function uiState(state=initialUiState, action) {
     // TODO: cleanup - 2017-08-26
