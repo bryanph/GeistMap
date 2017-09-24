@@ -180,8 +180,6 @@ class ContentEditor extends React.Component {
     componentWillMount() {
         const { showAddRelationWindow, removeEdge } = this.props
 
-        console.log("called componentWillMount")
-
         const linkifyPlugin = createLinkifyPlugin()
         const linkPlugin = createLinkPlugin()
         const blockPlugin = createBlockPlugin()
@@ -400,9 +398,9 @@ class ContentEditor extends React.Component {
     customBlockRendering = props => {
         // const { blockTypes } = props;
         const newObj = {
-            paragraph: {
-                element: 'p',
-            },
+            // paragraph: {
+            //     element: 'p',
+            // },
             // unstyled: {
             //     element: 'p',
             // },
@@ -410,7 +408,7 @@ class ContentEditor extends React.Component {
                 element: 'div',
             },
             'inline-latex': {
-                element: 'span',
+                element: 'div',
             },
             'audio': {
                 element: 'div',

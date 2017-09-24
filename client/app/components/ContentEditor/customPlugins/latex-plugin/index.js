@@ -220,7 +220,7 @@ export default (config = {}) => {
                     const regex2 = /TeXEditor-inline-tex/
                     const match2 = regex2.exec(html)
 
-                    if (!(match && match[1] === rawBlocks.editorKey) && !match2) {
+                    if (!(match && match[1] === rawBlocks.editorKey) || !match2) {
                         return
                     }
 
@@ -232,41 +232,7 @@ export default (config = {}) => {
                     const newFragments = cloneEntitiesInFragment(fragments, rawBlocks.entityMap)
                     setEditorState(insertFragment(editorState, newFragments))
                     return true
-
-
                 }
-
-                // if (html.indexOf('TeXEditor') !== -1) {
-                //     const clipboard = cloneEntitiesInFragment(internalClipboard)
-                //     setEditorState(insertFragment(editorState, clipboard))
-                //     return true
-                // }
-
-                // // If there is html paste data, try to parse that.
-                // if (html) {
-                //     var htmlFragment = DraftPasteProcessor.processHTML(
-                //         html,
-                //         getBlockRenderMap(),
-                //     );
-                //     if (htmlFragment) {
-                //         if (html.indexOf('TeXEditor') !== -1) { // TODO: more unique identifier - 2016-11-13
-                //             const clipboard = cloneLatexEntitiesInFragment(htmlFragment, html)
-                //             setEditorState(insertFragment(editorState, clipboard))
-                //             return true
-                //         }
-
-
-                //         // const { contentBlocks, entityMap } = htmlFragment;
-                //         // if (contentBlocks) {
-                //         //     var htmlMap = BlockMapBuilder.createFromArray(contentBlocks);
-                //         //     setEditorState(
-                //         //         // insertFragment(this._latestEditorState, htmlMap, entityMap)
-                //         //         insertFragment(getEditorState(), htmlMap, entityMap)
-                //         //     );
-                //         //     return;
-                //         // }
-                //     }
-                // }
             },
             blockRendererFn: (block) => {
                 const data = block.getData()
