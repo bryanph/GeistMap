@@ -25,8 +25,6 @@ class NodeSearchList extends React.Component {
     render() {
         const { searchResults, searchValue } = this.props
 
-        console.log(searchResults)
-
         const listItems = _.map(searchResults, result => (
             <ListItem
                 key={result._id}
