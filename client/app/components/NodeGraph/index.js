@@ -340,30 +340,36 @@ const createExploreEvents = function(simulation, actions) {
     const enterLink = createEnterLink()
 
     const updateLink = createUpdateLink({
-        onDeleteClick: (d) => actions.removeEdge(d.id)
+        onDeleteClick: (d) => {
+            console.log("called delete click")
+            actions.removeEdge(d.id)
+        }
     })
 
     return (nodeId, nodeSelection, collectionSelection, link, mode, focus) => {
+        if (this.props.mode !== mode) {
+            nodeSelection.call((selection) => updateNode(selection, mode, focus))
+            link.call((selection) => updateLink(selection, mode))
+        } else {
+            collectionSelection.exit().remove()
 
-        collectionSelection.exit().remove()
+            // EXIT selection
+            nodeSelection.exit().remove()
+            // ENTER selection
+            nodeSelection.enter().append('g').call(enterNode).call(nodeDrag)
+            // ENTER + UPDATE selection
+                .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
 
-        // EXIT selection
-        nodeSelection.exit().remove()
-        // ENTER selection
-        nodeSelection.enter().append('g').call(enterNode).call(nodeDrag)
-        // ENTER + UPDATE selection
-            .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
+            // EXIT selection
+            link.exit().remove()
+            // ENTER selection
+            link.enter().call(enterLink)
+            // ENTER + UPDATE selection
+                // .merge(link).call(updateLink)
 
-        // EXIT selection
-        link.exit().remove()
-        // ENTER selection
-        link.enter().call(enterLink)
-        // ENTER + UPDATE selection
-        .merge(link).call(updateLink)
-
-        // color node
-        colorActiveNode(d3Select(`#node-${nodeId}`))
-
+            // color node
+            colorActiveNode(d3Select(`#node-${nodeId}`))
+        }
     }
 }
 
@@ -471,8 +477,6 @@ const createCollectionDetailEvents = function(simulation, actions) {
             // ENTER + UPDATE selection
             // .merge(link).call(updateLink)
         }
-
-
     }
 }
 
