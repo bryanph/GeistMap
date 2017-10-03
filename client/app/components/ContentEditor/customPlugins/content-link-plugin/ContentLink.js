@@ -40,7 +40,7 @@ class ContentLink extends React.Component {
                 {this.props.children}
                 {
                     readOnly ? null :
-                    <div className="contentLinkDiv" contentEditable="true">
+                    <div className="contentLinkDiv">
                         <div className="contentLinkDiv-container">
                             { node && node.name }
                             <div className="contentLinkDiv-buttons">

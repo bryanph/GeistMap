@@ -56,7 +56,7 @@ class YoutubeBlock extends React.Component {
                         <iframe 
                             src={this.props.data.src}
                             style={styles.iframe}
-                            crossorigin="anonymous"
+                            crossOrigin="anonymous"
                         />
                     </div>
                 </BlockContent>

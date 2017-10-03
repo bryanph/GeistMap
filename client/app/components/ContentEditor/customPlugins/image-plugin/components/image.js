@@ -10,7 +10,7 @@ const ImageComponent = ({ theme }) => class Image extends Component {
     const { progress, src, url } = blockProps.entityData;
 
     return (
-      <div className={[theme.imageWrapper, alignmentClassName].filter(x => x).join(' ')} contentEditable={false} style={style}>
+      <div className={[theme.imageWrapper, alignmentClassName].filter(x => x).join(' ')} style={style}>
         <img {...other} src={src || url} alt="" width="100%" height="100%" className={[theme.image, focusClassName].filter(x => x).join(' ')} />
         {this.renderProgress(progress, theme)}
       </div>
