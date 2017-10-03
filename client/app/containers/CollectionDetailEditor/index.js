@@ -28,9 +28,12 @@ import {
 } from '../../actions/node'
 
 export class CollectionDetailEditor extends React.Component {
-    componentWillMount() {
+    constructor(props) {
+        super(props)
+
         this.props.loadCollectionL1(this.props.collectionId, this.props.collectionChainIds)
         this.props.loadNodeL1(this.props.nodeId)
+
     }
 
     componentWillReceiveProps(nextProps) {
@@ -46,10 +49,6 @@ export class CollectionDetailEditor extends React.Component {
     }
 
     render() {
-        if (!this.props.node) {
-            return null
-        }
-
         const fullChain = [ ...this.props.collectionChain, this.props.node ]
 
         return (
@@ -100,6 +99,8 @@ function mapStateToProps(state, props) {
         collectionChainIds: props.collectionChainIds,
         nodeId: props.nodeId,
         node: getNode(state, props.nodeId),
+        isLoading: state.loadingStates.GET_NODE_L1,
+        loadingStates: state.loadingStates,
     }
 }
 

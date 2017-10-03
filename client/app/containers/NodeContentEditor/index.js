@@ -45,7 +45,9 @@ class NodeContentEditor extends React.Component {
     }
 
     render() {
-        if (!this.props.node) return null
+        if (this.props.isLoading || !this.props.node) {
+            return null
+        }
 
         return (
             <ContentEditor
