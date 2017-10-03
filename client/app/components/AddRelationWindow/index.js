@@ -78,7 +78,7 @@ class AddRelationWindow extends React.Component {
 
         // TODO: how do we handle links from non-text? - 2016-07-08
 
-        const entityKey = Entity.create(ENTITY_TYPE, 'IMMUTABLE', { node, nodeId, text });
+        const entityKey = Entity.create(ENTITY_TYPE, 'MUTABLE', { node, nodeId, text });
 
         // force the update
         this.props.setEditorState(RichUtils.toggleLink(editorState, selection, entityKey));

@@ -15,7 +15,7 @@ export function insertContentLink(editorState, { nodeId, showAddRelationWindow, 
     const active = isActive(editorState)
 
     if (active) {
-        const { nodeId, edgeId } = Entity.get(firstEntityKey).getData()
+        // const { nodeId, edgeId } = Entity.get(firstEntityKey).getData()
 
         // this.props.removeEdge(edgeId)
         return RichUtils.toggleLink(editorState, selection, null)
