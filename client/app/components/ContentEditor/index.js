@@ -341,6 +341,9 @@ class ContentEditor extends React.Component {
             const { edgeId } = entity.getData()
 
             return this.props.removeEdge(edgeId)
+                .catch(e => {
+                    console.error(e)
+                })
         })
 
         // call some "add" event for every added entity, some "remove" event for every removed entity

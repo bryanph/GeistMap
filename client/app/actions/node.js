@@ -249,6 +249,11 @@ export function removeEdge(id) {
     return (dispatch, getState) => {
         // get from, to edge id's then dispatch them to fetchRemoveEdge
         const edge = getEdge(getState(), id)
+
+        if (!edge) {
+            return Promise.reject(`edge with id ${id} doesn't exist`)
+        }
+
         const start = edge.start
         const end = edge.end
 
