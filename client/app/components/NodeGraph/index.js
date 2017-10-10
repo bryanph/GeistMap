@@ -152,7 +152,7 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
     }
     else if (mode === 'abstract') {
         // TODO: move up in abstraction? - 2017-09-05
-        // selection.on('click', actions.onAbstractClick)
+        selection.on('click', actions.onAbstractClick)
     }
     else if (mode === 'focus') {
         selection.on('click', actions.onFocusClick)
@@ -245,7 +245,7 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
         }
     }
     else if (mode === 'abstract') {
-        // selection.on('click', actions.onAbstractClick)
+        selection.on('click', actions.onAbstractClick)
     }
     else if (mode === 'focus') {
         selection.on('click', actions.onFocusClick)
@@ -392,10 +392,13 @@ const createCollectionDetailEvents = function(simulation, actions) {
     }
 
     const onAbstractClick = (d) => {
-        if (d.type === "collection") {
-            const collectionChainIds = this.props.collectionChain.map(x => x.id)
-            actions.removeAbstraction(d.id, collectionChainIds)
-        }
+        // if (d.type === "collection") {
+            // const collectionChainIds = this.props.collectionChain.map(x => x.id)
+            // actions.removeAbstraction(d.id, collectionChainIds)
+
+            const newCollectionChain = [ ...this.props.collectionChain.map(x => x.id), d.id ]
+            this.props.history.push(`/app/collections/${newCollectionChain.join('/')}/nodes`)
+        // }
     }
 
     const onFocusClick = (d) => {
