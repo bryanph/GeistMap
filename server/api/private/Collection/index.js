@@ -70,7 +70,7 @@ module.exports = function(db, es) {
             return Promise.all([
                 // get all the edges between the collections
                 db.run(`
-                    MATCH (u:User)--(c:Collection)
+                    MATCH (u:User)--(r:RootCollection)<-[:AbstractEdge*0..]-(c:Collection)
                     WHERE u.id = {userId}
                     WITH collect(c) as c2
                     UNWIND c2 as cu1
@@ -84,7 +84,7 @@ module.exports = function(db, es) {
                 ),
                 // get all collections
                 db.run(`
-                    MATCH (u:User)--(c:Collection)
+                    MATCH (u:User)--(r:RootCollection)<-[:AbstractEdge*0..]-(c:Collection)
                     WHERE u.id = {userId}
                     MATCH (c)<-[:AbstractEdge*0..]-(c2:Collection) // all collections
                     WITH DISTINCT c2 as nodes
