@@ -186,7 +186,11 @@ export function addNodeToCollection(collectionId, nodeId) {
         // this fetches the neighbours as well (why?)
         const nodePromise = !node ? dispatch(loadNodeL1(nodeId)) : Promise.resolve(node)
 
-        return Promise.all([ collectionPromise, nodePromise ])
+        // first convert to a collection if the source is a node
+        const convertToCollection = collection.type === "node"
+            ? dispatch(convertNodeToCollection(collectionId)) : Promise.resolve()
+
+        return Promise.all([ collectionPromise, nodePromise, convertToCollection ])
             .then(() => {
                 const { collectionChains } = getCollection(getState(), collectionId)
                 const newCollectionChains = collectionChains.map(chain => [ ...chain, collectionId ])
