@@ -25,10 +25,14 @@ class ZoomButtons extends React.Component {
                     onClick={ zoomOut }
                 />
                 */}
-                <Button 
-                    circular icon={ "crop" } size="big" className={ "zoomButtons-button" }
-                    onClick={ zoomFit }
-                />
+                {
+                    /*
+                    <Button 
+                        circular icon={ "crop" } size="big" className={ "zoomButtons-button" }
+                        onClick={ zoomFit }
+                    />
+                    */
+                }
             </div>
         )
     }

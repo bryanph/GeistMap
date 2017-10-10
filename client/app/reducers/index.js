@@ -758,7 +758,7 @@ function allSearch(state=[], action) {
 
 const initialGraphUIState = {
     // can be "view", "edit", "focus" or "expand"
-    mode: "view",
+    mode: "edit",
     focus: {
         id: null,
     },
