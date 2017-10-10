@@ -42,7 +42,6 @@ class AbstractionList extends React.Component {
     }
 
     expandClick() {
-        console.log("called expandclick")
         const opened = this.props.opened
         return opened ? this.props.hideAbstractionSidebar() : this.props.showAbstractionSidebar()
     }
@@ -75,8 +74,6 @@ class AbstractionList extends React.Component {
          * 2. toggle the collapse
         */
 
-        console.log(collection)
-
         // TODO: separate fetching the chain and L1 collection - 2017-09-17
         const newCollectionChain = collection.collectionChains[0]
 
@@ -89,7 +86,6 @@ class AbstractionList extends React.Component {
     }
 
     onFocusClick(collection) {
-        console.log("called focus click")
         // TODO: should follow the correct abstraction chain - 2017-09-21
 
         const newCollectionChain = [ ...this.props.collectionChainIds, collection.id ]
@@ -117,7 +113,6 @@ class AbstractionList extends React.Component {
             "abstractionList-show": opened
         })
 
-        console.log(containerClass)
         if (this.props.isLoading) {
             return null;
         }

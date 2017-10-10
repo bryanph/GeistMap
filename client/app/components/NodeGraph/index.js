@@ -107,7 +107,7 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
 
     if (mode === 'view') {
         // make click go to editor
-        selection.on('click', actions.onViewClick)
+        // selection.on('click', actions.onViewClick)
     }
     else if (mode === 'edit') {
         if (focus.id) {
@@ -145,7 +145,9 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
         }
         else {
             // change click to edit node
-            selection.on('click', actions.onEditClick)
+            // selection.on('click', actions.onEditClick)
+            selection.on('click', actions.onViewClick)
+            selection.selectAll('text').on('click', actions.onEditClick)
         }
     }
     else if (mode === 'abstract') {
@@ -198,7 +200,7 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
 
     if (mode === 'view') {
         // make click go to editor
-        selection.on('click', actions.onViewClick)
+        // selection.on('click', actions.onViewClick)
     }
     else if (mode === 'edit') {
         if (focus.id) {
@@ -238,7 +240,8 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
         }
         else {
             // change click to edit node
-            selection.on('click', actions.onEditClick)
+            selection.on('click', actions.onViewClick)
+            selection.selectAll('text').on('click', actions.onEditClick)
         }
     }
     else if (mode === 'abstract') {
@@ -341,7 +344,6 @@ const createExploreEvents = function(simulation, actions) {
 
     const updateLink = createUpdateLink({
         onDeleteClick: (d) => {
-            console.log("called delete click")
             actions.removeEdge(d.id)
         }
     })

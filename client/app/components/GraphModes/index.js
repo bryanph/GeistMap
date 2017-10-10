@@ -38,16 +38,10 @@ class GraphModes extends React.Component {
         return (
                 <Button.Group className="graphModes">
                     <Button
-                        size="medium" className={ viewClass }
-                        onClick={ () => this.props.setGraphMode("view") }
-                        >
-                        <Icon name="edit" /> <span>Edit</span>
-                    </Button>
-                    <Button
                         size="medium" className={ editClass }
                         onClick={ () => this.props.setGraphMode("edit") }
                         >
-                            <Icon name="plus" /> <span>Add Node/Link</span>
+                            <Icon name="edit" /> <span>Edit</span>
                     </Button>
                     {
                         this.props.graphType === "collection" ?

@@ -48,8 +48,6 @@ class NodeHeader extends React.Component {
             active: active
         })
 
-        console.log(node)
-
         return (
             <div 
                 className={containerClass}
