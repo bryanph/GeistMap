@@ -756,6 +756,30 @@ function allSearch(state=[], action) {
     }
 }
 
+const initialAbstractGraphUIState = {
+    // can be "view", "edit", "focus" or "expand"
+    mode: "view",
+    focus: {
+        id: null,
+    },
+}
+function abstractGraphUiState(state=initialAbstractGraphUIState, action) {
+    /*
+     * UI state related to the graph
+     */
+    switch(action.type) {
+        case uiActionTypes.TOGGLE_ABSTRACT_EDIT_MODE:
+            return {
+                ...state,
+                mode: state.mode === "edit" ? "view" : "edit",
+            }
+
+        default:
+            return state;
+    }
+}
+
+
 const initialGraphUIState = {
     // can be "view", "edit", "focus" or "expand"
     mode: "edit",
@@ -763,7 +787,6 @@ const initialGraphUIState = {
         id: null,
     },
 }
-
 function graphUiState(state=initialGraphUIState, action) {
     /*
      * UI state related to the graph
@@ -999,6 +1022,7 @@ function rootReducer(state={}, action) {
         allSearch: allSearch(state.allSearch, action),
         uiState: uiState(state.uiState, action),
         graphUiState: graphUiState(state.graphUiState, action),
+        abstractGraphUiState: abstractGraphUiState(state.abstractGraphUiState, action),
         user: user(state.user, action),
         errors: errors(state.errors, action),
     }

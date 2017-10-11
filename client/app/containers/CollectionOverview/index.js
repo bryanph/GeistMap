@@ -87,7 +87,11 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
 
                 />
                 <div className="editModeButton-container">
+                    {
+                        /*
                     <EditModeButton />
+                        */
+                    }
                 </div>
             </div>
         );
@@ -106,8 +110,8 @@ function mapStateToProps(state, props) {
         collections: getCollections(state),
         collectionLinks: getCollectionEdges(state), // links between collections
         loadingStates: state.loadingStates,
-        mode: state.graphUiState.mode,
-        focus: state.graphUiState.focus,
+        mode: state.abstractGraphUiState.mode,
+        focus: state.abstractGraphUiState.focus,
         // sidebarState: state.uiState.showCollectionSidebarState,
         // activeCollection: getCollection(state, id),
     }

@@ -3,25 +3,25 @@ import { connect } from 'react-redux';
 import { Button, Icon } from 'semantic-ui-react'
 import classNames from 'classnames'
 
-import { toggleEditMode } from '../../actions/ui'
+import { toggleAbstractEditMode } from '../../actions/ui'
 
 import './styles.scss'
 
-let EditModeButton = ({ mode, toggleEditMode }) => {
+let EditModeButton = ({ mode, toggleAbstractEditMode }) => {
     const buttonClass = classNames("editModeButton", { editMode: mode === 'edit' })
 
     return (
         <Button 
             circular icon={ mode === 'edit' ? "checkmark" : "edit" } size="massive" className={ buttonClass }
-            onClick={ toggleEditMode }
+            onClick={ toggleAbstractEditMode }
         />
     )
 }
 
 const mapStateToProps = (state) => ({
-    mode: state.graphUiState.mode
+    mode: state.abstractGraphUiState.mode
 })
 
-export default connect(mapStateToProps, { toggleEditMode })(EditModeButton)
+export default connect(mapStateToProps, { toggleAbstractEditMode })(EditModeButton)
 
 

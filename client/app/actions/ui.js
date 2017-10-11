@@ -94,56 +94,58 @@ import { getCollection, getCollections, getCollectionEdges } from '../reducers'
 import { MIN_NODE_RADIUS } from '../graph/constants'
 
 
+export const TOGGLE_ABSTRACT_EDIT_MODE = 'TOGGLE_ABSTRACT_EDIT_MODE'
+export const toggleAbstractEditMode = createAction(TOGGLE_ABSTRACT_EDIT_MODE)
 
 export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE'
-// export const toggleEditMode = createAction(TOGGLE_EDIT_MODE)
-export function toggleEditMode(id) {
-    return (dispatch, getState) => {
-        const state = getState()
-        const collections = getCollections(state)
-        const editMode = !(state.graphUiState.mode === 'edit')
+export const toggleEditMode = createAction(TOGGLE_EDIT_MODE)
+// export function toggleEditMode(id) {
+//     return (dispatch, getState) => {
+//         const state = getState()
+//         const collections = getCollections(state)
+//         const editMode = !(state.graphUiState.mode === 'edit')
 
-        // for every collection, create a "addCollectionNode" and a "addCollectionEdge
-        // when clicked on, these nodes will expand to an actual node and put in "edit mode"
-        let addCollectionNodes = {}
-        let addCollectionEdges = {}
-        // TODO: these should be created only once on initial fetch and hidden with a flag - 2017-06-19
-        // and then updated on action changes
+//         // for every collection, create a "addCollectionNode" and a "addCollectionEdge
+//         // when clicked on, these nodes will expand to an actual node and put in "edit mode"
+//         let addCollectionNodes = {}
+//         let addCollectionEdges = {}
+//         // TODO: these should be created only once on initial fetch and hidden with a flag - 2017-06-19
+//         // and then updated on action changes
 
-        if (editMode) {
-            collections.forEach((node, index) => {
-                const nodeId = uuidV4()
-                const edgeId = uuidV4()
+//         if (editMode) {
+//             collections.forEach((node, index) => {
+//                 const nodeId = uuidV4()
+//                 const edgeId = uuidV4()
 
-                const addCollectionNode = {
-                    id: nodeId,
-                    type: 'addCollection',
-                    radius: 10,
+//                 const addCollectionNode = {
+//                     id: nodeId,
+//                     type: 'addCollection',
+//                     radius: 10,
 
-                    // for later reference in ADD_COLLECTION
-                    start: node.id,
-                    edgeId,
-                }
-                const addCollectionEdge = {
-                    id: edgeId,
-                    type: 'addCollection',
-                    start: node.id,
-                    end: nodeId,
-                }
+//                     // for later reference in ADD_COLLECTION
+//                     start: node.id,
+//                     edgeId,
+//                 }
+//                 const addCollectionEdge = {
+//                     id: edgeId,
+//                     type: 'addCollection',
+//                     start: node.id,
+//                     end: nodeId,
+//                 }
 
-                addCollectionNodes[nodeId] = addCollectionNode
-                addCollectionEdges[edgeId] = addCollectionEdge
-            })
+//                 addCollectionNodes[nodeId] = addCollectionNode
+//                 addCollectionEdges[edgeId] = addCollectionEdge
+//             })
 
-        }
-        return dispatch({
-            type: TOGGLE_EDIT_MODE,
-            editMode,
-            // addCollectionNodes,
-            // addCollectionEdges,
-        })
-    }
-}
+//         }
+//         return dispatch({
+//             type: TOGGLE_EDIT_MODE,
+//             editMode,
+//             // addCollectionNodes,
+//             // addCollectionEdges,
+//         })
+//     }
+// }
 
 
 
