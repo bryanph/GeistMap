@@ -84,7 +84,6 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                     graphType={'collectionOverview'}
                     mode={mode}
                     focus={this.props.focus}
-
                 />
                 <div className="editModeButton-container">
                     {

@@ -59,6 +59,8 @@ module.exports = function(db, es) {
             )
 
             const result = results.records[0]._fields[0]
+
+            return result
         },
 
         getAll: function(user, res) {
@@ -66,7 +68,6 @@ module.exports = function(db, es) {
              * Get all collections and their abstract relationships
              */
 
-            // TODO: only get collections reachable from the root node - 2017-07-14
             return Promise.all([
                 // get all the edges between the collections
                 db.run(`

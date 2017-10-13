@@ -55,7 +55,7 @@ class App extends React.Component {
     }
 
     render() {
-        const { match, location, isLoggedIn } = this.props
+        const { match, location, isLoggedIn, rootCollectionId } = this.props
 
         return (
             <ErrorBoundary>
@@ -69,18 +69,31 @@ class App extends React.Component {
                             <ArchiveSidebar />
 
                             <Switch>
-
-                                { /* The overview graph showing explicit collection links */ }
-                                <Route exact path={'/app/collections/:id?'} component={CollectionOverview}/>
-
                                 { /* same component to allow for smooth transitions */ }
-                                <Route exact path={'/app/nodes/:nodeId?'} component={NodeView}/>
-                                <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId?'} component={NodeView}/>
+                                <Route exact path={'/app/nodes/:nodeId?'} render={(props) => <NodeView {...props} graphType="node" />}/>
+                                <Route exact path={'/app/collections/:collectionChain*/nodes/:nodeId?'} render={
+                                    (props) => {
+                                        const collectionChain = props.match.params.collectionChain 
+                                        console.log(collectionChain)
+
+                                        if (!collectionChain) {
+                                            return <Redirect to={`/app/collections/${rootCollectionId}/nodes`}/>
+                                        }
+
+                                        return (
+                                            <NodeView {...props} graphType="collection" />
+                                        )
+                                    }
+                                }/>
+
 
                                 <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>
                                 <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
 
-                                <Redirect from={'/app/'} to={'/app/collections'}/>
+                                { /* The overview graph showing explicit collection links */ }
+                                <Route exact path={'/app/collections/:collectionChain*'} component={CollectionOverview}/>
+
+                                <Redirect from={'/app/'} to={'/app/collections/nodes'}/>
                             </Switch>
                             {
                                 /*
@@ -99,6 +112,7 @@ class App extends React.Component {
 function mapStateToProps(state, props) {
     return {
         isLoggedIn: isLoggedIn(),
+        rootCollectionId: state.user.rootCollectionId,
     }
 }
 

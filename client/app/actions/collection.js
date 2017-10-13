@@ -56,6 +56,27 @@ export function fetchCollection(id) {
 }
 
 /*
+ * Get the root collection, direct children and their neighbouring nodes (including edges)
+*/
+export const FETCH_ROOT_COLLECTION_REQUEST = 'FETCH_ROOT_COLLECTION_REQUEST'
+export const FETCH_ROOT_COLLECTION_SUCCESS = 'FETCH_ROOT_COLLECTION_SUCCESS'
+export const FETCH_ROOT_COLLECTION_FAILURE = 'FETCH_ROOT_COLLECTION_FAILURE'
+export function fetchRootCollection(id, collectionChainIds) {
+    return {
+        [CALL_API]: {
+            types: [ FETCH_ROOT_COLLECTION_REQUEST, FETCH_ROOT_COLLECTION_SUCCESS, FETCH_ROOT_COLLECTION_FAILURE ],
+            endpoint: 'Collection.getRoot',
+            payload: [ id, collectionChainIds ],
+            schema: {
+                collectionChain: arrayOf(Schemas.NODE),
+                nodes: arrayOf(Schemas.NODE),
+                edges: arrayOf(Schemas.EDGE),
+            }
+        }
+    }
+}
+
+/*
  * Get collection, direct children and their neighbouring nodes (including edges)
 */
 export const GET_COLLECTIONL1_REQUEST = 'GET_COLLECTIONL1_REQUEST'

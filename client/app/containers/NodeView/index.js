@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router'
 
 import compose from 'recompose/compose'
 import withProps from 'recompose/withProps'
@@ -30,7 +31,7 @@ import {
 import NodeView from '../../components/NodeView'
 
 function loadData(props) {
-    if (props.collectionId) {
+    if (props.graphType === "collection") {
         return props.loadCollectionL1(props.collectionId, props.collectionChainIds)
             .then((action) => {
                 if (props.nodeId) {
@@ -93,12 +94,11 @@ function mapStateToProps(state, props) {
 
     let nodes, edges, collections, visibleCollections, nodeTree, isLoading, graphType, collectionChain;
 
-    if (props.collectionChainIds) {
+    if (props.graphType === "collection") {
         isLoading = state.loadingStates.GET_COLLECTIONL1;
 
         collectionChain = getCollectionChain(state, props);
         ({ nodes, collections, visibleCollections, nodeTree, edges} = getNodesAndEdgesByCollectionId(state, props));
-        graphType = "collection"
 
     } else {
         isLoading = state.loadingStates.GET_NODE_L1 || state.loadingStates.GET_NODE_L2
@@ -107,7 +107,6 @@ function mapStateToProps(state, props) {
         visibleCollections = []
         collectionChain = []
         edges = getL2Edges(state, props.nodeId);
-        graphType = "node"
     }
 
     return {
@@ -123,7 +122,7 @@ function mapStateToProps(state, props) {
         visibleCollections,
         nodeTree,
         isLoading,
-        graphType,
+        graphType: props.graphType,
         collectionChain,
         adjacencyMap: state.adjacencyMap, // TODO: should this be passed down? - 2017-09-19
         abstractionSidebarOpened: state.uiState.abstractionSidebar.opened,
@@ -160,4 +159,4 @@ export default compose(
         removeEdge,
         setGraphMode,
     })
-)(NodeViewContainer)
+)(withRouter(NodeViewContainer))
