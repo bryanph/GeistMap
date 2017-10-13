@@ -6,6 +6,7 @@ import { List, ListItem } from 'material-ui/List'
 import { searchAll } from '../../actions/search'
 
 import {HotKeys} from 'react-hotkeys';
+import classNames from 'classnames'
 
 import './styles.scss'
 
@@ -38,8 +39,12 @@ class NodeSearchList extends React.Component {
             return null
         }
 
+        const className = classNames("nodeSearch-list", {
+            floatBelow: this.props.floatBelow
+        })
+
         return (
-            <div className='nodeSearch-list'>
+            <div className={ className }>
                 <List>
                     {listItems}
                 </List>
@@ -148,6 +153,7 @@ class NodeSearch extends React.Component {
                     disabled={this.props.disabled}
                 />
                 <NodeSearchList
+                    floatBelow={this.props.floatBelow}
                     searchValue={searchValue}
                     searchResults={searchResults}
                     onClick={this.onSearchClick}

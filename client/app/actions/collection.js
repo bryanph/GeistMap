@@ -47,7 +47,7 @@ export function fetchCollection(id) {
             endpoint: 'Collection.get',
             payload: [ id ],
             schema: {
-                collection: Schemas.COLLECTION,
+                collection: Schemas.NODE,
                 // nodes: arrayOf(Schemas.NODE),
                 edges: arrayOf(Schemas.EDGE),
             }
@@ -198,8 +198,8 @@ export function addNodeToCollection(collectionId, nodeId) {
     // TODO: should be tested separately - 2017-08-25
     // this makes sure the right state is present in order to be able to merge the resulting state
     return (dispatch, getState) => {
-        const collection = getCollection(getState(), collectionId)
-        const node = getNode(getState(), nodeId)
+        let collection = getNode(getState(), collectionId)
+        let node = getNode(getState(), nodeId)
 
         // TODO just use fetchNode()
         const collectionPromise = !collection ? dispatch(fetchCollectionL1(collectionId)) : Promise.resolve(collection)
@@ -207,17 +207,14 @@ export function addNodeToCollection(collectionId, nodeId) {
         // this fetches the neighbours as well (why?)
         const nodePromise = !node ? dispatch(loadNodeL1(nodeId)) : Promise.resolve(node)
 
-        // first convert to a collection if the source is a node
-        const convertToCollection = collection.type === "node"
-            ? dispatch(convertNodeToCollection(collectionId)) : Promise.resolve()
-
-        return Promise.all([ collectionPromise, nodePromise, convertToCollection ])
+        return Promise.all([ collectionPromise, nodePromise])
             .then(() => {
                 const { collectionChains } = getCollection(getState(), collectionId)
                 const newCollectionChains = collectionChains.map(chain => [ ...chain, collectionId ])
 
                 return dispatch(fetchAddNodeToCollection(collectionId, nodeId, newCollectionChains))
             })
+
     }
 }
 

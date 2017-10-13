@@ -36,7 +36,7 @@ module.exports = function(db, es) {
             db.run(`
                 MATCH (u:User)--(n:Node)
                 WHERE u.id = {userId} AND n.id = {id}
-                OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection)
+                OPTIONAL MATCH (n)-[:AbstractEdge]->(c:Node)
                 RETURN properties(n) as node, collect(properties(c)) as collections
                 `,
                 {
@@ -62,30 +62,6 @@ module.exports = function(db, es) {
             .catch(handleError)
         },
 
-        getArchive: function(user, res) {
-            /*
-             * Nodes without collections assigned to them
-             */
-
-            db.run(
-                "MATCH (u:User)--(n:Node) " +
-                "WHERE u.id = {userId} " +
-                "AND NOT (n)-[:IN]-(:Collection) " +
-                "RETURN collect(properties(n)) as nodes",
-                {
-                    userId: user._id.toString()
-                }
-            )
-            .then((results) => {
-                if (results.records.length === 0) {
-                    return res(null, [])
-                }
-
-                res(null, results.records[0]._fields[0])
-            })
-            .catch(handleError)
-        },
-
         getL1: function(user, id, res) {
             /*
              * Get node with id ${id} (including its neightbours)
@@ -94,7 +70,7 @@ module.exports = function(db, es) {
             db.run(`
                 MATCH (u:User)--(n:Node)
                 WHERE u.id = {userId} AND n.id = {id}
-                OPTIONAL MATCH (n)-[:AbstractEdge*0..]->(c:Collection)
+                OPTIONAL MATCH (n)-[:AbstractEdge]->(c:Node)
                 OPTIONAL MATCH (n)-[e:EDGE]-(n2:Node)
                 RETURN properties(n) as node, collect(distinct properties(n2)) as otherNodes, collect(distinct properties(e)) as edges, collect(distinct properties(c)) as collections
                 `,
@@ -133,7 +109,7 @@ module.exports = function(db, es) {
                 db.run(
                     `MATCH (u:User)--(n:Node)
                     WHERE u.id = {userId} AND n.id = {id}
-                    OPTIONAL MATCH (n)-[:AbstractEdge]->(c:Collection)
+                    OPTIONAL MATCH (n)-[:AbstractEdge]->(c:Node)
                     RETURN properties(n), collect(distinct properties(c))`,
                     {
                         id,
@@ -146,7 +122,7 @@ module.exports = function(db, es) {
                     WHERE u.id = {userId} AND n.id = {id}
                     OPTIONAL MATCH (n)-[:EDGE*0..2]-(n2:Node)
                     WITH distinct n2
-                    OPTIONAL MATCH (n2)-[:AbstractEdge]->(c:Collection)
+                    OPTIONAL MATCH (n2)-[:AbstractEdge]->(c:Node)
                     RETURN properties(n2), collect(distinct c.id)`,
                     // ORDER BY n2.id`,
                     {

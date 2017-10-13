@@ -63,7 +63,7 @@ export function fetchNodeL1(id) {
                 node: Schemas.NODE,
                 connectedNodes: arrayOf(Schemas.NODE),
                 edges: arrayOf(Schemas.EDGE),
-                collections: arrayOf(Schemas.COLLECTION),
+                collections: arrayOf(Schemas.NODE),
             },
         }
     }

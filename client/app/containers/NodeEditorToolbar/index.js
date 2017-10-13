@@ -66,7 +66,6 @@ export class NodeEditorToolbar extends React.Component {
         }
         else if (page === "collection") {
             // collection mode
-            console.log(this.props.collectionChainIds)
             history.push(`/app/collections/${this.props.collectionChainIds.join('/')}/nodes`)
         }
     }
@@ -106,6 +105,7 @@ export class NodeEditorToolbar extends React.Component {
                         <NodeCollectionList
                             node={this.props.node}
                             collections={this.props.collections}
+                            rootCollectionId={this.props.rootCollectionId}
                         />
 
                     </div>
@@ -135,12 +135,14 @@ import { showAddRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
     const id = props.id
+    const rootCollectionId = state.user.rootCollectionId
 
     return {
         opened: state.uiState.showGraphSideBarOpened,
         node: getNode(state, id),
         collections: getCollectionsByNodeId(state, id),
         loadingStates: state.loadingStates,
+        rootCollectionId,
     }
 }
 

@@ -18,6 +18,11 @@ import {
     createCollection,
 } from '../../actions/collection'
 
+import {
+    createNode
+} from '../../actions/node'
+
+
 import './styles.scss';
 
 const styles = {
@@ -46,9 +51,7 @@ class NodeCollectionList extends React.Component {
 
         this.toggleSearch = this.toggleSearch.bind(this)
         this.addNodeToCollection = this.addNodeToCollection.bind(this)
-        this.openWindow = this.openWindow.bind(this)
-        this.hideWindow = this.hideWindow.bind(this)
-        this.onCollectionCreated = this.onCollectionCreated.bind(this)
+        this.createAndAddNodeToCollection = this.createAndAddNodeToCollection.bind(this)
         this.removeNodeFromCollection = this.removeNodeFromCollection.bind(this)
         this.handleClickOutside = this.handleClickOutside.bind(this)
     }
@@ -64,24 +67,26 @@ class NodeCollectionList extends React.Component {
         this.setState({ searchToggle: false })
     }
 
-    onCollectionCreated(action) {
-        // now add node to the collection as well
-        const collectionId = action.response.result
+    createAndAddNodeToCollection(label) {
+        // add a new node to the graph
+        if (!label) {
+            return;
+        }
 
-        this.props.addNodeToCollection(collectionId, this.props.node.id)
+        console.log("creating!")
+
+        this.props.createNode({ name: label })
+            .then(action => action.response.result)
+            .then(id => this.props.addNodeToCollection(
+                id,
+                this.props.node.id,
+            ))
+
         this.setState({ searchToggle: false })
     }
 
     removeNodeFromCollection(collectionId) {
         this.props.removeNodeFromCollection(collectionId, this.props.node.id)
-    }
-
-    openWindow(collection) {
-        this.setState({ open: true, defaultValues: collection })
-    }
-
-    hideWindow() {
-        this.setState({ open: false })
     }
 
     handleClickOutside(event) {
@@ -111,7 +116,6 @@ class NodeCollectionList extends React.Component {
                 )}
 
                 {
-                    /*
                     !this.state.searchToggle ?
                         <Chip
                             backgroundColor={secondaryColor}
@@ -120,12 +124,14 @@ class NodeCollectionList extends React.Component {
                         >Add Collection
                         </Chip>
                         : 
-                        <NodeSearch 
-                            floatingLabel={"Search for a collection..."}
-                            onSearchClick={this.addNodeToCollection} 
-                            createCollection={this.openWindow}
-                        />
-                    */
+                        <div style={{ width: "300px" }}>
+                            <NodeSearch 
+                                floatBelow={ true }
+                                floatingLabel={"Search for a collection..."}
+                                onSearchClick={this.addNodeToCollection} 
+                                onClick={this.createAndAddNodeToCollection}
+                            />
+                        </div>
                 }
             </div>
         );
@@ -155,4 +161,5 @@ export default connect(null, {
     addNodeToCollection,
     removeNodeFromCollection,
     createCollection,
+    createNode,
 })(enhanceWithClickOutside(NodeCollectionList))

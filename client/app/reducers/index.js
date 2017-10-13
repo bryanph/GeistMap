@@ -69,7 +69,8 @@ export function nodes(state={}, action, collections) {
                             [ ...chains, ...action.collectionChains ],
                             JSON.stringify
                         )
-                    }
+                    },
+                    collections: { $push: [ action.collectionId ] }
                 }
             })
 
@@ -97,7 +98,8 @@ export function nodes(state={}, action, collections) {
                 [action.nodeId]: {
                     collectionChains: { $apply: (chains) => chains.filter(
                         chain => chain[chain.length-1] !== action.collectionId
-                    )}
+                    )},
+                    collections: { $apply: (c) =>  _.without(c, action.collectionId) }
                 }
             })
 
@@ -836,11 +838,6 @@ const initialUiState = {
         description: "",
     },
 
-    addNodeToCollectionWindowState: {
-        opened: false,
-        collection: null,
-    },
-
     activeCollections: [],
 
     archiveSidebar: {
@@ -892,22 +889,6 @@ function uiState(state=initialUiState, action) {
             return {
                 ...state,
                 createCollectionWindowOpened: false,
-            }
-        case uiActionTypes.SHOW_ADD_NODE_TO_COLLECTION_WINDOW:
-            return {
-                ...state,
-                addNodeToCollectionWindowState: {
-                    ...action.payload,
-                    opened: true,
-                }
-            }
-        case uiActionTypes.HIDE_ADD_NODE_TO_COLLECTION_WINDOW:
-            return {
-                ...state,
-                addNodeToCollectionWindowState: {
-                    ...state.addNodeToCollectionWindowState,
-                    opened: false,
-                }
             }
         case uiActionTypes.SHOW_ADD_PICTURE_WINDOW:
             return {

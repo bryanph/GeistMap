@@ -71,7 +71,7 @@ module.exports = function(db, es) {
             return Promise.all([
                 // get all the edges between the collections
                 db.run(`
-                    MATCH (u:User)--(r:RootCollection)<-[:AbstractEdge*0..]-(c:Collection)
+                    MATCH (u:User)--(r:RootCollection)<-[:AbstractEdge*0..]-(c:Node)
                     WHERE u.id = {userId}
                     WITH collect(c) as c2
                     UNWIND c2 as cu1
@@ -85,9 +85,9 @@ module.exports = function(db, es) {
                 ),
                 // get all collections
                 db.run(`
-                    MATCH (u:User)--(r:RootCollection)<-[:AbstractEdge*0..]-(c:Collection)
+                    MATCH (u:User)--(r:RootCollection)<-[:AbstractEdge*0..]-(c:Node)
                     WHERE u.id = {userId}
-                    MATCH (c)<-[:AbstractEdge*0..]-(c2:Collection) // all collections
+                    MATCH (c)<-[:AbstractEdge*0..]-(c2:Node) // all collections
                     WITH DISTINCT c2 as nodes
                     MATCH p=(:RootCollection)<-[:AbstractEdge*0..]-(nodes)
                     WITH nodes, collect(extract(c IN (nodes(p)[0..length(p)]) | c.id)) as collections
@@ -135,9 +135,9 @@ module.exports = function(db, es) {
             Promise.all([
                 // get collection
                 db.run(
-                    `MATCH (u:User)--(c:Collection)
+                    `MATCH (u:User)--(c:Node)
                     WHERE u.id = {userId} AND c.id = {id}
-                    RETURN c;`,
+                    RETURN properties(c);`,
                     {
                         id,
                         userId,
@@ -145,14 +145,14 @@ module.exports = function(db, es) {
                 ),
                 // get all edges in the collection
                 db.run(
-                    `MATCH (u:User)--(c:Collection)
+                    `MATCH (u:User)--(c:Node)
                     WHERE u.id = {userId} AND c.id = {id}
-                    OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
+                    OPTIONAL MATCH (c)<-[:AbstractEdge*0..]-(:Node)--(n:Node)
                     WITH c, collect(distinct n) as ns
                     UNWIND ns as n1
                     UNWIND ns as n2
                     OPTIONAL MATCH (n1)-[e:EDGE]-(n2)
-                    RETURN collect(distinct e)`,
+                    RETURN collect(distinct properties(e))`,
                     {
                         id,
                         userId,
@@ -160,12 +160,12 @@ module.exports = function(db, es) {
                 ),
                 // get all nodes in the collection, along with THEIR collections (ids)
                 db.run( `
-                    MATCH (u:User)--(c:Collection)
+                    MATCH (u:User)--(c:Node)
                     WHERE u.id = {userId} AND c.id = {id}
-                    OPTIONAL MATCH (c)<-[*0..]-(:Collection)--(n:Node)
+                    OPTIONAL MATCH (c)<-[:AbstractEdge*0..]-(:Node)--(n:Node)
                     WITH distinct n
-                    OPTIONAL MATCH (n)-[:IN]-(c:Collection)-[:PARENT*0..]->(c2:Collection) // get collections for node
-                    RETURN n, collect(distinct c2.id)
+                    OPTIONAL MATCH (n)-[:IN]-(c:Node)-[:AbstractEdge*0..]->(c2:Node) // get collections for node
+                    RETURN properties(n) as n, collect(distinct c2.id)
                     ORDER BY n.id
                     `,
                     {
@@ -180,18 +180,20 @@ module.exports = function(db, es) {
                     return res(new Error(`Collection with id ${id} was not found`))
                 }
 
-                const collection = mapIdentity(results[0].records[0].get(0))
-                const edges = results[1].records[0].get(0).map(mapEdges)
+                const collection = results[0].records[0].get(0)
+                const edges = results[1].records[0].get(0)
                 const nodes = results[2].records[0].get(0) === null ?
                     [] :
                     results[2].records.map(row => (
                         Object.assign({},
-                            mapIdentity(row.get(0)),
+                            row.get(0),
                             {
-                                collections: row.get(1).map(x => x.toString()), // ids for collections
+                                collections: row.get(1), // ids for collections
                             }
                         )
                     ))
+
+                console.log(nodes)
 
                 return res(null, {
                     collection: Object.assign({},
@@ -219,6 +221,7 @@ module.exports = function(db, es) {
                 return res("collection chain is too long");
             }
 
+            // TODO: separate the calls for getting all collections in a path to the root - 2017-10-13
             const chainQuery = "MATCH p=(u:User)--" + [
                 collectionChain.reduce((acc, val, i) => {
                     if (i === 0) {
@@ -258,7 +261,7 @@ module.exports = function(db, es) {
                 // get all edges in the collection
                 // TODO: should also filter out edges between parent collections and the nodes
                 db.run(
-                    `MATCH (u:User)--(c:Collection)
+                    `MATCH (u:User)--(c:Node)
                     WHERE u.id = {userId} AND c.id = {id}
                     MATCH (c)<-[:AbstractEdge*1..]-(n)-[e:EDGE]-(n2)
                     WITH DISTINCT n, c
@@ -277,7 +280,7 @@ module.exports = function(db, es) {
                  * Including their top-level abstractions in a list (ids)
                 */
                 db.run(`
-                    MATCH (u:User)--(c:Collection)
+                    MATCH (u:User)--(c:Node)
                     WHERE u.id = {userId} AND c.id = {id}
                     MATCH (c)<-[:AbstractEdge*0..]-(n) // children of this collection
                     OPTIONAL MATCH (n)-[e:EDGE]-(n2) // get neighbours
@@ -336,7 +339,7 @@ module.exports = function(db, es) {
 
         create: function(user, id, parentId, data, res) {
             /*
-             * Create a new collection connected to the root collection
+             * Create a new collection connected to the parent collection
              */
 
             if (!id || !parentId) {
@@ -381,46 +384,6 @@ module.exports = function(db, es) {
 
                     return node
 
-                })
-                .catch(handleError)
-        },
-
-        // TODO: not used at the moment - 2017-08-25
-        connect: function(user, sourceId, targetId, id, res) {
-            /*
-             * Create the edge [sourceId]-[edge]->[targetId]
-             */
-
-            if (!sourceId || !targetId) {
-                return res("Set both collection ids")
-            }
-
-            if (sourceId === targetId) {
-                return res("Self referencing connections are not allowed")
-            }
-
-            return db.run(`
-                MATCH (u:User)--(n1:Collection), (u:User)--(n2:Collection)
-                WHERE u.id = {userId}
-                AND n1.id = {sourceId} AND n2.id = {targetId}
-                MERGE (n1)-[e:AbstractEdge { id: {id}, start: {sourceId}, end: {targetId} }]->(n2)
-                RETURN properties(e) as edge
-                `,
-                {
-                    id,
-                    sourceId,
-                    targetId,
-                    userId: user._id.toString(),
-                }
-            )
-                .then(results => {
-                    const result = results.records[0]._fields[0]
-
-                    if (res) {
-                        res(null, result)
-                    }
-
-                    return result
                 })
                 .catch(handleError)
         },
@@ -485,7 +448,7 @@ module.exports = function(db, es) {
 
             // TODO: what if we add it to PKB directly?
             return db.run(`
-                MATCH (u:User)--(c:Collection), (u:User)--(n:Node)
+                MATCH (u:User)--(c:Node), (u:User)--(n:Node)
                 WHERE u.id = {userId}
                 AND c.id = {collectionId} AND n.id = {nodeId}
                 AND NOT (c)-[:AbstractEdge*0..]->(n)
@@ -531,7 +494,7 @@ module.exports = function(db, es) {
             }
 
             return db.run(`
-                MATCH (u:User)--(c:Collection)-[e]-(n:Node)--(u:User)
+                MATCH (u:User)--(c:Node)<-[e:AbstractEdge]-(n:Node)--(u:User)
                 WHERE u.id = {userId}
                 AND c.id = {collectionId} AND n.id = {nodeId}
                 DELETE e
@@ -564,7 +527,7 @@ module.exports = function(db, es) {
                 // remove the AbstractEdge to the source abstraction
                 db.run(
                     `
-                    MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
+                    MATCH (u:User)--(n:Node), (u:User)--(c:Node)
                     WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {sourceCollectionId}
                     MATCH (n)-[e:AbstractEdge]->(c)
                     DELETE e
@@ -578,7 +541,7 @@ module.exports = function(db, es) {
                 db.run(
                     // move the node to the abstraction with targetId
                     `
-                    MATCH (u:User)--(n:Node), (u:User)--(c:Collection)
+                    MATCH (u:User)--(n:Node), (u:User)--(c:Node)
                     WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {targetId}
                     CREATE (n)-[e:AbstractEdge { id: {edgeId}, start: {sourceId}, end: {targetId} }]->(c)
                     RETURN properties(e)

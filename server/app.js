@@ -173,7 +173,6 @@ io.on('connection', function(socket) {
 
     socket.on('Node.get', NodeAPI.get.bind(null, user));
     // TODO: rename to getL1 - 2016-08-01
-    socket.on('Node.getArchive', NodeAPI.getArchive.bind(null, user));
     socket.on('Node.getL1', NodeAPI.getL1.bind(null, user));
     socket.on('Node.getL2', NodeAPI.getL2.bind(null, user));
     socket.on('Node.create', NodeAPI.create.bind(null, user));
@@ -203,7 +202,6 @@ io.on('connection', function(socket) {
     // socket.on('Collection.getByIds', CollectionAPI.getByIds.bind(null, user));
     socket.on('Collection.create', CollectionAPI.create.bind(null, user));
     socket.on('Collection.remove', CollectionAPI.remove.bind(null, user));
-    socket.on('Collection.connect', CollectionAPI.connect.bind(null, user));
     socket.on('Collection.addNode', CollectionAPI.addNode.bind(null, user));
     socket.on('Collection.removeNode', CollectionAPI.removeNode.bind(null, user));
     socket.on('Collection.moveNode', CollectionAPI.moveNode.bind(null, user));
