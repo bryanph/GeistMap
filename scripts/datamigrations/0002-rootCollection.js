@@ -74,15 +74,13 @@ async function start() {
                 userId: user._id.toString(),
             })
 
-            if (!result.length) {
+            if (!result.records.length) {
                 return Promise.resolve()
             }
 
-            console.log(result.records)
             const rootCollection = result.records[0]._fields[0]
 
-            user.rootCollectionId = rootCollection.id
-            return user.save()
+            return app.db.models.User.update({ _id: user._id }, { $set: { rootCollectionId: rootCollection.id } })
         })
 
         Promise.all(promises)
