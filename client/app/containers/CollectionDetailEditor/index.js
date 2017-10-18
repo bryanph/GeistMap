@@ -16,7 +16,7 @@ import NodeEditorToolbar from '../../containers/NodeEditorToolbar'
 
 import {
     getNode,
-    getCollectionChain,
+    getAbstractionChain,
 } from '../../reducers'
 
 import {
@@ -95,7 +95,7 @@ function mapStateToProps(state, props) {
     return {
         collectionId: props.collectionId,
         collection: getNode(state, props.collectionId),
-        collectionChain: getCollectionChain(state, props),
+        collectionChain: getAbstractionChain(state, props),
         collectionChainIds: props.collectionChainIds,
         nodeId: props.nodeId,
         node: getNode(state, props.nodeId),

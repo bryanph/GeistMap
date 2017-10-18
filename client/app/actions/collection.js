@@ -174,13 +174,12 @@ export function removeAbstraction(collectionId, collectionChainIds) {
 export const ADD_NODE_TO_COLLECTION_REQUEST = 'ADD_NODE_TO_COLLECTION_REQUEST'
 export const ADD_NODE_TO_COLLECTION_SUCCESS = 'ADD_NODE_TO_COLLECTION_SUCCESS'
 export const ADD_NODE_TO_COLLECTION_FAILURE = 'ADD_NODE_TO_COLLECTION_FAILURE'
-export function fetchAddNodeToCollection(collectionId, nodeId, collectionChains) {
+export function fetchAddNodeToCollection(collectionId, nodeId) {
     const id = uuidV4();
 
     return {
         collectionId,
         nodeId,
-        collectionChains,
         [CALL_API]: {
             types: [ ADD_NODE_TO_COLLECTION_REQUEST, ADD_NODE_TO_COLLECTION_SUCCESS, ADD_NODE_TO_COLLECTION_FAILURE ],
             endpoint: 'Collection.addNode',
@@ -209,10 +208,7 @@ export function addNodeToCollection(collectionId, nodeId) {
 
         return Promise.all([ collectionPromise, nodePromise])
             .then(() => {
-                const { collectionChains } = getCollection(getState(), collectionId)
-                const newCollectionChains = collectionChains.map(chain => [ ...chain, collectionId ])
-
-                return dispatch(fetchAddNodeToCollection(collectionId, nodeId, newCollectionChains))
+                return dispatch(fetchAddNodeToCollection(collectionId, nodeId))
             })
 
     }
@@ -240,14 +236,13 @@ export function removeNodeFromCollection(collectionId, nodeId) {
 export const MOVE_TO_ABSTRACTION_REQUEST = 'MOVE_TO_ABSTRACTION_REQUEST'
 export const MOVE_TO_ABSTRACTION_SUCCESS = 'MOVE_TO_ABSTRACTION_SUCCESS'
 export const MOVE_TO_ABSTRACTION_FAILURE = 'MOVE_TO_ABSTRACTION_FAILURE'
-export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, sourceNode, collectionChains) {
+export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, sourceNode) {
     return {
         sourceCollectionId,
         sourceId,
         targetId,
         edgeId,
         sourceNode, // TODO: don't pass down?
-        collectionChains,
         [CALL_API]: {
             types: [ MOVE_TO_ABSTRACTION_REQUEST, MOVE_TO_ABSTRACTION_SUCCESS, MOVE_TO_ABSTRACTION_FAILURE ],
             endpoint: 'Collection.moveNode',
@@ -272,10 +267,7 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
             ? dispatch(convertNodeToCollection(targetId)) : Promise.resolve()
 
         return convertPromise.then(() => {
-            const { collectionChains } = getCollection(getState(), targetId)
-            const newCollectionChains = collectionChains.map(chain => [ ...chain, targetId ])
-
-            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, source, newCollectionChains))
+            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, source))
         })
     }
 }

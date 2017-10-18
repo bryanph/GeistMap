@@ -22,7 +22,6 @@ function entities(state={}, action, globalState) {
     return {
         nodes: nodes(state.nodes, action, globalState),
         edges: edges(state.edges, action, globalState),
-        // collections: collections(state.collections, action, globalState),
         collectionEdges: collectionEdges(state.collectionEdges, action, globalState),
     }
 }
@@ -41,101 +40,37 @@ export function nodes(state={}, action, collections) {
      * Handles the non-merging action types
      */
     switch(action.type) {
-        case collectionActionTypes.CREATE_COLLECTION_SUCCESS:
-            // TODO: this action shouldn't be called directly? - 2017-08-29
-            // TODO: should be handled in server response? - 2017-08-28
-            return {
-                ...state,
-                [action.id]: {
-                    ...action.response.entities.collections[action.id],
-                    collectionChains: [
-                        [ action.parentId ]
-                    ]
-                }
-            }
-
         case nodeActionTypes.REMOVE_NODE_SUCCESS:
             return _.omit(state, action.nodeId)
 
         case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
-            if (!state[action.nodeId].collectionChains) {
-                state[action.nodeId].collectionChains = []
-            }
-
             return update(state, {
                 [action.nodeId]: {
-                    collectionChains: { $apply: (chains) => 
-                        _.uniqBy(
-                            [ ...chains, ...action.collectionChains ],
-                            JSON.stringify
-                        )
-                    },
                     collections: { $push: [ action.collectionId ] }
                 }
             })
 
         case collectionActionTypes.REMOVE_COLLECTION_SUCCESS: {
-            let newState = update(state, {
-                [action.collectionId]: { type: { $set: "node"}}
-            })
-
-            // TODO: this is very expensive to compute - 2017-08-29
-            return _.mapValues(newState, (x) => update(x, {
-                collectionChains: { $apply: (chains) => 
-                    _.uniqBy(
-                        (chains || []).map(chain => _.without(chain, action.collectionId)),
-                        JSON.stringify
-                    )
+            return _.mapValues(state, (x) => update(x, {
+                collections: { $apply: (collections) => 
+                    _.without(collections, action.collectionId)
                 }
             }))
         }
 
         case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
-            /*
-             * remove the collectionChains with ${collectionId} as last in the chain
-             */
             return update(state, {
                 [action.nodeId]: {
-                    collectionChains: { $apply: (chains) => chains.filter(
-                        chain => chain[chain.length-1] !== action.collectionId
-                    )},
                     collections: { $apply: (c) =>  _.without(c, action.collectionId) }
                 }
             })
 
         case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
-            const sourceNode = state[action.sourceId]
-
-            let newState = state;
-
-            // must also update the nodes if source is a collection
-            if (sourceNode.type === "collection") {
-                const newCollectionChains = action.collectionChains.map((chain) =>
-                    [ ...chain, action.sourceId ]
-                )
-
-                newState = _.mapValues(newState, (n) => update(n, {
-                    collectionChains: { $apply: (chains) => {
-                        if (!_.some(chains, (chain) => chain[chain.length-1] === action.sourceId)) {
-                            return chains
-                        }
-
-                        return [
-                            ...chains.filter(chain => chain[chain.length-1] !== action.sourceId),
-                            ...newCollectionChains,
-                        ]
-                    }}
-                }))
-            }
-
-            return update(newState, {
+            return update(state, {
                 [action.sourceId]: {
-                    collectionChains: { $apply: (chains) => 
-                        [
-                            ...chains.filter(chain => chain[chain.length-1] !== action.sourceCollectionId),
-                            ...action.collectionChains,
-                        ]
-                    }
+                    collections: { $apply: (collections) => (
+                        collections.splice(_.findIndex(collections, action.sourceCollectionId), 1 , action.targetId)
+                    )}
                 }
             })
         }
@@ -276,63 +211,6 @@ function collectionEdges(state={}, action) {
         default:
             if (action.response && action.response.entities && action.response.entities.collectionEdges) {
                 return _.merge({}, state, action.response.entities.collectionEdges)
-            }
-
-            return state
-    }
-}
-
-
-function collections(state={}, action) {
-    /*
-     * Handles the non-merging action types
-     */
-    switch(action.type) {
-            // u       case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
-            //             return _.omit(state, action.collectionId)
-
-        case collectionActionTypes.CREATE_COLLECTION_SUCCESS:
-            // TODO: should be handled in server response? - 2017-08-28
-            return {
-                ...state,
-                [action.id]: {
-                    ...action.response.entities.collections[action.id],
-                    collectionChains: [
-                        [ action.parentId ]
-                    ]
-                }
-            }
-
-            //         case uiActionTypes.TOGGLE_EDIT_MODE:
-            //             if (action.editMode) {
-            //                 // add the addCollectionNodes
-            //                 return {
-            //                     ...state,
-            //                     ...action.addCollectionNodes
-            //                 }
-            //             } else {
-            //                 // remove the addCollectionNodes
-            //                 return _.omitBy(state, (e) => e.type === 'addCollection')
-            //             }
-
-            //         case uiActionTypes.ADD_COLLECTION:
-            //             // TODO: should this be done with more of a "sync" behaviour? - 2017-06-14
-            //             // temporarily add a collection and defer synching with the server
-            //             return {
-            //                 ...state,
-            //                 [action.id]: {
-            //                     ...state[action.id],
-            //                     type: 'node',
-            //                     isNew: true,
-            //                     parentId: action.start, // parent node
-            //                     edgeId: action.edgeId, // id of edge to the parent node
-            //                     // TODO: created should also be set here - 2017-06-07
-            //                 }
-            //             }
-
-        default:
-            if (action.response && action.response.entities && action.response.entities.collections) {
-                return _.merge({}, state, action.response.entities.collections)
             }
 
             return state
@@ -508,106 +386,23 @@ function edgeListMap(state={}, action) {
             return newState
     }
 }
-function allNodesByCollectionId(state={}, action) {
-    /*
-     * this represents all children recursively
-     * // TODO: a more generic tree datastructure - 2017-09-20
-     */
-    switch(action.type) {
-        case collectionActionTypes.GET_COLLECTION_SUCCESS:
-        case collectionActionTypes.GET_COLLECTIONL1_SUCCESS: {
-            let newState = { ...state }
-            // for every node, add them to the corresponding collection list
-
-            _.forEach(action.response.entities.nodes, node => {
-                const uniqueCollections = _.uniq(_.flatten(node.collectionChains))
-
-                _.forEach(uniqueCollections, c => {
-                    if (!newState[c]) {
-                        newState[c] = [ node.id ]
-                    } else {
-                        // TODO: terrible performance on this - 2017-09-04
-                        newState[c] = _.union( newState[c], [ node.id ])
-                    }
-                })
-            })
-
-            return newState
-        }
-
-        case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS: {
-            let newState = { ...state }
-            const uniqueCollections = _.uniq(_.flatten(action.collectionChains))
-
-            _.forEach(uniqueCollections, c => {
-                if (!newState[c]) {
-                    newState[c] = [ action.nodeId ]
-                } else {
-                    // TODO: terrible performance on this - 2017-09-04
-                    newState[c] = _.union( newState[c], [ action.nodeId ])
-                }
-            })
-
-            return newState
-        }
-
-        case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
-            return update(state, {
-                [action.collectionId]: { $apply: (nodes) => _.without(nodes, action.nodeId) }
-            })
-
-        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
-            return _.omit(state, action.collectionId)
-
-        case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
-            let newState = state;
-
-            if (!newState[action.targetId]) {
-                newState[action.targetId] = []
-            }
-
-            if (action.sourceNode.type === "collection") {
-                /*
-                 * Add nodes from source to target collection as well
-                 */
-                newState = update(state, {
-                    [action.targetId]: { $set: _.union(state[action.targetId], state[action.sourceId]) }
-                })
-            }
-
-            return update(newState, {
-                [action.targetId]: { $push: [ action.sourceId ]}
-            })
-        }
-
-        default:
-            return state
-    }
-}
 
 function nodesByCollectionId(state={}, action) {
     /*
      * this represents only direct children
-     * // TODO: a more generic tree datastructure - 2017-09-20
      */
 
     switch(action.type) {
         case collectionActionTypes.GET_COLLECTION_SUCCESS:
         case collectionActionTypes.GET_COLLECTIONL1_SUCCESS: {
-            // TODO: only direct children - 2017-09-20
-
             let newState = { ...state }
             // for every node, add them to the corresponding collection list
 
             _.forEach(action.response.entities.nodes, node => {
-                // TODO: this shouldn't include the root collection - 2017-09-20
-                const collections = _.flatten((node.collectionChains || []).map(chain => chain[chain.length - 1]))
-
-                _.forEach(collections, c => {
+                _.forEach(node.collections, c => {
                     if (!newState[c]) {
                         newState[c] = [ node.id ]
                     } else {
-                        // TODO: terrible performance on this - 2017-09-04
                         newState[c] = _.union( newState[c], [ node.id ])
                     }
                 })
@@ -617,20 +412,15 @@ function nodesByCollectionId(state={}, action) {
         }
 
         case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS: {
-            let newState = { ...state }
-
-            const collections = _.flatten(action.collectionChains.map(chain => chain[chain.length - 1]))
-
-            _.forEach(collections, c => {
-                if (!newState[c]) {
-                    newState[c] = [ action.nodeId ]
-                } else {
-                    // TODO: terrible performance on this - 2017-09-04
-                    newState[c] = _.union( newState[c], [ action.nodeId ])
-                }
+            return update(start, {
+                [action.collectionId]: { $apply: (collections) => {
+                    if (!collections) {
+                        return [ action.nodeId ]
+                    } else {
+                        return _.union(collections, [ action.nodeId ])
+                    }
+                }}
             })
-
-            return newState
         }
 
         case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
@@ -642,22 +432,8 @@ function nodesByCollectionId(state={}, action) {
             return _.omit(state, action.collectionId)
 
         case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
-            let newState = state;
-
-            if (!newState[action.targetId]) {
-                newState[action.targetId] = []
-            }
-
-            if (action.sourceNode.type === "collection") {
-                /*
-                 * Add nodes from source to target collection as well
-                 */
-                newState = update(state, {
-                    [action.targetId]: { $set: _.union(state[action.targetId], state[action.sourceId]) }
-                })
-            }
-
-            return update(newState, {
+            return update(state, {
+                [action.sourceCollectionId]: { $pull: [ action.sourceId ] },
                 [action.targetId]: { $push: [ action.sourceId ]}
             })
         }
@@ -832,12 +608,6 @@ const initialUiState = {
     addPictureWindowOpened: false,
     addVideoWindowOpened: false,
     addAudioWindowOpened: false,
-    createCollectionWindowOpened: false,
-    createCollectionWindowState: {
-        title: "",
-        description: "",
-    },
-
     activeCollections: [],
 
     archiveSidebar: {
@@ -878,17 +648,6 @@ function uiState(state=initialUiState, action) {
                 ...state,
                 addRelationWindowOpened: false,
                 addCollectionRelationWindowOpened: false,
-            }
-        case uiActionTypes.SHOW_CREATE_COLLECTION_WINDOW:
-            return {
-                ...state,
-                createCollectionWindowOpened: true,
-                // createCollectionWindowState: action.payload,
-            }
-        case uiActionTypes.HIDE_CREATE_COLLECTION_WINDOW:
-            return {
-                ...state,
-                createCollectionWindowOpened: false,
             }
         case uiActionTypes.SHOW_ADD_PICTURE_WINDOW:
             return {
@@ -995,7 +754,6 @@ function rootReducer(state={}, action) {
         reverseAdjacencyMap: reverseAdjacencyMap(state.reverseAdjacencyMap, action),
         edgeListMap: edgeListMap(state.edgeListMap, action),
         nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
-        allNodesByCollectionId: allNodesByCollectionId(state.allNodesByCollectionId, action),
         archive: archive(state.archive, action),
         // errorMessage: errorMessage(state.errorMessage, action),
         loadingStates: loadingStates(state.loadingStates, action),
@@ -1170,13 +928,12 @@ export const getL2Edges = (state, id) => {
         .map(id => getEdge(state, id))
 }
 
-export const getCollectionChain = createSelector(
+export const getAbstractionChain = createSelector(
     getNodes,
     (_, props) => props.collectionChainIds,
-    (collectionMap, collectionChainIds) => {
+    (nodeMap, collectionChainIds) => {
         return _(collectionChainIds)
-            .map(id => collectionMap[id])
-            .filter(edge => edge !== undefined)
+            .map(id => nodeMap[id])
             .value()
     }
 )
@@ -1186,15 +943,29 @@ export const getNodesBelowAbstraction = createSelector(
      * returns a map of all the nodes below in the abstraction
      */
     getNodes,
-    (_, props) => props.collectionChainIds,
-    (nodes, collectionChain) => {
-        return _.pickBy(nodes, node => (
-                _.some(node.collectionChains, (chain) =>
-                    _.intersection(collectionChain, chain).length === collectionChain.length
-                )
-            ))
+    (_, props) => props.collectionId,
+    (state) => state.nodesByCollectionId,
+    (nodeMap, collectionId, nodesByCollectionId) => {
+        let encounteredNodes = {}
+        let nodeList = []
+
+        function handleChildren(nodeList) {
+            return _.flatMap(nodeList, id => {
+                if (encounteredNodes[id]) {
+                    return []
+                }
+
+                encounteredNodes[id] = true;
+
+                return [ id, ...handleChildren(nodesByCollectionId[id]) ]
+            })
+        }
+
+        return _(handleChildren(nodesByCollectionId[collectionId]))
+            .map(id => nodeMap[id])
+            .keyBy('id')
+            .value()
     }
-    // .map(node => node.id)
 )
 
 export const getEdgesBelowAbstraction = createSelector(
@@ -1221,38 +992,13 @@ export const getEdgesBelowAbstraction = createSelector(
     }
 )
 
-export const getNeighbouringNodesAndEdgesByCollectionId = (state, { collectionChainIds }) => {
-
-    /*
-     * gets all nodes and edges that are part of the chain of collection with id ${id}
-     */
-    // TODO: memoize - 2017-08-27
-    // TODO: test this properly - 2017-08-26
-
-    const nodes = getNodes(state)
-        .filter(node => (
-            _.some(node.collectionChains, (chain) =>
-                _.intersection(collectionChainIds, chain).length === collectionChainIds.length
-            )
-        ))
-        .map(node => node.id)
-
-    const edges = getEdgeIdsForNodes(state, nodes)
-
-    return {
-        nodes,
-        edges,
-    }
-}
-
 export const getNodesAndEdgesByCollectionId = createSelector(
     (state, { collectionId }) => getCollection(state, collectionId),
     getNodesBelowAbstraction,
     getEdgesBelowAbstraction,
     (state) => state.nodesByCollectionId, // direct children
-    (state) => state.allNodesByCollectionId, // all children
     (_, { collectionChainIds }) => collectionChainIds,
-    (parentCollection, nodeMap, edgeMap, nodesByCollectionId, allNodesByCollectionId, collectionChainIds) => {
+    (parentCollection, nodeMap, edgeMap, nodesByCollectionId, collectionChainIds) => {
         /*
          * This gets the direct nodes including their children
          */
@@ -1264,217 +1010,107 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 collections: [],
                 visibleCollections: [],
                 edges: [],
-                collectionChain: [],
                 nodeTree: [],
             }
         }
 
-        const nodes = _.filter(nodeMap, n => n.type === 'node')
-        const collections = _.filter(nodeMap, n => n.type === 'collection')
 
-        let visibleCollections = []
-        let visibleEdges = []
-
-        let hiddenNodeMap = {}
         let visibleNodeMap = {}
+        let visibleEdgeMap = {}
+        let visibleNodeTree = {}
 
-        // copy edges
-        let transformedEdges = _.map(edgeMap, e => Object.assign({}, e))
+        function handleShowNodes(parentNode, nodeIds) {
+            // console.log(parentNode, nodeIds)
 
-        const collectionIds = collections.map(c => c.id)
+            if (parentNode.collapsed) {
+                // collapsed, shouldn't show the children, but show the node
+                visibleNodeMap[parentNode.id] = parentNode
 
-        // add :NODE nodes that are direct children of this collection
-        nodes.forEach(node => {
-            if (_.some(node.collectionChains, (list) => _.isEqual(list, collectionChainIds))) {
-                visibleNodeMap[node.id] = node
-            }
-        })
 
-        // TODO: need to filter edges that go outside the collection
-        transformedEdges = transformedEdges.filter(e => {
-            /*
-             * iterate over all edges
-             * filter edges that go outside the collection
-             */
-
-            // if start is not part of this collection, remove the edge
-            if (_.every(nodeMap[e.start].collectionChains, (list) =>_.difference(collectionChainIds, list).length > 0)) {
-                return false;
-            }
-            // if end is not part of this collection, remove the edge
-            if (_.every(nodeMap[e.end].collectionChains, (list) =>_.difference(collectionChainIds, list).length > 0)) {
-                return false;
-            }
-
-            return true
-        })
-
-        const filteredCollections = _(collections)
-            .sortBy('collectionChains')
-            .filter(c => {
-                // if this is a parent collection, don't handle it
-                if (collectionChainIds.includes(c.id)) {
-                    return false;
+                return {
+                    ...parentNode,
+                    children: []
                 }
-
-                // is a direct child
-                // TODO: do this at the same time with direct nodes children
-                if (_.some(c.collectionChains, (list) => _.isEqual(list, collectionChainIds))) {
-                    return true
-                }
-
-
-                // case 1: only one parent collection
-                // case 2: multiple parent collections
-                // case 3: combination of external collections and child collections
-
-                // check if the direct parent is collapsed or not
-                // TODO: this would be a lot easier with a data structure created from abstraction edges - 2017-09-01
-                const parentCollections = c.collectionChains
-                    .filter(chain => _.intersection(collectionChainIds, chain).length === collectionChainIds.length)
-                    .map(list => nodeMap[list[list.length-1]])
-
-                if (_.every(parentCollections, (c) => !c || c.collapsed)) {
-                    return false
-                }
-
-                // const parentCollection = nodeMap[c.collections[0]]
-                // // not fetched yet, or collapsed
-                // if (!parentCollection || parentCollection.collapsed) {
-                //     return false;
-                // }
-                //
-                return true;
-            })
-            .value()
-
-        filteredCollections.forEach(c => {
-            // TODO: improved performance by implementing the algorithm below , requires ability get all edges below a collection - 2017-09-20
-            // instead of iterating through all edges
-            /*
-             * Collapsed x => 
-             * 1. Hide all nodes under x
-             * 2. Show x
-             * 3. For every edge e with e.start below x OR e.end below x =>
-             *    * If only e.start below x => update e.start to x.id
-             *    * If only e.end below x => update e.end to x.id
-             *    * If both e.start, e.end below x => hide e
-             *
-             * Expanded x => 
-             * 1. Show direct children
-             * 2. hide x
-             * 3. continue with children
-            */
-
-            if (c.collapsed) {
-                /*
-                 * Hide nodes that are not expanded due to another collection
-                 */
-
-                // returns node ids for this collection (not all, just the ones that were fetched)
-                const nodeIds = allNodesByCollectionId[c.id] || []
-
-                nodeIds.forEach(n => {
-                    // TODO: need to account for case where node is part of two collections and hidden by one, shown by the other
-                    if (visibleNodeMap[n]) {
-                        delete visibleNodeMap[n]
-                    }
-                    hiddenNodeMap[n] = n
-                })
-
-                // collapsed, no children
-                c.children = []
-
-                // visibleCollections.push(c)
-                visibleCollections.push(c)
-
-                // TODO: more performant - 2017-07-13
-                transformedEdges = _(transformedEdges)
-                    .map((e) => {
-                        if (visibleNodeMap[e.start] && visibleNodeMap[e.end]) {
-                            // this link is in the graph directly, no need to alter edges
-                            // console.log("LINK IS IN GRAPH DIRECTLY");
-                            return e;
-                        }
-
-                        // if start is hidden, change start to this collection
-                        if (hiddenNodeMap[e.start]) {
-                            // console.log("CHANGING START");
-                            e.start = c.id
-                        }
-                        if (hiddenNodeMap[e.end]) {
-                            // console.log("CHANGING END");
-                            e.end = c.id
-                        }
-                        if (e.start === e.end) {
-                            // console.log("BOTH INSIDE THE SAME ABSTRACTION");
-                            return null
-                        }
-
-                        return e
+            } else {
+                // expanded, show all children as well
+                return {
+                    ...parentNode,
+                    children: nodeIds.map(id => {
+                        return handleShowNodes(nodeMap[id], nodesByCollectionId[id] || [])
                     })
-                    .filter(x => x !== null)
-                    .value()
+                }
             }
-
-            else {
-                /*
-                 * 1. Determine which nodes should be hidden
-                 * 2. Show the nodes that are not hidden
-                 */
-
-                const allChildNodes = allNodesByCollectionId[c.id] || []
-                allChildNodes.forEach(n => {
-                    visibleNodeMap[n] = n
-                })
-                c.children = _(nodesByCollectionId[c.id] || [])
-                    .map(id => nodeMap[id])
-                    .orderBy(n => n.name.toLowerCase())
-                    .orderBy(n => n.type)
-                    .value()
-
-                // hide direct edges from/to this collection
-                transformedEdges = _(transformedEdges)
-                    .filter((e) => {
-                        // TODO: should only happen for direct edges - 2017-07-14
-                        if (e.start === c.id) {
-                            return false
-                        }
-
-                        if (e.end === c.id) {
-                            return false
-
-                        }
-
-                        return true
-                    })
-                    .value()
-            }
-        })
-
-        const nodeTree = {
-            ...parentCollection,
-            children: _(nodesByCollectionId[parentCollection.id] || [])
-                .map(id => nodeMap[id])
-                .orderBy(n => n.name.toLowerCase())
-                .orderBy(n => n.type)
-                .value()
         }
 
-        console.log(nodeTree)
+        const rootIds = nodesByCollectionId[parentCollection.id]
+        const notCollapsedParentCollection = { ...parentCollection, collapsed: false } // TODO: shouldn't be necessary - 2017-10-18
+        visibleNodeTree = handleShowNodes(notCollapsedParentCollection, rootIds) 
 
-        const visibleNodes = nodes
-            .filter(n => !!visibleNodeMap[n.id])
-            .map(n => nodeMap[n.id])
+        // let transformedEdges = _.map(edgeMap, e => Object.assign({}, e))
+
+        function findParentCollection(node) {
+
+        }
+
+        const transformedEdges = _(edgeMap).map(edge => {
+            const start = visibleNodeMap[edge.start]
+            const end = visibleNodeMap[edge.end]
+            if (start && end) {
+                return edge
+            }
+
+            console.log(edge.start, edge.end)
+            console.log(start, end)
+
+            if (!start) {
+                // start is hidden by a parent, find the parent
+                // change to parent until it is in visibleNodeMap
+                // (can branche, and collection might not be child of activeCollection)
+                const startNode = nodeMap[edge.start]
+
+                return null
+
+                findParentCollection(startNode)
+
+                // return {
+                //     ...edge,
+                //     start: 
+                // }
+
+                // return edge.start = 
+            }
+
+            if (!end) {
+                return null
+            }
+
+            // TODO: check start === end now - 2017-10-18
+        })
+            .filter(x => x !== null)
+            .value()
+
+//         const nodeTree = {
+//             ...parentCollection,
+//             children: _(nodesByCollectionId[parentCollection.id] || [])
+//                 .map(id => nodeMap[id])
+//                 .orderBy(n => n.name.toLowerCase())
+//                 .orderBy(n => n.type)
+//                 .value()
+//         }
+
+        // const visibleNodes = nodes
+        //     .filter(n => !!visibleNodeMap[n.id])
+        //     .map(n => nodeMap[n.id])
+        const visibleNodes = _.map(visibleNodeMap, x => x)
 
         // console.log(visibleNodes, visibleCollections, transformedEdges)
 
         return {
             nodes: visibleNodes,
-            collections: filteredCollections,
-            visibleCollections,
+            // collections: filteredCollections,
+            // visibleCollections,
             edges: transformedEdges,
-            nodeTree: nodeTree.children,
+            nodeTree: visibleNodeTree.children,
         }
     }
 )

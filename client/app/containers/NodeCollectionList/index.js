@@ -15,7 +15,6 @@ import { primaryColor, secondaryColor } from '../../containers/App/muitheme'
 import {
     addNodeToCollection,
     removeNodeFromCollection,
-    createCollection,
 } from '../../actions/collection'
 
 import {
@@ -160,6 +159,5 @@ export const NodeCollectionItem = withRouter((props) => {
 export default connect(null, {
     addNodeToCollection,
     removeNodeFromCollection,
-    createCollection,
     createNode,
 })(enhanceWithClickOutside(NodeCollectionList))

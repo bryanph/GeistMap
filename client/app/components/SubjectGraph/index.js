@@ -394,7 +394,6 @@ const createCollectionOverviewEvents = function(simulation, actions) {
         click: onCollectionClick,
         zoomToNode: actions.zoomToNode,
         zoomFit: actions.zoomFit,
-        createCollection: actions.createCollection,
         updateNode: actions.updateNode,
         setActiveCollection: actions.setActiveCollection,
         connectCollections: actions.connectCollections,
@@ -624,7 +623,6 @@ class SubjectGraph extends React.Component {
             removeEdge, // TODO: this must be removeNodeFromCollection instead
             connectCollections: this.props.connectCollections,
             setActiveCollection: this.props.setActiveCollection,
-            createCollection: this.props.createCollection,
             updateNode: this.props.updateNode,
             addCollection: this.props.addCollection,
             zoomToNode: this.zoom.zoomToNode,

@@ -32,68 +32,6 @@ describe('collection actions', () => {
         })
     })
 
-
-    /*
-     * Tests the node actions and the reducer reacting on the state changes
-     */
-    test("Test createCollection() action", () => {
-        mockServer.on('Collection.create', (id, parentId, data, res) => {
-            res(null, {
-                "created": 1503389225848,
-                "name": "Collection",
-                "modified": 1503389225848,
-                "id": "TEST__Collection",
-                "type": "collection",
-            })
-        })
-
-        const initialState = {
-            entities: {
-                nodes: {
-                    ["TEST__RootCollection"]: {
-                        "isRootCollection": true,
-                        "created": 1503389225848,
-                        "name": "My Knowledge Base",
-                        "modified": 1503389225848,
-                        "id": "TEST__RootCollection",
-                        "type": "root"
-                    },
-                },
-            },
-        }
-
-        store = createMockStore(_socket, initialState)
-
-        return store.dispatch(collectionActions.createCollection("TEST__Collection", "TEST__RootCollection", { "name": "Collection" }))
-            .then((action) => {
-                // console.log(require('util').inspect(store.getState(), false, null))
-                expect(store.getState()).toMatchObject({
-                    entities: {
-                        nodes: {
-                            "TEST__RootCollection": {
-                                "isRootCollection": true,
-                                "created": 1503389225848,
-                                "name": "My Knowledge Base",
-                                "modified": 1503389225848,
-                                "id": "TEST__RootCollection",
-                                "type": "root",
-                            },
-                            "TEST__Collection": {
-                                "created": 1503389225848,
-                                "name": "Collection",
-                                "modified": 1503389225848,
-                                "id": "TEST__Collection",
-                                "type": "collection",
-                                "collectionChains": [
-                                    [ "TEST__RootCollection" ]
-                                ]
-                            },
-                        },
-                    },
-                })
-            })
-    })
-
     test("Test removeCollection action", function() {
         // TODO: test more cases - 2017-08-29
         mockServer.on('Collection.remove', (id, res) => {

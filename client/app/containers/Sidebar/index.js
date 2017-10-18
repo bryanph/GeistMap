@@ -42,7 +42,6 @@ class Sidebar extends React.Component {
 
         this.toggleNav = this.toggleNav.bind(this)
         this.createNode = this.createNode.bind(this)
-        this.createCollection = this.createCollection.bind(this)
 
     }
 
@@ -55,11 +54,6 @@ class Sidebar extends React.Component {
             .then(action => action.response.result)
             .then(id => this.props.history.push(`/app/archive/${id}/edit`))
 
-        this.props.toggleNav()
-    }
-
-    createCollection() {
-        this.props.showCreateCollectionWindow()
         this.props.toggleNav()
     }
 
@@ -76,7 +70,6 @@ class Sidebar extends React.Component {
                 <Link style={styles.link} to="/app/nodes"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Nodes</MenuItem></Link>
                 <Link style={styles.link} to="/app/collections"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Collections</MenuItem></Link>
                 <MenuItem style={styles.menuItem} onClick={this.createNode} leftIcon={<ContentAdd color='white' />}>Create Node</MenuItem>
-                <MenuItem style={styles.menuItem} onClick={this.createCollection} leftIcon={<ActionGroupWork color='white' />}>Create Collection</MenuItem>
                 { /* <Link style={styles.link} to="/app/explore/collections"><MenuItem style={styles.menuItem} onClick={this.toggleNav}>Explore collections</MenuItem></Link> */ }
             </Drawer>
             

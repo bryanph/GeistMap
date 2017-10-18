@@ -21,8 +21,8 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "modified": 1503389225848,
                         "id": "TEST__RootParent",
                         "type": "root",
-                        "collectionChains": [
-                        ]
+                        "collections": [ ],
+                        "collapsed": true,
                     },
                     ["TEST__Root"]: {
                         "created": 1503389225848,
@@ -30,9 +30,8 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "modified": 1503389225848,
                         "id": "TEST__Root",
                         "type": "collection",
-                        "collectionChains": [
-                            [ "TEST__RootParent" ]
-                        ]
+                        "collections": [ "TEST__RootParent" ],
+                        "collapsed": true,
                     },
                     "TEST__A": {
                         "created": 1503389225848,
@@ -40,10 +39,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "modified": 1503389225848,
                         "id": "TEST__A",
                         "type": "collection",
-                        "collectionChains": [
-                            [ "TEST__RootParent", "TEST__Root" ],
-                            [ "TEST__RootParent", "TEST__Root", "TEST__B" ],
-                        ],
+                        "collections": [ "TEST__Root", "TEST__B" ],
                         "collapsed": true,
                     },
                     "TEST__B": {
@@ -52,9 +48,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "modified": 1503389225848,
                         "id": "TEST__B",
                         "type": "collection",
-                        "collectionChains": [
-                            [ "TEST__RootParent", "TEST__Root" ],
-                        ],
+                        "collections": [ "TEST__Root" ],
                         "collapsed": true,
                     },
                     "TEST__Root_x": {
@@ -63,9 +57,8 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "modified": 1503389225848,
                         "id": "TEST__Root_x",
                         "type": "node",
-                        "collectionChains": [
-                            [ "TEST__RootParent", "TEST__Root" ],
-                        ]
+                        "collections": [ "TEST__Root" ],
+                        "collapsed": true,
                     },
                     "TEST__A_x": {
                         "created": 1503389225848,
@@ -73,10 +66,8 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "modified": 1503389225848,
                         "id": "TEST__A_x",
                         "type": "node",
-                        "collectionChains": [
-                            [ "TEST__RootParent", "TEST__Root", "TEST__A" ],
-                            [ "TEST__RootParent", "TEST__Root", "TEST__B", "TEST__A" ],
-                        ]
+                        "collections": [ "TEST__A", ],
+                        "collapsed": true,
                     },
                     "TEST__A_y": {
                         "created": 1503389225848,
@@ -84,10 +75,8 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "modified": 1503389225848,
                         "id": "TEST__A_y",
                         "type": "node",
-                        "collectionChains": [
-                            [ "TEST__RootParent", "TEST__Root", "TEST__A" ],
-                            [ "TEST__RootParent", "TEST__Root", "TEST__B", "TEST__A" ],
-                        ]
+                        "collections": [ "TEST__A" ],
+                        "collapsed": true,
                     },
                     "TEST__B_x": {
                         "created": 1503389225848,
@@ -95,9 +84,8 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "modified": 1503389225848,
                         "id": "TEST__B_x",
                         "type": "node",
-                        "collectionChains": [
-                            [ "TEST__RootParent", "TEST__Root", "TEST_B" ],
-                        ]
+                        "collections": [ "TEST__B" ],
+                        "collapsed": true,
                     },
                 },
                 edges: {
@@ -133,82 +121,47 @@ describe('getNodesAndEdgesByCollectionId', () => {
                 },
             },
             nodesByCollectionId: {
-                "TEST__RootCollection": [ "TEST__A", "TEST__B", "TEST__Root_x", "TEST__A_x", "TEST__A_y", "TEST__B_x" ],
+                "TEST__Root": [ "TEST__A", "TEST__B", "TEST__Root_x" ],
                 "TEST__A": [ "TEST__A_x", "TEST__A_y" ],
                 "TEST__B": [ "TEST__B_x" ],
             }
         }
 
         const result = getNodesAndEdgesByCollectionId(initialState, {
-            collectionId: "TEST__Root",
-            collectionChainIds: [ "TEST__RootParent", "TEST__Root" ],
+            collectionId: "TEST__Root"
         })
+
+        // console.log(result)
 
         expect(result).toMatchObject({
             nodes: [ 
+                { 
+                    created: 1503389225848,
+                    name: 'A',
+                    modified: 1503389225848,
+                    id: 'TEST__A',
+                    type: 'collection',
+                    "collections": [ "TEST__Root", "TEST__B" ],
+                    collapsed: true 
+                },
+                { 
+                    created: 1503389225848,
+                    name: 'B',
+                    modified: 1503389225848,
+                    id: 'TEST__B',
+                    type: 'collection',
+                    "collections": [ "TEST__Root" ],
+                    collapsed: true 
+
+                },
                 {
                     created: 1503389225848,
                     name: 'Root_x',
                     modified: 1503389225848,
                     id: 'TEST__Root_x',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root" ]
-                    ] 
-                } 
-            ],
-            collections: [ 
-                { 
-                    created: 1503389225848,
-                    name: 'B',
-                    modified: 1503389225848,
-                    id: 'TEST__B',
-                    type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root" ],
-                    ],
-                    collapsed: true 
-
-                },
-                { 
-                    created: 1503389225848,
-                    name: 'A',
-                    modified: 1503389225848,
-                    id: 'TEST__A',
-                    type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root" ],
-                        [ "TEST__RootParent", "TEST__Root", "TEST__B" ],
-                    ],
-                    collapsed: true 
-                } 
-            ],
-            visibleCollections: [ 
-                { 
-                    created: 1503389225848,
-                    name: 'B',
-                    modified: 1503389225848,
-                    id: 'TEST__B',
-                    type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root" ],
-                    ],
-                    collapsed: true,
-
-                },
-                { 
-                    created: 1503389225848,
-                    name: 'A',
-                    modified: 1503389225848,
-                    id: 'TEST__A',
-                    type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root" ],
-                        [ "TEST__RootParent", "TEST__Root", "TEST__B" ],
-                    ],
-                    collapsed: true,
-
-                } 
+                    "collections": [ "TEST__Root" ],
+                } ,
             ],
             edges: [
                 { end: 'TEST__B', start: 'TEST__A', id: 'TEST__A_y-B' },
@@ -235,9 +188,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__Root_x',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"]
-                    ]
+                    "collections": [ "TEST__Root" ],
                 },
                 {
                     created: 1503389225848,
@@ -245,10 +196,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__A_x',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__A'],
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__B', 'TEST__A']
-                    ]
+                    "collections": [ "TEST__A", ],
                 },
                 {
                     created: 1503389225848,
@@ -256,10 +204,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__A_y',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__A'],
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__B', 'TEST__A']
-                    ]
+                    "collections": [ "TEST__A" ],
                 }
             ],
             collections: [
@@ -269,9 +214,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__B',
                     type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"]
-                    ],
+                    "collections": [ "TEST__Root" ],
                     collapsed: true
                 },
                 {
@@ -280,10 +223,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__A',
                     type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"],
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__B']
-                    ],
+                    "collections": [ "TEST__Root", "TEST__B" ],
                     collapsed: false
                 }
             ],
@@ -294,9 +234,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__B',
                     type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"]
-                    ],
+                    "collections": [ "TEST__Root" ],
                     collapsed: true,
                 }
 
@@ -336,9 +274,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__Root_x',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"]
-                    ]
+                    "collections": [ "TEST__Root" ],
                 },
                 {
                     created: 1503389225848,
@@ -346,9 +282,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__B_x',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root", 'TEST_B']
-                    ]
+                    "collections": [ "TEST__B" ],
                 }],
             collections: [
                 {
@@ -357,9 +291,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__B',
                     type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"]
-                    ],
+                    "collections": [ "TEST__Root" ],
                     collapsed: false
                 },
                 {
@@ -368,10 +300,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__A',
                     type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"],
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__B']
-                    ],
+                    "collections": [ "TEST__Root", "TEST__B" ],
                     collapsed: true
                 }],
             visibleCollections: [
@@ -381,10 +310,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__A',
                     type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"],
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__B']
-                    ],
+                    "collections": [ "TEST__Root", "TEST__B" ],
                     collapsed: true,
                 }],
             edges: [
@@ -417,9 +343,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__Root_x',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"]
-                    ]
+                    "collections": [ "TEST__Root" ],
                 },
                 {
                     created: 1503389225848,
@@ -427,10 +351,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__A_x',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__A'],
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__B', 'TEST__A']
-                    ]
+                    "collections": [ "TEST__A", ],
                 },
                 {
                     created: 1503389225848,
@@ -438,10 +359,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__A_y',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__A'],
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__B', 'TEST__A']
-                    ]
+                    "collections": [ "TEST__A" ],
                 },
                 {
                     created: 1503389225848,
@@ -449,9 +367,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__B_x',
                     type: 'node',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root", 'TEST_B']
-                    ]
+                    "collections": [ "TEST__B" ],
                 }],
             collections: [
                 {
@@ -460,9 +376,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__B',
                     type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"]
-                    ],
+                    "collections": [ "TEST__Root" ],
                     collapsed: false
                 },
                 {
@@ -471,10 +385,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     modified: 1503389225848,
                     id: 'TEST__A',
                     type: 'collection',
-                    collectionChains: [
-                        [ "TEST__RootParent", "TEST__Root"],
-                        [ "TEST__RootParent", "TEST__Root", 'TEST__B']
-                    ],
+                    "collections": [ "TEST__Root", "TEST__B" ],
                     collapsed: false
                 }],
             visibleCollections: [],
@@ -488,13 +399,13 @@ describe('getNodesAndEdgesByCollectionId', () => {
         })
     })
 
-//     test('Given one node abstraction with one node in it and explicit links, give the desired state', () => {
+    //     test('Given one node abstraction with one node in it and explicit links, give the desired state', () => {
 
-//     })
+    //     })
 
-//     test('Given one node abstraction with implicit links, give the desired state', () => {
+    //     test('Given one node abstraction with implicit links, give the desired state', () => {
 
-//     })
+    //     })
 
     // test('Given one node abstraction with implicit links, give the desired state', () => {
 

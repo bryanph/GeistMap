@@ -87,7 +87,7 @@ import {
     getCollections,
     getNode,
     getNodesAndEdgesByCollectionId,
-    getCollectionChain,
+    getAbstractionChain,
 } from '../../reducers'
 
 function mapStateToProps(state, props) {
@@ -97,7 +97,7 @@ function mapStateToProps(state, props) {
     if (props.graphType === "collection") {
         isLoading = state.loadingStates.GET_COLLECTIONL1;
 
-        collectionChain = getCollectionChain(state, props);
+        collectionChain = getAbstractionChain(state, props);
         ({ nodes, collections, visibleCollections, nodeTree, edges} = getNodesAndEdgesByCollectionId(state, props));
 
     } else {

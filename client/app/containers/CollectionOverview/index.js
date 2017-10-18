@@ -17,7 +17,6 @@ import EditModeButton from '../../components/EditModeButton'
 import './styles.scss'
 
 import {
-    createCollection,
     fetchCollections,
     loadCollectionL1,
 } from '../../actions/collection'
@@ -79,7 +78,6 @@ export class CollectionOverview extends React.Component { // eslint-disable-line
                     links={collectionLinks || []}
                     setActiveCollection={this.props.setActiveCollection}
                     addCollection={this.props.addCollection}
-                    createCollection={this.props.createCollection}
                     updateNode={this.props.updateNode}
                     graphType={'collectionOverview'}
                     mode={mode}
@@ -118,7 +116,6 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
     updateNode,
-    createCollection,
     showCreateCollectionWindow,
     fetchCollections,
     loadCollectionL1,
