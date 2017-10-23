@@ -164,8 +164,8 @@ describe('getNodesAndEdgesByCollectionId', () => {
                 } ,
             ],
             edges: [
+                { end: 'TEST__B', start: 'TEST__A', id: 'TEST__A_x-B_x' },
                 { end: 'TEST__B', start: 'TEST__A', id: 'TEST__A_y-B' },
-                { end: 'TEST__B', start: 'TEST__A', id: 'TEST__A_x-B_x' } 
             ],
         })
 

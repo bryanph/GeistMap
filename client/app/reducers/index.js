@@ -1052,15 +1052,28 @@ export const getNodesAndEdgesByCollectionId = createSelector(
 
         }
 
+        // TODO: combine map + filter here into reduce - 2017-10-18
         const transformedEdges = _(edgeMap).map(edge => {
             const start = visibleNodeMap[edge.start]
             const end = visibleNodeMap[edge.end]
             if (start && end) {
-                return edge
+                return [ edge ]
             }
 
-            console.log(edge.start, edge.end)
-            console.log(start, end)
+            function transformEdges(edge, node, position="start") {
+                return node.collections.reduce((result, id) => {
+                    // this also takes care of the case where id is the active collection
+                    if (!nodeMap[id]) {
+                        return result;
+                    }
+
+                    if (visibleNodeMap[id]) {
+                        return [ ...result, { ...edge, [position]: id } ] }
+                    else {
+                        return [ ...result, ...transformEdges(edge, nodeMap[id]) ]
+                    }
+                }, [])
+            }
 
             if (!start) {
                 // start is hidden by a parent, find the parent
@@ -1068,9 +1081,9 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 // (can branche, and collection might not be child of activeCollection)
                 const startNode = nodeMap[edge.start]
 
-                return null
-
-                findParentCollection(startNode)
+                // can return multiple edges
+                console.log(transformEdges(edge, startNode, "start"))
+                return transformEdges(edge, startNode, "start")
 
                 // return {
                 //     ...edge,
@@ -1079,13 +1092,22 @@ export const getNodesAndEdgesByCollectionId = createSelector(
 
                 // return edge.start = 
             }
+            else if (!end) {
+                const endNode = nodeMap[edge.end]
 
-            if (!end) {
+                console.log("handling end")
+
+                // can return multiple edges
+                return transformEdges(edge, endNode, "end")
+            }
+
+            if (start === end) {
                 return null
             }
 
             // TODO: check start === end now - 2017-10-18
         })
+            .flatMap()
             .filter(x => x !== null)
             .value()
 
