@@ -1082,33 +1082,32 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 const startNode = nodeMap[edge.start]
 
                 // can return multiple edges
-                console.log(transformEdges(edge, startNode, "start"))
-                return transformEdges(edge, startNode, "start")
+                const newEdges = transformEdges(edge, startNode, "start")
 
-                // return {
-                //     ...edge,
-                //     start: 
-                // }
+                // case where both start and end are hidden
+                if (!end) {
+                    return _(newEdges)
+                        .map(edge => {
+                            const endNode = nodeMap[edge.end]
 
-                // return edge.start = 
+                            return transformEdges(edge, endNode, "end")
+                        })
+                        .flatMap()
+                        .filter(edge => edge.start !== edge.end)
+                        .value()
+                }
+
+                return newEdges
             }
-            else if (!end) {
-                const endNode = nodeMap[edge.end]
 
-                console.log("handling end")
+            if (!end) {
+                const endNode = nodeMap[edge.end]
 
                 // can return multiple edges
                 return transformEdges(edge, endNode, "end")
             }
-
-            if (start === end) {
-                return null
-            }
-
-            // TODO: check start === end now - 2017-10-18
         })
             .flatMap()
-            .filter(x => x !== null)
             .value()
 
 //         const nodeTree = {
