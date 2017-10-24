@@ -54,7 +54,7 @@ class AbstractionList extends React.Component {
          * 2. all edges from this collection to its nodes should become normal
         */
 
-        this.props.removeAbstraction(id, this.props.collectionChainIds)
+        this.props.removeAbstraction(id)
     }
 
     focusAbstraction(id) {
@@ -64,8 +64,7 @@ class AbstractionList extends React.Component {
          * 1. change node type to 'node'
          * 2. all edges from this collection to its nodes should become normal
         */
-        const newCollectionChain = [ ...this.props.collectionChainIds, id ]
-        this.props.history.push(`/app/collections/${newCollectionChain.join('/')}/nodes`)
+        this.props.history.push(`/app/collections/${id}/nodes`)
     }
 
     toggleCollapse(collection, collapsed) {
@@ -74,11 +73,8 @@ class AbstractionList extends React.Component {
          * 2. toggle the collapse
         */
 
-        // TODO: separate fetching the chain and L1 collection - 2017-09-17
-        const newCollectionChain = collection.collectionChains[0]
-
         if (collection.collapsed) {
-            this.props.loadCollectionL1(collection.id, newCollectionChain)
+            this.props.loadCollectionL1(collection.id)
                 .then(() => this.props.toggleCollapse(collection.id))
         } else {
             this.props.toggleCollapse(collection.id)
@@ -88,8 +84,7 @@ class AbstractionList extends React.Component {
     onFocusClick(collection) {
         // TODO: should follow the correct abstraction chain - 2017-09-21
 
-        const newCollectionChain = [ ...this.props.collectionChainIds, collection.id ]
-        this.props.history.push(`/app/collections/${newCollectionChain.join('/')}/nodes`)
+        this.props.history.push(`/app/collections/${collection.id}/nodes`)
     }
 
     shouldComponentUpdate(nextProps) {

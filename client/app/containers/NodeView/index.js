@@ -32,7 +32,7 @@ import NodeView from '../../components/NodeView'
 
 function loadData(props) {
     if (props.graphType === "collection") {
-        return props.loadCollectionL1(props.collectionId, props.collectionChainIds)
+        return props.loadCollectionL1(props.collectionId)
             .then((action) => {
                 if (props.nodeId) {
                     props.loadNode(props.nodeId)
@@ -92,7 +92,7 @@ import {
 
 function mapStateToProps(state, props) {
 
-    let nodes, edges, collections, visibleCollections, nodeTree, isLoading, graphType, collectionChain;
+    let nodes, edges, collections, visibleCollections, nodeTree, isLoading, graphType, collectionChain
 
     if (props.graphType === "collection") {
         isLoading = state.loadingStates.GET_COLLECTIONL1;
@@ -130,12 +130,10 @@ function mapStateToProps(state, props) {
 }
 
 const addProps = withProps(props => {
-    const collectionChainIds = props.match.params.collectionChain && props.match.params.collectionChain.split('/')
-    const collectionId = collectionChainIds && collectionChainIds[collectionChainIds.length-1]
+    const collectionId = props.match.params && props.match.params.collectionId
     const nodeId = props.match.params && props.match.params.nodeId
 
     return {
-        collectionChainIds,
         collectionId,
         nodeId,
     }

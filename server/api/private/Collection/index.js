@@ -204,7 +204,7 @@ module.exports = function(db, es) {
             .catch(handleError)
         },
 
-        getPath: function(user, collectionChain, res) {
+        getPath: function(user, chain, res) {
 
         },
 

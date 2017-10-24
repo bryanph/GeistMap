@@ -175,7 +175,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
 
         const result2 = getNodesAndEdgesByCollectionId(withExpandedA, {
             collectionId: "TEST__Root",
-            collectionChainIds: [ "TEST__RootParent", "TEST__Root" ],
         })
 
         expect(result2).toMatchObject({
@@ -237,7 +236,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
 
         const result3 = getNodesAndEdgesByCollectionId(withExpandedB, {
             collectionId: "TEST__Root",
-            collectionChainIds: [ "TEST__RootParent", "TEST__Root" ],
         })
 
 
@@ -287,7 +285,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
 
         const result4 = getNodesAndEdgesByCollectionId(withExpandedAB, {
             collectionId: "TEST__Root",
-            collectionChainIds: [ "TEST__RootParent", "TEST__Root" ],
         })
 
         expect(result4).toMatchObject({

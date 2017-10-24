@@ -31,7 +31,7 @@ export class CollectionDetailEditor extends React.Component {
     constructor(props) {
         super(props)
 
-        this.props.loadCollectionL1(this.props.collectionId, this.props.collectionChainIds)
+        this.props.loadCollectionL1(this.props.collectionId)
         this.props.loadNodeL1(this.props.nodeId)
 
     }
@@ -41,7 +41,7 @@ export class CollectionDetailEditor extends React.Component {
         //     this.props.loadNodeL1(nextProps.nodeId)
         // }
         if (nextProps.collectionId && this.props.collectionId !== nextProps.collectionId) {
-            this.props.loadCollectionL1(nextProps.collectionId, nextProps.collectionChainIds)
+            this.props.loadCollectionL1(nextProps.collectionId)
         }
         if (nextProps.nodeId && this.props.nodeId !== nextProps.nodeId) {
             this.props.loadNodeL1(nextProps.nodeId)
@@ -49,20 +49,21 @@ export class CollectionDetailEditor extends React.Component {
     }
 
     render() {
-        const fullChain = [ ...this.props.collectionChain, this.props.node ]
-
         return (
             <div className="appContainer">
+                {
+                    /*
                 <AbstractionNavigator
                     collectionChain={this.props.collectionChain}
                     collection={this.props.collection}
                     extra={true}
                 />
+                    */
+                }
                 <NodeEditorToolbar
                     id={this.props.nodeId}
                     node={this.props.node}
                     collectionId={this.props.collectionId}
-                    collectionChainIds={this.props.collectionChainIds}
                     page="collection"
                 />
                 <div className="contentContainer">
@@ -80,12 +81,10 @@ export class CollectionDetailEditor extends React.Component {
 }
 
 const addProps = withProps(props => {
-    const collectionChainIds = props.match.params.collectionChain && props.match.params.collectionChain.split('/')
-    const collectionId = collectionChainIds && collectionChainIds[collectionChainIds.length-1]
     const nodeId = props.match.params && props.match.params.nodeId
+    const collectionId = props.match.params && props.match.params.collectionId
 
     return {
-        collectionChainIds,
         collectionId,
         nodeId,
     }
@@ -95,8 +94,7 @@ function mapStateToProps(state, props) {
     return {
         collectionId: props.collectionId,
         collection: getNode(state, props.collectionId),
-        collectionChain: getAbstractionChain(state, props),
-        collectionChainIds: props.collectionChainIds,
+        // collectionChain: getAbstractionChain(state, props),
         nodeId: props.nodeId,
         node: getNode(state, props.nodeId),
         isLoading: state.loadingStates.GET_NODE_L1,

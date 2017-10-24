@@ -997,8 +997,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
     getNodesBelowAbstraction,
     getEdgesBelowAbstraction,
     (state) => state.nodesByCollectionId, // direct children
-    (_, { collectionChainIds }) => collectionChainIds,
-    (parentCollection, nodeMap, edgeMap, nodesByCollectionId, collectionChainIds) => {
+    (parentCollection, nodeMap, edgeMap, nodesByCollectionId) => {
         /*
          * This gets the direct nodes including their children
          */

@@ -51,7 +51,6 @@ describe('node actions', () => {
                 id: id,
                 created: '1501582629992',
                 modified: '1501582629992',
-                collectionChains: [],
             })
         })
 
@@ -72,7 +71,6 @@ describe('node actions', () => {
                                 id: "TEST__Node",
                                 type: 'node',
                                 created: '1501582629992',
-                                collectionChains: [],
                             }
                         }
                     }
@@ -87,7 +85,6 @@ describe('node actions', () => {
             id: "TEST__Node",
             type: 'node',
             created: '1501582629992',
-            collectionChains: [],
         }
 
         mockServer.on('Node.update', (id, data, res) => {
@@ -115,7 +112,6 @@ describe('node actions', () => {
                                 id: "TEST__Node",
                                 type: 'node',
                                 created: '1501582629992',
-                                collectionChains: [],
                             }
                         }
                     }
@@ -137,7 +133,6 @@ describe('node actions', () => {
                         id: "TEST__Node",
                         type: 'node',
                         created: '1501582629992',
-                        collectionChains: [],
                     },
                     ["TEST__Node2"]: {
                         name: 'Node2',
@@ -145,7 +140,6 @@ describe('node actions', () => {
                         id: "TEST__Node2",
                         type: 'node',
                         created: '1501582629992',
-                        collectionChains: [],
                     },
                 },
                 edges: {
@@ -194,7 +188,6 @@ describe('node actions', () => {
                                 id: "TEST__Node2",
                                 type: 'node',
                                 created: '1501582629992',
-                                collectionChains: [],
                             },
                         },
                         edges: { }
@@ -233,7 +226,6 @@ describe('node actions', () => {
                         id: "TEST__Node",
                         type: 'node',
                         created: '1501582629992',
-                        collectionChains: [],
                     },
                     ["TEST__Node2"]: {
                         name: 'Node2',
@@ -241,7 +233,6 @@ describe('node actions', () => {
                         id: "TEST__Node2",
                         type: 'node',
                         created: '1501582629992',
-                        collectionChains: [],
                     }
                 }
             }
@@ -262,7 +253,6 @@ describe('node actions', () => {
                                 id: "TEST__Node",
                                 type: 'node',
                                 created: '1501582629992',
-                                collectionChains: [],
                             },
                             ["TEST__Node2"]: {
                                 name: 'Node2',
@@ -270,7 +260,6 @@ describe('node actions', () => {
                                 id: "TEST__Node2",
                                 type: 'node',
                                 created: '1501582629992',
-                                collectionChains: [],
                             },
                         },
                         edges: {
@@ -321,7 +310,6 @@ describe('node actions', () => {
                         id: "TEST__Node",
                         type: 'node',
                         created: '1501582629992',
-                        collectionChains: [],
                     },
                     ["TEST__Node2"]: {
                         name: 'Node2',
@@ -329,7 +317,6 @@ describe('node actions', () => {
                         id: "TEST__Node2",
                         type: 'node',
                         created: '1501582629992',
-                        collectionChains: [],
                     }
                 }
             }
@@ -350,7 +337,6 @@ describe('node actions', () => {
                                 id: "TEST__Node",
                                 type: 'node',
                                 created: '1501582629992',
-                                collectionChains: [],
                             },
                             ["TEST__Node2"]: {
                                 name: 'Node2',
@@ -358,7 +344,6 @@ describe('node actions', () => {
                                 id: "TEST__Node2",
                                 type: 'node',
                                 created: '1501582629992',
-                                collectionChains: [],
                             },
                         },
                         edges: {
@@ -404,7 +389,6 @@ describe('node actions', () => {
                         id: "TEST__Node",
                         type: 'node',
                         created: '1501582629992',
-                        collectionChains: [],
                     },
                     ["TEST__Node2"]: {
                         name: 'Node2',
@@ -412,7 +396,6 @@ describe('node actions', () => {
                         id: "TEST__Node2",
                         type: 'node',
                         created: '1501582629992',
-                        collectionChains: [],
                     },
                 },
                 edges: {
@@ -454,7 +437,6 @@ describe('node actions', () => {
                                 id: "TEST__Node",
                                 type: 'node',
                                 created: '1501582629992',
-                                collectionChains: [],
                             },
                             ["TEST__Node2"]: {
                                 name: 'Node2',
@@ -462,7 +444,6 @@ describe('node actions', () => {
                                 id: "TEST__Node2",
                                 type: 'node',
                                 created: '1501582629992',
-                                collectionChains: [],
                             },
                         },
                         edges: { }

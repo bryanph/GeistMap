@@ -47,9 +47,9 @@ function colorNode(d) {
      * Assign a color to a node based on its collections
     */
     if (d.type === 'node') {
-        return colora(_.flatten(d.collectionChains).sort().join(','))
+        return colora(_.flatten(d.collections).sort().join(','))
     } else {
-        return colora([d.id, ..._.flatten(d.collectionChains)].sort().join(','))
+        return colora([d.id, ..._.flatten(d.collections)].sort().join(','))
 
     }
 }
@@ -383,8 +383,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onViewClick = (d) => {
         // click in view mode
-        const baseUrl = this.props.collectionChain.map(x => x.id).join('/')
-        actions.history.push(`/app/collections/${baseUrl}/nodes/${d.id}/edit`)
+        actions.history.push(`/app/collections/${this.props.collection.id}/nodes/${d.id}/edit`)
     }
 
     const onEditClick = (d) => {
@@ -392,13 +391,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
     }
 
     const onAbstractClick = (d) => {
-        // if (d.type === "collection") {
-            // const collectionChainIds = this.props.collectionChain.map(x => x.id)
-            // actions.removeAbstraction(d.id, collectionChainIds)
-
-            const newCollectionChain = [ ...this.props.collectionChain.map(x => x.id), d.id ]
-            this.props.history.push(`/app/collections/${newCollectionChain.join('/')}/nodes`)
-        // }
+        this.props.history.push(`/app/collections/${d.id}/nodes`)
     }
 
     const onFocusClick = (d) => {

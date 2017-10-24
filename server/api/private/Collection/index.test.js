@@ -246,7 +246,7 @@ describe('collectionApi', () => {
 
     })
 
-    test("test Collection.getL1() returns the collection, direct children and their neighbours and their collectionChains[]", function() {
+    test("test Collection.getL1() returns the collection, direct children and their neighbours and their collections[]", function() {
         return loadFixtures(db, userId.toString(), [
             {
                 properties: {

@@ -56,54 +56,32 @@ export function fetchCollection(id) {
 }
 
 /*
- * Get the root collection, direct children and their neighbouring nodes (including edges)
-*/
-export const FETCH_ROOT_COLLECTION_REQUEST = 'FETCH_ROOT_COLLECTION_REQUEST'
-export const FETCH_ROOT_COLLECTION_SUCCESS = 'FETCH_ROOT_COLLECTION_SUCCESS'
-export const FETCH_ROOT_COLLECTION_FAILURE = 'FETCH_ROOT_COLLECTION_FAILURE'
-export function fetchRootCollection(id, collectionChainIds) {
-    return {
-        [CALL_API]: {
-            types: [ FETCH_ROOT_COLLECTION_REQUEST, FETCH_ROOT_COLLECTION_SUCCESS, FETCH_ROOT_COLLECTION_FAILURE ],
-            endpoint: 'Collection.getRoot',
-            payload: [ id, collectionChainIds ],
-            schema: {
-                collectionChain: arrayOf(Schemas.NODE),
-                nodes: arrayOf(Schemas.NODE),
-                edges: arrayOf(Schemas.EDGE),
-            }
-        }
-    }
-}
-
-/*
  * Get collection, direct children and their neighbouring nodes (including edges)
 */
 export const GET_COLLECTIONL1_REQUEST = 'GET_COLLECTIONL1_REQUEST'
 export const GET_COLLECTIONL1_SUCCESS = 'GET_COLLECTIONL1_SUCCESS'
 export const GET_COLLECTIONL1_FAILURE = 'GET_COLLECTIONL1_FAILURE'
-export function fetchCollectionL1(id, collectionChainIds) {
+export function fetchCollectionL1(id) {
     return {
         [CALL_API]: {
             types: [ GET_COLLECTIONL1_REQUEST, GET_COLLECTIONL1_SUCCESS, GET_COLLECTIONL1_FAILURE ],
             endpoint: 'Collection.getL1',
-            payload: [ id, collectionChainIds ],
+            payload: [ id ],
             schema: {
-                collectionChain: arrayOf(Schemas.NODE),
                 nodes: arrayOf(Schemas.NODE),
                 edges: arrayOf(Schemas.EDGE),
             }
         }
     }
 }
-export function loadCollectionL1(id, collectionChainIds) {
+export function loadCollectionL1(id) {
     /*
      * Check if we have node in cache already, if not, fetch it first
      * case 1: new node, no need to fetch neighbours
      * case 2: existing node, need to add neighbours
     */
     return (dispatch, getState) => {
-        return dispatch(fetchCollectionL1(id, collectionChainIds))
+        return dispatch(fetchCollectionL1(id))
         // const collection = getCollection(getState(), id)
         //
         // if (cache) {
@@ -152,7 +130,7 @@ export function fetchRemoveAbstraction(collectionId) {
         }
     }
 }
-export function removeAbstraction(collectionId, collectionChainIds) {
+export function removeAbstraction(collectionId) {
     /*
      * 1. Fetch direct child nodes of ${collectionId}
      * 2. Move abstraction with ${collectionId} to ${sourceCollectionId}
@@ -161,7 +139,7 @@ export function removeAbstraction(collectionId, collectionChainIds) {
         // get the direct child nodes,
         // TODO: must be merged with previous
         // TODO: should be getCollection?
-        return dispatch(fetchCollectionL1(collectionId, collectionChainIds))
+        return dispatch(fetchCollectionL1(collectionId))
             .then(() => {
                 return dispatch(fetchRemoveAbstraction(collectionId))
             })

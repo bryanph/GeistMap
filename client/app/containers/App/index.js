@@ -71,27 +71,14 @@ class App extends React.Component {
                             <Switch>
                                 { /* same component to allow for smooth transitions */ }
                                 <Route exact path={'/app/nodes/:nodeId?'} render={(props) => <NodeView {...props} graphType="node" />}/>
-                                <Route exact path={'/app/collections/:collectionChain*/nodes/:nodeId?'} render={
-                                    (props) => {
-                                        const collectionChain = props.match.params.collectionChain 
-                                        console.log(collectionChain)
-
-                                        if (!collectionChain) {
-                                            return <Redirect to={`/app/collections/${rootCollectionId}/nodes`}/>
-                                        }
-
-                                        return (
-                                            <NodeView {...props} graphType="collection" />
-                                        )
-                                    }
-                                }/>
+                                <Route exact path={'/app/collections/:collectionId/nodes/:nodeId?'} render={(props) => <NodeView {...props} graphType="collection" /> } />
 
 
                                 <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>
-                                <Route exact path={'/app/collections/:collectionChain+/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
+                                <Route exact path={'/app/collections/:collectionId/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
 
                                 { /* The overview graph showing explicit collection links */ }
-                                <Route exact path={'/app/collections/:collectionChain*'} component={CollectionOverview}/>
+                                <Route exact path={'/app/collections/:collectionId'} component={CollectionOverview}/>
 
                                 <Redirect from={'/app/'} to={'/app/collections/nodes'}/>
                             </Switch>

@@ -26,8 +26,6 @@ CollectionSchema.define({
     nodes: arrayOf(NodeSchema),
     edges: arrayOf(CollectionRelationSchema), // edges going out from this collection to another collection
     collections: arrayOf(CollectionSchema), // top-level parent collections
-    collectionChain: arrayOf(CollectionSchema), // complete collection chain (AbstractionDetail)
-    collectionChains: arrayOf(arrayOf(CollectionSchema)), // complete collection chains (NodeExplore)
 })
 
 

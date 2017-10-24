@@ -66,7 +66,7 @@ export class NodeEditorToolbar extends React.Component {
         }
         else if (page === "collection") {
             // collection mode
-            history.push(`/app/collections/${this.props.collectionChainIds.join('/')}/nodes`)
+            history.push(`/app/collections/${this.props.id}/nodes`)
         }
     }
 

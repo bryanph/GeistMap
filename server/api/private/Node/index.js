@@ -261,7 +261,7 @@ module.exports = function(db, es) {
              */
             return db.run(`
                 MATCH (u:User)--(n:Node)
-                WHERE u.id = {userId}
+                WHERE u.id = {userId} AND NOT n:RootCollection
                 AND n.id = {id}
                 DETACH DELETE n
                 `,

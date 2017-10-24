@@ -185,8 +185,6 @@ io.on('connection', function(socket) {
     socket.on('Node.search', NodeAPI.search.bind(null, user));
     socket.on('Node.searchAll', NodeAPI.searchAll.bind(null, user));
 
-    socket.on('Node.toCollection', NodeAPI.toCollection.bind(null, user));
-
     /*
      * gets collection with its nodes
     */
