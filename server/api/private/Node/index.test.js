@@ -504,50 +504,5 @@ describe('nodeApi', () => {
                 ]))
             })
     })
-
-    test("test Node.toCollection converts the given node to a collection", function() {
-        return loadFixtures(db, userId.toString(), [
-            {
-                labels: [ "Node" ],
-                properties: {
-                    "name": "Node",
-                    "id": "TEST__node",
-                    "type": "node"
-                }
-            },
-        ])
-            .then(() => {
-                return nodeApi.toCollection(user, "TEST__node")
-            })
-            .then((result) => {
-                expect(result).toMatchObject({
-                    "name": "Node",
-                    "id": "TEST__node",
-                    "type": "collection"
-                })
-
-                return getUserGraphData(db, userId)
-            })
-            .then((graphState) => {
-                // TODO: instead compare using the original object
-                expect(sortById(graphState.nodes)).toMatchObject(sortById([
-                    {
-                        labels: [ "Collection", "Node" ],
-                        properties: {
-                            "name": "Node",
-                            "id": "TEST__node",
-                            "type": "collection"
-                        }
-                    }
-                ]))
-
-                expect(sortById(graphState.edges)).toMatchObject(sortById([
-                    {
-                        type: 'AUTHOR',
-                        properties: {}
-                    }
-                ]))
-            })
-    })
 })
 

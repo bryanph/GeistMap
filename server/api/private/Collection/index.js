@@ -87,10 +87,12 @@ module.exports = function(db, es) {
                 db.run(`
                     MATCH (u:User)--(r:RootCollection)<-[:AbstractEdge*0..]-(c:Node)
                     WHERE u.id = {userId}
-                    WITH DISTINCT c as nodes
+                    MATCH (c)<-[:AbstractEdge*0..]-(c2:Node) // all collections
+                    WITH DISTINCT c2 as nodes
                     OPTIONAL MATCH (parentNodes:Node)<-[:AbstractEdge]-(nodes)
                     WITH nodes, collect(parentNodes.id) as collections
-                    RETURN properties(nodes) as node, collections
+                    OPTIONAL MATCH (nodes)<-[:AbstractEdge*1..]-(children)
+                    RETURN properties(nodes) as node, collections, COUNT(children)
                     ORDER BY node.id
                     `,
                     {
@@ -191,8 +193,6 @@ module.exports = function(db, es) {
                         )
                     ))
 
-                console.log(nodes)
-
                 return res(null, {
                     collection: Object.assign({},
                         collection,
@@ -246,7 +246,7 @@ module.exports = function(db, es) {
                     WITH DISTINCT nodes
                     OPTIONAL MATCH (nodes)-[:AbstractEdge]->(parentNodes)
                     WITH nodes, collect(parentNodes.id) as collections
-                    OPTIONAL MATCH (nodes)<-[:AbstractEdge*1..]-(children)
+                    OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
                     RETURN { id: nodes.id, name: nodes.name, type: nodes.type } as node, collections, COUNT(children)
                     ORDER BY node.id
                     `,
@@ -257,8 +257,6 @@ module.exports = function(db, es) {
                 ),
             ])
                 .then((results) => {
-                    console.log(results[1])
-
                     const edges = results[0].records.map(record => record.get('edge'))
 
                     let nodes = !results[1].records.length  ?
