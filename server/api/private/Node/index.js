@@ -203,7 +203,7 @@ module.exports = function(db, es) {
             .then((results) => {
                 const result = 
                     Object.assign(results.records[0]._fields[0], {
-                        collectionChains: []
+                        collections: []
                     })
 
                 if (res) {
@@ -395,37 +395,6 @@ module.exports = function(db, es) {
                 }
 
                 return true
-            })
-            .catch(handleError)
-        },
-
-        toCollection: function(user, id, res) {
-
-            return db.run(
-                `
-                MATCH (u:User)--(n:Node)
-                WHERE u.id = {userId} AND n.id = { id }
-                REMOVE n:Node
-                SET n:Node:Collection
-                SET n.type = 'collection'
-                RETURN properties(n) as node
-                `,
-                {
-                    userId: user._id.toString(),
-                    id,
-                }
-            )
-            .then((results) => {
-                const result = results.records[0]._fields[0]
-
-                if (res) {
-                    res(null, result)
-                }
-
-                // now update ES indexes...
-                updateIndex(es, user._id.toString(), result)
-
-                return result
             })
             .catch(handleError)
         },

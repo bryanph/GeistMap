@@ -56,15 +56,15 @@ describe('nodeApi', () => {
                 `)
     })
 
-    test.skip("Node.get() returns the node and its collectionChains[]", function() {
+    test.skip("Node.get() returns the node and its collections[]", function() {
 
     })
 
-    test.skip("Node.getL1() returns the node, its neighbours and their collectionChains[]", function() {
+    test.skip("Node.getL1() returns the node, its neighbours and their collections[]", function() {
 
     })
 
-    test.skip("Node.getL2() returns the node, its neighbours up to two levels and their collectionChains[]", function() {
+    test.skip("Node.getL2() returns the node, its neighbours up to two levels and their collections[]", function() {
 
     })
 

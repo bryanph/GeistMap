@@ -9,7 +9,7 @@ import {
 
 const uuidV4 = require('uuid/v4');
 
-import { convertNodeToCollection, loadNodeL1 } from './node'
+import { loadNodeL1 } from './node'
 
 /*
  * Get all collections
@@ -263,12 +263,7 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
         const source = getNode(getState(), sourceId)
         const target = getNode(getState(), targetId)
 
-        const convertPromise = target.type === "node"
-            ? dispatch(convertNodeToCollection(targetId)) : Promise.resolve()
-
-        return convertPromise.then(() => {
-            return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, source))
-        })
+        return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, source))
     }
 }
 

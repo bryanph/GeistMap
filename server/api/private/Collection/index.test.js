@@ -92,7 +92,7 @@ describe('collectionApi', () => {
         })
     })
 
-    test("test Collection.getAll() returns all collections and their connections", function() {
+    test.skip("test Collection.getAll() returns all collections and their connections", function() {
         return loadFixtures(db, userId.toString(), [
             {
                 properties: {
@@ -101,7 +101,7 @@ describe('collectionApi', () => {
                     type: 'root',
                     isRootCollection: true,
                 },
-                labels: [ 'RootCollection', 'Collection' ]
+                labels: [ 'Node', 'RootCollection', 'Collection' ]
             },
             {
                 labels: [ "Collection", "Node" ],
@@ -176,6 +176,7 @@ describe('collectionApi', () => {
                 expect(sortByIdFlat(result.collections)).toMatchObject(
                     sortByIdFlat([
                         {
+                            collections: [],
                             name: 'My Knowledge Base',
                             isRootCollection: true,
                             id: 'TEST__rootCollection',
@@ -183,23 +184,34 @@ describe('collectionApi', () => {
                             count: 4
                         },
                         {
+                            collections: [ "TEST__rootCollection" ],
                             type: 'collection',
                             name: 'Collection3',
                             id: 'TEST__collection3',
                             count: 0
                         },
                         {
+                            collections: [ "TEST__collection" ],
                             type: 'collection',
                             name: 'Collection2',
                             id: 'TEST__collection2',
                             count: 1
                         },
                         {
+                            collections: [ "TEST__rootCollection" ],
                             type: 'collection',
                             name: 'Collection',
                             id: 'TEST__collection',
                             count: 2
-                        }])
+                        },
+                        {
+                            collections: [ "TEST__collection2" ],
+                            count: 0,
+                            type: 'node',
+                            name: 'Node',
+                            id: 'TEST__node',
+                        }
+                    ])
                 )
 
 
@@ -219,12 +231,18 @@ describe('collectionApi', () => {
                             end: 'TEST__rootCollection',
                             start: 'TEST__collection3',
                             id: 'TEST__node3_collection'
-                        }])
+                        },
+                        {
+                            end: 'TEST__collection2',
+                            start: 'TEST__node',
+                            id: 'TEST__node_collection2'
+                        }
+                    ])
                 )
             })
     })
 
-    test.skip("test Collection.get() returns the collection and the direct children with their collectionChains[]", function() {
+    test.skip("test Collection.get() returns the collection and the direct children with their collections[]", function() {
 
     })
 
@@ -330,31 +348,18 @@ describe('collectionApi', () => {
             },
         ])
             .then(() => {
-                return collectionApi.getL1(user, "TEST__collection", [ "TEST__rootCollection", "TEST__collection" ])
+                return collectionApi.getL1(user, "TEST__collection")
             })
             .then((result) => {
                 expect(result).toEqual(
                     {
-                        collectionChain: [
-                            {
-                                name: 'My Knowledge Base',
-                                isRootCollection: true,
-                                id: 'TEST__rootCollection',
-                                type: 'root'
-                            },
-                            { 
-                                type: 'collection',
-                                name: 'Collection',
-                                id: 'TEST__collection' 
-                            }
-                        ],
                         nodes: [
                             { 
                                 type: 'collection',
                                 name: 'Collection',
                                 id: 'TEST__collection',
-                                collectionChains: [ 
-                                    [ 'TEST__rootCollection' ]
+                                collections: [ 
+                                    'TEST__rootCollection'
                                 ],
                                 count: 2 
                             },
@@ -362,8 +367,8 @@ describe('collectionApi', () => {
                                     id: 'TEST__node',
                                     type: 'node',
                                     name: 'Node',
-                                    collectionChains: [
-                                        ['TEST__rootCollection']
+                                    collections: [
+                                        'TEST__rootCollection'
                                     ],
                                     count: 0
                             },
@@ -371,8 +376,8 @@ describe('collectionApi', () => {
                                 name: 'Node2',
                                 id: 'TEST__node2',
                                 type: 'node',
-                                collectionChains: [
-                                    ['TEST__rootCollection', 'TEST__collection']
+                                collections: [
+                                    'TEST__collection'
                                 ],
                                 count: 0
                             },
@@ -380,8 +385,8 @@ describe('collectionApi', () => {
                                 name: 'Node3',
                                 id: 'TEST__node3',
                                 type: 'node',
-                                collectionChains: [
-                                    ['TEST__rootCollection', 'TEST__collection']
+                                collections: [
+                                    'TEST__collection'
                                 ],
                                 count: 0
                             },
@@ -440,93 +445,6 @@ describe('collectionApi', () => {
             })
     })
 
-    test("Collection.connect() works properly", () => {
-        const edgeId = uuidV4Actual()
-        const sourceId = uuidV4Actual()
-        const targetId = uuidV4Actual()
-
-        return loadFixtures(db, userId.toString(), [
-            {
-                labels: [ "Collection", "Node" ],
-                properties: {
-                    "name": "Source collection",
-                    "id": sourceId,
-                    "type": "collection"
-                }
-            },
-            {
-                labels: [ "Collection", "Node" ],
-                properties: {
-                    "name": "Target collection",
-                    "id": targetId,
-                    "type": "collection"
-                }
-            },
-        ])
-            .then(() => {
-                return collectionApi.connect(user, sourceId, targetId, edgeId)
-                    .then((result) => {
-                        return result
-                    })
-            })
-            .then((result) => {
-                // expect result to return the edge
-                expect(result).toMatchObject({
-                    start: sourceId,
-                    end: targetId,
-                    id: edgeId,
-                })
-
-                return getUserGraphData(db, userId)
-            })
-            .then((graphState) => {
-                // test if graph state is as expected
-                expect(sortById(graphState.nodes)).toMatchObject(sortById([
-                    {
-                        properties: {
-                            name: 'Source collection',
-                            type: 'collection',
-                            id: sourceId,
-                        },
-                        labels: [ 'Collection', 'Node' ]
-                    },
-                    {
-                        properties: {
-                            name: 'Target collection',
-                            type: 'collection',
-                            id: targetId,
-                        },
-                        labels: [ 'Collection', 'Node' ]
-                    },
-                    {
-                        properties: {
-                            id: userId.toString(),
-                        },
-                        labels: [ 'User' ]
-                    }
-                ]))
-
-                expect(sortById(graphState.edges)).toMatchObject(sortById([
-                    {
-                        type: 'AUTHOR',
-                        properties: {}
-                    },
-                    {
-                        type: 'AUTHOR',
-                        properties: {}
-                    },
-                    {
-                        properties: {
-                            end: targetId,
-                            start: sourceId,
-                            id: edgeId,
-                        },
-                        type: "AbstractEdge"
-                    }
-                ]))
-            })
-    })
-
     test("Impossible to remove RootCollection", () => {
         return loadFixtures(db, userId.toString(), [
             {
@@ -536,7 +454,7 @@ describe('collectionApi', () => {
                     type: 'root',
                     isRootCollection: true,
                 },
-                labels: [ 'RootCollection', 'Collection' ]
+                labels: [ 'RootCollection', 'Collection', 'Node' ]
             },
         ])
             .then(() => {
@@ -555,7 +473,7 @@ describe('collectionApi', () => {
                             type: 'root',
                             isRootCollection: true,
                         },
-                        labels: [ 'RootCollection', 'Collection' ]
+                        labels: [ 'RootCollection', 'Node', 'Collection' ]
                     },
                 ]))
 
@@ -578,7 +496,7 @@ describe('collectionApi', () => {
                     type: 'root',
                     isRootCollection: true,
                 },
-                labels: [ 'RootCollection', 'Collection' ]
+                labels: [ 'RootCollection', 'Node', 'Collection' ]
             },
             {
                 labels: [ "Collection", "Node" ],
@@ -617,7 +535,7 @@ describe('collectionApi', () => {
                             type: 'root',
                             isRootCollection: true,
                         },
-                        labels: [ 'RootCollection', 'Collection' ]
+                        labels: [ 'RootCollection', 'Node', 'Collection' ]
                     },
                     {
                         labels: [ "Node" ], // this was removed
@@ -1141,7 +1059,7 @@ describe('collectionApi', () => {
                     type: 'root',
                     isRootCollection: true,
                 },
-                labels: [ 'RootCollection', 'Collection' ]
+                labels: [ 'RootCollection', 'Collection', 'Node' ]
             },
             {
                 labels: [ "Collection", "Node" ],
@@ -1206,7 +1124,7 @@ describe('collectionApi', () => {
                             type: 'root',
                             isRootCollection: true,
                         },
-                        labels: [ 'RootCollection', 'Collection' ]
+                        labels: [ 'RootCollection', 'Node', 'Collection' ]
                     },
                     {
                         labels: [ "Collection", "Node" ],

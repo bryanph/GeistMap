@@ -261,27 +261,6 @@ export function removeEdge(id) {
     }
 }
 
-
-
-export const CONVERT_NODE_TO_COLLECTION_REQUEST = 'CONVERT_NODE_TO_COLLECTION_REQUEST'
-export const CONVERT_NODE_TO_COLLECTION_SUCCESS = 'CONVERT_NODE_TO_COLLECTION_SUCCESS'
-export const CONVERT_NODE_TO_COLLECTION_FAILURE = 'CONVERT_NODE_TO_COLLECTION_FAILURE'
-export function convertNodeToCollection(id) {
-    /*
-     * Should have some extra
-    */
-
-    return {
-        id,
-        [CALL_API]: {
-            types: [ CONVERT_NODE_TO_COLLECTION_REQUEST, CONVERT_NODE_TO_COLLECTION_SUCCESS, CONVERT_NODE_TO_COLLECTION_FAILURE ],
-            endpoint: 'Node.toCollection',
-            payload: [ id ],
-            // schema: Schemas.NODE,
-        }
-    }
-}
-
 /*
  * Get a node by id
 */

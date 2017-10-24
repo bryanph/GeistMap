@@ -69,7 +69,7 @@ export function nodes(state={}, action, collections) {
             return update(state, {
                 [action.sourceId]: {
                     collections: { $apply: (collections) => (
-                        collections.splice(_.findIndex(collections, action.sourceCollectionId), 1 , action.targetId)
+                        [ ..._.without(collections, action.sourceCollectionId), action.targetId ] 
                     )}
                 }
             })
@@ -412,7 +412,7 @@ function nodesByCollectionId(state={}, action) {
         }
 
         case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS: {
-            return update(start, {
+            return update(state, {
                 [action.collectionId]: { $apply: (collections) => {
                     if (!collections) {
                         return [ action.nodeId ]
@@ -433,8 +433,8 @@ function nodesByCollectionId(state={}, action) {
 
         case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
             return update(state, {
-                [action.sourceCollectionId]: { $pull: [ action.sourceId ] },
-                [action.targetId]: { $push: [ action.sourceId ]}
+                [action.sourceCollectionId]: { $apply: (arr) => _.without(arr, action.sourceId) },
+                [action.targetId]: { $apply: (arr) => [ ...(arr || []), action.sourceId ]}
             })
         }
 

@@ -87,12 +87,10 @@ module.exports = function(db, es) {
                 db.run(`
                     MATCH (u:User)--(r:RootCollection)<-[:AbstractEdge*0..]-(c:Node)
                     WHERE u.id = {userId}
-                    MATCH (c)<-[:AbstractEdge*0..]-(c2:Node) // all collections
-                    WITH DISTINCT c2 as nodes
-                    MATCH p=(:RootCollection)<-[:AbstractEdge*0..]-(nodes)
-                    WITH nodes, collect(extract(c IN (nodes(p)[0..length(p)]) | c.id)) as collections
-                    OPTIONAL MATCH (nodes)<-[:AbstractEdge*1..]-(children)
-                    RETURN properties(nodes) as node, collections, COUNT(children)
+                    WITH DISTINCT c as nodes
+                    OPTIONAL MATCH (parentNodes:Node)<-[:AbstractEdge]-(nodes)
+                    WITH nodes, collect(parentNodes.id) as collections
+                    RETURN properties(nodes) as node, collections
                     ORDER BY node.id
                     `,
                     {
@@ -105,7 +103,7 @@ module.exports = function(db, es) {
                     Object.assign({},
                         row.get(0),
                         {
-                            collectionChains: row.get(1), // ids for collections
+                            collections: row.get(1), // ids for collections
                             count: parseInt(row.get(2))
                         }
                     )
@@ -206,58 +204,17 @@ module.exports = function(db, es) {
             .catch(handleError)
         },
 
-        getL1: function(user, id, collectionChain, res) {
+        getPath: function(user, collectionChain, res) {
+
+        },
+
+        getL1: function(user, id, res) {
             /*
              * Get abstraction with id ${id} including its children and their direct neighbours
              */
             const userId = user._id.toString()
 
-            if (!Array.isArray(collectionChain)) {
-                return res("collection chain must be passed")
-            }
-
-            // TODO: do a cut-off at a given abstraction level - 2017-08-31
-            if (collectionChain.length > 50) {
-                return res("collection chain is too long");
-            }
-
-            // TODO: separate the calls for getting all collections in a path to the root - 2017-10-13
-            const chainQuery = "MATCH p=(u:User)--" + [
-                collectionChain.reduce((acc, val, i) => {
-                    if (i === 0) {
-                        return `(n${i})`
-                    }
-                    return acc + `<-[:AbstractEdge]-(n${i})`
-                }, ""),
-                collectionChain.reduce((acc, val, i) => {
-                    if (i === 0) {
-                        return `WHERE u.id = {userId} AND n${i}.id = { n${i} }`
-                    }
-                    return acc + ` AND n${i}.id = { n${i} }`
-                }, "")
-            ].join("\n") 
-
-            const nodeParams = _.reduce(collectionChain, (obj, id, i) =>  {
-                obj[`n${i}`] = id
-                return obj
-            }, {})
-
-            // console.log(id, collectionChain)
-            // console.log(chainQuery)
-            // console.log(nodeParams)
-
             return Promise.all([
-                /*
-                 * Get collection and all collections in the chain to the root collection
-                */
-                db.run(
-                    `${chainQuery}
-                    UNWIND nodes(p) AS n
-                    RETURN collect(properties(n))`,
-                    Object.assign({
-                        userId,
-                    }, nodeParams)
-                ),
                 // get all edges in the collection
                 // TODO: should also filter out edges between parent collections and the nodes
                 db.run(
@@ -287,9 +244,9 @@ module.exports = function(db, es) {
                     WITH c + collect(distinct n) + collect(distinct n2) as nodelist
                     UNWIND nodelist as nodes
                     WITH DISTINCT nodes
-                    MATCH p=(:RootCollection)<-[:AbstractEdge*0..]-(nodes)
-                    WITH nodes, collect(extract(c IN (nodes(p)[0..length(p)]) | c.id)) as collections
-                    OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
+                    OPTIONAL MATCH (nodes)-[:AbstractEdge]->(parentNodes)
+                    WITH nodes, collect(parentNodes.id) as collections
+                    OPTIONAL MATCH (nodes)<-[:AbstractEdge*1..]-(children)
                     RETURN { id: nodes.id, name: nodes.name, type: nodes.type } as node, collections, COUNT(children)
                     ORDER BY node.id
                     `,
@@ -300,30 +257,23 @@ module.exports = function(db, es) {
                 ),
             ])
                 .then((results) => {
-                    let collectionChain = results[0].records[0].get(0)
+                    console.log(results[1])
 
-                    if (collectionChain.length === 0) {
-                        console.log("collection not found..");
-                        return res(new Error(`Collection with id ${id} was not found`))
-                    }
+                    const edges = results[0].records.map(record => record.get('edge'))
 
-                    collectionChain.shift() // remove userId
-
-                    const edges = results[1].records.map(record => record.get('edge'))
-                    let nodes = !results[2].records.length  ?
+                    let nodes = !results[1].records.length  ?
                         [] :
-                        results[2].records.map(row => (
+                        results[1].records.map(row => (
                             Object.assign({},
                                 row.get(0),
                                 {
-                                    collectionChains: row.get(1), // ids for collections
+                                    collections: row.get(1), // ids for collections
                                     count: parseInt(row.get(2))
                                 }
                             )
                         ))
 
                     const result = {
-                        collectionChain,
                         nodes,
                         edges // all edges between the nodes
                     }

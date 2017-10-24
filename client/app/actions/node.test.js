@@ -486,48 +486,5 @@ describe('node actions', () => {
                 })
             })
     })
-
-    test("test convertNodeToCollection() action", function() {
-        const node = {
-            name: 'Node',
-            modified: '1501582629992',
-            id: "TEST__Node",
-            type: 'node',
-            created: '1501582629992',
-            collectionChains: [],
-        }
-
-        mockServer.on('Node.toCollection', (id, res) => {
-            res(null, { ...node, type: "collection" })
-        })
-
-        const initialState = {
-            entities: {
-                nodes: {
-                    ["TEST__Node"]: node
-                }
-            }
-        }
-        store = createMockStore(_socket, initialState)
-
-        return store.dispatch(nodeActions.convertNodeToCollection("TEST__Node"))
-            .then((action) => {
-                // console.log(require('util').inspect(store.getState(), false, null))
-                expect(store.getState()).toMatchObject({
-                    entities: {
-                        nodes: {
-                            ["TEST__Node"]: {
-                                name: 'Node',
-                                modified: '1501582629992',
-                                id: "TEST__Node",
-                                type: 'collection',
-                                created: '1501582629992',
-                                collectionChains: [],
-                            }
-                        }
-                    }
-                })
-            })
-    })
 })
 
