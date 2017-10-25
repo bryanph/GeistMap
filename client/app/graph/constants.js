@@ -1,4 +1,4 @@
-export const MIN_NODE_RADIUS = 30;
+export const MIN_NODE_RADIUS = 12;
 export const MAX_NODE_RADIUS = 60;
 export const NODE_RADIUS = 12;
 export const WIDTH = 600;

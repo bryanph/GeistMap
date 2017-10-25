@@ -1041,7 +1041,9 @@ export const getNodesAndEdgesByCollectionId = createSelector(
             }
         }
 
-        const rootIds = nodesByCollectionId[parentCollection.id]
+        console.log(nodesByCollectionId)
+
+        const rootIds = nodesByCollectionId[parentCollection.id] || []
         const notCollapsedParentCollection = { ...parentCollection, collapsed: false } // TODO: shouldn't be necessary - 2017-10-18
         visibleNodeTree = handleShowNodes(notCollapsedParentCollection, rootIds) 
 

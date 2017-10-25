@@ -28,7 +28,6 @@ export class NodeView extends React.PureComponent {
         const {
             nodeId,
             nodes,
-            collections,
             links,
             focus,
             mode,
@@ -71,7 +70,6 @@ export class NodeView extends React.PureComponent {
                             isLoading={isLoading}
                             key="2"
                             activeCollection={this.props.activeCollection}
-                            collections={this.props.collections}
                             nodeTree={this.props.nodeTree}
                         />
                         ]
@@ -85,7 +83,6 @@ export class NodeView extends React.PureComponent {
                     activeCollection={this.props.activeCollection}
                     activeCollectionId={this.props.activeCollectionId}
                     nodes={nodes}
-                    collections={this.props.visibleCollections}
                     links={links}
                     graphType={ graphType }
                     mode={mode}

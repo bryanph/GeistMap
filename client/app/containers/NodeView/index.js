@@ -83,8 +83,6 @@ import {
     getL1Nodes,
     getL2Nodes,
     getL2Edges,
-    getCollection,
-    getCollections,
     getNode,
     getNodesAndEdgesByCollectionId,
     getAbstractionChain,
@@ -92,19 +90,17 @@ import {
 
 function mapStateToProps(state, props) {
 
-    let nodes, edges, collections, visibleCollections, nodeTree, isLoading, graphType, collectionChain
+    let nodes, edges, nodeTree, isLoading, graphType, collectionChain
 
     if (props.graphType === "collection") {
         isLoading = state.loadingStates.GET_COLLECTIONL1;
 
         collectionChain = getAbstractionChain(state, props);
-        ({ nodes, collections, visibleCollections, nodeTree, edges} = getNodesAndEdgesByCollectionId(state, props));
+        ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
 
     } else {
         isLoading = state.loadingStates.GET_NODE_L1 || state.loadingStates.GET_NODE_L2
         nodes = getL2Nodes(state, props.nodeId);
-        collections = []
-        visibleCollections = []
         collectionChain = []
         edges = getL2Edges(state, props.nodeId);
     }
@@ -113,13 +109,11 @@ function mapStateToProps(state, props) {
         activeNodeId: props.nodeId,
         activeNode: getNode(state, props.nodeId),
         activeCollectionId: props.collectionId,
-        activeCollection: getCollection(state, props.collectionId),
+        activeCollection: getNode(state, props.collectionId),
         mode: state.graphUiState.mode,
         focus: state.graphUiState.focus,
         nodes,
         links: edges,
-        collections,
-        visibleCollections,
         nodeTree,
         isLoading,
         graphType: props.graphType,

@@ -71,7 +71,17 @@ class App extends React.Component {
                             <Switch>
                                 { /* same component to allow for smooth transitions */ }
                                 <Route exact path={'/app/nodes/:nodeId?'} render={(props) => <NodeView {...props} graphType="node" />}/>
-                                <Route exact path={'/app/collections/:collectionId/nodes/:nodeId?'} render={(props) => <NodeView {...props} graphType="collection" /> } />
+                                <Route exact path={'/app/collections/:collectionId?/nodes/:nodeId?'} render={(props) => {
+                                    const collectionId = props.match.params.collectionId
+
+                                    if (!collectionId) {
+                                        return <Redirect to={`/app/collections/${rootCollectionId}/nodes`}/>
+                                    }
+
+                                    return (
+                                        <NodeView {...props} graphType="collection" />
+                                    )
+                                }} />
 
 
                                 <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>

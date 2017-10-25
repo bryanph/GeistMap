@@ -170,7 +170,7 @@ const createEnterCollection = function(actions) {
     */
     return (selection, click) => {
         selection
-            .attr("class", "collectionSelection node")
+            .attr("class", "nodeSelection node")
             .attr('id', (d) => `node-${d.id}`)
             .attr('r', (d) => d.radius)
 
@@ -348,13 +348,11 @@ const createExploreEvents = function(simulation, actions) {
         }
     })
 
-    return (nodeId, nodeSelection, collectionSelection, link, mode, focus) => {
+    return (nodeId, nodeSelection, link, mode, focus) => {
         if (this.props.mode !== mode) {
             nodeSelection.call((selection) => updateNode(selection, mode, focus))
             link.call((selection) => updateLink(selection, mode))
         } else {
-            collectionSelection.exit().remove()
-
             // EXIT selection
             nodeSelection.exit().remove()
             // ENTER selection
@@ -450,23 +448,18 @@ const createCollectionDetailEvents = function(simulation, actions) {
         onDeleteClick: (d) => actions.removeEdge(d.id)
     })
 
-    return (nodeSelection, collectionSelection, link, mode, focus) => {
+    return (nodeSelection, link, mode, focus) => {
         // if mode changed, update everything
 
         if (this.props.mode !== mode) {
-            nodeSelection.call((selection) => updateNode(selection, mode, focus))
-            collectionSelection.call((selection) => updateCollection(selection, mode, focus))
+            nodeSelection.call((selection) => updateCollection(selection, mode, focus))
             link.call((selection) => updateLink(selection, mode))
         } else {
             // EXIT selection
             nodeSelection.exit().remove()
-            collectionSelection.exit().remove()
             // ENTER selection
-            nodeSelection.enter().append('g').call(enterNode).call(nodeDrag)
-            .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
-
-            collectionSelection.enter().append('g').call(enterCollection).call(nodeDrag)
-            .merge(collectionSelection).call((selection) => updateCollection(selection, mode, focus))
+            nodeSelection.enter().append('g').call(enterCollection).call(nodeDrag)
+                .merge(nodeSelection).call((selection) => updateCollection(selection, mode, focus))
 
             // EXIT selection
             link.exit().remove()
@@ -495,7 +488,6 @@ class NodeGraph extends React.Component {
         let {
             isLoading,
             nodes,
-            collections,
             links,
             graphType,
             mode, // mode of the graph
@@ -508,21 +500,13 @@ class NodeGraph extends React.Component {
 
         let nodeById = {}
 
-        // TODO: this only applies to CollectionOverview
-        const maxCount = (_.maxBy(collections, (d) => d.count) || {}).count || 0
+        const maxCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
         const maxRadiusDomain = maxCount > 10 ? maxCount : 10
         const radiusScale = scaleLinear().domain([0, maxRadiusDomain]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
 
-        collections.forEach(c => {
-            nodeById[c.id] = c
-
-            c.radius = radiusScale(c.count || 0)
-        })
-
-        // set extra properties here
         nodes.forEach(node => {
             nodeById[node.id] = node
-            node.radius = NODE_RADIUS
+            node.radius = radiusScale(node.count || 0)
         })
 
         const adjacencyMap = nextProps.adjacencyMap
@@ -541,29 +525,25 @@ class NodeGraph extends React.Component {
 
         // set data
         var nodeSelection = this.container.selectAll('.nodeSelection')
-            .data(nodes, x => x.id)
-
-        var collectionSelection = this.container.selectAll('.collectionSelection')
-            .data(collections, x => x.id + x.count)
+            .data(nodes, x => x.id + x.count)
 
         var link = this.container.selectAll('.link')
             .data(links, link => link.id)
 
         // enter-update-exit cycle depending on type of graph
         if (graphType === 'node') {
-            this.exploreEvents(nextProps.activeNodeId, nodeSelection, collectionSelection, link, mode, focus)
+            this.exploreEvents(nextProps.activeNodeId, nodeSelection, link, mode, focus)
         } else if (graphType === 'collection') {
-            this.collectionDetailEvents(nodeSelection, collectionSelection, link, mode, focus)
+            this.collectionDetailEvents(nodeSelection, link, mode, focus)
         } else {
             console.error('this should not happen!')
         }
 
-        this.simulation.nodes([...nodes, ...collections])
+        this.simulation.nodes(nodes)
         this.simulation.force("link").links(links)
 
         if (
             nodes.length !== (this.prevProps && this.prevProps.nodes.length) ||
-            collections.length !== (this.prevProps && this.prevProps.collections.length) ||
             links.length !== (this.prevProps && this.prevProps.links.length))
         {
             this.zoomed = false
@@ -571,7 +551,7 @@ class NodeGraph extends React.Component {
         }
 
         // nescessary because not using react here
-        this.prevProps = { nodes, collections, links }
+        this.prevProps = { nodes, links }
     }
 
     restartSimulation() {
@@ -591,7 +571,6 @@ class NodeGraph extends React.Component {
             loadNode,
             removeEdge,
             connectNodes,
-            connectCollections,
         } = this.props
 
         const domNode = ReactDOM.findDOMNode(this.refs.graph)
@@ -628,7 +607,6 @@ class NodeGraph extends React.Component {
             moveToAbstraction: this.props.moveToAbstraction,
         })
 
-        // TODO: collectionId should be not be static like this - 2017-05-21
         this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, {
             history: this.props.history,
             removeEdge,
@@ -652,8 +630,6 @@ class NodeGraph extends React.Component {
             }
 
             selection.selectAll('.nodeSelection')
-                .call(transformNode);
-            selection.selectAll('.collectionSelection')
                 .call(transformNode);
 
             selection.selectAll('.link')

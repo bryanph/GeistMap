@@ -41,7 +41,7 @@ module.exports = function(db, es) {
                 MERGE (u:User {
                     id: {userId}
                 })
-                CREATE (c:Collection:RootCollection {
+                CREATE (c:Node:Collection:RootCollection {
                     id: {id},
                     name: {name},
                     isRootCollection: true,
@@ -259,7 +259,7 @@ module.exports = function(db, es) {
                 .then((results) => {
                     const edges = results[0].records.map(record => record.get('edge'))
 
-                    let nodes = !results[1].records.length  ?
+                    let nodes = !results[1].records.length ?
                         [] :
                         results[1].records.map(row => (
                             Object.assign({},
