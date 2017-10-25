@@ -43,7 +43,7 @@ class NodeHeader extends React.Component {
     render() {
         const {animations, node, onToggleExpand, onFocusClick} = this.props;
         const {active, children} = node;
-        const terminal = !children;
+        const terminal = !node.count;
         const containerClass = classNames('link', {
             active: active
         })

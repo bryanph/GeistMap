@@ -120,7 +120,7 @@ class NodeCollectionList extends React.Component {
                             backgroundColor={secondaryColor}
                             onClick={this.toggleSearch}
                             style={styles.chip}
-                        >Add Collection
+                        >Add Parent
                         </Chip>
                         : 
                         <div style={{ width: "300px" }}>

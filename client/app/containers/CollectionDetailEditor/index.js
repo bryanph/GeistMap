@@ -31,9 +31,12 @@ export class CollectionDetailEditor extends React.Component {
     constructor(props) {
         super(props)
 
+        this.state = {
+            hasLoaded: false
+        }
+
         this.props.loadCollectionL1(this.props.collectionId)
         this.props.loadNodeL1(this.props.nodeId)
-
     }
 
     componentWillReceiveProps(nextProps) {
@@ -45,6 +48,10 @@ export class CollectionDetailEditor extends React.Component {
         }
         if (nextProps.nodeId && this.props.nodeId !== nextProps.nodeId) {
             this.props.loadNodeL1(nextProps.nodeId)
+        }
+
+        if (!nextProps.isLoading) {
+            this.setState({ hasLoaded: true })
         }
     }
 
@@ -65,6 +72,7 @@ export class CollectionDetailEditor extends React.Component {
                     node={this.props.node}
                     collectionId={this.props.collectionId}
                     page="collection"
+                    isLoading={!this.state.hasLoaded || this.props.isLoading}
                 />
                 <div className="contentContainer">
                     <div className="contentContainer-inner">

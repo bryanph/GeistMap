@@ -1019,8 +1019,6 @@ export const getNodesAndEdgesByCollectionId = createSelector(
         let visibleNodeTree = {}
 
         function handleShowNodes(parentNode, nodeIds) {
-            // console.log(parentNode, nodeIds)
-
             if (parentNode.collapsed) {
                 // collapsed, shouldn't show the children, but show the node
                 visibleNodeMap[parentNode.id] = parentNode
@@ -1028,32 +1026,25 @@ export const getNodesAndEdgesByCollectionId = createSelector(
 
                 return {
                     ...parentNode,
-                    children: []
+                    children: [],
                 }
             } else {
                 // expanded, show all children as well
                 return {
                     ...parentNode,
-                    children: nodeIds.map(id => {
-                        return handleShowNodes(nodeMap[id], nodesByCollectionId[id] || [])
-                    })
+                    children: _(nodeIds)
+                        .map(id => handleShowNodes(nodeMap[id], nodesByCollectionId[id] || []))
+                        .orderBy(n => n.name.toLowerCase())
+                        .orderBy(n => !n.count)
+                        .value()
                 }
             }
         }
-
-        console.log(nodesByCollectionId)
 
         const rootIds = nodesByCollectionId[parentCollection.id] || []
         const notCollapsedParentCollection = { ...parentCollection, collapsed: false } // TODO: shouldn't be necessary - 2017-10-18
         visibleNodeTree = handleShowNodes(notCollapsedParentCollection, rootIds) 
 
-        // let transformedEdges = _.map(edgeMap, e => Object.assign({}, e))
-
-        function findParentCollection(node) {
-
-        }
-
-        // TODO: combine map + filter here into reduce - 2017-10-18
         const transformedEdges = _(edgeMap).map(edge => {
             const start = visibleNodeMap[edge.start]
             const end = visibleNodeMap[edge.end]
@@ -1111,26 +1102,10 @@ export const getNodesAndEdgesByCollectionId = createSelector(
             .flatMap()
             .value()
 
-//         const nodeTree = {
-//             ...parentCollection,
-//             children: _(nodesByCollectionId[parentCollection.id] || [])
-//                 .map(id => nodeMap[id])
-//                 .orderBy(n => n.name.toLowerCase())
-//                 .orderBy(n => n.type)
-//                 .value()
-//         }
-
-        // const visibleNodes = nodes
-        //     .filter(n => !!visibleNodeMap[n.id])
-        //     .map(n => nodeMap[n.id])
         const visibleNodes = _.map(visibleNodeMap, x => x)
-
-        // console.log(visibleNodes, visibleCollections, transformedEdges)
 
         return {
             nodes: visibleNodes,
-            // collections: filteredCollections,
-            // visibleCollections,
             edges: transformedEdges,
             nodeTree: visibleNodeTree.children,
         }

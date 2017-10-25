@@ -71,9 +71,9 @@ export class NodeEditorToolbar extends React.Component {
     }
 
     render() {
-        const { node, loadingStates } = this.props
+        const { node, isLoading } = this.props
 
-        if (loadingStates.GET_NODE_L2 || !node) {
+        if (isLoading) {
             return <Spinner />
         }
 
@@ -94,16 +94,16 @@ export class NodeEditorToolbar extends React.Component {
                     </div>
                     <div className="nodeToolbar-title">
                         <NodeTitle
-                            title={this.props.node.name} 
-                            updateNode={this.props.updateNode.bind(this, this.props.node.id)}
+                            title={node.name} 
+                            updateNode={this.props.updateNode.bind(this, node.id)}
                         />
                         <NodeSubtitle
-                            node={this.props.node}
+                            node={node}
                         />
                     </div>
                     <div>
                         <NodeCollectionList
-                            node={this.props.node}
+                            node={node}
                             collections={this.props.collections}
                             rootCollectionId={this.props.rootCollectionId}
                         />
@@ -134,14 +134,10 @@ import { updateNode, removeNode, removeEdge } from '../../actions/node'
 import { showAddRelationWindow } from '../../actions/ui'
 
 function mapStateToProps(state, props) {
-    const id = props.id
     const rootCollectionId = state.user.rootCollectionId
 
     return {
-        opened: state.uiState.showGraphSideBarOpened,
-        node: getNode(state, id),
-        collections: getCollectionsByNodeId(state, id),
-        loadingStates: state.loadingStates,
+        collections: getCollectionsByNodeId(state, props.id),
         rootCollectionId,
     }
 }

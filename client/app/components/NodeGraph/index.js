@@ -381,7 +381,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onViewClick = (d) => {
         // click in view mode
-        actions.history.push(`/app/collections/${this.props.collection.id}/nodes/${d.id}/edit`)
+        actions.history.push(`/app/collections/${this.props.activeCollection.id}/nodes/${d.id}/edit`)
     }
 
     const onEditClick = (d) => {
@@ -420,20 +420,9 @@ const createCollectionDetailEvents = function(simulation, actions) {
         .on('start', drag.dragstart.bind(this))
         .on('end', drag.dragend.bind(this))
 
-    const enterNode = createEnterNode()
+    const enterNode = createEnterCollection()
 
-    const updateNode = createUpdateNode({
-        onViewClick,
-        onEditClick,
-        onEditSave,
-        onAbstractClick,
-        onFocusClick,
-        onDeleteClick,
-    })
-
-    const enterCollection = createEnterCollection()
-
-    const updateCollection = createUpdateCollection({
+    const updateNode = createUpdateCollection({
         onViewClick,
         onEditClick,
         onEditSave,
@@ -452,14 +441,14 @@ const createCollectionDetailEvents = function(simulation, actions) {
         // if mode changed, update everything
 
         if (this.props.mode !== mode) {
-            nodeSelection.call((selection) => updateCollection(selection, mode, focus))
+            nodeSelection.call((selection) => updateNode(selection, mode, focus))
             link.call((selection) => updateLink(selection, mode))
         } else {
             // EXIT selection
             nodeSelection.exit().remove()
             // ENTER selection
-            nodeSelection.enter().append('g').call(enterCollection).call(nodeDrag)
-                .merge(nodeSelection).call((selection) => updateCollection(selection, mode, focus))
+            nodeSelection.enter().append('g').call(enterNode).call(nodeDrag)
+                .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
 
             // EXIT selection
             link.exit().remove()
