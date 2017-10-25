@@ -26,6 +26,9 @@ import {
     setActiveNode,
     toggleCollapse,
     setGraphMode,
+    moveChild,
+    moveParent,
+    resetAbstractionChain,
 } from '../../actions/ui'
 
 import NodeView from '../../components/NodeView'
@@ -54,7 +57,14 @@ export class NodeViewContainer extends React.PureComponent {
         this.state = {
             hasLoaded: false
         }
+
         loadData(props)
+            .then(() => {
+                if (props.graphType === "collection") {
+                    props.resetAbstractionChain()
+                    props.moveChild(props.activeCollectionId)
+                }
+            })
     }
 
     componentWillReceiveProps(nextProps) {
@@ -120,6 +130,7 @@ function mapStateToProps(state, props) {
         collectionChain,
         adjacencyMap: state.adjacencyMap, // TODO: should this be passed down? - 2017-09-19
         abstractionSidebarOpened: state.uiState.abstractionSidebar.opened,
+        abstractionChain: getAbstractionChain(state),
     };
 }
 
@@ -150,5 +161,8 @@ export default compose(
         loadNodeL2,
         removeEdge,
         setGraphMode,
+        moveChild,
+        moveParent,
+        resetAbstractionChain,
     })
 )(withRouter(NodeViewContainer))

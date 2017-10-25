@@ -443,6 +443,19 @@ function nodesByCollectionId(state={}, action) {
     }
 }
 
+function abstractionChain(state=[], action) {
+    switch(action.type) {
+        case uiActionTypes.MOVE_PARENT:
+            return state.slice(0, state.length - 1)
+        case uiActionTypes.MOVE_CHILD:
+            return [ ...state, action.payload ]
+        case uiActionTypes.RESET_ABSTRACTION_CHAIN:
+            return []
+        default:
+            return state
+    }
+}
+
 function archive(state=[], action) {
     switch(action.type) {
         case nodeActionTypes.REMOVE_NODE_SUCCESS:
@@ -754,6 +767,7 @@ function rootReducer(state={}, action) {
         reverseAdjacencyMap: reverseAdjacencyMap(state.reverseAdjacencyMap, action),
         edgeListMap: edgeListMap(state.edgeListMap, action),
         nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
+        abstractionChain: abstractionChain(state.abstractionChain, action),
         archive: archive(state.archive, action),
         // errorMessage: errorMessage(state.errorMessage, action),
         loadingStates: loadingStates(state.loadingStates, action),
@@ -930,9 +944,9 @@ export const getL2Edges = (state, id) => {
 
 export const getAbstractionChain = createSelector(
     getNodes,
-    (_, props) => props.collectionChainIds,
-    (nodeMap, collectionChainIds) => {
-        return _(collectionChainIds)
+    (state) => state.abstractionChain,
+    (nodeMap, abstractionChain) => {
+        return _(abstractionChain)
             .map(id => nodeMap[id])
             .value()
     }
@@ -1052,7 +1066,8 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 return [ edge ]
             }
 
-            function transformEdges(edge, node, position="start") {
+
+            function transformEdges(edge, node, position) {
                 return node.collections.reduce((result, id) => {
                     // this also takes care of the case where id is the active collection
                     if (!nodeMap[id]) {
@@ -1062,7 +1077,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                     if (visibleNodeMap[id]) {
                         return [ ...result, { ...edge, [position]: id } ] }
                     else {
-                        return [ ...result, ...transformEdges(edge, nodeMap[id]) ]
+                        return [ ...result, ...transformEdges(edge, nodeMap[id], position) ]
                     }
                 }, [])
             }

@@ -389,6 +389,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
     }
 
     const onAbstractClick = (d) => {
+        this.props.moveChild(d.id)
         this.props.history.push(`/app/collections/${d.id}/nodes`)
     }
 
@@ -532,8 +533,8 @@ class NodeGraph extends React.Component {
         this.simulation.force("link").links(links)
 
         if (
-            nodes.length !== (this.prevProps && this.prevProps.nodes.length) ||
-            links.length !== (this.prevProps && this.prevProps.links.length))
+            nodes !== (this.prevProps && this.prevProps.nodes) ||
+            links !== (this.prevProps && this.prevProps.links))
         {
             this.zoomed = false
             this.restartSimulation()

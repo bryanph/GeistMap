@@ -14,6 +14,7 @@ import {
     toggleCollapse,
     showAbstractionSidebar,
     hideAbstractionSidebar,
+    moveChild,
 } from '../../actions/ui'
 
 import {
@@ -34,7 +35,6 @@ class AbstractionList extends React.Component {
     constructor(props) {
         super(props)
 
-        this.focusAbstraction = this.focusAbstraction.bind(this)
         this.removeAbstraction = this.removeAbstraction.bind(this)
         this.toggleCollapse = this.toggleCollapse.bind(this)
         this.expandClick = this.expandClick.bind(this)
@@ -57,16 +57,6 @@ class AbstractionList extends React.Component {
         this.props.removeAbstraction(id)
     }
 
-    focusAbstraction(id) {
-        /*
-         * Route to the collection
-         *
-         * 1. change node type to 'node'
-         * 2. all edges from this collection to its nodes should become normal
-        */
-        this.props.history.push(`/app/collections/${id}/nodes`)
-    }
-
     toggleCollapse(collection, collapsed) {
         /*
          * 1. fetch the collection to collapse if it hasn't been fetched yet
@@ -82,9 +72,8 @@ class AbstractionList extends React.Component {
     }
 
     onFocusClick(collection) {
-        // TODO: should follow the correct abstraction chain - 2017-09-21
-
         this.props.history.push(`/app/collections/${collection.id}/nodes`)
+        this.props.moveChild(collection.id)
     }
 
     shouldComponentUpdate(nextProps) {
@@ -169,4 +158,5 @@ export default connect(mapStateToProps, {
     loadCollectionL1,
     showAbstractionSidebar,
     hideAbstractionSidebar,
+    moveChild,
 })(withRouter(AbstractionList))

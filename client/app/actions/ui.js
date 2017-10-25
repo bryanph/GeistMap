@@ -213,3 +213,13 @@ export function addNode(pos) {
         pos,
     }
 }
+
+
+export const MOVE_CHILD = 'MOVE_CHILD'
+export const moveChild = createAction(MOVE_CHILD)
+
+export const MOVE_PARENT = 'MOVE_PARENT'
+export const moveParent = createAction(MOVE_PARENT)
+
+export const RESET_ABSTRACTION_CHAIN = 'RESET_ABSTRACTION_CHAIN'
+export const resetAbstractionChain = createAction(RESET_ABSTRACTION_CHAIN)

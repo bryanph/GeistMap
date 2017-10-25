@@ -60,12 +60,12 @@ export class NodeView extends React.PureComponent {
                 {
                     graphType === "collection" ?
                         [
-                        // <AbstractionNavigator
-                        //     key="1"
-                        //     collectionChain={this.props.collectionChain}
-                        //     collection={this.props.activeCollection}
-                        //     isLoading={isLoading}
-                        // />,
+                        <AbstractionNavigator
+                            key="1"
+                            abstractionChain={this.props.abstractionChain}
+                            collection={this.props.activeCollection}
+                            isLoading={isLoading}
+                        />,
                         <AbstractionList
                             isLoading={isLoading}
                             key="2"
@@ -77,32 +77,8 @@ export class NodeView extends React.PureComponent {
                         null
                 }
                 <NodeGraph
-                    isLoading={isLoading}
-                    activeNodeId={this.props.activeNodeId}
-                    activeNode={this.props.activeNode}
-                    activeCollection={this.props.activeCollection}
-                    activeCollectionId={this.props.activeCollectionId}
-                    nodes={nodes}
-                    links={links}
-                    graphType={ graphType }
-                    mode={mode}
-                    focus={focus}
-
-                    adjacencyMap={this.props.adjacencyMap}
-
-                    addNode={this.props.addNode}
-                    connectNodes={this.props.connectNodes}
-                    updateNode={this.props.updateNode}
-                    removeNode={this.props.removeNode}
-                    removeNodeFromCollection={this.props.removeNodeFromCollection}
-                    removeAbstraction={this.props.removeAbstraction}
-                    setActiveNode={this.props.setActiveNode}
-                    toggleCollapse={this.props.toggleCollapse}
-                    moveToAbstraction={this.props.moveToAbstraction}
-                    fetchNodeL1={this.props.fetchNodeL1}
-                    removeEdge={this.props.removeEdge}
+                    {...this.props}
                 />
-                { /* // TODO: combine this into one mode button - 2017-06-28 */ }
                 <GraphModes
                     graphType={graphType}
                 />

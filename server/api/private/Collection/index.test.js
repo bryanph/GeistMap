@@ -80,7 +80,7 @@ describe('collectionApi', () => {
                         isRootCollection: true,
                         // created: '1503323527535'
                     },
-                    labels: [ 'RootCollection', 'Collection' ]
+                    labels: [ 'RootCollection', 'Node', 'Collection' ]
                 }
             ],
             edges: [
