@@ -8,6 +8,7 @@
     "body-parser": "1.17.2",
     "connect-redis": "3.3.0",
     "cookie-parser": "1.4.3",
+    "draft-js": "0.10.4",
     "elasticsearch": "11.0.1",
     "express": "4.15.3",
     "express-handlebars": "3.0.0",
