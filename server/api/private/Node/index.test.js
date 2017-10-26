@@ -273,6 +273,42 @@ describe('nodeApi', () => {
             })
     })
 
+
+    test("Node.remove() can't remove the root collection", function() {
+        return loadFixtures(db, userId.toString(), [
+            {
+                properties: {
+                    name: 'My Knowledge Base',
+                    id: 'TEST__rootCollection',
+                    type: 'root',
+                    isRootCollection: true,
+                },
+                labels: [ 'Node', 'RootCollection', 'Collection' ]
+            },
+        ])
+            .then(() => {
+                return nodeApi.remove(user, "TEST__rootCollection")
+            })
+            .then((result) => {
+                expect(result).toBe(true)
+                return getUserGraphData(db, userId)
+            })
+            .then((graphState) => {
+                // TODO: instead compare using the original object
+                expect(sortById(graphState.nodes)).toMatchObject(sortById([
+                    {
+                        properties: {
+                            name: 'My Knowledge Base',
+                            id: 'TEST__rootCollection',
+                            type: 'root',
+                            isRootCollection: true,
+                        },
+                        labels: [ 'RootCollection', 'Node', 'Collection' ]
+                    },
+                ]))
+            })
+    })
+
     test("Test Node.connect() creates an edge between the two nodes", function() {
         return loadFixtures(db, userId.toString(), [
             {
