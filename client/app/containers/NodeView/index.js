@@ -100,18 +100,16 @@ import {
 
 function mapStateToProps(state, props) {
 
-    let nodes, edges, nodeTree, isLoading, graphType, collectionChain
+    let nodes, edges, nodeTree, isLoading, graphType
 
     if (props.graphType === "collection") {
         isLoading = state.loadingStates.GET_COLLECTIONL1;
 
-        collectionChain = getAbstractionChain(state, props);
         ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
 
     } else {
         isLoading = state.loadingStates.GET_NODE_L1 || state.loadingStates.GET_NODE_L2
         nodes = getL2Nodes(state, props.nodeId);
-        collectionChain = []
         edges = getL2Edges(state, props.nodeId);
     }
 
@@ -127,7 +125,6 @@ function mapStateToProps(state, props) {
         nodeTree,
         isLoading,
         graphType: props.graphType,
-        collectionChain,
         adjacencyMap: state.adjacencyMap, // TODO: should this be passed down? - 2017-09-19
         abstractionSidebarOpened: state.uiState.abstractionSidebar.opened,
         abstractionChain: getAbstractionChain(state),

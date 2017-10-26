@@ -58,15 +58,6 @@ export class CollectionDetailEditor extends React.Component {
     render() {
         return (
             <div className="appContainer">
-                {
-                    /*
-                <AbstractionNavigator
-                    collectionChain={this.props.collectionChain}
-                    collection={this.props.collection}
-                    extra={true}
-                />
-                    */
-                }
                 <NodeEditorToolbar
                     id={this.props.nodeId}
                     node={this.props.node}
@@ -102,7 +93,6 @@ function mapStateToProps(state, props) {
     return {
         collectionId: props.collectionId,
         collection: getNode(state, props.collectionId),
-        // collectionChain: getAbstractionChain(state, props),
         nodeId: props.nodeId,
         node: getNode(state, props.nodeId),
         isLoading: state.loadingStates.GET_NODE_L1,
