@@ -8,15 +8,18 @@ See [this blog post](https://medium.com/@bphaakman/building-a-open-source-person
 * [Feature requests](https://github.com/bryanph/Geist/issues/57)
 
 ## Live version
-You can try Geist [here](https://www.geist.fyi). Please note that this version is basically running the master branch. I am currently managing my pkb in this live version but I can't guarentee full stability at this moment. This version can be considered a prototype.
+You can try the current version of Geist [here](https://www.geist.fyi). 
 
 ## Roadmap
 Can be found [here](https://github.com/bryanph/Geist/blob/master/meta/roadmaps/2017.md).
 
-Note: I am currently working on a complete redesign of this prototype.
+## Local development
+1. Run `vagrant up && vagrant ssh`
+2. Run `npm run dev`
+3. Open your browser at localhost:3001
 
-## Installation instructions
-Will follow
+## Run tests
+Run `npm run test`
 
 ## Contact
 To get help or to have a chat you can reach me on [Twitter](https://twitter.com/bphaakman)

@@ -1,7 +1,7 @@
 'use strict';
 const Async = require('async');
 const promptly = require('promptly');
-const neo4j = require('neo4j-driver').v1
+const neo4j = require('@bryanph/neo4j-driver').v1
 const elasticsearch = require('elasticsearch')
 
 const config = require('../../server/config/config.js')

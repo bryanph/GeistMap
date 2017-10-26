@@ -1,7 +1,7 @@
 "use strict"
 
 const _ = require('lodash')
-const neo4j = require('neo4j-driver').v1
+const neo4j = require('@bryanph/neo4j-driver').v1
 
 const config = require('../../config/config')
 const { print, printTrace } = require('../../utils/dev')

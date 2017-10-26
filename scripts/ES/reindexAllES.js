@@ -8,7 +8,7 @@ mongoose.Promise = global.Promise; // use ES6 promises
 
 const db = mongoose.createConnection(config.database.url);
 const app = { db } // mock express app object for now...
-const neo4j = require('neo4j-driver').v1
+const neo4j = require('@bryanph/neo4j-driver').v1
 
 const { updateIndex } = require('../../server/fulltext')
 

@@ -1,4 +1,4 @@
-const neo4j = require('neo4j-driver').v1
+const neo4j = require('@bryanph/neo4j-driver').v1
 const elasticsearch = require('elasticsearch')
 const ObjectID = require('mongodb').ObjectID
 
