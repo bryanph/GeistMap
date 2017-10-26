@@ -65,6 +65,7 @@ export class NodeView extends React.PureComponent {
                             abstractionChain={this.props.abstractionChain}
                             collection={this.props.activeCollection}
                             isLoading={isLoading}
+                            moveParent={this.props.moveParent}
                         />,
                         <AbstractionList
                             isLoading={isLoading}

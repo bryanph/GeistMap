@@ -13,6 +13,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentClear from 'material-ui/svg-icons/content/clear';
 import ContentCopy from 'material-ui/svg-icons/content/content-copy';
 import NavigationArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
+import GpsNotFixed from 'material-ui/svg-icons/device/gps-not-fixed';
 
 const styles = {
     labelStyle: {
@@ -107,6 +108,16 @@ export const AddRelationButton = (props) => (
     <FlatButton
         label="Add Relation"
         icon={<NavigationArrowForward />}
+        primary={true}
+        labelStyle={styles.labelStyle}
+        {...props}
+    />
+)
+
+export const FocusButton = (props) => (
+    <FlatButton
+        label="Focus graph"
+        icon={<GpsNotFixed />}
         primary={true}
         labelStyle={styles.labelStyle}
         {...props}

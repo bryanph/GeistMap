@@ -25,6 +25,7 @@ class AbstractionNavigator extends React.Component {
                 url={`/app/collections/${c.id}/nodes`}
                 name={c.name}
                 hasNext={ this.props.extra || (i < (abstractionChain.length - 1)) }
+                onClick={() => this.props.moveParent(c.id)}
             />
         ))
 
@@ -37,9 +38,9 @@ class AbstractionNavigator extends React.Component {
     }
 }
 
-const AbstractionItem = ({ url, name, hasNext }) => (
+const AbstractionItem = ({ url, name, hasNext, onClick }) => (
     <div className="AbstractionNavigator-item">
-        <Link to={url}>{ name }</Link>
+        <Link to={url} onClick={onClick}>{ name }</Link>
         {
             hasNext ? <Icon name="angle right" /> : null
         }

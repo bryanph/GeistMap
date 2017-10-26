@@ -10,7 +10,7 @@ import { withRouter } from 'react-router-dom'
 import {HotKeys} from 'react-hotkeys';
 import moment from 'moment'
 
-import { EditButton, GraphButton, ExploreButton, CollectionGraphButton, TrashButton, DuplicateButton, AddRelationButton } from '../../components/Buttons'
+import { EditButton, GraphButton, ExploreButton, CollectionGraphButton, TrashButton, DuplicateButton, AddRelationButton, FocusButton } from '../../components/Buttons'
 import SavedState from '../../containers/SavedState'
 import Spinner, { InlineSpinner } from '../../components/Spinner'
 
@@ -40,6 +40,7 @@ export class NodeEditorToolbar extends React.Component {
         this.exploreNode = this.exploreNode.bind(this)
         this.addRelation = this.addRelation.bind(this)
         this.toGraphView = this.toGraphView.bind(this)
+        this.focusNode = this.focusNode.bind(this)
     }
 
     removeNode() {
@@ -68,6 +69,10 @@ export class NodeEditorToolbar extends React.Component {
             // collection mode
             history.push(`/app/collections/${this.props.id}/nodes`)
         }
+    }
+
+    focusNode() {
+        this.props.history.push(`/app/collections/${this.props.id}/nodes`)
     }
 
     render() {
@@ -110,6 +115,9 @@ export class NodeEditorToolbar extends React.Component {
 
                     </div>
                     <div className="nodeToolbar-cardActions">
+                        <FocusButton
+                            onClick={this.focusNode}
+                        />
                         {
                             this.props.page !== "node" ?
                                 <ExploreButton

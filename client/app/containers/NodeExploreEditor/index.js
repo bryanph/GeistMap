@@ -24,31 +24,41 @@ import {
 } from '../../reducers'
 
 export class NodeExploreEditor extends React.Component { // eslint-disable-line react/prefer-stateless-function
-    componentWillMount() {
-        this.props.loadNodeL2(this.props.nodeId)
+
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            hasLoaded: false
+        }
+
+        this.props.loadNodeL2(props.nodeId)
     }
 
     componentWillReceiveProps(nextProps) {
         if (nextProps.nodeId && this.props.nodeId !== nextProps.nodeId) {
             this.props.loadNodeL2(nextProps.nodeId)
         }
+
+        if (!nextProps.isLoading) {
+            this.setState({ hasLoaded: true })
+        }
     }
     render() {
-        if (!this.props.node) {
-            return null
-        }
-
         return (
             <div className="appContainer">
                 <NodeEditorToolbar
                     id={this.props.nodeId}
                     page="node"
+                    isLoading={!this.state.hasLoaded || this.props.isLoading}
+                    node={this.props.node}
                 />
                 <div className="contentContainer">
                     <div className="contentContainer-inner">
                         <NodeEditor 
                             id={this.props.nodeId}
                             page="node"
+                            isLoading={!this.state.hasLoaded || this.props.isLoading}
                             { ...this.props }
                         />
                     </div>
@@ -67,7 +77,10 @@ const addProps = withProps(props => {
 })
 
 function mapStateToProps(state, props) {
+    const isLoading = state.loadingStates.GET_NODE_L2;
+
     return {
+        isLoading,
         node: getNode(state, props.nodeId),
         collections: getCollectionsByNodeId(state, props.nodeId)
     }

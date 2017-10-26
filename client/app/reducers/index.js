@@ -446,7 +446,7 @@ function nodesByCollectionId(state={}, action) {
 function abstractionChain(state=[], action) {
     switch(action.type) {
         case uiActionTypes.MOVE_PARENT:
-            return state.slice(0, state.length - 1)
+            return state.slice(0, state.indexOf(action.payload) + 1)
         case uiActionTypes.MOVE_CHILD:
             return [ ...state, action.payload ]
         case uiActionTypes.RESET_ABSTRACTION_CHAIN:
