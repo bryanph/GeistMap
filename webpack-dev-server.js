@@ -8,7 +8,7 @@ new WebpackDevServer(webpack(config), {
     // inline: true,
     historyApiFallback: true,
     headers: { 'Access-Control-Allow-Origin': '*' },
-}).listen(3000, 'localhost', function (err, result) {
+}).listen(3000, '0.0.0.0', function (err, result) {
     if (err) {
         return console.log(err);
     }

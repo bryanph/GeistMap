@@ -230,6 +230,6 @@ function onAuthorizeFail(data, message, isError, accept){
     accept(new Error(message));
 }
 
-server.listen(config.port)
+server.listen(config.port, "0.0.0.0")
 
 console.log(`listening on port ${config.port}`);
