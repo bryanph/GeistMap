@@ -28,7 +28,17 @@ Vagrant.configure(2) do |config|
     # Create a forwarded port mapping which allows access to a specific port
     # within the machine from a port on the host machine. In the example below,
     # accessing "localhost:8080" will access port 80 on the guest machine.
-    # config.vm.network "forwarded_port", guest: 80, host: 8080
+    #
+    # webpack reloading
+    config.vm.network "forwarded_port", guest: 3001, host: 3001
+    # express
+    config.vm.network "forwarded_port", guest: 3000, host: 3000
+    # elasticsearch
+    config.vm.network "forwarded_port", guest: 9200, host: 9200
+    # neo4j REST
+    config.vm.network "forwarded_port", guest: 7474, host: 7474
+    # neo4j bolt interface
+    config.vm.network "forwarded_port", guest: 7687, host: 7687
 
     # Create a private network, which allows host-only access to the machine
     # using a specific IP.
@@ -54,7 +64,7 @@ Vagrant.configure(2) do |config|
       # vb.gui = true
     
       # Customize the amount of memory on the VM:
-      vb.memory = "2048"
+      vb.memory = "4096"
     end
     #
     # View the documentation for the provider you are using for more
@@ -74,7 +84,7 @@ Vagrant.configure(2) do |config|
     #   sudo apt-get update
     #   sudo apt-get install -y apache2
     # SHELL
-    config.vm.provision "shell", path: "scripts/vagrant/vagrantinstall.sh"
     config.vm.provision "shell", path: "scripts/vagrant/installdependencies.sh"
+    config.vm.provision "shell", path: "scripts/vagrant/vagrantinstall.sh"
 
 end

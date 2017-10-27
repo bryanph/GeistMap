@@ -4,7 +4,7 @@ import ReactDom from 'react-dom'
 import "../scss/landing.scss"
 
 // TODO: set from within settings - 2017-07-04
-const title = "Geist prototype"
+const title = "Geist"
 
 const mainSection = {
     header: "Get organized",
