@@ -19,5 +19,5 @@ You can find the latest version of Geist [here](https://www.geist.fyi).
 Run `npm run test`
 
 ## Contact
-To get help or to have a chat you can join the [discuss channel](https://discord.gg/usqPzfe) or you can reach me on [Twitter](https://twitter.com/bphaakman).
+To get help or to have a chat you can join the [discord channel](https://discord.gg/usqPzfe) or you can reach me on [Twitter](https://twitter.com/bphaakman).
 
