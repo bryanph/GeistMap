@@ -454,8 +454,6 @@ class ContentEditor extends React.Component {
             'ContentEditor-hidePlaceholder':  hidePlaceholder
         })
 
-        console.log(this.props.saved, this.state.saveInProgress)
-
         return (
             <div className={ rootClass }>
                 { !this.props.readOnly ?
