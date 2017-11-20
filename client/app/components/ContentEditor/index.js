@@ -161,6 +161,7 @@ class ContentEditor extends React.Component {
             editorState: initialEditorState,
             entities: getAllEntities(initialEditorState.getCurrentContent().getBlockMap()),
             collapsed: !props.withToolbar, // without toolbar we start collapsed
+            saveInProgress: false,
         }
 
         this.onChange = this.onChange.bind(this)
@@ -169,7 +170,7 @@ class ContentEditor extends React.Component {
 
         this.persistState = this.persistState.bind(this)
         // this.persistState = _.debounce(this.persistState.bind(this), 1000)
-        this.persistContentLinks = debounce(this.persistContentLinks.bind(this), 1000)
+        this.persistContentLinks = debounce(this.persistContentLinks.bind(this), 500)
 
         this.blockRenderMap = DefaultDraftBlockRenderMap.merge(
             this.customBlockRendering(props)
@@ -357,13 +358,16 @@ class ContentEditor extends React.Component {
     }
 
     onChange(editorState, methods, forceUpdate) {
+
         const prevContent = this.state.editorState.getCurrentContent()
         const content = editorState.getCurrentContent()
 
         if (forceUpdate || prevContent !== content) {
+            this.setState({ saveInProgress: true })
             // the order here is important, because the function above still modifies the global Entity object
             this.persistContentLinks(editorState, this.state.editorState)
                 .then(() => this.persistState(content))
+                .then(() => this.setState({ saveInProgress: false }))
         }
 
         this.setState({
@@ -450,12 +454,14 @@ class ContentEditor extends React.Component {
             'ContentEditor-hidePlaceholder':  hidePlaceholder
         })
 
+        console.log(this.props.saved, this.state.saveInProgress)
+
         return (
             <div className={ rootClass }>
                 { !this.props.readOnly ?
                     <div>
                         <Prompt
-                            when={!this.props.saved}
+                            when={!this.props.saved || this.state.saveInProgress}
                             message={location => (
                                 `Saving is in progress, are you sure you want to leave the page?`
                             )}
