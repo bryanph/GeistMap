@@ -70,7 +70,10 @@ export function nodes(state={}, action, collections) {
                 [action.sourceId]: {
                     collections: { $apply: (collections) => (
                         [ ..._.without(collections, action.sourceCollectionId), action.targetId ] 
-                    )}
+                    )},
+                },
+                [action.targetId]: {
+                    count: { $apply: (count) => count + 1 }
                 }
             })
         }
