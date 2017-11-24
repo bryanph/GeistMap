@@ -43,33 +43,13 @@ class GraphModes extends React.Component {
                         >
                             <Icon name="edit" /> <span>Edit</span>
                     </Button>
-                    {
-                        this.props.graphType === "collection" ?
-                            <Button
-                                size="medium" className={ abstractClass }
-                                onClick={ () => this.props.setGraphMode("abstract") }
-                                >
-                                    <Icon name="object group" /> <span>Group/Focus</span>
-                            </Button>
-                            :
-                            null
-                    }
+
                     <Button
-                        size="medium" className={ focusClass }
-                        onClick={ () => this.props.setGraphMode("focus") }
-                        >
-                        <Icon name="crosshairs" /> <span>Explore</span>
+                        size="medium" className={ abstractClass }
+                        onClick={ () => this.props.setGraphMode("abstract") }
+                    >
+                        <Icon name="location arrow" /> <span>Navigate</span>
                     </Button>
-                    {
-                        /*
-                        <Button
-                        size="medium" className={ expandClass }
-                        onClick={ () => this.props.setGraphMode("expand") }
-                        >
-                        <Icon name="expand" /> <span>Expand (x)</span>
-                        </Button>
-                        */
-                    }
                     <Button
                         size="medium" className={ deleteClass }
                         onClick={ () => this.props.setGraphMode("delete") }

@@ -302,6 +302,10 @@ const createExploreEvents = function(simulation, actions) {
         actions.setActiveNode(d.id)
     }
 
+    const onAbstractClick = (d) => {
+        actions.history.push(`/app/nodes/${d.id}/`)
+    }
+
     const onFocusClick = (d) => {
         actions.history.push(`/app/nodes/${d.id}/`)
     }
@@ -337,6 +341,7 @@ const createExploreEvents = function(simulation, actions) {
         onEditClick,
         onEditSave,
         onFocusClick,
+        onAbstractClick,
         onDeleteClick,
     })
 

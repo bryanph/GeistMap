@@ -15,6 +15,7 @@ import AddNodeWindow from '../../components/AddNodeWindow'
 import EditModeButton from '../../components/EditModeButton'
 import FocusButton from '../../components/FocusButton'
 import GraphModes from '../../components/GraphModes'
+import GraphTypeSwitcher from '../../components/GraphTypeSwitcher'
 import ExpandButton from '../../components/ExpandButton'
 import AbstractionList from '../../containers/AbstractionList'
 import AbstractionNavigator from '../../components/AbstractionNavigator'
@@ -79,6 +80,10 @@ export class NodeView extends React.PureComponent {
                 }
                 <NodeGraph
                     {...this.props}
+                />
+                <GraphTypeSwitcher
+                    graphType={graphType}
+                    id={this.props.activeNodeId || this.props.activeCollectionId}
                 />
                 <GraphModes
                     graphType={graphType}
