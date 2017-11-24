@@ -19,28 +19,31 @@ class GraphTypeSwitcher extends React.Component {
     render() {
         const { graphType, id } = this.props
 
-        const abstractionClass = classNames("GraphTypeSwitcher-button", {
+        const abstractionClass = classNames("graphTypeSwitcher-button", {
             "active": graphType === "collection"
         })
-        const exploreClass = classNames("GraphTypeSwitcher-button", {
+        const exploreClass = classNames("graphTypeSwitcher-button", {
             "active": graphType === "node"
         })
 
         return (
-            <Button.Group vertical labeled icon className="graphTypeSwitcher">
-                <Button 
-                    icon='triangle down'
-                    content='Children'
-                    onClick={ () => this.props.history.push(`/app/collections/${id}/nodes`) }
-                    className={ abstractionClass }
-                />
-                <Button 
-                    icon='crosshairs'
-                    content='Relations'
-                    onClick={ () => this.props.history.push(`/app/nodes/${id}`) }
-                    className={ exploreClass }
-                />
-            </Button.Group>
+            <div className="graphTypeSwitcher">
+                <span className="graphTypeSwitcher-label">Graph Type</span>
+                <Button.Group vertical labeled icon>
+                    <Button 
+                        icon='triangle down'
+                        content='Abstraction'
+                        onClick={ () => this.props.history.push(`/app/collections/${id}/nodes`) }
+                        className={ abstractionClass }
+                    />
+                    <Button 
+                        icon='crosshairs'
+                        content='Explore'
+                        onClick={ () => this.props.history.push(`/app/nodes/${id}`) }
+                        className={ exploreClass }
+                    />
+                </Button.Group>
+            </div>
         )
     }
 }
