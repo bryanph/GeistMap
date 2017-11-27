@@ -73,7 +73,7 @@ export function nodes(state={}, action, collections) {
                     )},
                 },
                 [action.targetId]: {
-                    count: { $apply: (count) => count + 1 }
+                    count: { $apply: (count) => (count || 0) + 1 }
                 }
             })
         }
