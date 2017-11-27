@@ -34,22 +34,27 @@ class GraphTypeSwitcher extends React.Component {
                 <Button.Group className="graphTypeSwitcher-buttons">
                     <Button 
                         icon='edit'
-                        content='Editor'
+                        content='Notes'
                         onClick={ () => this.props.history.push(`/app/nodes/${id}/edit`) }
                         className={ editorClass }
                     />
                     <Button 
                         icon='triangle down'
-                        content='Abstraction graph'
+                        content='Map'
                         onClick={ () => this.props.history.push(`/app/collections/${id}/nodes`) }
                         className={ abstractionClass }
                     />
+                    {
+                        /*
+                         *
                     <Button 
                         icon='crosshairs'
-                        content='Explore graph'
+                        content='Links'
                         onClick={ () => this.props.history.push(`/app/nodes/${id}`) }
                         className={ exploreClass }
                     />
+                        */
+                    }
                 </Button.Group>
             </div>
         )
