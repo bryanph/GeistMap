@@ -76,7 +76,8 @@ class AddNodeWindow extends React.Component {
     render() {
         const { opened } = this.props
 
-        const containerClass = classNames('addNodeWindow', { visible: opened })
+        // const containerClass = classNames('addNodeWindow', { visible: opened })
+        const containerClass = classNames('addNodeWindow', { visible: true })
 
         // TODO: disable when disabled prop is true - 2017-06-28
         return (
