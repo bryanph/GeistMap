@@ -66,9 +66,30 @@ export class NodeView extends React.PureComponent {
                     node={this.props.activeNode || this.props.activeCollection}
                 />
                 <div className="contentContainer">
-                        <NodeGraph
-                            {...this.props}
-                        />
+                    {
+                        /*
+                        graphType === "collection" ?
+                            <AbstractionNavigator
+                                key="1"
+                                abstractionChain={this.props.abstractionChain}
+                                collection={this.props.activeCollection}
+                                isLoading={isLoading}
+                                moveParent={this.props.moveParent}
+                            /> : null
+                        */
+                    }
+                    {
+                        graphType === "collection" ?
+                            <AbstractionList
+                                isLoading={isLoading}
+                                key="2"
+                                activeCollection={this.props.activeCollection}
+                                nodeTree={this.props.nodeTree}
+                            /> : null
+                    }
+                    <NodeGraph
+                        {...this.props}
+                    />
                 </div>
                 <GraphTypeSwitcher
                     graphType={graphType}

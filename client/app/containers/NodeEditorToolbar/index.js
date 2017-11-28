@@ -82,6 +82,8 @@ export class NodeEditorToolbar extends React.Component {
             return <Spinner />
         }
 
+        console.log(node)
+
         // keymapping handlers, see App.js
         const handlers = {
             'explore': this.exploreNode,
@@ -103,18 +105,25 @@ export class NodeEditorToolbar extends React.Component {
                         />
                     </div>
                     <div>
-                        <NodeCollectionList
-                            node={node}
-                            collections={this.props.collections}
-                            rootCollectionId={this.props.rootCollectionId}
-                        />
+                        { 
+                            node.type !== "root" ? 
+                                <NodeCollectionList
+                                    node={node}
+                                    collections={this.props.collections}
+                                    rootCollectionId={this.props.rootCollectionId}
+                                    visible={node.type !== "root"}
+                                />
+                                : null
+                        }
                     </div>
                     <div className="nodeToolbar-cardActions">
                         <AddRelationButton
                             onClick={this.addRelation}
+                            disabled={node.type === "root"}
                         />
                         <TrashButton
                             onClick={this.removeNode}
+                            disabled={node.type === "root"}
                         />
                     </div>
             </HotKeys>
