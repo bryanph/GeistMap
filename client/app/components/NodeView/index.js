@@ -19,6 +19,7 @@ import GraphTypeSwitcher from '../../components/GraphTypeSwitcher'
 import ExpandButton from '../../components/ExpandButton'
 import AbstractionList from '../../containers/AbstractionList'
 import AbstractionNavigator from '../../components/AbstractionNavigator'
+import NodeEditorToolbar from '../../containers/NodeEditorToolbar'
 import { HotKeys } from 'react-hotkeys';
 
 import './styles.scss'
@@ -58,29 +59,38 @@ export class NodeView extends React.PureComponent {
                     activeCollectionId={this.props.activeCollectionId}
                     disabled={isLoading}
                 />
-                {
-                    graphType === "collection" ?
-                        [
-                        <AbstractionNavigator
-                            key="1"
-                            abstractionChain={this.props.abstractionChain}
-                            collection={this.props.activeCollection}
-                            isLoading={isLoading}
-                            moveParent={this.props.moveParent}
-                        />,
-                        <AbstractionList
-                            isLoading={isLoading}
-                            key="2"
-                            activeCollection={this.props.activeCollection}
-                            nodeTree={this.props.nodeTree}
-                        />
-                        ]
-                    :
-                        null
-                }
-                <NodeGraph
-                    {...this.props}
+                <NodeEditorToolbar
+                    id={this.props.activeNodeId || this.props.activeCollectionId}
+                    page="node"
+                    isLoading={isLoading}
+                    node={this.props.activeNode || this.props.activeCollection}
                 />
+                <div className="contentContainer">
+                    {
+                        /*
+                        graphType === "collection" ?
+                            <AbstractionNavigator
+                                key="1"
+                                abstractionChain={this.props.abstractionChain}
+                                collection={this.props.activeCollection}
+                                isLoading={isLoading}
+                                moveParent={this.props.moveParent}
+                            /> : null
+                        */
+                    }
+                    {
+                        graphType === "collection" ?
+                            <AbstractionList
+                                isLoading={isLoading}
+                                key="2"
+                                activeCollection={this.props.activeCollection}
+                                nodeTree={this.props.nodeTree}
+                            /> : null
+                    }
+                    <NodeGraph
+                        {...this.props}
+                    />
+                </div>
                 <GraphTypeSwitcher
                     graphType={graphType}
                     id={this.props.activeNodeId || this.props.activeCollectionId}

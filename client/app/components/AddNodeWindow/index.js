@@ -76,11 +76,11 @@ class AddNodeWindow extends React.Component {
     render() {
         const { opened } = this.props
 
-        const containerClass = classNames('addNodeWindow', { visible: opened })
+        // const containerClass = classNames('addNodeWindow', { visible: opened })
+        const containerClass = classNames('addNodeWindow', { visible: true })
 
         // TODO: disable when disabled prop is true - 2017-06-28
         return (
-            <Portal isOpened={true}>
                 <div className={ containerClass }>
                     <div className="addNodeWindow-container">
                         <div className="addNodeWindow-input">
@@ -93,7 +93,6 @@ class AddNodeWindow extends React.Component {
                         </div>
                     </div>
                 </div>
-            </Portal>
         )
     }
 }

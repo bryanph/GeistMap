@@ -16,17 +16,8 @@ class GraphModes extends React.Component {
     render() {
         const { mode } = this.props
 
-        const viewClass = classNames("graphMode-button", {
-            "active": mode === "view"
-        })
         const editClass = classNames("graphMode-button", {
             "active": mode === "edit"
-        })
-        const focusClass = classNames("graphMode-button", {
-            "active": mode === "focus"
-        })
-        const expandClass = classNames("graphMode-button", {
-            "active": mode === "expand"
         })
         const abstractClass = classNames("graphMode-button", {
             "active": mode === "abstract"
@@ -36,7 +27,9 @@ class GraphModes extends React.Component {
         })
 
         return (
-                <Button.Group className="graphModes">
+            <div className="graphModes">
+                <span className="graphModes-label">Graph Mode</span>
+                <Button.Group vertical>
                     <Button
                         size="medium" className={ editClass }
                         onClick={ () => this.props.setGraphMode("edit") }
@@ -57,6 +50,7 @@ class GraphModes extends React.Component {
                         <Icon name="remove" /> <span>Remove</span>
                     </Button>
                 </Button.Group>
+            </div>
         )
     }
 }

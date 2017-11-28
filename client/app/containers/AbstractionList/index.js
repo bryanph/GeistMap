@@ -92,23 +92,23 @@ class AbstractionList extends React.Component {
         }
 
         return (
-            <div className={ containerClass }>
-                <Portal isOpened={true}>
-                    <ExpandButton 
-                        expanded={opened}
-                        onClick={this.expandClick}
+            <div>
+                <ExpandButton 
+                    expanded={opened}
+                    onClick={this.expandClick}
+                />
+                <div className={ containerClass }>
+                    <AbstractionHeading
+                        title={this.props.activeCollection.name}
+                        onToggle={this.props.toggleAbstractionSidebar}
                     />
-                </Portal>
-                <AbstractionHeading
-                    title={this.props.activeCollection.name}
-                    onToggle={this.props.toggleAbstractionSidebar}
-                />
-                <AbstractionTree 
-                    data={this.props.nodeTree}
-                    onToggle={this.toggleCollapse}
-                    onToggleExpand={this.toggleCollapse}
-                    onFocusClick={this.onFocusClick}
-                />
+                    <AbstractionTree 
+                        data={this.props.nodeTree}
+                        onToggle={this.toggleCollapse}
+                        onToggleExpand={this.toggleCollapse}
+                        onFocusClick={this.onFocusClick}
+                    />
+                </div>
             </div>
         );
     }

@@ -247,7 +247,7 @@ module.exports = function(db, es) {
                     OPTIONAL MATCH (nodes)-[:AbstractEdge]->(parentNodes)
                     WITH nodes, collect(parentNodes.id) as collections
                     OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
-                    RETURN { id: nodes.id, name: nodes.name, type: nodes.type } as node, collections, COUNT(children)
+                    RETURN { id: nodes.id, name: nodes.name, type: nodes.type, modified: nodes.modified } as node, collections, COUNT(children)
                     ORDER BY node.id
                     `,
                     {

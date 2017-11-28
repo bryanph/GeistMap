@@ -2,8 +2,8 @@
 
 .graphModes {
     position: fixed;
-    width: 100%;
-    bottom: 0px;
+    right: 20px;
+    bottom: 60px;
 
     z-index: 100;
 
@@ -11,7 +11,11 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
+}
 
+.graphModes-label {
+    font-weight: bold;
+    padding: 5px;
 }
 
 .graphMode-button {

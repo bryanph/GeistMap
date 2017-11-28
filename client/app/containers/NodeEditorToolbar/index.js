@@ -82,6 +82,8 @@ export class NodeEditorToolbar extends React.Component {
             return <Spinner />
         }
 
+        console.log(node)
+
         // keymapping handlers, see App.js
         const handlers = {
             'explore': this.exploreNode,
@@ -92,10 +94,6 @@ export class NodeEditorToolbar extends React.Component {
         return (
             <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} className="nodeToolbar">
                     <div className="nodeToolbar-loadingState">
-                        <GraphButton
-                            onClick={this.toGraphView}
-                        />
-                        { /* <SavedState /> */ }
                     </div>
                     <div className="nodeToolbar-title">
                         <NodeTitle
@@ -107,29 +105,25 @@ export class NodeEditorToolbar extends React.Component {
                         />
                     </div>
                     <div>
-                        <NodeCollectionList
-                            node={node}
-                            collections={this.props.collections}
-                            rootCollectionId={this.props.rootCollectionId}
-                        />
-
-                    </div>
-                    <div className="nodeToolbar-cardActions">
-                        <FocusButton
-                            onClick={this.focusNode}
-                        />
-                        {
-                            this.props.page !== "node" ?
-                                <ExploreButton
-                                    onClick={this.exploreNode}
+                        { 
+                            node.type !== "root" ? 
+                                <NodeCollectionList
+                                    node={node}
+                                    collections={this.props.collections}
+                                    rootCollectionId={this.props.rootCollectionId}
+                                    visible={node.type !== "root"}
                                 />
                                 : null
                         }
+                    </div>
+                    <div className="nodeToolbar-cardActions">
                         <AddRelationButton
                             onClick={this.addRelation}
+                            disabled={node.type === "root"}
                         />
                         <TrashButton
                             onClick={this.removeNode}
+                            disabled={node.type === "root"}
                         />
                     </div>
             </HotKeys>

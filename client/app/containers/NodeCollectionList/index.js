@@ -72,8 +72,6 @@ class NodeCollectionList extends React.Component {
             return;
         }
 
-        console.log("creating!")
-
         this.props.createNode({ name: label })
             .then(action => action.response.result)
             .then(id => this.props.addNodeToCollection(
@@ -147,7 +145,7 @@ export const NodeCollectionItem = withRouter((props) => {
     return (
         <Chip
             onRequestDelete={() => props.onDelete(props.id)}
-            onClick={() => props.history.push(`/app/collections/${props.id}/nodes/${props.nodeId}`)}
+            onClick={() => props.history.push(`/app/collections/${props.id}/nodes`)}
             style={styles.chip}
         >
             { props.name }

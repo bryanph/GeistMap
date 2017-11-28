@@ -13,6 +13,7 @@ import withProps from 'recompose/withProps'
 
 import NodeEditor from '../../containers/NodeContentEditor'
 import NodeEditorToolbar from '../../containers/NodeEditorToolbar'
+import GraphTypeSwitcher from '../../components/GraphTypeSwitcher'
 
 import {
     loadNodeL2,
@@ -63,6 +64,10 @@ export class NodeExploreEditor extends React.Component { // eslint-disable-line 
                         />
                     </div>
                 </div>
+                <GraphTypeSwitcher
+                    graphType="editor"
+                    id={this.props.nodeId}
+                />
             </div>
         );
     }

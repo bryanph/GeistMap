@@ -386,7 +386,7 @@ class ContentEditor extends React.Component {
             })
         }
 
-        this.refs.editor.focus()
+        this.refs.editor.refs.editor.focus()
     }
 
     handleClickOutside() {
