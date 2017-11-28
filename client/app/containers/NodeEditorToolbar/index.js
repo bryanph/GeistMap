@@ -82,8 +82,6 @@ export class NodeEditorToolbar extends React.Component {
             return <Spinner />
         }
 
-        console.log(node)
-
         // keymapping handlers, see App.js
         const handlers = {
             'explore': this.exploreNode,
@@ -105,7 +103,7 @@ export class NodeEditorToolbar extends React.Component {
                         />
                     </div>
                     <div>
-                        { 
+                        {
                             node.type !== "root" ? 
                                 <NodeCollectionList
                                     node={node}

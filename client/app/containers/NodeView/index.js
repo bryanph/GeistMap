@@ -7,6 +7,7 @@ import withProps from 'recompose/withProps'
 
 import {
     loadNode,
+    loadNodeL1,
     loadNodeL2,
     connectNodes,
     updateNode,
@@ -35,7 +36,10 @@ import NodeView from '../../components/NodeView'
 
 function loadData(props) {
     if (props.graphType === "collection") {
-        return props.loadCollectionL1(props.collectionId)
+        return Promise.all([
+            props.loadCollectionL1(props.collectionId),
+            props.loadNodeL1(props.collectionId)
+        ])
             .then((action) => {
                 if (props.nodeId) {
                     props.loadNode(props.nodeId)
@@ -103,7 +107,7 @@ function mapStateToProps(state, props) {
     let nodes, edges, nodeTree, isLoading, graphType
 
     if (props.graphType === "collection") {
-        isLoading = state.loadingStates.GET_COLLECTIONL1;
+        isLoading = state.loadingStates.GET_COLLECTIONL1 || state.loadingStates.GET_NODE_L1;
 
         ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
 
@@ -155,6 +159,7 @@ export default compose(
         toggleCollapse,
         moveToAbstraction,
         loadNode,
+        loadNodeL1,
         loadNodeL2,
         removeEdge,
         setGraphMode,
