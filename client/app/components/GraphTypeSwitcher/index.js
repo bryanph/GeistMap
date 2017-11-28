@@ -44,17 +44,12 @@ class GraphTypeSwitcher extends React.Component {
                         onClick={ () => this.props.history.push(`/app/collections/${id}/nodes`) }
                         className={ abstractionClass }
                     />
-                    {
-                        /*
-                         *
                     <Button 
                         icon='crosshairs'
                         content='Links'
                         onClick={ () => this.props.history.push(`/app/nodes/${id}`) }
                         className={ exploreClass }
                     />
-                        */
-                    }
                 </Button.Group>
             </div>
         )

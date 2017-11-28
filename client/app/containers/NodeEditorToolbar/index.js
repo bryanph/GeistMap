@@ -92,10 +92,6 @@ export class NodeEditorToolbar extends React.Component {
         return (
             <HotKeys focused={true} attach={document.getElementById('root')} handlers={handlers} className="nodeToolbar">
                     <div className="nodeToolbar-loadingState">
-                        <GraphButton
-                            onClick={this.toGraphView}
-                        />
-                        { /* <SavedState /> */ }
                     </div>
                     <div className="nodeToolbar-title">
                         <NodeTitle
@@ -112,19 +108,8 @@ export class NodeEditorToolbar extends React.Component {
                             collections={this.props.collections}
                             rootCollectionId={this.props.rootCollectionId}
                         />
-
                     </div>
                     <div className="nodeToolbar-cardActions">
-                        <FocusButton
-                            onClick={this.focusNode}
-                        />
-                        {
-                            this.props.page !== "node" ?
-                                <ExploreButton
-                                    onClick={this.exploreNode}
-                                />
-                                : null
-                        }
                         <AddRelationButton
                             onClick={this.addRelation}
                         />
