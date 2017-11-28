@@ -576,7 +576,7 @@ function abstractGraphUiState(state=initialAbstractGraphUIState, action) {
 
 const initialGraphUIState = {
     // can be "view", "edit", "focus" or "expand"
-    mode: "edit",
+    mode: "abstract",
     focus: {
         id: null,
     },
