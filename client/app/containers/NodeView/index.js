@@ -74,6 +74,7 @@ export class NodeViewContainer extends React.PureComponent {
     componentWillReceiveProps(nextProps) {
         if (nextProps.collectionId !== this.props.collectionId || nextProps.nodeId !== this.props.nodeId) {
             loadData(nextProps)
+            return this.setState({ hasLoaded: false })
         }
 
         // TODO: solve this more general, with a hoc or something - 2017-09-16
