@@ -12,7 +12,7 @@ import moment from 'moment'
 
 import { EditButton, GraphButton, ExploreButton, CollectionGraphButton, TrashButton, DuplicateButton, AddRelationButton, FocusButton } from '../../components/Buttons'
 import SavedState from '../../containers/SavedState'
-import Spinner, { InlineSpinner } from '../../components/Spinner'
+import Spinner from '../../components/Spinner'
 
 import './styles.scss'
 
@@ -79,7 +79,11 @@ export class NodeEditorToolbar extends React.Component {
         const { node, isLoading } = this.props
 
         if (isLoading) {
-            return <Spinner />
+            return (
+                <div className="nodeToolbar">
+                    <Spinner />
+                </div>
+            )
         }
 
         // keymapping handlers, see App.js
