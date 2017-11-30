@@ -7,36 +7,26 @@ import "../scss/landing.scss"
 const title = "Geist"
 
 const mainSection = {
-    header: "Get organized",
-    content: "Organize your thoughts and information in a personal knowledge base that adjusts to you",
+    header: "A knowledge base with a focus on connections",
+    content: "Organize your thoughts and information in a knowledge base that works the way you think: by association.",
 
 }
 const rows = {
     connections: {
         header: "Relations first",
-        content: "Instead of trying to organize all your thoughts and notes in folders, organize your notes by defining relations between them. This is ideal for studying or research",
-        imageSrc: "/static/img/graph1.png",
+        content: "Instead of trying to organize all your thoughts and notes in hierarchical folders, organize your notes by defining relations between them. This is ideal for studying or research.",
+        imageSrc: "https://cdn-images-1.medium.com/max/800/1*d6Vw7Bc6-f6eoXli9qPVUQ.png",
     },
     explore: {
-        header: "Explore your thoughts",
-        content: "Easily and quickly explore your thoughts by traversing between them and their collections",
-        imageSrc: "/static/img/graph3.png",
+        header: "Define hierarchies whenever you need them.",
+        content: "Instead of being limited by a folder structure, Geist allows you to create hierarchies from every node.",
+        imageSrc: "https://cdn-images-1.medium.com/max/800/1*XuRGyMSHCy98bTx2aQwwLQ.png",
     },
-    collections: {
-        header: "Organise with collections",
-        content: "Besides relations, nodes can be added to one or more collections to quickly navigate between groups of nodes",
-        imageSrc: "/static/img/graph2.png",
+    editor: {
+        header: "A powerful editor",
+        content: "Every node has a document attached to it. Add pictures, video, audio and even TeX. Links made in the editor are reflected in the network.",
+        imageSrc: "https://cdn-images-1.medium.com/max/800/1*ZZ_4dgoPyfF2rvlHiABAKg.gif",
     },
-    // connections: {
-    //     header: "More powerful than hierarchies",
-    //     content: "Are you tired of hierarchies? So am I. Hierarchies are for dictators.",
-    //     imageSrc: "some image",
-    // },
-    // explore: {
-    //         header: "Explore your thoughts",
-    //         content: "Instead of just spending your time organizing your thoughts and information, explore and gogogo!",
-    //         imageSrc: "some image",
-    // },
 }
 const endSection = {
     header: "Give it a try!"
@@ -73,9 +63,9 @@ const App = (props) => (
                 imageSrc={rows.explore.imageSrc}
             />
             <FeatureRow 
-                header={rows.collections.header}
-                content={rows.collections.content}
-                imageSrc={rows.collections.imageSrc}
+                header={rows.editor.header}
+                content={rows.editor.content}
+                imageSrc={rows.editor.imageSrc}
             />
             <EndSection {...initialState} header={endSection.header} />
             <Footer />
