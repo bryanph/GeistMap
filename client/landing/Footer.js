@@ -8,7 +8,9 @@ export default class Footer extends React.Component {
     render() {
         return (
             <div className="footer">
-                <a href="mailto:bryanhaakman@gmail.com">Contact</a>
+                <a href={ this.props.privacyPolicyUrl }>Privacy Policy</a> -
+                <a href={ this.props.termsOfServiceUrl }>Terms of Service</a> -
+                <a href="mailto:bryanhaakman@gmail.com">Contact</a> -
                 <span>© 2017 Bryan Haakman</span>
             </div>
         )

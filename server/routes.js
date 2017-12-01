@@ -37,6 +37,8 @@ module.exports = function(app, authRoutes, adminRoutes) {
                 oauthGitHub: !!req.app.config.oauth.github.key,
                 oauthFacebook: !!req.app.config.oauth.facebook.key,
                 oauthGoogle: !!req.app.config.oauth.google.key,
+                privacyPolicyUrl: req.app.config.privacyPolicyUrl,
+                termsOfServiceUrl: req.app.config.termsOfServiceUrl,
             })
         })
     })

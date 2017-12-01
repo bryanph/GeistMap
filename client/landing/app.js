@@ -68,7 +68,7 @@ const App = (props) => (
                 imageSrc={rows.editor.imageSrc}
             />
             <EndSection {...initialState} header={endSection.header} />
-            <Footer />
+            <Footer { ...initialState } />
             <FollowOnTwitter />
         </div>
     </MuiThemeProvider>

@@ -41,6 +41,8 @@ const auth = {
     "supportEmail": "support@geistmap.com",
     "cryptoKey": "TODO change",
     "requireAccountVerification": false,
+    "termsOfServiceUrl": null,
+    "privacyPolicyUrl": null,
     "smtp": {
         from: {
             name: process.env.SMTP_FROM_NAME || 'Geist team',
