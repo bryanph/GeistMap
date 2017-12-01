@@ -4,7 +4,7 @@ A personal knowledge base with a focus on connections.
 See [this blog post](https://medium.com/@bphaakman/building-a-open-source-personal-knowledge-base-45c25f5a4324) for why I am making this.
 
 ## Live version
-You can find the latest version of Geist [here](https://www.geist.fyi).
+You can find the latest version of Geist [here](https://geistmap.com).
 
 ## Links
 * [Introduction](https://medium.com/@bphaakman/building-a-open-source-personal-knowledge-base-45c25f5a4324)

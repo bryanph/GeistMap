@@ -37,14 +37,14 @@ const auth = {
     "companyName": "Bryan Haakman",
     "projectName": "Geist",
     "version": "0.1",
-    "systemEmail": "noreply@geist.fyi",
-    "supportEmail": "support@geist.fyi",
+    "systemEmail": "noreply@geistmap.com",
+    "supportEmail": "support@geistmap.com",
     "cryptoKey": "TODO change",
     "requireAccountVerification": false,
     "smtp": {
         from: {
             name: process.env.SMTP_FROM_NAME || 'Geist team',
-            address: process.env.SMTP_FROM_ADDRESS || 'noreply@geist.fyi'
+            address: process.env.SMTP_FROM_ADDRESS || 'noreply@geistmap.com'
         },
         credentials: {
             user: process.env.SMTP_USERNAME || 'user',
