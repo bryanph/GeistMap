@@ -62,6 +62,7 @@ const Signup = createClass({
                         <Social {...this.props} />
                         <Divider />
                         <SignupForm
+                            { ...this.props }
                             handleError={this.handleError}
                             handleResponse={this.handleResponse}
                         />
@@ -137,6 +138,7 @@ export const SignupForm = createClass({
                         style={styles.textField}
                         type="password"
                     />
+                    <span className="signupForm-tos">By signing up you agree with the <a href={ this.props.termsOfServiceUrl }>terms of service</a> and the <a href={ this.props.privacyPolicyUrl }>privacy policy</a></span>
                     <FlatButton
                         onClick={this.handleSubmit}   
                         label="Sign up"
