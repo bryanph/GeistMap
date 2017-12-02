@@ -254,6 +254,7 @@ describe('collectionApi', () => {
                     id: 'TEST__rootCollection',
                     type: 'root',
                     isRootCollection: true,
+                    "modified": 1503389225848,
                 },
                 labels: [ 'RootCollection', 'Collection' ]
             },
@@ -262,7 +263,8 @@ describe('collectionApi', () => {
                 properties: {
                     "name": "Collection",
                     "id": "TEST__collection",
-                    "type": "collection"
+                    "type": "collection",
+                    "modified": 1503389225848,
                 }
             },
             {
@@ -270,7 +272,8 @@ describe('collectionApi', () => {
                 properties: {
                     "name": "Node",
                     "id": "TEST__node",
-                    "type": "node"
+                    "type": "node",
+                    "modified": 1503389225848,
                 }
             },
             {
@@ -278,7 +281,8 @@ describe('collectionApi', () => {
                 properties: {
                     "name": "Node2",
                     "id": "TEST__node2",
-                    "type": "node"
+                    "type": "node",
+                    "modified": 1503389225848,
                 }
             },
             {
@@ -286,7 +290,8 @@ describe('collectionApi', () => {
                 properties: {
                     "name": "Node3",
                     "id": "TEST__node3",
-                    "type": "node"
+                    "type": "node",
+                    "modified": 1503389225848,
                 }
             },
             {
@@ -294,7 +299,8 @@ describe('collectionApi', () => {
                 properties: {
                     "name": "Node4",
                     "id": "TEST__node4",
-                    "type": "node"
+                    "type": "node",
+                    "modified": 1503389225848,
                 }
             }
         ], [
@@ -361,6 +367,7 @@ describe('collectionApi', () => {
                                 collections: [ 
                                     'TEST__rootCollection'
                                 ],
+                                "modified": "1503389225848",
                                 count: 2 
                             },
                             {
@@ -370,6 +377,7 @@ describe('collectionApi', () => {
                                     collections: [
                                         'TEST__rootCollection'
                                     ],
+                                "modified": "1503389225848",
                                     count: 0
                             },
                             {
@@ -379,6 +387,7 @@ describe('collectionApi', () => {
                                 collections: [
                                     'TEST__collection'
                                 ],
+                                "modified": "1503389225848",
                                 count: 0
                             },
                             {
@@ -388,6 +397,7 @@ describe('collectionApi', () => {
                                 collections: [
                                     'TEST__collection'
                                 ],
+                                "modified": "1503389225848",
                                 count: 0
                             },
                         ],

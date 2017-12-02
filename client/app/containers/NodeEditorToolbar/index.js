@@ -47,6 +47,7 @@ export class NodeEditorToolbar extends React.Component {
         const result = window.confirm(`Are you sure you want to remove '${this.props.node.name}'`)
         if (result) {
             this.props.removeNode(this.props.node.id)
+            this.props.history.push(`/app/collections`)
         }
     }
 

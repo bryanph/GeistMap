@@ -35,13 +35,16 @@ function removeFirstOccurrence(array, elem) {
     return [ ...array.slice(0, toRemove), ...array.slice(toRemove + 1, -1) ]
 }
 
-export function nodes(state={}, action, collections) {
+export function nodes(state={}, action) {
     /*
      * Handles the non-merging action types
      */
     switch(action.type) {
         case nodeActionTypes.REMOVE_NODE_SUCCESS:
-            return _.omit(state, action.nodeId)
+            const newState = _.omit(state, action.nodeId)
+            return _.mapValues(newState, node => update(node, {
+                collections: { $apply: (collections) => _.without(collections, action.nodeId) }
+            }))
 
         case collectionActionTypes.ADD_NODE_TO_COLLECTION_SUCCESS:
             return update(state, {
@@ -425,6 +428,9 @@ function nodesByCollectionId(state={}, action) {
                 }}
             })
         }
+
+        case nodeActionTypes.REMOVE_NODE_SUCCESS:
+            return _.mapValues(state, children => _.without(children, action.nodeId))
 
         case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
             return update(state, {

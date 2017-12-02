@@ -127,6 +127,11 @@ describe('node actions', () => {
         const initialState = {
             entities: {
                 nodes: {
+                    ["TEST__Root"]: {
+                        name: 'Node',
+                        id: "TEST__Root",
+                        type: 'node',
+                    },
                     ["TEST__Node"]: {
                         name: 'Node',
                         modified: '1501582629992',
@@ -172,6 +177,9 @@ describe('node actions', () => {
                     from: [ "TEST__Node2_Node" ],
                     to: [ "TEST__Node_Node2" ],
                 }
+            },
+            nodesByCollectionId: {
+                "TEST__Root": [ "TEST__Node", "TEST__Node2" ],
             }
         }
         store = createMockStore(_socket, initialState)
@@ -203,6 +211,9 @@ describe('node actions', () => {
                             from: [],
                             to: [],
                         }
+                    },
+                    nodesByCollectionId: {
+                        "TEST__Root": [ "TEST__Node2" ],
                     }
                 })
             })
