@@ -167,6 +167,10 @@ io.on('connection', function(socket) {
 
     const user = socket.request.user;
 
+    if (!user) {
+        return;
+    }
+
     console.log(user.email, user._id, "just connected,", moment().format('MMMM Do YYYY, h:mm:ss a'))
 
     socket.on('User.generateMobileUploadToken', UserAPI.generateMobileUploadToken.bind(null, socket, user));
