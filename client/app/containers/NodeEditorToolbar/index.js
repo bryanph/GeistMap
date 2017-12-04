@@ -119,11 +119,7 @@ export class NodeEditorToolbar extends React.Component {
                                 : null
                         }
                     </div>
-                    <div className="nodeToolbar-cardActions">
-                        <AddRelationButton
-                            onClick={this.addRelation}
-                            disabled={node.type === "root"}
-                        />
+                    <div className="nodeToolbar-actions">
                         <TrashButton
                             onClick={this.removeNode}
                             disabled={node.type === "root"}
