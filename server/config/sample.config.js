@@ -15,7 +15,7 @@ const config = {
     "neo4j": {
         "url": "bolt://localhost",
         "user": "neo4j",
-        "password": "neo4j",
+        "password": "changeinthefuture",
     },
     "database": {
         "url": "mongodb://localhost:27017/graphtodo"
