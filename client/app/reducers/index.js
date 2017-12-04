@@ -1068,63 +1068,78 @@ export const getNodesAndEdgesByCollectionId = createSelector(
         const notCollapsedParentCollection = { ...parentCollection, collapsed: false } // TODO: shouldn't be necessary - 2017-10-18
         visibleNodeTree = handleShowNodes(notCollapsedParentCollection, rootIds) 
 
-        const transformedEdges = _(edgeMap).map(edge => {
-            const start = visibleNodeMap[edge.start]
-            const end = visibleNodeMap[edge.end]
-            if (start && end) {
-                return [ edge ]
-            }
-
-
-            function transformEdges(edge, node, position) {
-                return node.collections.reduce((result, id) => {
-                    // this also takes care of the case where id is the active collection
-                    if (!nodeMap[id]) {
-                        return result;
-                    }
-
-                    if (visibleNodeMap[id]) {
-                        return [ ...result, { ...edge, [position]: id } ] }
-                    else {
-                        return [ ...result, ...transformEdges(edge, nodeMap[id], position) ]
-                    }
-                }, [])
-            }
-
-            if (!start) {
-                // start is hidden by a parent, find the parent
-                // change to parent until it is in visibleNodeMap
-                // (can branche, and collection might not be child of activeCollection)
-                const startNode = nodeMap[edge.start]
-
-                // can return multiple edges
-                const newEdges = transformEdges(edge, startNode, "start")
-
-                // case where both start and end are hidden
-                if (!end) {
-                    return _(newEdges)
-                        .map(edge => {
-                            const endNode = nodeMap[edge.end]
-
-                            return transformEdges(edge, endNode, "end")
-                        })
-                        .flatMap()
-                        .filter(edge => edge.start !== edge.end)
-                        .value()
+        const transformedEdges = _(edgeMap)
+            .map(edge => {
+                const start = visibleNodeMap[edge.start]
+                const end = visibleNodeMap[edge.end]
+                if (start && end) {
+                    return [ edge ]
                 }
 
-                return newEdges
-            }
 
-            if (!end) {
-                const endNode = nodeMap[edge.end]
+                function transformEdges(edge, node, position) {
+                    return node.collections.reduce((result, id) => {
+                        // this also takes care of the case where id is the active collection
+                        if (!nodeMap[id]) {
+                            return result;
+                        }
 
-                // can return multiple edges
-                return transformEdges(edge, endNode, "end")
-            }
-        })
+                        if (visibleNodeMap[id]) {
+                            return [ ...result, { ...edge, [position]: id } ] }
+                        else {
+                            return [ ...result, ...transformEdges(edge, nodeMap[id], position) ]
+                        }
+                    }, [])
+                }
+
+                if (!start) {
+                    // start is hidden by a parent, find the parent
+                    // change to parent until it is in visibleNodeMap
+                    // (can branche, and collection might not be child of activeCollection)
+                    const startNode = nodeMap[edge.start]
+
+                    // can return multiple edges
+                    const newEdges = transformEdges(edge, startNode, "start")
+
+                    // case where both start and end are hidden
+                    if (!end) {
+                        return _(newEdges)
+                            .map(edge => {
+                                const endNode = nodeMap[edge.end]
+
+                                return transformEdges(edge, endNode, "end")
+                            })
+                            .flatMap()
+                            .filter(edge => edge.start !== edge.end)
+                            .value()
+                    }
+
+                    return newEdges
+                }
+
+                if (!end) {
+                    const endNode = nodeMap[edge.end]
+
+                    // can return multiple edges
+                    return transformEdges(edge, endNode, "end")
+                }
+            })
             .flatMap()
-            .value()
+            .reduce((result, edge) => { // filter + map
+                let entry = visibleEdgeMap[edge.start + edge.end]
+                if (entry) {
+                    if (!entry.count) {
+                        entry.count = 0
+                    }
+                    entry.count += 1
+
+                    return result
+                }
+
+                visibleEdgeMap[edge.start + edge.end] = edge
+
+                return [ ...result, edge ]
+            }, [])
 
         const visibleNodes = _.map(visibleNodeMap, x => x)
 

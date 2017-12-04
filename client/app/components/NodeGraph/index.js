@@ -267,6 +267,7 @@ const createEnterLink = function(actions) {
         // transparent clickable edge
         g
             .append("path")
+            .attr("stroke-opacity", (d) => d.opacity)
             .attr("class", "node-link-transparent")
             .attr("marker-end", "url(#Triangle)")
             // .on('dblclick', actions.doubleClick)
@@ -274,6 +275,7 @@ const createEnterLink = function(actions) {
         // visible non-clickable edge
         g
             .append("path")
+            .attr("stroke-opacity", (d) => d.opacity)
             .attr("class", "node-link")
             .attr("marker-end", "url(#Triangle)")
     }
@@ -466,7 +468,6 @@ const createCollectionDetailEvents = function(simulation, actions) {
     }
 }
 
-
 class NodeGraph extends React.Component {
     constructor(props) {
         super(props)
@@ -498,6 +499,8 @@ class NodeGraph extends React.Component {
         const maxCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
         const maxRadiusDomain = maxCount > 10 ? maxCount : 10
         const radiusScale = scaleLinear().domain([0, maxRadiusDomain]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
+        const strokeScale = scaleLinear().domain([0, 10]).range([0.3, 1])
+
 
         nodes.forEach(node => {
             nodeById[node.id] = node
@@ -509,6 +512,8 @@ class NodeGraph extends React.Component {
         links.forEach(link => {
             link.source = nodeById[link.start]
             link.target = nodeById[link.end]
+
+            link.opacity = strokeScale(link.count || 0)
 
             if (adjacencyMap[link.end] && adjacencyMap[link.end].includes(link.start)) {
                 link.curved = true
