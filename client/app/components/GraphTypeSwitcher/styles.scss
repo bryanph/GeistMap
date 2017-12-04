@@ -26,8 +26,8 @@
 .graphTypeSwitcher-button {
     color: white !important;
     // background: $accent-color !important;
-    background: #BABBBC !important;
-    // opacity: 0.8;
+    background: $primary-color !important;
+    opacity: 0.8;
 
     @media only screen and (max-width: $max-screen-width) {
         span {
@@ -49,11 +49,8 @@
         opacity: 0.4;
     }
 
-    &:active {
-        // opacity: 0.6;
-    }
-
     &.active {
-        background: $accent-color !important;
+        opacity: 1;
+        // color: $accent-color !important;
     }
 }
