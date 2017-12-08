@@ -358,16 +358,16 @@ class ContentEditor extends React.Component {
     }
 
     onChange(editorState, methods, forceUpdate) {
-
         const prevContent = this.state.editorState.getCurrentContent()
         const content = editorState.getCurrentContent()
 
         if (forceUpdate || prevContent !== content) {
-            this.setState({ saveInProgress: true })
-            // the order here is important, because the function above still modifies the global Entity object
-            this.persistContentLinks(editorState, this.state.editorState)
-                .then(() => this.persistState(content))
-                .then(() => this.setState({ saveInProgress: false }))
+            this.setState({ saveInProgress: true }, () => {
+                // the order here is important, because the function above still modifies the global Entity object
+                this.persistContentLinks(editorState, this.state.editorState)
+                    .then(() => this.persistState(content))
+                    .then(() => this.setState({ saveInProgress: false }))
+            })
         }
 
         this.setState({
