@@ -42,8 +42,8 @@ export default function (editorState, selection, type, data, text = ' ') {
   const newContentStateAfterSplit = Modifier.setBlockType(insertionTargetBlock, insertionTargetSelection, type);
 
   // creating a new ContentBlock including the entity with data
-  const entityKey = Entity.create(type, 'IMMUTABLE', { ...data });
-  const charData = CharacterMetadata.create({ entity: entityKey });
+  const contentStateWithEntity = newContentStateAfterSplit.createEntity(type, 'IMMUTABLE', { ...data });
+  const charData = CharacterMetadata.create({ entity: contentStateWithEntity.getLastCreatedEntityKey() });
 
   const fragmentArray = [
     new ContentBlock({
@@ -67,7 +67,7 @@ export default function (editorState, selection, type, data, text = ' ') {
 
   // replace the contentblock we reserved for our insert
   const contentStateWithBlock = Modifier.replaceWithFragment(
-      newContentStateAfterSplit,
+      contentStateWithEntity,
       insertionTargetSelection,
       fragment
   );

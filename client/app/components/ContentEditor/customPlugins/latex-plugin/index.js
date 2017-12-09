@@ -11,7 +11,7 @@ import TeXBlock from './TeXBlock';
 import {insertTeXBlock} from './modifiers/insertTeXBlock';
 import {removeTeXBlock} from './modifiers/removeTeXBlock';
 
-import cloneEntitiesInFragment, { cloneLatexEntitiesInFragment } from '../../../../components/ContentEditor/utils/cloneEntitiesInFragment.js'
+import cloneEntitiesInFragment from '../../../../components/ContentEditor/utils/cloneEntitiesInFragment.js'
 import insertFragment from '../../../../components/ContentEditor/utils/insertFragment'
 import { convertBlocksToRaw, convertRawToBlocks } from '../../../../components/ContentEditor/utils/convert.js'
 
@@ -21,11 +21,11 @@ import styles from './styles.css'
 import 'katex/dist/katex.min.css'
 
 
-function findTex(contentBlock, callback) {
+function findTex(contentBlock, callback, contentState) {
   contentBlock.findEntityRanges(
     (character) => {
       const key = character.getEntity()
-      return key !== null && Entity.get(key).getType() === 'inline-latex'
+      return key !== null && contentState.getEntity(key).getType() === 'inline-latex'
     },
     callback
   )
@@ -140,15 +140,15 @@ export default (config = {}) => {
                 // here key is blockKey for block, entityKey for inline
                 setReadOnly(true)
             },
-            onFinishEdit: (key, isInline) => {
-                const editorState = getEditorState()
+            onFinishEdit: (newContentState, key, isInline) => {
+                const newEditorState = EditorState.push(getEditorState(), newContentState, 'apply-entity')
 
-                // setEditorState(editorState, true)
+                // setEditorState(newEditorState, true)
                 setReadOnly(false)
 
                 if (isInline) {
-                    const selectionState = editorState.getSelection()
-                    const contentState = editorState.getCurrentContent()
+                    const selectionState = newEditorState.getSelection()
+                    const contentState = newEditorState.getCurrentContent()
                     const startKey = selectionState.getStartKey()
                     const startBlock = contentState.getBlockForKey(startKey)
 
@@ -160,14 +160,14 @@ export default (config = {}) => {
                         .set('focusKey', startKey)
                         .set('focusOffset', offset)
 
-                    const editorStateWithSelection = EditorState.forceSelection(editorState, newSelectionState)
+                    const editorStateWithSelection = EditorState.forceSelection(newEditorState, newSelectionState)
                     setEditorState(editorStateWithSelection, true)
 
                     setTimeout(() => focus(), 0)
 
                     // now find entity range and create a new selection after this
                 } else {
-                    setEditorState(editorState, true)
+                    setEditorState(newEditorState, true)
                     setTimeout(() => focus(), 0)
 
                 }
@@ -200,8 +200,9 @@ export default (config = {}) => {
                 if (internalClipboard) {
                     // TODO: create a unique key to compare with instead - 2016-08-22
                     if (html.indexOf('TeXEditor') !== -1) {
-                        const clipboard = cloneEntitiesInFragment(internalClipboard)
-                        setEditorState(insertFragment(editorState, clipboard))
+                        const { newFragment, newContentState } = cloneEntitiesInFragment(editorState, internalClipboard)
+                        const newEditorState = EditorState.push(editorState, newContentState, 'apply-entity')
+                        setEditorState(insertFragment(newEditorState, newFragment))
                         return true
                     }
                 }
@@ -229,8 +230,9 @@ export default (config = {}) => {
 
                     const fragments = convertRawToBlocks(rawBlocks)
 
-                    const newFragments = cloneEntitiesInFragment(fragments, rawBlocks.entityMap)
-                    setEditorState(insertFragment(editorState, newFragments))
+                    const { newFragment, newContentState } = cloneEntitiesInFragment(editorState, fragments, rawBlocks.entityMap)
+                    const newEditorState = EditorState.push(editorState, newContentState, 'apply-entity')
+                    setEditorState(insertFragment(newEditorState, newFragment))
                     return true
                 }
             },

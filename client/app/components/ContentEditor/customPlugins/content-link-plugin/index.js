@@ -29,7 +29,7 @@ const linkPlugin = (config = {}) => {
                 nodeId: config.nodeId,
                 showAddRelationWindow: config.showAddRelationWindow,
                 removeEdge: config.removeEdge,
-            }))
+            }), true)
             return 'handled'
         }
 

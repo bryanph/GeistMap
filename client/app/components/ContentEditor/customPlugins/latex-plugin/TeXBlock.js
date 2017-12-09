@@ -120,17 +120,23 @@ export default class TeXBlock extends React.Component {
         };
 
         this._save = () => {
+            const { contentState } = this.props
             if (this.state.invalidTeX) {
                 return;
             }
 
             var entityKey = this.props.entityKey || this.props.block.getEntityAt(0);
-            Entity.mergeData(entityKey, {content: this.state.texValue, initial: false});
+
+            const newContentState = contentState.mergeEntityData(entityKey, {content: this.state.texValue, initial: false});
+
             this.setState({
                 invalidTeX: false,
                 editMode: false,
                 texValue: null,
-            }, this._finishEdit);
+            }, () => {
+                const onFinishEdit = this.props.onFinishEdit || this.props.blockProps.onFinishEdit
+                onFinishEdit(newContentState, this.props.entityKey || this.props.block.getKey(), this.props.inline);
+            });
         };
 
         this._remove = () => {
@@ -138,14 +144,9 @@ export default class TeXBlock extends React.Component {
             onRemove(this.props.entityKey || this.props.block.getKey(), this.props.inline);
         };
         this._startEdit = () => {
-            console.log(this.textarea);
             setTimeout(() => this.textarea.focus(), 0)
             const onStartEdit = this.props.onStartEdit || this.props.blockProps.onStartEdit
             onStartEdit(this.props.entityKey || this.props.block.getKey(), this.props.inline);
-        };
-        this._finishEdit = () => {
-            const onFinishEdit = this.props.onFinishEdit || this.props.blockProps.onFinishEdit
-            onFinishEdit(this.props.entityKey || this.props.block.getKey(), this.props.inline);
         };
     }
 

@@ -26,7 +26,7 @@ class ContentLinkButton extends React.Component {
             node: this.props.node,
             showAddRelationWindow: this.props.showAddRelationWindow,
             removeEdge: this.props.removeEdge,
-        }))
+        }), true, true)
     }
 
     isActive(props, cb) {

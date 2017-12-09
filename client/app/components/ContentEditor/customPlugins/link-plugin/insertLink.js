@@ -4,6 +4,7 @@ import { Entity, RichUtils } from 'draft-js';
 import { getSelectionEntity } from '../../utils/inline.js'
 
 export function insertLink(editorState) {
+    const contentState = editorState.getCurrentContent()
     const selection = editorState.getSelection();
     if (selection.isCollapsed()) {
         return;
@@ -19,9 +20,10 @@ export function insertLink(editorState) {
 
         if (!href) return;
 
-        const entityKey = Entity.create('LINK', 'MUTABLE', { href });
+        const newContentState = contentState.createEntity('LINK', 'MUTABLE', { href });
+        const newEditorState = EditorState.push(editorState, newContentState, 'apply-entity')
 
-        return RichUtils.toggleLink(editorState, selection, entityKey)
+        return RichUtils.toggleLink(newEditorState, selection, newContentState.getLastCreatedEntityKey())
     }
 }
 

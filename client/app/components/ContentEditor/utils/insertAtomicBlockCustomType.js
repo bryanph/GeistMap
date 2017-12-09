@@ -1,5 +1,5 @@
 import { List, Map, Repeat } from 'immutable';
-import { Modifier, CharacterMetadata, BlockMapBuilder, EditorState, ContentBlock, Entity, genKey } from 'draft-js';
+import { Modifier, CharacterMetadata, BlockMapBuilder, EditorState, ContentBlock, genKey } from 'draft-js';
 
 export default function(
     editorState: EditorState,

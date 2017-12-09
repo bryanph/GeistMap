@@ -1,11 +1,12 @@
 import { EditorState, Entity } from 'draft-js';
 
 export default function (editorState, key, data) {
-  const currentContentState = editorState.getCurrentContent();
+    const contentState = editorState.getCurrentContent();
+    const block = contentState.getBlockForKey(key);
+    const entityKey = block.getEntityAt(0);
 
-  const block = currentContentState.getBlockForKey(key);
-  const entityKey = block.getEntityAt(0);
-  Entity.mergeData(entityKey, data);
+    const newContentState = contentState.mergeEntityData(entityKey, data);
+    const newEditorState = EditorState.push(editorState, newContentState, 'change-block-data')
 
-  return EditorState.forceSelection(editorState, editorState.getCurrentContent().getSelectionAfter());
+    return EditorState.forceSelection(newEditorState, newEditorState.getCurrentContent().getSelectionAfter());
 }
