@@ -9,9 +9,6 @@ import { insertDataBlock } from '../../utils/block'
 
 import Dropzone from 'react-dropzone'
 
-import Media from './components/media';
-import { Audio, Video, Image } from './components/media'
-
 const insertFiles = (getEditorState, setEditorState) => (files) => {
     files.forEach(file => {
         const src = file.url

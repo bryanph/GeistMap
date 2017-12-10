@@ -13,7 +13,7 @@ import { withRouter } from 'react-router-dom'
 import { FlatButton, Dialog } from 'material-ui'
 import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'
-import { Entity, RichUtils } from 'draft-js';
+import { Entity, EditorState, RichUtils } from 'draft-js';
 
 import { AddNodeWithRelationButton } from '../../components/Buttons'
 
@@ -50,7 +50,6 @@ class AddRelationWindow extends React.Component {
         this.addRelation = this.addRelation.bind(this)
         this.addOnlyRelation = this.addOnlyRelation.bind(this)
 
-        // this._createContentLinkEntity = this._createContentLinkEntity.bind(this)
         this.addContentLink = this.addContentLink.bind(this)
 
         this.state = {
@@ -65,7 +64,9 @@ class AddRelationWindow extends React.Component {
 
     addContentLink(node, nodeId, editorState) {
         // a detailed relation
+        const contentState = editorState.getCurrentContent()
         const selection = editorState.getSelection();
+
         if (selection.isCollapsed()) {
             return;
         }
@@ -78,10 +79,11 @@ class AddRelationWindow extends React.Component {
 
         // TODO: how do we handle links from non-text? - 2016-07-08
 
-        const entityKey = Entity.create(ENTITY_TYPE, 'MUTABLE', { node, nodeId, text });
+        const newContentState = contentState.createEntity(ENTITY_TYPE, 'MUTABLE', { node, nodeId, text });
+        const newEditorState = EditorState.push(editorState, newContentState, 'apply-entity')
 
         // force the update
-        this.props.setEditorState(RichUtils.toggleLink(editorState, selection, entityKey));
+        this.props.setEditorState(RichUtils.toggleLink(newEditorState, selection, newContentState.getLastCreatedEntityKey()));
 
         return Promise.resolve()
     }

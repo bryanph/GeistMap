@@ -60,7 +60,6 @@ export class AddMediaInput extends React.Component {
                 <InputText 
                     onChange={e => this.setState({ value: e.target.value })}
                     value={this.state.value}
-                    ref={(input) => this.input = input}
                     placeholder={"Insert full URL here"}
                 />
                 <RaisedButton

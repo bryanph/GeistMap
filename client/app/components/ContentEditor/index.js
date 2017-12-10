@@ -10,9 +10,7 @@ import classNames from 'classnames'
 import enhanceWithClickOutside from 'react-onclickoutside'
 import { Map } from 'immutable';
 import { Prompt } from 'react-router-dom'
-import blockContainsEntityType from './utils/blockContainsEntityType'
 
-// TODO: is this nescessary here? - 2016-08-02
 import { EditorState, Entity, DefaultDraftBlockRenderMap, convertToRaw, convertFromRaw } from 'draft-js';
 import createInlinePlugin from './customPlugins/inline-plugin';
 import createBlockPlugin from './customPlugins/block-plugin';
@@ -25,8 +23,6 @@ import createMediaPlugin from './customPlugins/media-plugin'
 import createUploadPlugin from './customPlugins/upload-plugin'
 import createLatexPlugin from './customPlugins/latex-plugin'
 
-// TODO: do the dnd stuff in the image plugin - 2016-08-03
-import createDndPlugin from './customPlugins/dnd-plugin';
 import createImagePlugin from './customPlugins/image-plugin';
 
 import createAutoListPlugin from './customPlugins/list-plugin'
@@ -115,7 +111,10 @@ function createInitialEditorState(initialEditorState) {
 }
 
 // TODO: separate method - 2016-10-28
-function getAllEntities(blocks) {
+function getAllEntities(editorState) {
+    const contentState = editorState.getCurrentContent()
+    const blocks = editorState.getCurrentContent().getBlockMap()
+
     let entities = []
 
     // then find entity ranges in each changed block, store all entity keys
@@ -126,7 +125,7 @@ function getAllEntities(blocks) {
         charList.reduce((c, nc, ni) => {
             const entityKey = c.getEntity()
             if (!(entityKey === nc.getEntity())) {
-                if (entityKey !== null && Entity.get(entityKey).getType() === 'CONTENT_LINK') {
+                if (entityKey !== null && contentState.getEntity(entityKey).getType() === 'CONTENT_LINK') {
                     entities.push(entityKey)
                 }
             }
@@ -159,7 +158,7 @@ class ContentEditor extends React.Component {
 
         this.state = {
             editorState: initialEditorState,
-            entities: getAllEntities(initialEditorState.getCurrentContent().getBlockMap()),
+            entities: getAllEntities(initialEditorState),
             collapsed: !props.withToolbar, // without toolbar we start collapsed
             saveInProgress: false,
         }
@@ -252,8 +251,6 @@ class ContentEditor extends React.Component {
 
                         return selectedBlocks.every(block => {
                             return ['unstyled', 'header-three', 'header-four', 'header-five', 'blockquote', 'code-block', 'unordered-list-item', 'ordered-list-item'].includes(block.getType()) && block.getText() !== '' 
-                            // return !blockContainsEntityType(block, 'inline-latex') 
-                                // && block.getType() === 'unstyled'
                         })
                     },
                     components: !this.props.withoutContentLink ?
@@ -277,7 +274,7 @@ class ContentEditor extends React.Component {
             const newEditorState = createInitialEditorState(nextProps.editorState)
             return this.setState({
                 editorState: newEditorState,
-                entities: getAllEntities(newEditorState.getCurrentContent().getBlockMap()),
+                entities: getAllEntities(newEditorState),
                 collapsed: !nextProps.withToolbar, // without toolbar we start collapsed
             })
         }
@@ -292,28 +289,7 @@ class ContentEditor extends React.Component {
         const contentState = editorState.getCurrentContent()
         const blockMap = contentState.getBlockMap()
 
-        const prevContentState = prevEditorState.getCurrentContent()
-        const prevBlockMap = prevContentState.getBlockMap()
-
-        const changedBlocks = [];
-
-        // first find the ContentBlocks that have changed
-        blockMap.forEach((val, key) => {
-            // TODO: better performing soln for this - 2016-10-28
-            // if (prevBlockMap.has(key)) {
-            //     // not added at least
-
-            //     if (prevBlockMap.get(key) !== blockMap.get(key)) {
-            //         changedBlocks.push(blockMap.get(key))
-            //     }
-
-            //     return;
-            // }
-
-            changedBlocks.push(blockMap.get(key))
-        })
-
-        const entities = getAllEntities(changedBlocks)
+        const entities = getAllEntities(editorState)
 
         // diff the previous entities and the current entities
         const added = _.difference(entities, prevEntities)
@@ -322,23 +298,19 @@ class ContentEditor extends React.Component {
         const addedPromises = added.map((entityKey) => {
             // add this entity remotely on the server
 
-            const entity = Entity.get(entityKey)
+            const entity = contentState.getEntity(entityKey)
 
             const { node, nodeId, text } = entity.getData()
 
             return this.props.addEdge(this.props.id, nodeId, text)
-                .then(action => {
-                    const edgeId = action.response.result
-
-                    Entity.mergeData(entityKey, { edgeId })
-                })
+                .then((action) => [ entityKey, action.response.result ])
                 .catch(error => console.error(error.stack))
         })
 
         const removedPromises = removed.map((entityKey) => {
             // remove this entity remotely on the server
 
-            const entity = Entity.get(entityKey)
+            const entity = contentState.getEntity(entityKey)
             const { edgeId } = entity.getData()
 
             return this.props.removeEdge(edgeId)
@@ -353,8 +325,15 @@ class ContentEditor extends React.Component {
             entities,
         })
 
-        return Promise.all([ ...addedPromises, ...removedPromises ])
+        // merge into contentState...
+        return Promise.all(addedPromises)
+            .then((actions) => {
+                const newContentState = actions
+                    .reduce((contentState, [ entityKey, edgeId ]) => contentState.mergeEntityData(entityKey, { edgeId }), contentState)
 
+                return Promise.all(removedPromises)
+                    .then(() => newContentState)
+            })
     }
 
     onChange(editorState, methods, forceUpdate) {
@@ -365,7 +344,7 @@ class ContentEditor extends React.Component {
             this.setState({ saveInProgress: true }, () => {
                 // the order here is important, because the function above still modifies the global Entity object
                 this.persistContentLinks(editorState, this.state.editorState)
-                    .then(() => this.persistState(content))
+                    .then((newContentState) => this.persistState(newContentState))
                     .then(() => this.setState({ saveInProgress: false }))
             })
         }
@@ -386,7 +365,7 @@ class ContentEditor extends React.Component {
             })
         }
 
-        this.refs.editor.refs.editor.focus()
+        this.editor.editor.focus()
     }
 
     handleClickOutside() {
@@ -524,7 +503,7 @@ class ContentEditor extends React.Component {
                         plugins={this.plugins}
                         placeholder={this.props.readOnly ? "" : "Write your story..."}
                         spellCheck={true}
-                        ref="editor"
+                        ref={(element) => { this.editor = element; }}
                     />
                 </div>
                 {

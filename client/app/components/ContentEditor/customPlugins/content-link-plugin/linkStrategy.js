@@ -1,10 +1,10 @@
 import { Entity } from 'draft-js';
 
-function findLinkEntities(contentBlock, callback) {
+function findLinkEntities(contentBlock, callback, contentState) {
   contentBlock.findEntityRanges(
     (character) => {
       const entityKey = character.getEntity();
-      return entityKey !== null && Entity.get(entityKey).getType() === 'CONTENT_LINK';
+      return entityKey !== null && contentState.getEntity(entityKey).getType() === 'CONTENT_LINK';
     }, callback
   );
 }

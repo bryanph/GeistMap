@@ -1,7 +1,7 @@
 import encodeEntityRanges from 'draft-js/lib/encodeEntityRanges'
 import encodeInlineStyleRanges from 'draft-js/lib/encodeInlineStyleRanges'
 import DraftStringKey from 'draft-js/lib/DraftStringKey'
-import { Entity, ContentBlock } from 'draft-js'
+import { ContentBlock } from 'draft-js'
 
 import { OrderedMap, Map } from 'immutable'
 
@@ -52,8 +52,7 @@ export function convertBlocksToRaw(
   var entityKeys = Object.keys(entityStorageMap);
   var flippedStorageMap = {};
   entityKeys.forEach((key, jj) => {
-    var entity = Entity.get(DraftStringKey.unstringify(key))
-    // var entity = contentState.getEntity(DraftStringKey.unstringify(key));
+    var entity = contentState.getEntity(DraftStringKey.unstringify(key));
     flippedStorageMap[jj] = {
       type: entity.getType(),
       mutability: entity.getMutability(),

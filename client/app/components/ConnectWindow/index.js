@@ -35,11 +35,14 @@ class ConnectWindow extends React.Component {
 
     createContentLinkEntity(nodeId, edgeId) {
         const { editorState, setEditorState } = this.props
+        const contentState = editorState.getCurrentContent()
 
         const selection = editorState.getSelection();
 
-        const entityKey = Entity.create(ENTITY_TYPE, 'IMMUTABLE', { nodeId, edgeId });
-        setEditorState(RichUtils.toggleLink(editorState, selection, entityKey));
+        const newContentState = contentState.createEntity(ENTITY_TYPE, 'IMMUTABLE', { nodeId, edgeId });
+        const newEditorState = EditorState.push(editorState, newContentState, 'apply-entity')
+
+        setEditorState(RichUtils.toggleLink(newEditorState, selection, newContentState.getLastCreatedEntityKey()));
     }
 
     handleCancel() {

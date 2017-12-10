@@ -102,7 +102,8 @@ import { getNode } from '../.././../../reducers'
 
 // TODO: shouldn't connect here - 2017-06-01
 function mapStateToProps(state, props) {
-    const { nodeId, edgeId } = Entity.get(props.entityKey).getData();
+    const editorState = props.getEditorState()
+    const { nodeId, edgeId } = editorState.getCurrentContent().getEntity(props.entityKey).getData();
 
     return {
         nodeId,
