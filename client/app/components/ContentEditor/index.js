@@ -11,7 +11,6 @@ import enhanceWithClickOutside from 'react-onclickoutside'
 import { Map } from 'immutable';
 import { Prompt } from 'react-router-dom'
 
-// TODO: is this nescessary here? - 2016-08-02
 import { EditorState, Entity, DefaultDraftBlockRenderMap, convertToRaw, convertFromRaw } from 'draft-js';
 import createInlinePlugin from './customPlugins/inline-plugin';
 import createBlockPlugin from './customPlugins/block-plugin';
@@ -24,8 +23,6 @@ import createMediaPlugin from './customPlugins/media-plugin'
 import createUploadPlugin from './customPlugins/upload-plugin'
 import createLatexPlugin from './customPlugins/latex-plugin'
 
-// TODO: do the dnd stuff in the image plugin - 2016-08-03
-import createDndPlugin from './customPlugins/dnd-plugin';
 import createImagePlugin from './customPlugins/image-plugin';
 
 import createAutoListPlugin from './customPlugins/list-plugin'
@@ -307,11 +304,6 @@ class ContentEditor extends React.Component {
 
             return this.props.addEdge(this.props.id, nodeId, text)
                 .then((action) => [ entityKey, action.response.result ])
-                // .then(action => {
-                //     const edgeId = action.response.result
-
-                //     contentState.mergeEntityData(entityKey, { edgeId })
-                // })
                 .catch(error => console.error(error.stack))
         })
 
@@ -339,7 +331,7 @@ class ContentEditor extends React.Component {
                 const newContentState = actions
                     .reduce((contentState, [ entityKey, edgeId ]) => contentState.mergeEntityData(entityKey, { edgeId }), contentState)
 
-                Promise.all(removedPromises)
+                return Promise.all(removedPromises)
                     .then(() => newContentState)
             })
     }
@@ -348,10 +340,7 @@ class ContentEditor extends React.Component {
         const prevContent = this.state.editorState.getCurrentContent()
         const content = editorState.getCurrentContent()
 
-        console.log("called onChange", methods, forceUpdate)
-
         if (forceUpdate || prevContent !== content) {
-            console.log("going to persist content links")
             this.setState({ saveInProgress: true }, () => {
                 // the order here is important, because the function above still modifies the global Entity object
                 this.persistContentLinks(editorState, this.state.editorState)

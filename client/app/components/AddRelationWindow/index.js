@@ -13,7 +13,7 @@ import { withRouter } from 'react-router-dom'
 import { FlatButton, Dialog } from 'material-ui'
 import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'
-import { Entity, RichUtils } from 'draft-js';
+import { Entity, EditorState, RichUtils } from 'draft-js';
 
 import { AddNodeWithRelationButton } from '../../components/Buttons'
 

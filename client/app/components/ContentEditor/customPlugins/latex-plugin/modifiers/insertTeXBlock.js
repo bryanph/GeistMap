@@ -3,6 +3,7 @@
 import {
     AtomicBlockUtils,
     Entity,
+    EditorState,
 } from 'draft-js';
 import insertAtomicBlockCustomType from '../../../utils/insertAtomicBlockCustomType'
 import insertInlineCustomType from '../../../utils/insertInlineCustomType'
