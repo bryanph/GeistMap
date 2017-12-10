@@ -104,7 +104,7 @@ export default (config = {}) => {
                 window.localStorage.setItem('draftjs-copyState', JSON.stringify(rawBlocks))
 
                 // set clipboard to null, must happen after draft sets it - 2016-11-16
-                setTimeout(() => setClipboard(null), 0)
+                // setTimeout(() => setClipboard(null), 0)
 
                 return true
             }
