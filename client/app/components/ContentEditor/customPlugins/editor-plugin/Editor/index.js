@@ -34,13 +34,6 @@ class PluginEditor extends Component {
     constructor(props) {
         super(props);
 
-        // attach proxy methods like `focus` or `blur`
-        for (const method of proxies) {
-            this[method] = (...args) => (
-                this.refs.editor[method](...args)
-            );
-        }
-
         this.resolvedPlugins = this.props.plugins.map(plugin => {
             if (typeof plugin !== 'function') {
                 return plugin
@@ -49,12 +42,11 @@ class PluginEditor extends Component {
         })
 
         const plugins = [this.props, ...this.resolvePlugins()];
-
-
         for (const plugin of plugins) {
             if (typeof plugin.initialize !== 'function') continue;
             plugin.initialize(this.getPluginMethods());
         }
+
 
         this.state = {}; // TODO for Nik: ask ben why this is relevent
     }
@@ -105,17 +97,17 @@ class PluginEditor extends Component {
 
     getEditorState = () => this.props.editorState;
     getPluginMethods = () => ({
-        focus: this.focus,
         getPlugins: this.getPlugins,
         getProps: this.getProps,
         setEditorState: this.onChange,
         getEditorState: this.getEditorState,
         getReadOnly: this.getReadOnly,
         setReadOnly: this.setReadOnly,
-        getClipboard: this.getClipboard,
-        setClipboard: this.setClipboard,
         getBlockRenderMap: () => this.props.blockRenderMap,
-        getEditorKey: this.getEditorKey,
+        focus: () => this.editor.focus(),
+        getClipboard: () => this.editor.getClipboard(),
+        setClipboard: () => this.editor.setClipboard(),
+        getEditorKey: () => this.editor.getEditorKey(),
     });
 
     createEventHooks = (methodName, plugins) => (...args) => {
@@ -294,7 +286,7 @@ class PluginEditor extends Component {
                 customStyleMap={ customStyleMap }
                 onChange={ this.onChange }
                 editorState={ this.props.editorState }
-                ref="editor"
+                ref={(element) => { this.editor = element; }}
             />
         );
     }

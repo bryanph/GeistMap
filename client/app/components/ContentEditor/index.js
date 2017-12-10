@@ -365,7 +365,7 @@ class ContentEditor extends React.Component {
             })
         }
 
-        this.refs.editor.refs.editor.focus()
+        this.editor.editor.focus()
     }
 
     handleClickOutside() {
@@ -503,7 +503,7 @@ class ContentEditor extends React.Component {
                         plugins={this.plugins}
                         placeholder={this.props.readOnly ? "" : "Write your story..."}
                         spellCheck={true}
-                        ref="editor"
+                        ref={(element) => { this.editor = element; }}
                     />
                 </div>
                 {

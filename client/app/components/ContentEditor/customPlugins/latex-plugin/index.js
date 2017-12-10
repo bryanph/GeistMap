@@ -221,7 +221,7 @@ export default (config = {}) => {
                     const regex2 = /TeXEditor-inline-tex/
                     const match2 = regex2.exec(html)
 
-                    if (!(match && match[1] === rawBlocks.editorKey) || !match2) {
+                    if (!(match && match[1] === rawBlocks.editorKey) && !match2) {
                         return
                     }
 
