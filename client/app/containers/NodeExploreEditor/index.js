@@ -39,6 +39,7 @@ export class NodeExploreEditor extends React.Component { // eslint-disable-line 
     componentWillReceiveProps(nextProps) {
         if (nextProps.nodeId && this.props.nodeId !== nextProps.nodeId) {
             this.props.loadNodeL2(nextProps.nodeId)
+            return this.setState({ hasLoaded: false })
         }
 
         if (!nextProps.isLoading) {
