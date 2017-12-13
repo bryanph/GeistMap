@@ -110,44 +110,44 @@ export default (config = {}) => {
             const currentBlock = contentState.getBlockForKey(selectionState.getStartKey())
             const blockType = currentBlock.getType();
 
-            // const afterSplit = Modifier.splitBlock(afterRemoval, targetSelection);
+            if (selectionState.isCollapsed() && blockTypesNoNewLine.includes(blockType)) { 
+                // remove the blocktype
+                // const afterSplit = Modifier.splitBlock(afterRemoval, targetSelection);
 
-            const afterRemoval = Modifier.removeRange(
-                contentState,
-                selectionState,
-                'backward'
-            );
+                const afterRemoval = Modifier.removeRange(
+                    contentState,
+                    selectionState,
+                    'backward'
+                );
 
-            const targetSelection = afterRemoval.getSelectionAfter();
-            const afterSplit = Modifier.splitBlock(afterRemoval, targetSelection); // ContentState
-            const insertionTarget = afterSplit.getSelectionAfter();
+                const targetSelection = afterRemoval.getSelectionAfter();
+                const afterSplit = Modifier.splitBlock(afterRemoval, targetSelection); // ContentState
+                const insertionTarget = afterSplit.getSelectionAfter();
 
-            const fragmentArray = [
-                new ContentBlock({
+                const fragmentArray = [
+                    new ContentBlock({
                         key: genKey(),
                         type: 'unstyled',
                         text: '',
                         characterList: List(),
                     }),
-            ];
+                ];
 
-            const fragment = BlockMapBuilder.createFromArray(fragmentArray);
+                const fragment = BlockMapBuilder.createFromArray(fragmentArray);
 
-            const withAtomicBlock = Modifier.replaceWithFragment(
-                afterSplit,
-                insertionTarget,
-                fragment
-            );
+                const withAtomicBlock = Modifier.replaceWithFragment(
+                    afterSplit,
+                    insertionTarget,
+                    fragment
+                );
 
-            const newContent = withAtomicBlock.merge({
-                selectionBefore: selectionState,
-                selectionAfter: withAtomicBlock.getSelectionAfter().set('hasFocus', true),
-            });
+                const newContent = withAtomicBlock.merge({
+                    selectionBefore: selectionState,
+                    selectionAfter: withAtomicBlock.getSelectionAfter().set('hasFocus', true),
+                });
 
-            const newEditorState = EditorState.push(editorState, newContent, `newline`);
+                const newEditorState = EditorState.push(editorState, newContent, `newline`);
 
-            if (blockTypesNoNewLine.includes(blockType)) { 
-                // remove the blocktype
                 // const newState = removeSelectedBlocksStyle(editorState)
                 const newState = RichUtils.toggleBlockType(
                     newEditorState,

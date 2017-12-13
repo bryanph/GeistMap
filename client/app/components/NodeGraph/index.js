@@ -46,12 +46,7 @@ function colorNode(d) {
     /*
      * Assign a color to a node based on its collections
     */
-    if (d.type === 'node') {
-        return colora(_.flatten(d.collections).sort().join(','))
-    } else {
-        return colora([d.id, ..._.flatten(d.collections)].sort().join(','))
-
-    }
+    return colora(_.flatten(d.collections).sort().join(','))
 }
 
 function colorActiveNode(node) {
