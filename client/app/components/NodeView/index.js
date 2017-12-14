@@ -9,14 +9,10 @@ import React from 'react';
 import classNames from 'classnames'
 
 import NodeGraph from '../../components/graphs/NodeGraph'
-import AddButton from '../../components/AddButton'
-import Spinner from '../../components/Spinner'
+import HierarchyGraph from '../../components/graphs/HierarchyGraph'
 import AddNodeWindow from '../../components/AddNodeWindow'
-import EditModeButton from '../../components/EditModeButton'
-import FocusButton from '../../components/FocusButton'
 import GraphModes from '../../components/GraphModes'
 import GraphTypeSwitcher from '../../components/GraphTypeSwitcher'
-import ExpandButton from '../../components/ExpandButton'
 import AbstractionList from '../../containers/AbstractionList'
 import AbstractionNavigator from '../../components/AbstractionNavigator'
 import NodeEditorToolbar from '../../containers/NodeEditorToolbar'
@@ -78,7 +74,7 @@ export class NodeView extends React.PureComponent {
                         */
                     }
                     {
-                        graphType === "collection" ?
+                        graphType === "collection" || graphType === "hierarchy" ?
                             <AbstractionList
                                 isLoading={isLoading}
                                 key="2"
@@ -86,9 +82,14 @@ export class NodeView extends React.PureComponent {
                                 nodeTree={this.props.nodeTree}
                             /> : null
                     }
-                    <NodeGraph
-                        {...this.props}
-                    />
+                    {
+                        graphType === "hierarchy" ?
+                            <HierarchyGraph {...this.props} />
+                            :
+                            <NodeGraph
+                                {...this.props}
+                            />
+                    }
                 </div>
                 <GraphTypeSwitcher
                     graphType={graphType}

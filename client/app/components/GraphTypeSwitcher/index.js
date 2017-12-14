@@ -50,7 +50,7 @@ class GraphTypeSwitcher extends React.Component {
                     <Button 
                         icon='triangle down'
                         content='Hierarchy'
-                        onClick={ () => this.props.history.push(`/app/hierarchy/${id}/nodes`) }
+                        onClick={ () => this.props.history.push(`/app/hierarchy/${id}`) }
                         className={ hierarchyClass }
                     />
                     <Button 

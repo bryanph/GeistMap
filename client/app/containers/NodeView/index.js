@@ -35,21 +35,26 @@ import {
 import NodeView from '../../components/NodeView'
 
 function loadData(props) {
-    if (props.graphType === "collection") {
-        return Promise.all([
-            props.loadCollectionL1(props.collectionId),
-            props.loadNodeL1(props.collectionId)
-        ])
-            .then((action) => {
-                if (props.nodeId) {
-                    props.loadNode(props.nodeId)
+    switch(props.graphType) {
+        case "collection":
+        case "hierarchy":
+            return Promise.all([
+                props.loadCollectionL1(props.collectionId),
+                props.loadNodeL1(props.collectionId)
+            ])
+                .then((action) => {
+                    if (props.nodeId) {
+                        props.loadNode(props.nodeId)
+                        return action
+                    }
                     return action
-                }
-                return action
-            })
-    }
-    else {
-        return props.loadNodeL2(props.nodeId)
+                })
+            break;
+        case "node":
+            return props.loadNodeL2(props.nodeId)
+            break;
+        default:
+            console.error("got unexpected graphType", props.graphType)
     }
 }
 
@@ -107,7 +112,7 @@ function mapStateToProps(state, props) {
 
     let nodes, edges, nodeTree, isLoading, graphType
 
-    if (props.graphType === "collection") {
+    if (props.graphType === "collection" || props.graphType === "hierarchy") {
         isLoading = state.loadingStates.GET_COLLECTIONL1 || state.loadingStates.GET_NODE_L1;
 
         ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
