@@ -93,7 +93,9 @@ export class NodeView extends React.PureComponent {
                 </div>
                 <GraphTypeSwitcher
                     graphType={graphType}
+                    isLoading={isLoading}
                     id={this.props.activeNodeId || this.props.activeCollectionId}
+                    node={this.props.activeNode || this.props.activeCollection}
                 />
                 <GraphModes
                     graphType={graphType}

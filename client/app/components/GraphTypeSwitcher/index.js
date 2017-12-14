@@ -17,7 +17,7 @@ class GraphTypeSwitcher extends React.Component {
     }
 
     render() {
-        const { graphType, id } = this.props
+        const { graphType, id, node } = this.props
 
         const editorClass = classNames("graphTypeSwitcher-button", {
             "active": graphType === "editor"
@@ -48,6 +48,7 @@ class GraphTypeSwitcher extends React.Component {
                         icon='crosshairs'
                         content='Links'
                         onClick={ () => this.props.history.push(`/app/nodes/${id}`) }
+                        disabled={!node || node.type === "root"}
                         className={ exploreClass }
                     />
                 </Button.Group>
