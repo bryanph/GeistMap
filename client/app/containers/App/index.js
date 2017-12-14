@@ -15,7 +15,7 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { HotKeys } from 'react-hotkeys'
 
 
-import CollectionOverview from "../CollectionOverview"
+// import CollectionOverview from "../CollectionOverview"
 import NodeView from '../NodeView'
 import CollectionDetailEditor from '../CollectionDetailEditor'
 import NodeExploreEditor from '../NodeExploreEditor'
@@ -71,6 +71,7 @@ class App extends React.Component {
                             <Switch>
                                 { /* same component to allow for smooth transitions */ }
                                 <Route exact path={'/app/nodes/:nodeId?'} render={(props) => <NodeView {...props} graphType="node" />}/>
+                                <Route exact path={'/app/hierarchy/:nodeId?'} render={(props) => <NodeView {...props} graphType="hierarchy" />}/>
                                 <Route exact path={'/app/collections/:collectionId?/nodes/:nodeId?'} render={(props) => {
                                     const collectionId = props.match.params.collectionId
 
@@ -88,7 +89,7 @@ class App extends React.Component {
                                 <Route exact path={'/app/collections/:collectionId/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
 
                                 { /* The overview graph showing explicit collection links */ }
-                                <Route exact path={'/app/collections/:collectionId'} component={CollectionOverview}/>
+                                { /* <Route exact path={'/app/collections/:collectionId'} component={CollectionOverview}/> */ }
 
                                 <Redirect from={'/app/'} to={'/app/collections/nodes'}/>
                             </Switch>

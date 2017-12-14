@@ -8,7 +8,7 @@
 import React from 'react';
 import classNames from 'classnames'
 
-import NodeGraph from '../../components/NodeGraph'
+import NodeGraph from '../../components/graphs/NodeGraph'
 import AddButton from '../../components/AddButton'
 import Spinner from '../../components/Spinner'
 import AddNodeWindow from '../../components/AddNodeWindow'
@@ -68,14 +68,13 @@ export class NodeView extends React.PureComponent {
                 <div className="contentContainer">
                     {
                         /*
-                        graphType === "collection" ?
-                            <AbstractionNavigator
-                                key="1"
-                                abstractionChain={this.props.abstractionChain}
-                                collection={this.props.activeCollection}
-                                isLoading={isLoading}
-                                moveParent={this.props.moveParent}
-                            /> : null
+                        <AbstractionNavigator
+                            key="1"
+                            abstractionChain={this.props.abstractionChain}
+                            collection={this.props.activeCollection}
+                            isLoading={isLoading}
+                            moveParent={this.props.moveParent}
+                        /> 
                         */
                     }
                     {
