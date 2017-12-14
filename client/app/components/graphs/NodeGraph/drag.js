@@ -5,8 +5,7 @@ import {
     mouse as currentMouse,
 } from 'd3-selection'
 
-import { colorNode } from '../../graph/util'
-import { NODE_RADIUS } from '../../graph/constants'
+import { NODE_RADIUS } from '../constants'
 
 export default (simulation) => (actions) => {
 

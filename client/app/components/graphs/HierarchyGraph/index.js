@@ -9,10 +9,8 @@ import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
 
 import { browserHistory } from 'react-router-dom'
 
-import { createNodeSimulation, transformNode, transformLink } from './simulation'
 import createDrag from './drag'
 import createZoom from '../../graph/zoom'
-import { arrowHead } from '../../graph/svgdefs.js'
 import {
     MIN_NODE_RADIUS,
     MAX_NODE_RADIUS,
@@ -28,31 +26,12 @@ import './styles.scss'
 import {
     scaleOrdinal,
     scaleLinear,
-    schemeCategory20,
-    schemeCategory20b,
-    schemeCategory20c
 } from 'd3-scale'
 
-const colora = scaleOrdinal(schemeCategory20)
-const colorb = scaleOrdinal(schemeCategory20b)
-const colorc = scaleOrdinal(schemeCategory20c)
-
-// work around for now to make sure collections have a fixed color
-colora(undefined)
-colorb(undefined)
-colorc(undefined)
-
-function colorNode(d) {
-    /*
-     * Assign a color to a node based on its collections
-    */
-    return colora(_.flatten(d.collections).sort().join(','))
-}
-
-function colorActiveNode(node) {
-    d3Select(".nodeActive").classed("nodeActive", false)
-    node.classed("nodeActive", true)
-}
+import {
+    colorNode,
+    colorActiveNode
+} from '../colorNode'
 
 function getLabelText(text) {
     /*
@@ -675,3 +654,4 @@ class NodeGraph extends React.Component {
 }
 
 export default withRouter(NodeGraph)
+

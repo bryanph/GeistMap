@@ -25,6 +25,9 @@ class GraphTypeSwitcher extends React.Component {
         const abstractionClass = classNames("graphTypeSwitcher-button", {
             "active": graphType === "collection"
         })
+        const hierarchyClass = classNames("graphTypeSwitcher-button", {
+            "active": graphType === "hierarchy"
+        })
         const exploreClass = classNames("graphTypeSwitcher-button", {
             "active": graphType === "node"
         })
@@ -40,9 +43,15 @@ class GraphTypeSwitcher extends React.Component {
                     />
                     <Button 
                         icon='triangle down'
-                        content='Map'
+                        content='Collection'
                         onClick={ () => this.props.history.push(`/app/collections/${id}/nodes`) }
                         className={ abstractionClass }
+                    />
+                    <Button 
+                        icon='triangle down'
+                        content='Hierarchy'
+                        onClick={ () => this.props.history.push(`/app/hierarchy/${id}/nodes`) }
+                        className={ hierarchyClass }
                     />
                     <Button 
                         icon='crosshairs'

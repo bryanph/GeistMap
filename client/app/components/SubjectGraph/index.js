@@ -25,7 +25,6 @@ import { arrowHead } from '../../graph/svgdefs.js'
 import {
     MIN_NODE_RADIUS,
     MAX_NODE_RADIUS,
-    NODE_RADIUS,
     WIDTH,
     HEIGHT
 } from '../../graph/constants'
