@@ -9,29 +9,27 @@ import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
 
 import { browserHistory } from 'react-router-dom'
 
-import createDrag from './drag'
-import createZoom from '../../graph/zoom'
+import createZoom from '../zoom'
 import {
     MIN_NODE_RADIUS,
     MAX_NODE_RADIUS,
     NODE_RADIUS,
     WIDTH,
     HEIGHT,
-} from '../../graph/constants'
+} from '../constants'
 
 import ZoomButtons from '../ZoomButtons'
 
 import './styles.scss'
 
 import {
-    scaleOrdinal,
-    scaleLinear,
-} from 'd3-scale'
+    colorNode,
+    colorActiveNode,
+} from '../colorNode'
 
 import {
-    colorNode,
-    colorActiveNode
-} from '../colorNode'
+    scaleLinear,
+} from 'd3-scale'
 
 function getLabelText(text) {
     /*
@@ -550,74 +548,10 @@ class NodeGraph extends React.Component {
         const domNode = ReactDOM.findDOMNode(this.refs.graph)
         this.graph = d3Select(domNode);
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
-        this.container.append('defs').call(arrowHead)
-
-        this.graph.dragLine = this.container
-            .append("path")
-            .attr("class", "node-link")
-            .attr("marker-end", "url(#Triangle)")
-
-        this.simulation = createNodeSimulation(WIDTH, HEIGHT)
-
-        // this must be before zoom
-        this.graph.on('mousedown', () => {
-            const [ x, y ] = currentMouse(domNode)
-
-            if (this.props.editMode && graphType === 'collection') {
-                // prompt for a node name
-                // this.props.addNode({ x, y })
-            }
-        })
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
 
-        this.exploreEvents = createExploreEvents.call(this, this.simulation, {
-            history: this.props.history,
-            removeEdge,
-            connectNodes,
-            setActiveNode: this.props.setActiveNode,
-            updateNode: this.props.updateNode,
-            removeNode: this.props.removeNode,
-            moveToAbstraction: this.props.moveToAbstraction,
-        })
-
-        this.collectionDetailEvents = createCollectionDetailEvents.call(this, this.simulation, {
-            history: this.props.history,
-            removeEdge,
-            connectNodes,
-            fetchNodeL1: this.props.fetchNodeL1,
-            setActiveNode: this.props.setActiveNode,
-            updateNode: this.props.updateNode,
-            removeNode: this.props.removeNode,
-            removeNodeFromCollection: this.props.removeNodeFromCollection,
-            removeAbstraction: this.props.removeAbstraction,
-            toggleCollapse: this.props.toggleCollapse,
-            moveToAbstraction: this.props.moveToAbstraction,
-        })
-
         this.zoomed = false
-
-        const ticked = (selection) => {
-            if (!this.zoomed && this.simulation.alpha() < 0.6) {
-                this.zoomed = true
-                this.zoom.zoomFit()
-            }
-
-            selection.selectAll('.nodeSelection')
-                .call(transformNode);
-
-            selection.selectAll('.link')
-                .each(transformLink)
-        }
-
-        this.simulation.on('tick', () => {
-            // after force calculation starts, call updateGraph
-            // which uses d3 to manipulate the attributes,
-            // and Reac.6t doesn't have to go through lifecycle on each tick
-            this.container.call(ticked);
-        });
-
-
         this.update(this.props)
     }
 
@@ -654,4 +588,3 @@ class NodeGraph extends React.Component {
 }
 
 export default withRouter(NodeGraph)
-
