@@ -4,7 +4,7 @@ import getTranslate from './getTranslate.js'
 
 const setCTM = (element, m) => element.transform.baseVal.initialize(element.ownerSVGElement.createSVGTransformFromMatrix(m))
 
-export default (root, container, fullWidth, fullHeight) => {
+export default (root, container, fullWidth, fullHeight, zoomCallback) => {
 
     const center = [ fullWidth / 2, fullHeight / 2 ]
 
@@ -19,7 +19,7 @@ export default (root, container, fullWidth, fullHeight) => {
             zoomInProgress = false
         })
         .on('zoom', function () {
-            container.attr("transform", currentEvent.transform)
+            zoomCallback(currentEvent.transform)
         })
 
     // to allow for free zooming

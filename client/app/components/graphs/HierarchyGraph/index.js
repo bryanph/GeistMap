@@ -36,8 +36,6 @@ class Node extends React.Component {
         const { node, onClick, onDrag } = this.props
         const transform = `translate(${node.y}, ${node.x})`;
 
-        console.log(node)
-
         return (
             <g className="node" transform={transform} onClick={onClick} onDrag={onDrag}>
                 <circle
@@ -64,8 +62,6 @@ class Link extends React.Component {
     render() {
         const { link } = this.props
 
-        console.log(link)
-
         return (
             <path 
                 className="link"
@@ -86,6 +82,13 @@ class NodeGraph extends React.Component {
         super(props)
 
         this.onNodeClick = this.onNodeClick.bind(this)
+        this.zoomed = this.zoomed.bind(this)
+
+        this.tree = d3Tree()
+
+        this.state = {
+            zoomTransform: null
+        }
     }
 
     onNodeClick(d) {
@@ -94,31 +97,27 @@ class NodeGraph extends React.Component {
         // TODO: call expand action or edit action, whatever - 2017-12-31
     }
 
-    componentWillMount() {
-        const {
-            isLoading,
-            graphType,
-            loadNode,
-            removeEdge,
-            connectNodes,
-        } = this.props
+    zoomed(transform) {
+        this.setState({
+            containerTransform: transform
+        })
+    }
 
+    componentDidMount() {
         const domNode = ReactDOM.findDOMNode(this.refs.graph)
         this.graph = d3Select(domNode);
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
 
-        this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
-        this.tree = d3Tree()
+        this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT, this.zoomed)
         this.zoomed = false
+    }
+
+    componentDidUpdate() {
+        this.zoom.zoomFit()
     }
 
     render() {
         const { nodeTree, isLoading } = this.props
-
-        if (isLoading) {
-            // TODO: load a loading indicator somewhere - 2018-01-02
-            return null;
-        }
 
         const maxLabelLength = 50;
 
@@ -149,6 +148,7 @@ class NodeGraph extends React.Component {
 
         const nodeElements = nodes.map(node => (
             <Node 
+                key={node.id}
                 node={node}
                 onClick={this.onNodeClick}
                 onDrag={this.onDrag}
@@ -157,6 +157,7 @@ class NodeGraph extends React.Component {
 
         const linkElements = links.map(link => (
             <Link
+                key={link.id}
                 link={link}
             />
         ))
@@ -175,9 +176,10 @@ class NodeGraph extends React.Component {
                     ref="graph"
                     key="2"
                 >
-                    <g ref="container">
+                    <g ref="container" transform={this.state.containerTransform}>
                         { nodeElements }
                         { linkElements }
+                        { isLoading ? null : null }
                     </g>
                 </svg>
         ]
