@@ -1147,8 +1147,6 @@ export const getNodesAndEdgesByCollectionId = createSelector(
 
         const visibleNodes = _.map(visibleNodeMap, x => x)
 
-        console.log(visibleNodeTree)
-
         return {
             nodes: visibleNodes,
             edges: transformedEdges,
