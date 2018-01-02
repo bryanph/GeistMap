@@ -1016,6 +1016,10 @@ export const getEdgesBelowAbstraction = createSelector(
 )
 
 export const getNodesAndEdgesByCollectionId = createSelector(
+    /*
+     * This gets all nodes and edges directly below the node with the given id
+     * When a given node is "expanded" it is hidden and its children are shown instead
+    */
     (state, { collectionId }) => getCollection(state, collectionId),
     getNodesBelowAbstraction,
     getEdgesBelowAbstraction,
@@ -1032,7 +1036,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 collections: [],
                 visibleCollections: [],
                 edges: [],
-                nodeTree: [],
+                nodeTree: { children: null },
             }
         }
 
@@ -1049,7 +1053,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
 
                 return {
                     ...parentNode,
-                    children: [],
+                    children: null,
                 }
             } else {
                 // expanded, show all children as well
@@ -1143,10 +1147,12 @@ export const getNodesAndEdgesByCollectionId = createSelector(
 
         const visibleNodes = _.map(visibleNodeMap, x => x)
 
+        console.log(visibleNodeTree)
+
         return {
             nodes: visibleNodes,
             edges: transformedEdges,
-            nodeTree: visibleNodeTree.children,
+            nodeTree: visibleNodeTree,
         }
     }
 )
