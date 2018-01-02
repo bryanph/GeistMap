@@ -644,7 +644,7 @@ class NodeGraph extends React.Component {
                 <svg
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                     preserveAspectRatio="xMidYMid meet"
-                    className="svg-content"
+                    className="svg-content abstract-graph"
                     ref="graph"
                     key="2"
                 >

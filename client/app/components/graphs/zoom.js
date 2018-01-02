@@ -1,6 +1,6 @@
 import { zoom as d3Zoom, zoomIdentity, interpolate } from 'd3-zoom'
 import { event as currentEvent, } from 'd3-selection'
-
+import getTranslate from './getTranslate.js'
 
 const setCTM = (element, m) => element.transform.baseVal.initialize(element.ownerSVGElement.createSVGTransformFromMatrix(m))
 
@@ -24,18 +24,6 @@ export default (root, container, fullWidth, fullHeight) => {
 
     // to allow for free zooming
     root.call(zoom)
-
-    function getTranslate(node) {
-        const transs = node.attr("transform").split(' ');
-
-        const translate = transs[0].substring(transs[0].indexOf("(")+1, transs[0].indexOf(")")).split(",").map(parseFloat);
-        const scale = transs[1] ? parseFloat(transs[1].substring(transs[1].indexOf("(")+1, transs[1].indexOf(")"))) : 1
-
-        return [
-            ...translate,
-            scale
-        ]
-    }
 
     function zoomClick(dir) {
         const direction = dir

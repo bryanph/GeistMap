@@ -17,65 +17,68 @@
 //     }
 // }
 
-.node {
-    cursor: pointer;
-}
-
-.node-hovered {
-    circle {
-        fill: #000000 !important;
-    }
-}
-
-.nodeActive {
-    circle {
-        fill: $accent-color !important;
-    }
-}
-
-.node text {
-    fill: #0F073B;
-    stroke: none;
-    font-size: 1.2em;
-    z-index: 100;
-
-    text-anchor: middle;
-    dominant-baseline: central;
-    font-weight: bold;
-}
-
-.link {
-    fill: transparent;
-}
-
-.node-link {
-    stroke: $accent-color;
-    stroke-width: 3px;
-    // stroke-opacity: .4;
-
-    /* shaft-width: 1px; */
-    /* stroke-width:1.5px */
-    /* font-size: 8px; */
-    /* padding: 3px; */
-    /* text-color-external: #000000; */
-    /* text-color-internal: #FFFFFF; */
-}
-
-.node-link-transparent {
-    stroke: transparent;
-    stroke-width: 10px;
-    fill: transparent;
-    
-    &:hover {
+.abstract-graph g {
+    .node {
         cursor: pointer;
     }
-}
+
+    .node-hovered {
+        circle {
+            fill: #000000 !important;
+        }
+    }
+
+    .nodeActive {
+        circle {
+            fill: $accent-color !important;
+        }
+    }
+
+    .node text {
+        fill: #0F073B;
+        stroke: none;
+        font-size: 1.2em;
+        z-index: 100;
+
+        text-anchor: middle;
+        dominant-baseline: central;
+        font-weight: bold;
+    }
+
+    .link {
+        fill: transparent;
+    }
+
+    .node-link {
+        stroke: $accent-color;
+        stroke-width: 3px;
+        // stroke-opacity: .4;
+
+        /* shaft-width: 1px; */
+        /* stroke-width:1.5px */
+        /* font-size: 8px; */
+        /* padding: 3px; */
+        /* text-color-external: #000000; */
+        /* text-color-internal: #FFFFFF; */
+    }
+
+    .node-link-transparent {
+        stroke: transparent;
+        stroke-width: 10px;
+        fill: transparent;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
 
 
-.node-arrow {
-    fill: $light-accent-color;
+    .node-arrow {
+        fill: $light-accent-color;
+    }
+
+    .node-link.hidden {
+        visibility: hidden;
+    }
 }
 
-.node-link.hidden {
-    visibility: hidden;
-}
