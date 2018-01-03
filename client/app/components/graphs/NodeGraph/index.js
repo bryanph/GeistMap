@@ -363,7 +363,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onViewClick = (d) => {
         // click in view mode
-        actions.history.push(`/app/collections/${this.props.activeCollection.id}/nodes/${d.id}/edit`)
+        actions.history.push(`/app/nodes/${this.props.activeCollection.id}/abstract/${d.id}/edit`)
     }
 
     const onEditClick = (d) => {
@@ -372,7 +372,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onAbstractClick = (d) => {
         this.props.moveChild(d.id)
-        this.props.history.push(`/app/collections/${d.id}/nodes`)
+        this.props.history.push(`/app/nodes/${d.id}/abstract`)
     }
 
     const onFocusClick = (d) => {
@@ -506,9 +506,9 @@ class NodeGraph extends React.Component {
             .data(links, link => link.id)
 
         // enter-update-exit cycle depending on type of graph
-        if (graphType === 'node') {
+        if (graphType === 'explore') {
             this.exploreEvents(nextProps.activeNodeId, nodeSelection, link, mode, focus)
-        } else if (graphType === 'collection') {
+        } else if (graphType === 'abstract') {
             this.collectionDetailEvents(nodeSelection, link, mode, focus)
         } else {
             console.error('this should not happen!')
@@ -564,7 +564,7 @@ class NodeGraph extends React.Component {
         this.graph.on('mousedown', () => {
             const [ x, y ] = currentMouse(domNode)
 
-            if (this.props.editMode && graphType === 'collection') {
+            if (this.props.editMode && graphType === 'abstract') {
                 // prompt for a node name
                 // this.props.addNode({ x, y })
             }

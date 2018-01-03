@@ -95,6 +95,7 @@ class NodeGraph extends React.Component {
         if (currentEvent.defaultPrevented) return; // click suppressed
 
         // TODO: call expand action or edit action, whatever - 2017-12-31
+        console.log("called click")
     }
 
     zoomed(transform) {

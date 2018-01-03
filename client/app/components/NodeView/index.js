@@ -74,7 +74,7 @@ export class NodeView extends React.PureComponent {
                         */
                     }
                     {
-                        graphType === "collection" || graphType === "hierarchy" ?
+                        graphType === "abstract" || graphType === "hierarchy" ?
                             <AbstractionList
                                 isLoading={isLoading}
                                 key="2"

@@ -32,7 +32,7 @@ class AddNodeWindow extends React.Component {
         const id = esResult._id
         const { graphType, activeCollectionId, activeNodeId } = this.props
 
-        if (graphType === "collection") {
+        if (graphType === "abstract") {
             return this.props.addNodeToCollection(
                 activeCollectionId,
                 id,
@@ -60,7 +60,7 @@ class AddNodeWindow extends React.Component {
         const createPromise = this.props.createNode({ name: label })
             .then(action => action.response.result)
 
-        if (graphType === "collection") {
+        if (graphType === "abstract") {
             createPromise.then(id => this.props.addNodeToCollection(
                 activeCollectionId,
                  id,

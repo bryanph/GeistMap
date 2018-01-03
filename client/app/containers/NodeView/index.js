@@ -36,7 +36,7 @@ import NodeView from '../../components/NodeView'
 
 function loadData(props) {
     switch(props.graphType) {
-        case "collection":
+        case "abstract":
         case "hierarchy":
             return Promise.all([
                 props.loadCollectionL1(props.collectionId),
@@ -50,7 +50,7 @@ function loadData(props) {
                     return action
                 })
             break;
-        case "node":
+        case "explore":
             return props.loadNodeL2(props.nodeId)
             break;
         default:
@@ -69,7 +69,7 @@ export class NodeViewContainer extends React.PureComponent {
 
         loadData(props)
             .then(() => {
-                if (props.graphType === "collection") {
+                if (props.graphType === "abstract") {
                     props.resetAbstractionChain()
                     props.moveChild(props.activeCollectionId)
                 }
@@ -110,9 +110,12 @@ import {
 
 function mapStateToProps(state, props) {
 
-    let nodes, edges, nodeTree, isLoading, graphType
+    let nodes, edges, nodeTree, isLoading
 
-    if (props.graphType === "collection" || props.graphType === "hierarchy") {
+    const params = new URLSearchParams(props.location.search);
+    const graphType = params.get('graphType') || "abstract"
+
+    if (graphType === "abstract" || graphType === "hierarchy") {
         isLoading = state.loadingStates.GET_COLLECTIONL1 || state.loadingStates.GET_NODE_L1;
 
         ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
@@ -134,7 +137,7 @@ function mapStateToProps(state, props) {
         links: edges,
         nodeTree,
         isLoading,
-        graphType: props.graphType,
+        graphType: graphType,
         adjacencyMap: state.adjacencyMap, // TODO: should this be passed down? - 2017-09-19
         abstractionSidebarOpened: state.uiState.abstractionSidebar.opened,
         abstractionChain: getAbstractionChain(state),

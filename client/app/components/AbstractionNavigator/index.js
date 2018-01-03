@@ -22,7 +22,7 @@ class AbstractionNavigator extends React.Component {
         const abstractionItems = abstractionChain.map((c, i) => (
             <AbstractionItem
                 key={i}
-                url={`/app/collections/${c.id}/nodes`}
+                url={`/app/nodes/${c.id}/abstract`}
                 name={c.name}
                 hasNext={ this.props.extra || (i < (abstractionChain.length - 1)) }
                 onClick={() => this.props.moveParent(c.id)}

@@ -139,13 +139,10 @@ import { withRouter } from 'react-router-dom'
 
 // TODO: change to Link components - 2016-07-12
 export const NodeCollectionItem = withRouter((props) => {
-    // {/* 
-    //     <a href={`/app/collections/${id}`} className='collection-item'>{ name }</a>
-    // */} 
     return (
         <Chip
             onRequestDelete={() => props.onDelete(props.id)}
-            onClick={() => props.history.push(`/app/collections/${props.id}/nodes`)}
+            onClick={() => props.history.push(`/app/nodes/${props.id}/abstract`)}
             style={styles.chip}
         >
             { props.name }
