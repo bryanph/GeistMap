@@ -16,6 +16,7 @@ import GraphTypeSwitcher from '../../components/GraphTypeSwitcher'
 import AbstractionList from '../../containers/AbstractionList'
 import AbstractionNavigator from '../../components/AbstractionNavigator'
 import NodeEditorToolbar from '../../containers/NodeEditorToolbar'
+import NodeEditor from '../../containers/NodeContentEditor'
 import { HotKeys } from 'react-hotkeys';
 
 import './styles.scss'
@@ -57,13 +58,26 @@ export class NodeView extends React.PureComponent {
                 />
                 <NodeEditorToolbar
                     id={this.props.activeNodeId || this.props.activeCollectionId}
-                    page="node"
                     isLoading={isLoading}
                     node={this.props.activeNode || this.props.activeCollection}
                 />
-                <div className="contentContainer">
-                    {
-                        /*
+                <div className="nodeView">
+                    { /* This is only visible in desktop mode */ }
+                    <div className="nodeView-editor">
+                        <div className="contentContainer">
+                            <div className="contentContainer-inner">
+                                <NodeEditor 
+                                    id={this.props.activeNodeId || this.props.activeCollectionId}
+                                    isLoading={isLoading}
+                                    node={this.props.activeNode || this.props.activeCollection}
+                                />
+                            </div>
+                        </div>
+
+                    </div>
+                    <div className="nodeView-graph">
+                        {
+                            /*
                         <AbstractionNavigator
                             key="1"
                             abstractionChain={this.props.abstractionChain}
@@ -72,35 +86,37 @@ export class NodeView extends React.PureComponent {
                             moveParent={this.props.moveParent}
                         /> 
                         */
-                    }
-                    {
-                        graphType === "abstract" || graphType === "hierarchy" ?
-                            <AbstractionList
-                                isLoading={isLoading}
-                                key="2"
-                                activeCollection={this.props.activeCollection}
-                                nodeTree={this.props.nodeTree}
-                            /> : null
-                    }
-                    {
-                        graphType === "hierarchy" ?
-                            <HierarchyGraph {...this.props} />
-                            :
-                            <NodeGraph
-                                {...this.props}
-                            />
-                    }
+                        }
+                        {
+                            graphType === "abstract" || graphType === "hierarchy" ?
+                                <AbstractionList
+                                    isLoading={isLoading}
+                                    key="2"
+                                    activeCollection={this.props.activeCollection}
+                                    nodeTree={this.props.nodeTree}
+                                /> : null
+                        }
+                        {
+                            graphType === "hierarchy" ?
+                                <HierarchyGraph {...this.props} />
+                                :
+                                <NodeGraph
+                                    {...this.props}
+                                />
+                        }
+                        <GraphTypeSwitcher
+                            graphType={graphType}
+                            isLoading={isLoading}
+                            id={this.props.activeNodeId || this.props.activeCollectionId}
+                            node={this.props.activeNode || this.props.activeCollection}
+                        />
+                        <GraphModes
+                            graphType={graphType}
+                        />
+
                 </div>
-                <GraphTypeSwitcher
-                    graphType={graphType}
-                    isLoading={isLoading}
-                    id={this.props.activeNodeId || this.props.activeCollectionId}
-                    node={this.props.activeNode || this.props.activeCollection}
-                />
-                <GraphModes
-                    graphType={graphType}
-                />
-            </HotKeys>
+            </div>
+        </HotKeys>
 
         );
     }

@@ -1,0 +1,26 @@
+@import '~styles/settings';
+
+@media only screen and (max-width: $max-screen-width + 32px) {
+    .nodeView-editor {
+        display: none;
+    }
+}
+
+.nodeView {
+    position:absolute;
+    top: calc(#{$topbar-height} + #{$nodetoolbar-height});
+    bottom: 0px;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    flex-grow: 1;
+}
+
+.nodeView-editor {
+    overflow-y: scroll;
+}
+
+.nodeView-graph {
+
+}
