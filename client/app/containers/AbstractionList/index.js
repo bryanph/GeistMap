@@ -72,7 +72,7 @@ class AbstractionList extends React.Component {
     }
 
     onFocusClick(collection) {
-        this.props.history.push(`/app/collections/${collection.id}/nodes`)
+        this.props.history.push(`/app/nodes/${collection.id}/abstract`)
         this.props.moveChild(collection.id)
     }
 

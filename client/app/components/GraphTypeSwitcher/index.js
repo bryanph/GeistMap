@@ -23,13 +23,13 @@ class GraphTypeSwitcher extends React.Component {
             "active": graphType === "editor"
         })
         const abstractionClass = classNames("graphTypeSwitcher-button", {
-            "active": graphType === "collection"
+            "active": graphType === "abstract"
         })
         const hierarchyClass = classNames("graphTypeSwitcher-button", {
             "active": graphType === "hierarchy"
         })
         const exploreClass = classNames("graphTypeSwitcher-button", {
-            "active": graphType === "node"
+            "active": graphType === "explore"
         })
 
         return (
@@ -38,25 +38,25 @@ class GraphTypeSwitcher extends React.Component {
                     <Button 
                         icon='edit'
                         content='Notes'
-                        onClick={ () => this.props.history.push(`/app/nodes/${id}/edit`) }
+                        onClick={ () => this.props.history.push(`/app/nodes/${id}/edit` + this.props.history.location.search) }
                         className={ editorClass }
                     />
                     <Button 
                         icon='triangle down'
                         content='Collection'
-                        onClick={ () => this.props.history.push(`/app/collections/${id}/nodes`) }
+                        onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=abstract`) }
                         className={ abstractionClass }
                     />
                     <Button 
                         icon='triangle down'
                         content='Hierarchy'
-                        onClick={ () => this.props.history.push(`/app/hierarchy/${id}`) }
+                        onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=hierarchy`) }
                         className={ hierarchyClass }
                     />
                     <Button 
                         icon='crosshairs'
                         content='Links'
-                        onClick={ () => this.props.history.push(`/app/nodes/${id}`) }
+                        onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=explore`) }
                         disabled={!node || node.type === "root"}
                         className={ exploreClass }
                     />
