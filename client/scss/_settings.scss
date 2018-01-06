@@ -102,6 +102,9 @@ html {
 }
 *, *:before, *:after {
     box-sizing: inherit;
+    border: none;
+    margin: 0;
+    padding: 0;
 }
 body {
     margin: 0;
