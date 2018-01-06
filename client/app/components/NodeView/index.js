@@ -56,11 +56,13 @@ export class NodeView extends React.PureComponent {
                     activeCollectionId={this.props.activeCollectionId}
                     disabled={isLoading}
                 />
-                <NodeEditorToolbar
-                    id={this.props.activeNodeId || this.props.activeCollectionId}
-                    isLoading={isLoading}
-                    node={this.props.activeNode || this.props.activeCollection}
-                />
+                <div className="nodeView-toolbar">
+                    <NodeEditorToolbar
+                        id={this.props.activeNodeId || this.props.activeCollectionId}
+                        isLoading={isLoading}
+                        node={this.props.activeNode || this.props.activeCollection}
+                    />
+                </div>
                 <div className="nodeView">
                     { /* This is only visible in desktop mode */ }
                     <div className="nodeView-editor">
