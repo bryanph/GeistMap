@@ -1,9 +1,8 @@
 @import '~styles/settings';
 
-@media only screen and (max-width: $max-screen-width + 32px) {
-    .nodeView-editor {
-        display: none;
-    }
+.nodeView-toolbar {
+    width: 50%;
+    border-bottom: 1px solid #ddd;
 }
 
 .nodeView {
@@ -22,5 +21,15 @@
 }
 
 .nodeView-graph {
+    flex-grow: 1;
+}
 
+@media only screen and (max-width: $max-screen-width + 32px) {
+    .nodeView-editor {
+        display: none;
+    }
+
+    .nodeView-toolbar {
+        width: 100%;
+    }
 }

@@ -28,7 +28,7 @@
 
 @media only screen and (min-width: $max-screen-width + 32px) {
     .nodeToolbar {
-        width: $max-screen-width;
+        max-width: 800px;
         margin: 0 auto;
         margin-bottom: 8px;
     }
