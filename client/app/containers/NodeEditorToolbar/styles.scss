@@ -20,13 +20,13 @@
     margin-bottom: 8px;
 }
 
-@media only screen and (max-width: $max-screen-width + 32px) {
+@media only screen and (max-width: $max-width-mobile + 32px) {
     .nodeToolbar {
         width: 100%;
     }
 }
 
-@media only screen and (min-width: $max-screen-width + 32px) {
+@media only screen and (min-width: $max-width-mobile + 32px) {
     .nodeToolbar {
         max-width: 800px;
         margin: 0 auto;
