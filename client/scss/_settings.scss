@@ -1,7 +1,9 @@
 //
 // Screen sizes
 //
-$max-screen-width: 750px;
+$max-width-mobile: 750px;
+$max-width-desktop-small: 1000px;
+
 $topbar-height: 56px;
 $bottombar-height: 36px;
 $nodetoolbar-height: 145px;
@@ -9,7 +11,7 @@ $nodetoolbar-height: 145px;
 $sidebar-width: 500px;
 $sidebar-item-height: 400px;
 
-$total-screen-width: $sidebar-width + $max-screen-width;
+$total-screen-width: $sidebar-width + $max-width-mobile;
 
 //
 // COLORS
@@ -66,15 +68,16 @@ $abstractionSidebar-background: #21252B;
     flex-grow: 1;
 }
 
-@media only screen and (max-width: $max-screen-width + 32px) {
+@media only screen and (max-width: $max-width-mobile + 32px) {
     .contentContainer-inner {
         width: 100%;
     }
 }
 
-@media only screen and (min-width: $max-screen-width + 32px) {
+@media only screen and (min-width: $max-width-mobile + 32px) {
     .contentContainer-inner {
-        width: $max-screen-width;
+        max-width: $max-width-mobile;
+        width: 100%;
         margin: 16px auto 0;
     }
 }
