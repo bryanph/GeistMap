@@ -272,7 +272,7 @@ const createExploreEvents = function(simulation, actions) {
      * Afterwards, can be called with node an link DOM nodes
      */
     const onViewClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}/edit`)
+        actions.history.push(`/app/nodes/${d.id}/graph?graphType=explore`)
     }
 
     const onEditClick = (d) => {
@@ -363,7 +363,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onViewClick = (d) => {
         // click in view mode
-        actions.history.push(`/app/nodes/${this.props.focusNode.id}/abstract/${d.id}/edit`)
+        actions.history.push(`/app/nodes/${this.props.focusNode.id}/graph/${d.id}`)
     }
 
     const onEditClick = (d) => {

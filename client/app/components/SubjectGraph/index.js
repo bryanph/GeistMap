@@ -359,7 +359,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
      * Afterwards, can be called with node an link DOM nodes
      */
     const onCollectionClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}/abstract`)
+        actions.history.push(`/app/nodes/${d.id}/graph`)
     }
 
     const onConnect = (from, to) => {
