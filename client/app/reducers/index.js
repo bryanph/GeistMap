@@ -1029,8 +1029,6 @@ export const getNodesAndEdgesByCollectionId = createSelector(
          * This gets the direct nodes including their children
          */
 
-        console.log(parentCollection)
-
         if (!parentCollection) {
             // TODO: not necessary, just have a loading state
             return {
@@ -1048,7 +1046,6 @@ export const getNodesAndEdgesByCollectionId = createSelector(
         let visibleNodeTree = {}
 
         function handleShowNodes(parentNode, nodeIds) {
-            console.log("in handleShowNodes", parentNode)
             if (parentNode.collapsed) {
                 // collapsed, shouldn't show the children, but show the node
                 visibleNodeMap[parentNode.id] = parentNode

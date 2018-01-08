@@ -49,13 +49,6 @@ export class NodeView extends React.PureComponent {
 
         return (
             <HotKeys className={appContainerClass}>
-                <AddNodeWindow
-                    graphType={graphType}
-                    opened={mode === 'edit'}
-                    activeNodeId={this.props.activeNodeId}
-                    focusNodeId={this.props.focusNodeId}
-                    disabled={isLoading}
-                />
                 <div className="nodeView-toolbar">
                     <NodeEditorToolbar
                         id={this.props.activeNodeId || this.props.focusNodeId}
@@ -106,6 +99,13 @@ export class NodeView extends React.PureComponent {
                                 {...this.props}
                             />
                     }
+                    <AddNodeWindow
+                        graphType={graphType}
+                        opened={mode === 'edit'}
+                        activeNodeId={this.props.activeNodeId}
+                        focusNodeId={this.props.focusNodeId}
+                        disabled={isLoading}
+                    />
                     <GraphTypeSwitcher
                         graphType={graphType}
                         isLoading={isLoading}
