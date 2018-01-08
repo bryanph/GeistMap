@@ -30,18 +30,18 @@ class AddNodeWindow extends React.Component {
     addExistingNode(esResult) {
         // add existing node to the graph
         const id = esResult._id
-        const { graphType, activeCollectionId, activeNodeId } = this.props
+        const { graphType, focusNodeId } = this.props
 
-        if (graphType === "collection") {
+        if (graphType === "abstract") {
             return this.props.addNodeToCollection(
-                activeCollectionId,
+                focusNodeId,
                 id,
             )
         } else {
             return this.props.loadNodeL2(id)
                 .then(() =>
                     this.props.addEdge(
-                        activeNodeId,
+                        focusNodeId,
                         id
                     )
                 )
@@ -55,19 +55,19 @@ class AddNodeWindow extends React.Component {
             return;
         }
 
-        const { graphType, activeCollectionId, activeNodeId } = this.props
+        const { graphType, focusNodeId } = this.props
 
         const createPromise = this.props.createNode({ name: label })
             .then(action => action.response.result)
 
-        if (graphType === "collection") {
+        if (graphType === "abstract") {
             createPromise.then(id => this.props.addNodeToCollection(
-                activeCollectionId,
+                focusNodeId,
                  id,
              ))
         } else {
             createPromise.then(id => this.props.addEdge(
-                activeNodeId,
+                focusNodeId,
                  id,
              ))
         }

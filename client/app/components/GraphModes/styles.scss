@@ -3,7 +3,7 @@
 .graphModes {
     position: fixed;
     right: 20px;
-    top: 230px;
+    bottom: calc(#{$bottombar-height} + 100px);
 
     z-index: 100;
 
@@ -23,7 +23,7 @@
     background: $accent-color !important;
     opacity: 0.7;
 
-    @media only screen and (max-width: $max-screen-width) {
+    @media only screen and (max-width: $max-width-mobile) {
         span {
             display: none;
         }

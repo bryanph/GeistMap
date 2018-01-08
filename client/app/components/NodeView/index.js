@@ -8,18 +8,15 @@
 import React from 'react';
 import classNames from 'classnames'
 
-import NodeGraph from '../../components/NodeGraph'
-import AddButton from '../../components/AddButton'
-import Spinner from '../../components/Spinner'
+import NodeGraph from '../../components/graphs/NodeGraph'
+import HierarchyGraph from '../../components/graphs/HierarchyGraph'
 import AddNodeWindow from '../../components/AddNodeWindow'
-import EditModeButton from '../../components/EditModeButton'
-import FocusButton from '../../components/FocusButton'
 import GraphModes from '../../components/GraphModes'
 import GraphTypeSwitcher from '../../components/GraphTypeSwitcher'
-import ExpandButton from '../../components/ExpandButton'
 import AbstractionList from '../../containers/AbstractionList'
 import AbstractionNavigator from '../../components/AbstractionNavigator'
 import NodeEditorToolbar from '../../containers/NodeEditorToolbar'
+import NodeEditor from '../../containers/NodeContentEditor'
 import { HotKeys } from 'react-hotkeys';
 
 import './styles.scss'
@@ -52,55 +49,75 @@ export class NodeView extends React.PureComponent {
 
         return (
             <HotKeys className={appContainerClass}>
-                <AddNodeWindow
-                    graphType={graphType}
-                    opened={mode === 'edit'}
-                    activeNodeId={this.props.activeNodeId}
-                    activeCollectionId={this.props.activeCollectionId}
-                    disabled={isLoading}
-                />
-                <NodeEditorToolbar
-                    id={this.props.activeNodeId || this.props.activeCollectionId}
-                    page="node"
-                    isLoading={isLoading}
-                    node={this.props.activeNode || this.props.activeCollection}
-                />
-                <div className="contentContainer">
+                <div className="nodeView-toolbar">
+                    <NodeEditorToolbar
+                        id={this.props.activeNodeId || this.props.focusNodeId}
+                        isLoading={isLoading}
+                        node={this.props.activeNode || this.props.focusNode}
+                    />
+                </div>
+
+                { /* This is only visible in desktop mode */ }
+                <div className="nodeView-editor">
+                    <div className="contentContainer">
+                        <div className="contentContainer-inner">
+                            <NodeEditor
+                                id={this.props.activeNodeId || this.props.focusNodeId}
+                                isLoading={isLoading}
+                                node={this.props.activeNode || this.props.focusNode}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="nodeView-graph">
                     {
                         /*
-                        graphType === "collection" ?
-                            <AbstractionNavigator
-                                key="1"
-                                abstractionChain={this.props.abstractionChain}
-                                collection={this.props.activeCollection}
-                                isLoading={isLoading}
-                                moveParent={this.props.moveParent}
-                            /> : null
+                        <AbstractionNavigator
+                            key="1"
+                            abstractionChain={this.props.abstractionChain}
+                            collection={this.props.focusNode}
+                            isLoading={isLoading}
+                            moveParent={this.props.moveParent}
+                        /> 
                         */
                     }
                     {
-                        graphType === "collection" ?
+                        graphType === "abstract" || graphType === "hierarchy" ?
                             <AbstractionList
                                 isLoading={isLoading}
                                 key="2"
-                                activeCollection={this.props.activeCollection}
+                                focusNode={this.props.focusNode}
                                 nodeTree={this.props.nodeTree}
                             /> : null
                     }
-                    <NodeGraph
-                        {...this.props}
+                    {
+                        graphType === "hierarchy" ?
+                            <HierarchyGraph {...this.props} />
+                            :
+                            <NodeGraph
+                                {...this.props}
+                            />
+                    }
+                    <AddNodeWindow
+                        graphType={graphType}
+                        opened={mode === 'edit'}
+                        activeNodeId={this.props.activeNodeId}
+                        focusNodeId={this.props.focusNodeId}
+                        disabled={isLoading}
+                    />
+                    <GraphTypeSwitcher
+                        graphType={graphType}
+                        isLoading={isLoading}
+                        id={this.props.activeNodeId || this.props.focusNodeId}
+                        node={this.props.activeNode || this.props.focusNode}
+                    />
+                    <GraphModes
+                        graphType={graphType}
                     />
                 </div>
-                <GraphTypeSwitcher
-                    graphType={graphType}
-                    isLoading={isLoading}
-                    id={this.props.activeNodeId || this.props.activeCollectionId}
-                    node={this.props.activeNode || this.props.activeCollection}
-                />
-                <GraphModes
-                    graphType={graphType}
-                />
-            </HotKeys>
+
+        </HotKeys>
 
         );
     }

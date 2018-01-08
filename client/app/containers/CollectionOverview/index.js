@@ -107,7 +107,7 @@ function mapStateToProps(state, props) {
         mode: state.abstractGraphUiState.mode,
         focus: state.abstractGraphUiState.focus,
         // sidebarState: state.uiState.showCollectionSidebarState,
-        // activeCollection: getCollection(state, id),
+        // focusNode: getCollection(state, id),
     }
 }
 

@@ -9,8 +9,6 @@ import {
 import { select as d3Select } from 'd3-selection'
 import { transition } from 'd3-transition'
 
-import { NODE_RADIUS } from '../../graph/constants'
-
 export const createNodeSimulation = function(WIDTH, HEIGHT, simulation) {
     return (simulation ? simulation : forceSimulation())
         // .alphaTarget(0.01)

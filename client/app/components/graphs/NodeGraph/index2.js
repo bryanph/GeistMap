@@ -46,7 +46,12 @@ function colorNode(d) {
     /*
      * Assign a color to a node based on its collections
     */
-    return colora(_.flatten(d.collections).sort().join(','))
+    if (d.type === 'node') {
+        return colora(_.flatten(d.collections).sort().join(','))
+    } else {
+        return colora([d.id, ..._.flatten(d.collections)].sort().join(','))
+
+    }
 }
 
 function colorActiveNode(node) {
@@ -262,7 +267,6 @@ const createEnterLink = function(actions) {
         // transparent clickable edge
         g
             .append("path")
-            .attr("stroke-opacity", (d) => d.opacity)
             .attr("class", "node-link-transparent")
             .attr("marker-end", "url(#Triangle)")
             // .on('dblclick', actions.doubleClick)
@@ -270,7 +274,6 @@ const createEnterLink = function(actions) {
         // visible non-clickable edge
         g
             .append("path")
-            .attr("stroke-opacity", (d) => d.opacity)
             .attr("class", "node-link")
             .attr("marker-end", "url(#Triangle)")
     }
@@ -383,7 +386,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onViewClick = (d) => {
         // click in view mode
-        actions.history.push(`/app/collections/${this.props.activeCollection.id}/nodes/${d.id}/edit`)
+        actions.history.push(`/app/nodes/${this.props.focusNode.id}/graph/${d.id}`)
     }
 
     const onEditClick = (d) => {
@@ -392,7 +395,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onAbstractClick = (d) => {
         this.props.moveChild(d.id)
-        this.props.history.push(`/app/collections/${d.id}/nodes`)
+        this.props.history.push(`/app/nodes/${d.id}/graph`)
     }
 
     const onFocusClick = (d) => {
@@ -400,7 +403,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
     }
 
     const onDeleteClick = (d) => {
-        actions.removeNodeFromCollection(this.props.activeCollection.id, d.id)
+        actions.removeNodeFromCollection(this.props.focusNode.id, d.id)
     }
 
     const onEditSave = (d, value) => {
@@ -410,7 +413,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onConnect = (from, to) => {
         // this call is done from the abstractiondetail graph
-        return actions.connectNodes(from, to, this.props.activeCollection.id)
+        return actions.connectNodes(from, to, this.props.focusNode.id)
     }
 
     const drag = createDrag(simulation)({
@@ -463,6 +466,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
     }
 }
 
+
 class NodeGraph extends React.Component {
     constructor(props) {
         super(props)
@@ -494,8 +498,6 @@ class NodeGraph extends React.Component {
         const maxCount = (_.maxBy(nodes, (d) => d.count) || {}).count || 0
         const maxRadiusDomain = maxCount > 10 ? maxCount : 10
         const radiusScale = scaleLinear().domain([0, maxRadiusDomain]).range([MIN_NODE_RADIUS, MAX_NODE_RADIUS])
-        const strokeScale = scaleLinear().domain([0, 10]).range([0.3, 1])
-
 
         nodes.forEach(node => {
             nodeById[node.id] = node
@@ -507,8 +509,6 @@ class NodeGraph extends React.Component {
         links.forEach(link => {
             link.source = nodeById[link.start]
             link.target = nodeById[link.end]
-
-            link.opacity = strokeScale(link.count || 0)
 
             if (adjacencyMap[link.end] && adjacencyMap[link.end].includes(link.start)) {
                 link.curved = true
@@ -526,9 +526,9 @@ class NodeGraph extends React.Component {
             .data(links, link => link.id)
 
         // enter-update-exit cycle depending on type of graph
-        if (graphType === 'node') {
+        if (graphType === 'explore') {
             this.exploreEvents(nextProps.activeNodeId, nodeSelection, link, mode, focus)
-        } else if (graphType === 'collection') {
+        } else if (graphType === 'abstract') {
             this.collectionDetailEvents(nodeSelection, link, mode, focus)
         } else {
             console.error('this should not happen!')
@@ -584,7 +584,7 @@ class NodeGraph extends React.Component {
         this.graph.on('mousedown', () => {
             const [ x, y ] = currentMouse(domNode)
 
-            if (this.props.editMode && graphType === 'collection') {
+            if (this.props.editMode && graphType === 'abstract') {
                 // prompt for a node name
                 // this.props.addNode({ x, y })
             }

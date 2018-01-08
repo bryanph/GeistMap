@@ -47,7 +47,7 @@ export class NodeEditorToolbar extends React.Component {
         const result = window.confirm(`Are you sure you want to remove '${this.props.node.name}'`)
         if (result) {
             this.props.removeNode(this.props.node.id)
-            this.props.history.push(`/app/collections`)
+            this.props.history.push(`/app/nodes`)
         }
     }
 
@@ -61,19 +61,12 @@ export class NodeEditorToolbar extends React.Component {
 
     toGraphView() {
         const { history, page, id } = this.props
-        if (page === "node") {
-            // explore mode
-            history.push(`/app/nodes/${id}`)
 
-        }
-        else if (page === "collection") {
-            // collection mode
-            history.push(`/app/collections/${this.props.collectionId}/nodes`)
-        }
+        history.push(`/app/nodes/${id}/graph`)
     }
 
     focusNode() {
-        this.props.history.push(`/app/collections/${this.props.id}/nodes`)
+        this.props.history.push(`/app/nodes/${this.props.id}/graph`)
     }
 
     render() {

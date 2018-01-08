@@ -72,7 +72,7 @@ class AbstractionList extends React.Component {
     }
 
     onFocusClick(collection) {
-        this.props.history.push(`/app/collections/${collection.id}/nodes`)
+        this.props.history.push(`/app/nodes/${collection.id}/graph`)
         this.props.moveChild(collection.id)
     }
 
@@ -99,7 +99,7 @@ class AbstractionList extends React.Component {
                 />
                 <div className={ containerClass }>
                     <AbstractionHeading
-                        title={this.props.activeCollection.name}
+                        title={this.props.focusNode.name}
                         onToggle={this.props.toggleAbstractionSidebar}
                     />
                     <AbstractionTree 

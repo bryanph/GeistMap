@@ -5,8 +5,7 @@ import {
     mouse as currentMouse,
 } from 'd3-selection'
 
-import { colorNode } from '../../graph/util'
-import { NODE_RADIUS } from '../../graph/constants'
+import { NODE_RADIUS } from '../constants'
 
 export default (simulation) => (actions) => {
 
@@ -167,7 +166,7 @@ export default (simulation) => (actions) => {
                         // move this node to the abstraction that is hovered over
                         // TODO: need a method for getting the currently visible abstraction chain
                         return actions.moveToAbstraction(
-                            this.props.activeCollection.id,
+                            this.props.focusNode.id,
                              d.id,
                              node.id,
                          )

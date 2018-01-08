@@ -35,21 +35,26 @@ import {
 import NodeView from '../../components/NodeView'
 
 function loadData(props) {
-    if (props.graphType === "collection") {
-        return Promise.all([
-            props.loadCollectionL1(props.collectionId),
-            props.loadNodeL1(props.collectionId)
-        ])
-            .then((action) => {
-                if (props.nodeId) {
-                    props.loadNode(props.nodeId)
+    switch(props.graphType) {
+        case "abstract":
+        case "hierarchy":
+            return Promise.all([
+                props.loadCollectionL1(props.focusNodeId),
+                props.loadNodeL1(props.focusNodeId)
+            ])
+                .then((action) => {
+                    if (props.nodeId) {
+                        props.loadNode(props.nodeId)
+                        return action
+                    }
                     return action
-                }
-                return action
-            })
-    }
-    else {
-        return props.loadNodeL2(props.nodeId)
+                })
+            break;
+        case "explore":
+            return props.loadNodeL2(props.focusNodeId)
+            break;
+        default:
+            console.error("got unexpected graphType", props.graphType)
     }
 }
 
@@ -64,15 +69,15 @@ export class NodeViewContainer extends React.PureComponent {
 
         loadData(props)
             .then(() => {
-                if (props.graphType === "collection") {
+                if (props.graphType === "abstract") {
                     props.resetAbstractionChain()
-                    props.moveChild(props.activeCollectionId)
+                    props.moveChild(props.focusNodeId)
                 }
             })
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.collectionId !== this.props.collectionId || nextProps.nodeId !== this.props.nodeId) {
+        if (nextProps.focusNodeId !== this.props.focusNodeId || nextProps.nodeId !== this.props.nodeId) {
             loadData(nextProps)
             return this.setState({ hasLoaded: false })
         }
@@ -105,31 +110,34 @@ import {
 
 function mapStateToProps(state, props) {
 
-    let nodes, edges, nodeTree, isLoading, graphType
+    let nodes, edges, nodeTree, isLoading
 
-    if (props.graphType === "collection") {
+    const params = new URLSearchParams(props.location.search);
+    const graphType = params.get('graphType') || "abstract"
+
+    if (graphType === "abstract" || graphType === "hierarchy") {
         isLoading = state.loadingStates.GET_COLLECTIONL1 || state.loadingStates.GET_NODE_L1;
 
         ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
 
     } else {
         isLoading = state.loadingStates.GET_NODE_L1 || state.loadingStates.GET_NODE_L2
-        nodes = getL2Nodes(state, props.nodeId);
-        edges = getL2Edges(state, props.nodeId);
+        nodes = getL2Nodes(state, props.focusNodeId);
+        edges = getL2Edges(state, props.focusNodeId);
     }
 
     return {
         activeNodeId: props.nodeId,
         activeNode: getNode(state, props.nodeId),
-        activeCollectionId: props.collectionId,
-        activeCollection: getNode(state, props.collectionId),
+        focusNodeId: props.focusNodeId,
+        focusNode: getNode(state, props.focusNodeId),
         mode: state.graphUiState.mode,
         focus: state.graphUiState.focus,
         nodes,
         links: edges,
         nodeTree,
         isLoading,
-        graphType: props.graphType,
+        graphType: graphType,
         adjacencyMap: state.adjacencyMap, // TODO: should this be passed down? - 2017-09-19
         abstractionSidebarOpened: state.uiState.abstractionSidebar.opened,
         abstractionChain: getAbstractionChain(state),
@@ -137,11 +145,11 @@ function mapStateToProps(state, props) {
 }
 
 const addProps = withProps(props => {
-    const collectionId = props.match.params && props.match.params.collectionId
+    const focusNodeId = props.match.params && props.match.params.focusNodeId
     const nodeId = props.match.params && props.match.params.nodeId
 
     return {
-        collectionId,
+        focusNodeId,
         nodeId,
     }
 })

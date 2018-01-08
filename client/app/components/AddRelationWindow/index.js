@@ -126,7 +126,6 @@ class AddRelationWindow extends React.Component {
                     (isContentLink ?  this.addContentLink(node, node.id, editorState) : this.addRelation(node.id)).then(() => node)
                     // this.props.connectNodes(this.props.id, id).then(() => id)
                 ))
-                // .then(node => this.props.history.push(`/app/collections/${collectionId}/nodes/${node.id}`))
         }
         // in the explore view
         else {

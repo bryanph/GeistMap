@@ -57,18 +57,13 @@ class Topbar extends React.Component {
     navigate(result) {
         const id  = result._id
 
-        if(result._index.startsWith("collections")) {
-            this.props.history.push(`/app/collections/${id}`)
-        } 
-        else if (result._index.startsWith('nodes')) {
-            this.props.history.push(`/app/nodes/${id}/edit`)
-        }
+        this.props.history.push(`/app/nodes/${id}/graph`)
     }
 
     createNode() {
         return this.props.createNode({ name: 'Untitled', content: '' })
             .then(action => action.response.result)
-            .then(id => this.props.history.push(`/app/nodes/${id}/edit`))
+            .then(id => this.props.history.push(`/app/nodes/${id}/graph`))
     }
 
 

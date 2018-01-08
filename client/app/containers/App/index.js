@@ -15,13 +15,12 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { HotKeys } from 'react-hotkeys'
 
 
-import CollectionOverview from "../CollectionOverview"
+// import CollectionOverview from "../CollectionOverview"
 import NodeView from '../NodeView'
 import CollectionDetailEditor from '../CollectionDetailEditor'
 import NodeExploreEditor from '../NodeExploreEditor'
 import ArchiveSidebar from '../ArchiveSidebar'
 
-import EditCollectionOverlay from '../EditCollectionOverlay'
 import ErrorBoundary from '../ErrorPage'
 
 const keyMapping = {
@@ -60,9 +59,8 @@ class App extends React.Component {
         return (
             <ErrorBoundary>
                 <MuiThemeProvider muiTheme={getMuiTheme()}>
-                    <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
-                        <div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
-                            <EditCollectionOverlay />
+                    <HotKeys keyMap={keyMapping}>
+                        <div style={{display: 'flex', flexDirection: 'column' }}>
                             <Errors />
                             <Topbar />
 
@@ -70,27 +68,18 @@ class App extends React.Component {
 
                             <Switch>
                                 { /* same component to allow for smooth transitions */ }
-                                <Route exact path={'/app/nodes/:nodeId?'} render={(props) => <NodeView {...props} graphType="node" />}/>
-                                <Route exact path={'/app/collections/:collectionId?/nodes/:nodeId?'} render={(props) => {
-                                    const collectionId = props.match.params.collectionId
-
-                                    if (!collectionId) {
-                                        return <Redirect to={`/app/collections/${rootCollectionId}/nodes`}/>
-                                    }
-
-                                    return (
-                                        <NodeView {...props} graphType="collection" />
-                                    )
-                                }} />
-
-
+                                <Route exact path={'/app/nodes/:focusNodeId/graph'} component={NodeView} />
                                 <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>
-                                <Route exact path={'/app/collections/:collectionId/nodes/:nodeId/edit'} component={CollectionDetailEditor}/>
 
-                                { /* The overview graph showing explicit collection links */ }
-                                <Route exact path={'/app/collections/:collectionId'} component={CollectionOverview}/>
+                                { /* <Route exact path={'/app/nodes/:focusNodeId/abstract/:nodeId/edit'} component={CollectionDetailEditor}/> */ }
+                                { /* focusNode is the focused node in the graph, node is the node that is edited */ }
+                                <Route exact path={'/app/nodes/:focusNodeId/graph/:nodeId'} component={NodeView}/>
 
-                                <Redirect from={'/app/'} to={'/app/collections/nodes'}/>
+                                <Route exact path={'/app/nodes'} render={(props) => {
+                                        return <Redirect to={`/app/nodes/${rootCollectionId}/graph`}/>
+                                }}/>
+
+                                <Redirect from={'/app/'} to={'/app/nodes'}/>
                             </Switch>
                             {
                                 /*

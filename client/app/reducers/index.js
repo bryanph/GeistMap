@@ -966,7 +966,7 @@ export const getNodesBelowAbstraction = createSelector(
      * returns a map of all the nodes below in the abstraction
      */
     getNodes,
-    (_, props) => props.collectionId,
+    (_, props) => props.focusNodeId,
     (state) => state.nodesByCollectionId,
     (nodeMap, collectionId, nodesByCollectionId) => {
         let encounteredNodes = {}
@@ -1016,7 +1016,11 @@ export const getEdgesBelowAbstraction = createSelector(
 )
 
 export const getNodesAndEdgesByCollectionId = createSelector(
-    (state, { collectionId }) => getCollection(state, collectionId),
+    /*
+     * This gets all nodes and edges directly below the node with the given id
+     * When a given node is "expanded" it is hidden and its children are shown instead
+    */
+    (state, { focusNodeId }) => getCollection(state, focusNodeId),
     getNodesBelowAbstraction,
     getEdgesBelowAbstraction,
     (state) => state.nodesByCollectionId, // direct children
@@ -1032,7 +1036,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 collections: [],
                 visibleCollections: [],
                 edges: [],
-                nodeTree: [],
+                nodeTree: { children: null },
             }
         }
 
@@ -1049,7 +1053,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
 
                 return {
                     ...parentNode,
-                    children: [],
+                    children: null,
                 }
             } else {
                 // expanded, show all children as well
@@ -1146,7 +1150,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
         return {
             nodes: visibleNodes,
             edges: transformedEdges,
-            nodeTree: visibleNodeTree.children,
+            nodeTree: visibleNodeTree,
         }
     }
 )

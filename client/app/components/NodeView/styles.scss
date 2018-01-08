@@ -1,0 +1,75 @@
+@import '~styles/settings';
+
+.nodeView {
+    position:absolute;
+    top: calc(#{$topbar-height} + #{$nodetoolbar-height});
+    bottom: 0px;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    flex-grow: 1;
+}
+
+// on a big screen
+.nodeView-toolbar {
+    border-right: 1px solid #ddd;
+
+    float: left;
+    // position: absolute;
+    // top: 0;
+    // left: 0;
+    width: 50%;
+    max-width: $max-width-mobile;
+}
+
+.nodeView-editor {
+    overflow-y: scroll;
+
+    width: 50%;
+    max-width: $max-width-mobile;
+    float: left;
+    // position: absolute;
+    // top: $nodetoolbar-height;
+    // left: 0;
+    height: 100%;
+    bottom: 0;
+
+    border-top: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+}
+
+.nodeView-graph {
+    width: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    border-top: 1px solid #ddd;
+
+}
+
+// On a small screen
+@media only screen and (max-width: $max-width-desktop-small) {
+    .nodeView-toolbar {
+        width: 100%;
+        max-width: none;
+    }
+    .nodeView-editor {
+        display: none;
+    }
+    .nodeView-graph {
+        top: $nodetoolbar-height;
+        width: 100%;
+    }
+}
+
+// @media only screen and (min-width: calc(#{$max-width-mobile} * 2)) {
+@media only screen and (min-width: 1500px) {
+    .nodeView-graph {
+        left: $max-width-mobile;
+        right: 0;
+        width: auto;
+    }
+}

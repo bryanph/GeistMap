@@ -25,7 +25,6 @@ import { arrowHead } from '../../graph/svgdefs.js'
 import {
     MIN_NODE_RADIUS,
     MAX_NODE_RADIUS,
-    NODE_RADIUS,
     WIDTH,
     HEIGHT
 } from '../../graph/constants'
@@ -360,7 +359,7 @@ const createCollectionOverviewEvents = function(simulation, actions) {
      * Afterwards, can be called with node an link DOM nodes
      */
     const onCollectionClick = (d) => {
-        actions.history.push(`/app/collections/${d.id}/nodes`)
+        actions.history.push(`/app/nodes/${d.id}/graph`)
     }
 
     const onConnect = (from, to) => {
