@@ -51,7 +51,6 @@ function loadData(props) {
                 })
             break;
         case "explore":
-            console.log(props.focusNodeId)
             return props.loadNodeL2(props.focusNodeId)
             break;
         default:

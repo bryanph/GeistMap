@@ -3,7 +3,7 @@
 .graphModes {
     position: fixed;
     right: 20px;
-    bottom: calc(#{$bottombar-height} + 20px);
+    bottom: calc(#{$bottombar-height} + 100px);
 
     z-index: 100;
 
