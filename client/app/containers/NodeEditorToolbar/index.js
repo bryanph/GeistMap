@@ -61,19 +61,12 @@ export class NodeEditorToolbar extends React.Component {
 
     toGraphView() {
         const { history, page, id } = this.props
-        if (page === "node") {
-            // explore mode
-            history.push(`/app/nodes/${id}`)
 
-        }
-        else if (page === "collection") {
-            // collection mode
-            history.push(`/app/nodes/${this.props.collectionId}/abstract`)
-        }
+        history.push(`/app/nodes/${id}/graph`)
     }
 
     focusNode() {
-        this.props.history.push(`/app/nodes/${this.props.id}/abstract`)
+        this.props.history.push(`/app/nodes/${this.props.id}/graph`)
     }
 
     render() {

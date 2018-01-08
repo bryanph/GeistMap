@@ -966,7 +966,7 @@ export const getNodesBelowAbstraction = createSelector(
      * returns a map of all the nodes below in the abstraction
      */
     getNodes,
-    (_, props) => props.collectionId,
+    (_, props) => props.focusNodeId,
     (state) => state.nodesByCollectionId,
     (nodeMap, collectionId, nodesByCollectionId) => {
         let encounteredNodes = {}
@@ -1020,7 +1020,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
      * This gets all nodes and edges directly below the node with the given id
      * When a given node is "expanded" it is hidden and its children are shown instead
     */
-    (state, { collectionId }) => getCollection(state, collectionId),
+    (state, { focusNodeId }) => getCollection(state, focusNodeId),
     getNodesBelowAbstraction,
     getEdgesBelowAbstraction,
     (state) => state.nodesByCollectionId, // direct children
@@ -1028,6 +1028,8 @@ export const getNodesAndEdgesByCollectionId = createSelector(
         /*
          * This gets the direct nodes including their children
          */
+
+        console.log(parentCollection)
 
         if (!parentCollection) {
             // TODO: not necessary, just have a loading state
@@ -1046,6 +1048,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
         let visibleNodeTree = {}
 
         function handleShowNodes(parentNode, nodeIds) {
+            console.log("in handleShowNodes", parentNode)
             if (parentNode.collapsed) {
                 // collapsed, shouldn't show the children, but show the node
                 visibleNodeMap[parentNode.id] = parentNode

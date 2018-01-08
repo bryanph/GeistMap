@@ -280,11 +280,11 @@ const createExploreEvents = function(simulation, actions) {
     }
 
     const onAbstractClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}/`)
+        actions.history.push(`/app/nodes/${d.id}/graph?graphType=explore`)
     }
 
     const onFocusClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}/`)
+        actions.history.push(`/app/nodes/${d.id}/graph?graphType=explore`)
     }
 
     const onDeleteClick = (d) => {
@@ -363,7 +363,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onViewClick = (d) => {
         // click in view mode
-        actions.history.push(`/app/nodes/${this.props.activeCollection.id}/abstract/${d.id}/edit`)
+        actions.history.push(`/app/nodes/${this.props.focusNode.id}/abstract/${d.id}/edit`)
     }
 
     const onEditClick = (d) => {
@@ -372,15 +372,15 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onAbstractClick = (d) => {
         this.props.moveChild(d.id)
-        this.props.history.push(`/app/nodes/${d.id}/abstract`)
+        this.props.history.push(`/app/nodes/${d.id}/graph?graphType=abstract`)
     }
 
     const onFocusClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}/`)
+        actions.history.push(`/app/nodes/${d.id}/graph?graphType=abstract`)
     }
 
     const onDeleteClick = (d) => {
-        actions.removeNodeFromCollection(this.props.activeCollection.id, d.id)
+        actions.removeNodeFromCollection(this.props.focusNode.id, d.id)
     }
 
     const onEditSave = (d, value) => {
@@ -390,7 +390,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onConnect = (from, to) => {
         // this call is done from the abstractiondetail graph
-        return actions.connectNodes(from, to, this.props.activeCollection.id)
+        return actions.connectNodes(from, to, this.props.focusNode.id)
     }
 
     const drag = createDrag(simulation)({
@@ -507,7 +507,7 @@ class NodeGraph extends React.Component {
 
         // enter-update-exit cycle depending on type of graph
         if (graphType === 'explore') {
-            this.exploreEvents(nextProps.activeNodeId, nodeSelection, link, mode, focus)
+            this.exploreEvents(nextProps.focusNodeId, nodeSelection, link, mode, focus)
         } else if (graphType === 'abstract') {
             this.collectionDetailEvents(nodeSelection, link, mode, focus)
         } else {
@@ -518,8 +518,8 @@ class NodeGraph extends React.Component {
         this.simulation.force("link").links(links)
 
         if (
-            nodes !== (this.prevProps && this.prevProps.nodes) ||
-            links !== (this.prevProps && this.prevProps.links))
+            nodes.length !== (this.prevProps && this.prevProps.nodes.length) ||
+            links.length !== (this.prevProps && this.prevProps.links.length))
         {
             this.zoomed = false
             this.restartSimulation()
