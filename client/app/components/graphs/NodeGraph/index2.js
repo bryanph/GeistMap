@@ -386,7 +386,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onViewClick = (d) => {
         // click in view mode
-        actions.history.push(`/app/nodes/${this.props.focusNode.id}/abstract/${d.id}/edit`)
+        actions.history.push(`/app/nodes/${this.props.focusNode.id}/graph/${d.id}`)
     }
 
     const onEditClick = (d) => {
@@ -395,7 +395,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onAbstractClick = (d) => {
         this.props.moveChild(d.id)
-        this.props.history.push(`/app/nodes/${d.id}/abstract`)
+        this.props.history.push(`/app/nodes/${d.id}/graph`)
     }
 
     const onFocusClick = (d) => {

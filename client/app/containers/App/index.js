@@ -70,7 +70,10 @@ class App extends React.Component {
                                 { /* same component to allow for smooth transitions */ }
                                 <Route exact path={'/app/nodes/:focusNodeId/graph'} component={NodeView} />
                                 <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>
-                                <Route exact path={'/app/nodes/:focusNodeId/abstract/:nodeId/edit'} component={CollectionDetailEditor}/>
+
+                                { /* <Route exact path={'/app/nodes/:focusNodeId/abstract/:nodeId/edit'} component={CollectionDetailEditor}/> */ }
+                                { /* focusNode is the focused node in the graph, node is the node that is edited */ }
+                                <Route exact path={'/app/nodes/:focusNodeId/graph/:nodeId'} component={NodeView}/>
 
                                 <Route exact path={'/app/nodes'} render={(props) => {
                                         return <Redirect to={`/app/nodes/${rootCollectionId}/graph`}/>

@@ -33,10 +33,8 @@ class ContentLink extends React.Component {
 
         const readOnly = getReadOnly()
 
-        const href = path.resolve(window.location.pathname, `../../${nodeId}/edit`)
-
         return (
-            <Link to={ href } onClick={this.onNavigate} className="contentLink">
+            <Link to={ `/app/nodes/${nodeId}/graph` } onClick={this.onNavigate} className="contentLink">
                 {this.props.children}
                 {
                     readOnly ? null :
@@ -45,7 +43,7 @@ class ContentLink extends React.Component {
                             { node && node.name }
                             <div className="contentLinkDiv-buttons">
                                 <EditButton
-                                    onClick={() => history.push(href)}
+                                    onClick={() => history.push(`/app/nodes/${nodeId}/graph`)}
                                 />
                                 <TrashButton
                                     label={"Remove"}
