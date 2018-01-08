@@ -450,6 +450,16 @@ class NodeGraph extends React.Component {
         this.update = this.update.bind(this)
         this.restartSimulation = this.restartSimulation.bind(this)
         this.stopSimulation = this.stopSimulation.bind(this)
+
+        this.onZoom = this.onZoom.bind(this)
+
+        this.state = {
+            zoomTransform: null
+        }
+    }
+
+    onZoom(transform) {
+        this.container.attr("transform", transform)
     }
 
     update(nextProps) {
@@ -570,7 +580,7 @@ class NodeGraph extends React.Component {
             }
         })
 
-        this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT)
+        this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT, this.onZoom)
 
         this.exploreEvents = createExploreEvents.call(this, this.simulation, {
             history: this.props.history,
