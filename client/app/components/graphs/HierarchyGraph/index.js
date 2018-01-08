@@ -110,7 +110,6 @@ class NodeGraph extends React.Component {
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT, this.zoomed)
-        this.zoomed = false
     }
 
     componentDidUpdate() {
