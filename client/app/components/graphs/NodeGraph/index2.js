@@ -386,7 +386,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onViewClick = (d) => {
         // click in view mode
-        actions.history.push(`/app/nodes/${this.props.activeCollection.id}/abstract/${d.id}/edit`)
+        actions.history.push(`/app/nodes/${this.props.focusNode.id}/abstract/${d.id}/edit`)
     }
 
     const onEditClick = (d) => {
@@ -403,7 +403,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
     }
 
     const onDeleteClick = (d) => {
-        actions.removeNodeFromCollection(this.props.activeCollection.id, d.id)
+        actions.removeNodeFromCollection(this.props.focusNode.id, d.id)
     }
 
     const onEditSave = (d, value) => {
@@ -413,7 +413,7 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onConnect = (from, to) => {
         // this call is done from the abstractiondetail graph
-        return actions.connectNodes(from, to, this.props.activeCollection.id)
+        return actions.connectNodes(from, to, this.props.focusNode.id)
     }
 
     const drag = createDrag(simulation)({

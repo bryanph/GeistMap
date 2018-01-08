@@ -53,14 +53,14 @@ export class NodeView extends React.PureComponent {
                     graphType={graphType}
                     opened={mode === 'edit'}
                     activeNodeId={this.props.activeNodeId}
-                    activeCollectionId={this.props.activeCollectionId}
+                    focusNodeId={this.props.focusNodeId}
                     disabled={isLoading}
                 />
                 <div className="nodeView-toolbar">
                     <NodeEditorToolbar
-                        id={this.props.activeNodeId || this.props.activeCollectionId}
+                        id={this.props.activeNodeId || this.props.focusNodeId}
                         isLoading={isLoading}
-                        node={this.props.activeNode || this.props.activeCollection}
+                        node={this.props.activeNode || this.props.focusNode}
                     />
                 </div>
 
@@ -68,10 +68,10 @@ export class NodeView extends React.PureComponent {
                 <div className="nodeView-editor">
                     <div className="contentContainer">
                         <div className="contentContainer-inner">
-                            <NodeEditor 
-                                id={this.props.activeNodeId || this.props.activeCollectionId}
+                            <NodeEditor
+                                id={this.props.activeNodeId || this.props.focusNodeId}
                                 isLoading={isLoading}
-                                node={this.props.activeNode || this.props.activeCollection}
+                                node={this.props.activeNode || this.props.focusNode}
                             />
                         </div>
                     </div>
@@ -83,7 +83,7 @@ export class NodeView extends React.PureComponent {
                         <AbstractionNavigator
                             key="1"
                             abstractionChain={this.props.abstractionChain}
-                            collection={this.props.activeCollection}
+                            collection={this.props.focusNode}
                             isLoading={isLoading}
                             moveParent={this.props.moveParent}
                         /> 
@@ -94,7 +94,7 @@ export class NodeView extends React.PureComponent {
                             <AbstractionList
                                 isLoading={isLoading}
                                 key="2"
-                                activeCollection={this.props.activeCollection}
+                                focusNode={this.props.focusNode}
                                 nodeTree={this.props.nodeTree}
                             /> : null
                     }
@@ -109,8 +109,8 @@ export class NodeView extends React.PureComponent {
                     <GraphTypeSwitcher
                         graphType={graphType}
                         isLoading={isLoading}
-                        id={this.props.activeNodeId || this.props.activeCollectionId}
-                        node={this.props.activeNode || this.props.activeCollection}
+                        id={this.props.activeNodeId || this.props.focusNodeId}
+                        node={this.props.activeNode || this.props.focusNode}
                     />
                     <GraphModes
                         graphType={graphType}

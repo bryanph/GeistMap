@@ -37,7 +37,7 @@ $abstractionSidebar-background: #21252B;
 // Main containers
 //
 .appContainer {
-    height: calc(100% - 56px);
+    height: calc(100vh - 56px);
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -51,6 +51,7 @@ $abstractionSidebar-background: #21252B;
 }
 
 .contentContainer {
+    height: 100%;
     flex-grow: 1;
     background-color: $background-content;
 

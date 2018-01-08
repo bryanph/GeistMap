@@ -59,8 +59,8 @@ class App extends React.Component {
         return (
             <ErrorBoundary>
                 <MuiThemeProvider muiTheme={getMuiTheme()}>
-                    <HotKeys keyMap={keyMapping} style={{height: '100%'}}>
-                        <div style={{display: 'flex', flexDirection: 'column', minHeight: '100vh'}}>
+                    <HotKeys keyMap={keyMapping}>
+                        <div style={{display: 'flex', flexDirection: 'column' }}>
                             <Errors />
                             <Topbar />
 
@@ -68,9 +68,9 @@ class App extends React.Component {
 
                             <Switch>
                                 { /* same component to allow for smooth transitions */ }
-                                <Route exact path={'/app/nodes/:collectionId/graph'} component={NodeView} />
+                                <Route exact path={'/app/nodes/:focusNodeId/graph'} component={NodeView} />
                                 <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>
-                                <Route exact path={'/app/nodes/:collectionId/abstract/:nodeId/edit'} component={CollectionDetailEditor}/>
+                                <Route exact path={'/app/nodes/:focusNodeId/abstract/:nodeId/edit'} component={CollectionDetailEditor}/>
 
                                 <Route exact path={'/app/nodes'} render={(props) => {
                                         return <Redirect to={`/app/nodes/${rootCollectionId}/graph`}/>
