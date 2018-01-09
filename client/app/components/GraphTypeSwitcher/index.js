@@ -47,7 +47,7 @@ class GraphTypeSwitcher extends React.Component {
                     }
                     <Button 
                         icon='triangle down'
-                        content='Collection'
+                        content='Child map'
                         onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=abstract`) }
                         className={ abstractionClass }
                     />
@@ -63,7 +63,7 @@ class GraphTypeSwitcher extends React.Component {
                     }
                     <Button 
                         icon='crosshairs'
-                        content='Links'
+                        content='Link map'
                         onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=explore`) }
                         disabled={!node || node.type === "root"}
                         className={ exploreClass }
