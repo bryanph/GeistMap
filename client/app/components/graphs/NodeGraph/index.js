@@ -189,20 +189,13 @@ const createUpdateCollection = (actions) => (selection, mode, focus) => {
     return selection
 }
 
-const createEnterLink = function(actions) {
+const createEnterLink = function(options) {
     return (selection) => {
         const g = selection
             .insert("g", ":first-child")
             .attr('id', (d) => `link-${d.id}`)
             .attr("class", "link")
 
-        // transparent clickable edge
-        g
-            .append("path")
-            .attr("stroke-opacity", (d) => d.opacity)
-            .attr("class", "node-link-transparent")
-            .attr("marker-end", "url(#Triangle)")
-        // .on('dblclick', actions.doubleClick)
 
         // visible non-clickable edge
         g
@@ -210,16 +203,20 @@ const createEnterLink = function(actions) {
             .attr("stroke-opacity", (d) => d.opacity)
             .attr("class", "node-link")
             .attr("marker-end", "url(#Triangle)")
+
+        // transparent clickable edge
+        g
+            .append("path")
+            .attr("stroke-opacity", (d) => d.opacity)
+            .attr("class", "node-link-transparent")
+            .attr("marker-end", "url(#Triangle)")
+            .on('contextmenu', contextMenu(options.contextMenuOptions))
+        // .on('dblclick', actions.doubleClick)
     }
 }
 
-const createUpdateLink = function({ onDeleteClick }) {
+const createUpdateLink = function() {
     return (selection, mode) => {
-        selection.on('click', null)
-
-        // if (mode === 'delete') {
-        //     selection.on('click', onDeleteClick)
-        // }
     }
 }
 
@@ -294,13 +291,21 @@ const createExploreEvents = function(simulation, actions) {
         onClick
     })
 
-    const enterLink = createEnterLink()
-
-    const updateLink = createUpdateLink({
-        onDeleteClick: (d) => {
-            actions.removeEdge(d.id)
-        }
+    const enterLink = createEnterLink({
+        contextMenuOptions: [
+            {
+                title: "Delete link",
+                action: (elm, d, i) => {
+                    const result = window.confirm(`Are you sure you want to delete the link from "${d.source.name}" to "${d.target.name}"'`)
+                    if (result) {
+                        actions.removeEdge(d.id)
+                    }
+                }
+            },
+        ]
     })
+
+    const updateLink = createUpdateLink()
 
     return (nodeId, nodeSelection, link, mode, focus) => {
         // EXIT selection
@@ -370,9 +375,6 @@ const createCollectionDetailEvents = function(simulation, actions) {
         .on('start', innerDragEvents.dragstart.bind(this))
         .on('end', innerDragEvents.dragend.bind(this))
 
-    console.log()
-    console.log(this.props)
-
     const enterNode = createEnterNode({
         contextMenuOptions: [
             {
@@ -409,7 +411,20 @@ const createCollectionDetailEvents = function(simulation, actions) {
         onClick,
     })
 
-    const enterLink = createEnterLink()
+    const enterLink = createEnterLink({
+        contextMenuOptions: [
+            {
+                title: "Delete link",
+                action: (elm, d, i) => {
+                    const result = window.confirm(`Are you sure you want to delete the link from "${d.source.name}" to "${d.target.name}"'`)
+                    if (result) {
+                        actions.removeEdge(d.id)
+                    }
+                }
+            },
+        ]
+    })
+
 
     const updateLink = createUpdateLink({
         onDeleteClick: (d) => actions.removeEdge(d.id)
