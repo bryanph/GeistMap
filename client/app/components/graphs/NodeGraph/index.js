@@ -4,7 +4,7 @@ import { withRouter } from 'react-router-dom'
 import ReactDOM from 'react-dom'
 import classNames from 'classnames'
 import { drag as d3Drag } from 'd3-drag'
-import { select as d3Select } from 'd3-selection'
+import { select as d3Select, selectAll as d3SelectAll } from 'd3-selection'
 import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
 
 import { browserHistory } from 'react-router-dom'
@@ -34,6 +34,8 @@ import {
     scaleLinear,
 } from 'd3-scale'
 
+import contextMenu from './contextmenu'
+
 function getLabelText(text) {
     /*
      * Max length for label text
@@ -46,11 +48,13 @@ function getLabelText(text) {
     // return text.slice(0, 15) + '...'
 }
 
-const createEnterNode = function(actions) {
+const createEnterNode = function(options) {
     /*
      * HOF for enterNode
      */
     return (selection, click) => {
+
+
         selection
             .attr("class", "nodeSelection node")
             .attr('id', (d) => `node-${d.id}`)
@@ -70,6 +74,7 @@ const createEnterNode = function(actions) {
             .attr("x", (d) => -d.innerRadius)
             .attr("y", (d) => -d.innerRadius)
             .style("fill", "#fff")
+            .on('contextmenu', contextMenu(options.contextMenuOptions))
 
         // TODO: split into lines when text gets too big - 2017-06-22
         selection.append('text')
@@ -122,8 +127,6 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
         setTimeout(() => textarea.node().select(), 0)
     }
     else {
-        // change click to edit node
-        // selection.on('click', actions.onEditClick)
         selection.on('click', actions.onClick)
         selection.selectAll('text').on('click', actions.onEditClick)
     }
@@ -262,7 +265,28 @@ const createExploreEvents = function(simulation, actions) {
         .on('start', innerDragEvents.dragstart.bind(this))
         .on('end', innerDragEvents.dragend.bind(this))
 
-    const enterNode = createEnterNode()
+    const enterNode = createEnterNode({
+        contextMenuOptions: [
+            // {
+            //     title: "Edit",
+            //     action: (elm, d, i) => {
+            //         actions.history.push(`/app/nodes/${this.props.focusNode.id}/graph/${d.id}?graphView=explore`)
+            //     }
+            // },
+            {
+                title: "Delete",
+                action: (elm, d, i) => {
+                    if (d.id === this.props.focusNode.id) {
+                        return;
+                    }
+                    const result = window.confirm(`Are you sure you want to delete '${d.name}'`)
+                    if (result) {
+                        actions.removeNode(d.id)
+                    }
+                }
+            },
+        ]
+    })
 
     const updateNode = createUpdateNode({
         onEditClick,
@@ -346,7 +370,38 @@ const createCollectionDetailEvents = function(simulation, actions) {
         .on('start', innerDragEvents.dragstart.bind(this))
         .on('end', innerDragEvents.dragend.bind(this))
 
-    const enterNode = createEnterNode()
+    console.log()
+    console.log(this.props)
+
+    const enterNode = createEnterNode({
+        contextMenuOptions: [
+            {
+                title: "Edit",
+                action: (elm, d, i) => {
+                    actions.history.push(`/app/nodes/${this.props.focusNode.id}/graph/${d.id}?graphView=explore`)
+                }
+            },
+            {
+                title: `Remove from collection`,
+                action: (elm, d, i) => {
+                    const result = window.confirm(`Are you sure you want to remove "${d.name}" from "${this.props.focusNode.name}"'`)
+                    if (result) {
+                        actions.removeNodeFromCollection(this.props.focusNode.id, d.id)
+                    }
+                }
+            },
+            {
+                title: "Delete",
+                action: (elm, d, i) => {
+                    const result = window.confirm(`Are you sure you want to delete "${d.name}"`)
+                    if (result) {
+                        actions.removeNode(d.id)
+                    }
+                }
+            },
+        ]
+    })
+
 
     const updateNode = createUpdateCollection({
         onEditClick,
