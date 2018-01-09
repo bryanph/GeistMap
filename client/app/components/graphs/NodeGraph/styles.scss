@@ -20,6 +20,22 @@
 .abstract-graph g {
     .node {
         cursor: pointer;
+
+        .outerCircle {
+            cursor: crosshair;
+        }
+
+        .innerCircle {
+            cursor: pointer;
+        }
+
+        circle {
+            transition: opacity 0.5s ease;
+        }
+
+        circle:hover {
+            opacity: .5;
+        }
     }
 
     .node-hovered {

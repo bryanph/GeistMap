@@ -74,8 +74,4 @@ class GraphTypeSwitcher extends React.Component {
     }
 }
 
-// export default connect((state) => ({ mode: state.graphUiState.mode }), {
-//     setGraphMode
-// })(GraphTypeSwitcher)
-
 export default withRouter(GraphTypeSwitcher)

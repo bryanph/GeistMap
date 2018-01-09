@@ -118,16 +118,6 @@ export function toggleCollapse(id) {
     }
 }
 
-// set this node in edit mode
-export const SET_GRAPH_MODE = 'SET_GRAPH_MODE'
-export function setGraphMode(mode: "view" | "edit" | "focus" | "expand") {
-    return {
-        type: SET_GRAPH_MODE,
-        payload: mode,
-    }
-}
-
-
 const uuidV4 = require('uuid/v4');
 
 // add a new collection to the graph and put it in edit mode

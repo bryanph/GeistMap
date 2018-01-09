@@ -11,7 +11,6 @@ import classNames from 'classnames'
 import NodeGraph from '../../components/graphs/NodeGraph'
 import HierarchyGraph from '../../components/graphs/HierarchyGraph'
 import AddNodeWindow from '../../components/AddNodeWindow'
-import GraphModes from '../../components/GraphModes'
 import GraphTypeSwitcher from '../../components/GraphTypeSwitcher'
 import AbstractionList from '../../containers/AbstractionList'
 import AbstractionNavigator from '../../components/AbstractionNavigator'
@@ -33,15 +32,6 @@ export class NodeView extends React.PureComponent {
             isLoading,
             graphType,
         } = this.props
-
-        const handlers = {
-            'escape': () => this.props.setGraphMode("view"),
-            'navigateMode': () => this.props.setGraphMode("view"),
-            'editMode': () => this.props.setGraphMode("edit"),
-            'abstractMode': () => this.props.setGraphMode("abstract"),
-            'focusMode': () => this.props.setGraphMode("focus"),
-            'deleteMode': () => this.props.setGraphMode("delete"),
-        }
 
         const appContainerClass = classNames("appContainer", {
             "abstractionList-pusher": this.props.abstractionSidebarOpened
@@ -111,9 +101,6 @@ export class NodeView extends React.PureComponent {
                         isLoading={isLoading}
                         id={this.props.activeNodeId || this.props.focusNodeId}
                         node={this.props.activeNode || this.props.focusNode}
-                    />
-                    <GraphModes
-                        graphType={graphType}
                     />
                 </div>
 

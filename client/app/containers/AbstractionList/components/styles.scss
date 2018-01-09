@@ -53,13 +53,6 @@ $abstractionList-heading-height: 40px;
 // used in the main view
 .abstractionList-pusher {
     margin-left: $abstractionList-width;
-
-    // when the page is wide enough, re-center the graph so they can be shown side by side
-    @media only screen and (min-width: 1000px) {
-        .graphModes {
-            position: absolute;
-        }
-    }
 }
 
 .abstractionList {

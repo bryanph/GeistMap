@@ -10,7 +10,7 @@ import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
 import { browserHistory } from 'react-router-dom'
 
 import { createNodeSimulation, transformNode, transformLink } from './simulation'
-import createDrag from './drag'
+import { createOuterDrag, createInnerDrag } from './drag'
 import createZoom from '../zoom'
 import { arrowHead } from '../svgdefs.js'
 import {
@@ -49,23 +49,31 @@ function getLabelText(text) {
 const createEnterNode = function(actions) {
     /*
      * HOF for enterNode
-    */
+     */
     return (selection, click) => {
         selection
             .attr("class", "nodeSelection node")
             .attr('id', (d) => `node-${d.id}`)
             .attr('r', (d) => d.radius)
 
+        selection.append('circle')
+            .attr('class', "outerCircle")
+            .attr("r", (d) => d.radius)
+            .attr("x", (d) => -(d.radius))
+            .attr("y", (d) => -(d.radius))
+            .style("fill", colorNode)
+
         selection
             .append('circle')
-            .attr("r", (d) => d.radius)
-            .attr("x", (d) => -d.radius)
-            .attr("y", (d) => -d.radius)
-            .style("fill", colorNode)
+            .attr('class', "innerCircle")
+            .attr("r", (d) => d.innerRadius)
+            .attr("x", (d) => -d.innerRadius)
+            .attr("y", (d) => -d.innerRadius)
+            .style("fill", "#fff")
 
         // TODO: split into lines when text gets too big - 2017-06-22
         selection.append('text')
-            .attr("dy", (d) => d.radius + 10)
+            .attr("dy", (d) => (d.radius) + 10)
             .text((d) => getLabelText(d.name));
 
         return selection
@@ -80,154 +88,100 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
     selection.selectAll('.editMode').remove()
     selection.on('click', null)
 
-    if (mode === 'view') {
-        // make click go to editor
-        // selection.on('click', actions.onViewClick)
+    if (focus.id) {
+
+        const nodeSelection = d3Select(`#node-${focus.id}`)
+
+        const editMode = nodeSelection.append('g')
+            .attr('class', 'editMode')
+
+        const div = editMode.append('foreignObject')
+            .attr('x', -100)
+            .attr('y', (d) => d.radius + 1)
+            .attr('width', 200)
+            .attr('height', 100)
+            .append('xhtml:div')
+
+        // div.attr("style", `width: ${sqLen}px; height: ${sqLen}px;`)
+
+        const textarea = div.append('textarea')
+            .attr('maxLength', 50)
+            .attr('autofocus', true)
+            .text((d) => d.name)
+            .on("keydown", function(d) {
+                const e = currentEvent;
+
+                if (e.which === 13) {
+                    e.stopPropagation()
+                    const value = editMode.select('textarea').node().value
+
+                    actions.onEditSave(d, value)
+                }
+            })
+        // .style("height", sqLen)
+        setTimeout(() => textarea.node().select(), 0)
     }
-    else if (mode === 'edit') {
-        if (focus.id) {
-
-            const nodeSelection = d3Select(`#node-${focus.id}`)
-
-            const editMode = nodeSelection.append('g')
-                .attr('class', 'editMode')
-
-            const div = editMode.append('foreignObject')
-                .attr('x', -100)
-                .attr('y', (d) => d.radius + 1)
-                .attr('width', 200)
-                .attr('height', 100)
-                .append('xhtml:div')
-
-            // div.attr("style", `width: ${sqLen}px; height: ${sqLen}px;`)
-
-            const textarea = div.append('textarea')
-                .attr('maxLength', 50)
-                .attr('autofocus', true)
-                .text((d) => d.name)
-                .on("keydown", function(d) {
-                    const e = currentEvent;
-
-                    if (e.which === 13) {
-                        e.stopPropagation()
-                        const value = editMode.select('textarea').node().value
-
-                        actions.onEditSave(d, value)
-                    }
-                })
-            // .style("height", sqLen)
-            setTimeout(() => textarea.node().select(), 0)
-        }
-        else {
-            // change click to edit node
-            // selection.on('click', actions.onEditClick)
-            selection.on('click', actions.onViewClick)
-            selection.selectAll('text').on('click', actions.onEditClick)
-        }
+    else {
+        // change click to edit node
+        // selection.on('click', actions.onEditClick)
+        selection.on('click', actions.onClick)
+        selection.selectAll('text').on('click', actions.onEditClick)
     }
-    else if (mode === 'abstract') {
-        // TODO: move up in abstraction? - 2017-09-05
-        selection.on('click', actions.onAbstractClick)
-    }
-    else if (mode === 'focus') {
-        selection.on('click', actions.onFocusClick)
-    }
-    else if (mode === 'delete') {
-        selection.on('click', actions.onDeleteClick)
-    }
+
+    selection.on('click', actions.onAbstractClick)
 
     return selection
 }
 
-const createEnterCollection = function(actions) {
-    /*
-     * HOF for enterNode
-    */
-    return (selection, click) => {
-        selection
-            .attr("class", "nodeSelection node")
-            .attr('id', (d) => `node-${d.id}`)
-            .attr('r', (d) => d.radius)
-
-        selection
-            .append('circle')
-            .attr("r", (d) => d.radius)
-            .attr("x", (d) => -d.radius)
-            .attr("y", (d) => -d.radius)
-            .style("fill", colorNode)
-
-        // TODO: split into lines when text gets too big - 2017-06-22
-        selection.append('text')
-            .attr("dy", (d) => d.radius + 10)
-            .text((d) => getLabelText(d.name));
-
-        return selection
-    }
-}
-
 const createUpdateCollection = (actions) => (selection, mode, focus) => {
+
     selection.select('text').text(d => {
         return getLabelText(d.name)
     })
-
     selection.select('.editMode').remove()
-    selection.on('click', null)
+    selection.on('click', actions.onAbstractClick)
 
-    if (mode === 'view') {
-        // make click go to editor
-        // selection.on('click', actions.onViewClick)
+    if (focus.id) {
+        selection.on('click', null)
+
+        const nodeSelection = d3Select(`#node-${focus.id}`)
+
+        const editMode = nodeSelection.append('g')
+            .attr('class', 'editMode')
+
+        const div = editMode.append('foreignObject')
+            .attr('x', -100)
+            .attr('y', (d) => d.radius + 1)
+            .attr('width', 200)
+            .attr('height', 100)
+            .append('xhtml:div')
+
+        // div.attr("style", `width: ${sqLen}px; height: ${sqLen}px;`)
+
+        const textarea = div.append('textarea')
+            .attr('maxLength', 50)
+            .attr('autofocus', true)
+            .text((d) => d.name)
+            .on("keydown", function(d) {
+                const e = currentEvent;
+
+                if (e.which === 13) {
+                    e.stopPropagation()
+                    // on enter, update node
+
+                    const value = editMode.select('textarea').node().value
+                    actions.onEditSave(d, value)
+                }
+            })
+        // .style("height", sqLen)
+        setTimeout(() => textarea.node().select(), 0)
     }
-    else if (mode === 'edit') {
-        if (focus.id) {
-            selection.on('click', null)
-
-            const nodeSelection = d3Select(`#node-${focus.id}`)
-
-            const editMode = nodeSelection.append('g')
-                .attr('class', 'editMode')
-
-            const div = editMode.append('foreignObject')
-                .attr('x', -100)
-                .attr('y', (d) => d.radius + 1)
-                .attr('width', 200)
-                .attr('height', 100)
-                .append('xhtml:div')
-
-            // div.attr("style", `width: ${sqLen}px; height: ${sqLen}px;`)
-
-            const textarea = div.append('textarea')
-                .attr('maxLength', 50)
-                .attr('autofocus', true)
-                .text((d) => d.name)
-                .on("keydown", function(d) {
-                    const e = currentEvent;
-
-                    if (e.which === 13) {
-                        e.stopPropagation()
-                        // on enter, update node
-
-                        const value = editMode.select('textarea').node().value
-                        actions.onEditSave(d, value)
-                    }
-                })
-            // .style("height", sqLen)
-            setTimeout(() => textarea.node().select(), 0)
-        }
-        else {
-            // change click to edit node
-            selection.on('click', actions.onViewClick)
-            selection.selectAll('text').on('click', actions.onEditClick)
-        }
+    else {
+        // change click to edit node
+        selection.on('click', actions.onClick)
+        selection.selectAll('text').on('click', actions.onEditClick)
     }
-    else if (mode === 'abstract') {
-        selection.on('click', actions.onAbstractClick)
-    }
-    else if (mode === 'focus') {
-        selection.on('click', actions.onFocusClick)
-    }
-    else if (mode === 'delete') {
-        selection.on('click', actions.onDeleteClick)
-    }
+
 
     return selection
 }
@@ -245,7 +199,7 @@ const createEnterLink = function(actions) {
             .attr("stroke-opacity", (d) => d.opacity)
             .attr("class", "node-link-transparent")
             .attr("marker-end", "url(#Triangle)")
-            // .on('dblclick', actions.doubleClick)
+        // .on('dblclick', actions.doubleClick)
 
         // visible non-clickable edge
         g
@@ -260,9 +214,9 @@ const createUpdateLink = function({ onDeleteClick }) {
     return (selection, mode) => {
         selection.on('click', null)
 
-        if (mode === 'delete') {
-            selection.on('click', onDeleteClick)
-        }
+        // if (mode === 'delete') {
+        //     selection.on('click', onDeleteClick)
+        // }
     }
 }
 
@@ -271,27 +225,13 @@ const createExploreEvents = function(simulation, actions) {
      * in first call creates the drag() object
      * Afterwards, can be called with node an link DOM nodes
      */
-    const onViewClick = (d) => {
+    const onClick = (d) => {
         actions.history.push(`/app/nodes/${d.id}/graph?graphType=explore`)
     }
 
     const onEditClick = (d) => {
         actions.setActiveNode(d.id)
     }
-
-    const onAbstractClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}/graph?graphType=explore`)
-    }
-
-    const onFocusClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}/graph?graphType=explore`)
-    }
-
-    const onDeleteClick = (d) => {
-        // TODO: confirmation - 2017-09-15
-        actions.removeNode(d.id)
-    }
-
     const onEditSave = (d, value) => {
         actions.updateNode(d.id, { name: value })
         actions.setActiveNode(null)
@@ -302,24 +242,32 @@ const createExploreEvents = function(simulation, actions) {
         return actions.connectNodes(from, to)
     }
 
-    const drag = createDrag(simulation)({
+    const outerDragEvents = createOuterDrag(simulation)({
         connect: onConnect,
+        moveToAbstraction: actions.moveToAbstraction,
     })
 
-    const nodeDrag = d3Drag()
-        .on('drag', drag.drag.bind(this))
-        .on('start', drag.dragstart.bind(this))
-        .on('end', drag.dragend.bind(this))
+    const innerDragEvents = createInnerDrag(simulation)({
+        connect: onConnect,
+        moveToAbstraction: actions.moveToAbstraction,
+    })
+
+    const outerDrag = d3Drag()
+        .on('drag', outerDragEvents.drag.bind(this))
+        .on('start', outerDragEvents.dragstart.bind(this))
+        .on('end', outerDragEvents.dragend.bind(this))
+
+    const innerDrag = d3Drag()
+        .on('drag', innerDragEvents.drag.bind(this))
+        .on('start', innerDragEvents.dragstart.bind(this))
+        .on('end', innerDragEvents.dragend.bind(this))
 
     const enterNode = createEnterNode()
 
     const updateNode = createUpdateNode({
-        onViewClick,
         onEditClick,
         onEditSave,
-        onFocusClick,
-        onAbstractClick,
-        onDeleteClick,
+        onClick
     })
 
     const enterLink = createEnterLink()
@@ -331,27 +279,25 @@ const createExploreEvents = function(simulation, actions) {
     })
 
     return (nodeId, nodeSelection, link, mode, focus) => {
-        if (this.props.mode !== mode) {
-            nodeSelection.call((selection) => updateNode(selection, mode, focus))
-            link.call((selection) => updateLink(selection, mode))
-        } else {
-            // EXIT selection
-            nodeSelection.exit().remove()
-            // ENTER selection
-            nodeSelection.enter().append('g').call(enterNode).call(nodeDrag)
-            // ENTER + UPDATE selection
-                .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
+        // EXIT selection
+        nodeSelection.exit().remove()
+        // ENTER selection
+        const nodeEnter = nodeSelection.enter().append('g').call(enterNode)
+        nodeEnter.call(innerDrag)
+        nodeEnter.selectAll('.outerCircle').call(outerDrag)
 
-            // EXIT selection
-            link.exit().remove()
-            // ENTER selection
-            link.enter().call(enterLink)
-            // ENTER + UPDATE selection
-                // .merge(link).call(updateLink)
+        // ENTER + UPDATE selection
+        const nodeMerge = nodeEnter.merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
 
-            // color node
-            colorActiveNode(d3Select(`#node-${nodeId}`))
-        }
+        // EXIT selection
+        link.exit().remove()
+        // ENTER selection
+        link.enter().call(enterLink)
+        // ENTER + UPDATE selection
+        // .merge(link).call(updateLink)
+
+        // color node
+        colorActiveNode(d3Select(`#node-${nodeId}`))
     }
 }
 
@@ -361,26 +307,8 @@ const createCollectionDetailEvents = function(simulation, actions) {
      * Afterwards, can be called with node an link DOM nodes
      */
 
-    const onViewClick = (d) => {
-        // click in view mode
-        actions.history.push(`/app/nodes/${this.props.focusNode.id}/graph/${d.id}`)
-    }
-
     const onEditClick = (d) => {
         actions.setActiveNode(d.id)
-    }
-
-    const onAbstractClick = (d) => {
-        this.props.moveChild(d.id)
-        this.props.history.push(`/app/nodes/${d.id}/graph?graphType=abstract`)
-    }
-
-    const onFocusClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}/graph?graphType=abstract`)
-    }
-
-    const onDeleteClick = (d) => {
-        actions.removeNodeFromCollection(this.props.focusNode.id, d.id)
     }
 
     const onEditSave = (d, value) => {
@@ -388,30 +316,42 @@ const createCollectionDetailEvents = function(simulation, actions) {
         actions.setActiveNode(null)
     }
 
+    const onClick = (d) => {
+        this.props.moveChild(d.id)
+        this.props.history.push(`/app/nodes/${d.id}/graph?graphType=abstract`)
+    }
+
     const onConnect = (from, to) => {
         // this call is done from the abstractiondetail graph
         return actions.connectNodes(from, to, this.props.focusNode.id)
     }
 
-    const drag = createDrag(simulation)({
+    const outerDragEvents = createOuterDrag(simulation)({
         connect: onConnect,
         moveToAbstraction: actions.moveToAbstraction,
     })
 
-    const nodeDrag = d3Drag()
-        .on('drag', drag.drag.bind(this))
-        .on('start', drag.dragstart.bind(this))
-        .on('end', drag.dragend.bind(this))
+    const innerDragEvents = createInnerDrag(simulation)({
+        connect: onConnect,
+        moveToAbstraction: actions.moveToAbstraction,
+    })
 
-    const enterNode = createEnterCollection()
+    const outerDrag = d3Drag()
+        .on('drag', outerDragEvents.drag.bind(this))
+        .on('start', outerDragEvents.dragstart.bind(this))
+        .on('end', outerDragEvents.dragend.bind(this))
+
+    const innerDrag = d3Drag()
+        .on('drag', innerDragEvents.drag.bind(this))
+        .on('start', innerDragEvents.dragstart.bind(this))
+        .on('end', innerDragEvents.dragend.bind(this))
+
+    const enterNode = createEnterNode()
 
     const updateNode = createUpdateCollection({
-        onViewClick,
         onEditClick,
         onEditSave,
-        onAbstractClick,
-        onFocusClick,
-        onDeleteClick,
+        onClick,
     })
 
     const enterLink = createEnterLink()
@@ -423,23 +363,21 @@ const createCollectionDetailEvents = function(simulation, actions) {
     return (nodeSelection, link, mode, focus) => {
         // if mode changed, update everything
 
-        if (this.props.mode !== mode) {
-            nodeSelection.call((selection) => updateNode(selection, mode, focus))
-            link.call((selection) => updateLink(selection, mode))
-        } else {
-            // EXIT selection
-            nodeSelection.exit().remove()
-            // ENTER selection
-            nodeSelection.enter().append('g').call(enterNode).call(nodeDrag)
-                .merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
+        // EXIT selection
+        nodeSelection.exit().remove()
+        // ENTER selection
+        const nodeEnter = nodeSelection.enter().append('g').call(enterNode)
+        nodeEnter.call(innerDrag)
+        nodeEnter.selectAll('.outerCircle').call(outerDrag)
 
-            // EXIT selection
-            link.exit().remove()
-            // ENTER selection
-            link.enter().call(enterLink)
-            // ENTER + UPDATE selection
-            // .merge(link).call(updateLink)
-        }
+        const nodeUpdate = nodeEnter.merge(nodeSelection).call((selection) => updateNode(selection, mode, focus))
+
+        // EXIT selection
+        link.exit().remove()
+        // ENTER selection
+        link.enter().call(enterLink)
+        // ENTER + UPDATE selection
+        // .merge(link).call(updateLink)
     }
 }
 
@@ -465,7 +403,7 @@ class NodeGraph extends React.Component {
     update(nextProps) {
         /*
          * Go through the enter,update,exit cycle based on the route
-        */
+         */
         let {
             isLoading,
             nodes,
@@ -487,9 +425,12 @@ class NodeGraph extends React.Component {
         const strokeScale = scaleLinear().domain([0, 10]).range([0.3, 1])
 
 
+        const outerRadiusScale = 1.4
+
         nodes.forEach(node => {
             nodeById[node.id] = node
-            node.radius = radiusScale(node.count || 0)
+            node.radius = radiusScale(node.count || 0) * outerRadiusScale
+            node.innerRadius = node.radius / outerRadiusScale
         })
 
         const adjacencyMap = nextProps.adjacencyMap
@@ -645,21 +586,21 @@ class NodeGraph extends React.Component {
         // const className = 'svg-content' + (this.props.editMode ? ' editMode' : '')
 
         return [
-                <ZoomButtons
-                    zoomIn={() => this.zoom.zoomIn()}
-                    zoomOut={() => this.zoom.zoomOut()}
-                    zoomFit={() => this.zoom.zoomFit()}
-                    key="1"
-                />,
-                <svg
-                    viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-                    preserveAspectRatio="xMidYMid meet"
-                    className="svg-content abstract-graph"
-                    ref="graph"
-                    key="2"
-                >
-                    <g ref="container" />
-                </svg>
+            <ZoomButtons
+                zoomIn={() => this.zoom.zoomIn()}
+                zoomOut={() => this.zoom.zoomOut()}
+                zoomFit={() => this.zoom.zoomFit()}
+                key="1"
+            />,
+            <svg
+                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                preserveAspectRatio="xMidYMid meet"
+                className="svg-content abstract-graph"
+                ref="graph"
+                key="2"
+            >
+                <g ref="container" />
+            </svg>
         ]
     }
 }
