@@ -131,8 +131,6 @@ const createUpdateNode = (actions) => (selection, mode, focus) => {
         selection.selectAll('text').on('click', actions.onEditClick)
     }
 
-    selection.on('click', actions.onAbstractClick)
-
     return selection
 }
 
@@ -226,6 +224,7 @@ const createExploreEvents = function(simulation, actions) {
      * Afterwards, can be called with node an link DOM nodes
      */
     const onClick = (d) => {
+        console.log("called onClick", d)
         actions.history.push(`/app/nodes/${d.id}/graph?graphType=explore`)
     }
 
