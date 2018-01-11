@@ -1,7 +1,8 @@
 @import '~styles/settings';
 
+// min-width
 $abstractionList-width: 300px;
-$abstractionList-heading-height: 40px;
+$abstractionList-heading-height: 50px;
 
 .abstractionList-heading {
     height: $abstractionList-heading-height;
@@ -13,7 +14,7 @@ $abstractionList-heading-height: 40px;
     color: white;
 
     .title {
-        font-size: 13px;
+        font-size: 1.5rem;
         line-height: $abstractionList-heading-height;
         font-weight: bold;
         margin-left: 10px;
@@ -23,26 +24,27 @@ $abstractionList-heading-height: 40px;
 .abstractionList-expandButton-expanded {
     position: fixed;
     top: calc(#{$topbar-height} + 5px);
-    left: calc(#{$abstractionList-width} - 45px);
-    z-index: 100;
+    // left: calc(#{$abstractionList-width} - 45px);
+    right: 10px;
+    z-index: 100000;
 }
 .abstractionList-expandButton-collapsed {
     position: absolute;
     top: 10px;
-    left: 10px;
-    z-index: 100;
+    right: 10px;
+    z-index: 100000;
 }
 
 .abstractionList-container {
     position: fixed;
     top: $topbar-height;
     bottom: 0;
-    left: 0;
+    right: 0;
     width: $abstractionList-width;
 
-    z-index: 10;
+    z-index: 10000;
     transition: transform 0.2s ease;
-    transform: translate3d(-100%, 0px, 0px);
+    transform: translate3d(100%, 0px, 0px);
 
 }
 
@@ -52,7 +54,7 @@ $abstractionList-heading-height: 40px;
 
 // used in the main view
 .abstractionList-pusher {
-    margin-left: $abstractionList-width;
+    margin-right: $abstractionList-width;
 }
 
 .abstractionList {
@@ -62,7 +64,7 @@ $abstractionList-heading-height: 40px;
     padding: 0;
     color: #9DA5AB;
     font-family: lucida grande ,tahoma,verdana,arial,sans-serif;
-    font-size: 14px;
+    font-size: 1.2rem;
     width: 100%;
     height: 100%;
 
@@ -101,6 +103,7 @@ $abstractionList-heading-height: 40px;
 .abstractionList-node {
     position: relative;
     white-space: nowrap;
+    margin: 3px 0;
 
     .subtree {
         list-style: none;

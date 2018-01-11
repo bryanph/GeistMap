@@ -4,7 +4,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import deepEqual from 'lodash/isEqual'
 
-import { Header } from './decorators.js'
 import classNames from 'classnames'
 import { VelocityComponent } from 'velocity-react';
 
@@ -25,6 +24,19 @@ export const FocusButton = (props) => {
     return (
         <Icon name="circle" onClick={props.onClick} />
     );
+};
+
+export const Header = ({node}) => {
+    return (
+        <div className="abstractionList-header">
+            <div className="title" contenteditable="true">
+                {node.name}
+            </div>
+        </div>
+    );
+};
+Header.propTypes = {
+    node: PropTypes.object.isRequired
 };
 
 class NodeHeader extends React.Component {

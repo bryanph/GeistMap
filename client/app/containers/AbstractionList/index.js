@@ -118,7 +118,7 @@ import { Button, Icon } from 'semantic-ui-react'
 
 export const ExpandButton = ({ expanded, onClick }) => {
 
-    const icon = expanded ? "chevron left" : "chevron right"
+    const icon = expanded ? "chevron right" : "chevron left"
     const className = classNames({
         "abstractionList-expandButton-expanded": expanded,
         "abstractionList-expandButton-collapsed": !expanded,
