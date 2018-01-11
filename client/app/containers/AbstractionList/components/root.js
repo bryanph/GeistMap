@@ -17,6 +17,7 @@ class TreeBeard extends React.Component {
         if (!Array.isArray(data)) {
             data = [data];
         }
+
         return (
             <ul className="abstractionList">
                 {data.map((node, index) =>
@@ -25,6 +26,7 @@ class TreeBeard extends React.Component {
                               node={node}
                               onFocusClick={onFocusClick}
                               onToggleExpand={onToggleExpand}
+                              updateNode={this.props.updateNode}
                     />
                 )}
             </ul>

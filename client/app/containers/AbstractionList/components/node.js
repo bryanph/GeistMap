@@ -87,6 +87,7 @@ class TreeNode extends React.Component {
                 onClick={this.onClick}
                 onToggleExpand={this.onToggleExpand}
                 onFocusClick={this.onFocusClick}
+                updateNode={this.props.updateNode}
             />
         );
     }
@@ -111,6 +112,7 @@ class TreeNode extends React.Component {
                         animations={animations}
                         key={child.id || index}
                         node={child}
+                        updateNode={this.props.updateNode}
                     />
                 )}
             </ul>

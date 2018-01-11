@@ -92,11 +92,11 @@ $abstractionList-heading-height: 50px;
 
 .abstractionList-focusButton {
     cursor: pointer;
-    color: #5e93c5;
+    // color: #5e93c5;
     text-decoration: none;
 
     &:hover {
-        color: #7eadda;
+        opacity: 0.6;
         outline: 0; /* reset for :focus */
         cursor: pointer;
     }

@@ -9,6 +9,9 @@ import { VelocityComponent } from 'velocity-react';
 
 import { Icon } from 'semantic-ui-react'
 
+// TODO: different location - 2018-01-11
+import { colorNode } from '../../../components/graphs/colorNode.js'
+
 export const Toggle = ({ expanded, terminal, onClick}) => {
     const icon = expanded ? "minus": "plus"
 
@@ -24,17 +27,18 @@ export const Toggle = ({ expanded, terminal, onClick}) => {
 };
 
 export const FocusButton = (props) => {
+    console.log(props)
     return (
         <span className="abstractionList-focusButton">
-            <Icon name="circle" onClick={props.onClick} />
+            <Icon name="circle" style={{ color: props.buttonColor }} onClick={props.onClick} />
         </span>
     );
 };
 
-export const Header = ({node}) => {
+export const Header = ({node, onInput}) => {
     return (
         <div className="abstractionList-header">
-            <div className="title" contentEditable="true">
+            <div className="title" contentEditable="true" onInput={onInput}>
                 {node.name}
             </div>
         </div>
@@ -45,6 +49,14 @@ Header.propTypes = {
 };
 
 class NodeHeader extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.onInput = this.onInput.bind(this);
+        this.updateNode = _.debounce(props.updateNode, 1000)
+    }
+
+
     shouldComponentUpdate(nextProps) {
         const props = this.props;
         const nextPropKeys = Object.keys(nextProps);
@@ -55,6 +67,20 @@ class NodeHeader extends React.Component {
                 return true;
             }
         }
+    }
+
+    onInput(event) {
+        // necessary for debounce
+        event.persist()
+
+        const text = event.target.textContent
+
+        this.updateNode(
+            this.props.node.id,
+            {
+                name: text
+            }
+        )
     }
 
     render() {
@@ -70,8 +96,8 @@ class NodeHeader extends React.Component {
                 className={containerClass}
             >
                  <Toggle terminal={terminal} expanded={!node.collapsed} onClick={onToggleExpand}/>
-                 <FocusButton onClick={onFocusClick}/>
-                 <Header node={node} />
+                 <FocusButton onClick={onFocusClick} buttonColor={colorNode(node)}/>
+                 <Header node={node} onInput={this.onInput} />
             </div>
         );
     }

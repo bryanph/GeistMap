@@ -19,6 +19,7 @@ import {
 
 import {
     fetchNodeL1,
+    updateNode,
 } from '../../actions/node'
 import {
     removeAbstraction,
@@ -107,6 +108,7 @@ class AbstractionList extends React.Component {
                         onToggle={this.toggleCollapse}
                         onToggleExpand={this.toggleCollapse}
                         onFocusClick={this.onFocusClick}
+                        updateNode={this.props.updateNode}
                     />
                 </div>
             </div>
@@ -159,4 +161,5 @@ export default connect(mapStateToProps, {
     showAbstractionSidebar,
     hideAbstractionSidebar,
     moveChild,
+    updateNode,
 })(withRouter(AbstractionList))
