@@ -67,10 +67,13 @@ class TreeNode extends React.Component {
 
         const {animation, duration, ...restAnimationInfo} = animations.drawer;
         return (
-            <VelocityTransitionGroup {...restAnimationInfo}
-                                     ref={ref => this.velocityRef = ref}>
-                {!collapsed ? this.renderChildren(animations) : null}
-            </VelocityTransitionGroup>
+            <div className="abstractionList-children">
+                <VelocityTransitionGroup 
+                    {...restAnimationInfo}
+                    ref={ref => this.velocityRef = ref}>
+                    {!collapsed ? this.renderChildren(animations) : null}
+                </VelocityTransitionGroup>
+            </div>
         );
     }
 

@@ -13,7 +13,7 @@
 
 // on a big screen
 .nodeView-toolbar {
-    border-right: 1px solid #ddd;
+    border-right: $container-border;
 
     float: left;
     // position: absolute;
@@ -35,8 +35,8 @@
     height: 100%;
     bottom: 0;
 
-    border-top: 1px solid #ddd;
-    border-right: 1px solid #ddd;
+    border-top: $container-border;
+    border-right: $container-border;
 }
 
 .nodeView-graph {
@@ -46,7 +46,7 @@
     right: 0;
     bottom: 0;
 
-    border-top: 1px solid #ddd;
+    border-top: $container-border;
 
 }
 

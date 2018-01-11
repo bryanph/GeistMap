@@ -8,28 +8,33 @@ import classNames from 'classnames'
 import { VelocityComponent } from 'velocity-react';
 
 import { Icon } from 'semantic-ui-react'
+
 export const Toggle = ({ expanded, terminal, onClick}) => {
     const icon = expanded ? "minus": "plus"
 
     return (
-        <Icon 
-            style={{ visibility: terminal ? "hidden" : "visible" }}
-            name={ icon }
-            onClick={onClick} 
-        />
+        <span className="abstractionList-toggle">
+            <Icon 
+                style={{ visibility: terminal ? "hidden" : "visible" }}
+                name={ icon }
+                onClick={onClick} 
+            />
+        </span>
     );
 };
 
 export const FocusButton = (props) => {
     return (
-        <Icon name="circle" onClick={props.onClick} />
+        <span className="abstractionList-focusButton">
+            <Icon name="circle" onClick={props.onClick} />
+        </span>
     );
 };
 
 export const Header = ({node}) => {
     return (
         <div className="abstractionList-header">
-            <div className="title" contenteditable="true">
+            <div className="title" contentEditable="true">
                 {node.name}
             </div>
         </div>
@@ -56,7 +61,7 @@ class NodeHeader extends React.Component {
         const {animations, node, onToggleExpand, onFocusClick} = this.props;
         const {active, children} = node;
         const terminal = !node.count;
-        const containerClass = classNames('link', {
+        const containerClass = classNames({
             active: active
         })
 
