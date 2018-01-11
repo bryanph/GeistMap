@@ -99,9 +99,10 @@ export class NodeViewContainer extends React.PureComponent {
 
 
 import {
-    getL1Nodes,
     getL2Nodes,
     getL2Edges,
+    getL1Nodes,
+    getL1Edges,
     getNode,
     getNodesAndEdgesByCollectionId,
     getAbstractionChain,
@@ -121,8 +122,8 @@ function mapStateToProps(state, props) {
 
     } else {
         isLoading = state.loadingStates.GET_NODE_L1 || state.loadingStates.GET_NODE_L2
-        nodes = getL2Nodes(state, props.focusNodeId);
-        edges = getL2Edges(state, props.focusNodeId);
+        nodes = getL1Nodes(state, props.focusNodeId);
+        edges = getL1Edges(state, props.focusNodeId);
     }
 
     return {

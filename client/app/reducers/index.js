@@ -102,24 +102,6 @@ export function nodes(state={}, action) {
                 }
             }
 
-        case nodeActionTypes.CONVERT_NODE_TO_COLLECTION_SUCCESS:
-            return update(state, {
-                [action.id]: { $merge: {
-                    type: 'collection',
-                    collapsed: true,
-                }
-                }
-            })
-            return {
-                ...state,
-                [action.id]: {
-                    ...state[action.id],
-                    ...action.response.entities.nodes[action.id],
-                    type: 'collection',
-                    collapsed: true,
-                }
-            }
-
         default:
             if (action.response && action.response.entities && action.response.entities.nodes) {
                 // TODO: probably useful to use models with something like redux-orm - 2017-09-01
@@ -200,19 +182,6 @@ function collectionEdges(state={}, action) {
                     isSynced: false,
                 }
             }
-
-        case uiActionTypes.TOGGLE_EDIT_MODE:
-            if (action.editMode) {
-                // add the addCollectionEdges
-                return {
-                    ...state,
-                    ...action.addCollectionEdges
-                }
-            } else {
-                // remove the addCollectionEdges
-                return _.omitBy(state, (e) => e.type === 'addCollection')
-            }
-
 
         default:
             if (action.response && action.response.entities && action.response.entities.collectionEdges) {
@@ -473,8 +442,8 @@ function archive(state=[], action) {
             return action.response.result
         case nodeActionTypes.CREATE_NODE_SUCCESS:
             return [ ...state, action.response.result ]
-        case nodeActionTypes.CLEAR_ARCHIVE_SUCCESS:
-            return []
+        // case nodeActionTypes.CLEAR_ARCHIVE_SUCCESS:
+        //     return []
         default:
             return state
     }
@@ -556,33 +525,7 @@ function allSearch(state=[], action) {
     }
 }
 
-const initialAbstractGraphUIState = {
-    // can be "view", "edit", "focus" or "expand"
-    mode: "view",
-    focus: {
-        id: null,
-    },
-}
-function abstractGraphUiState(state=initialAbstractGraphUIState, action) {
-    /*
-     * UI state related to the graph
-     */
-    switch(action.type) {
-        case uiActionTypes.TOGGLE_ABSTRACT_EDIT_MODE:
-            return {
-                ...state,
-                mode: state.mode === "edit" ? "view" : "edit",
-            }
-
-        default:
-            return state;
-    }
-}
-
-
 const initialGraphUIState = {
-    // can be "view", "edit", "focus" or "expand"
-    mode: "abstract",
     focus: {
         id: null,
     },
@@ -601,20 +544,6 @@ function graphUiState(state=initialGraphUIState, action) {
                     id: action.id,
                 }
             }
-
-        case uiActionTypes.SET_GRAPH_MODE:
-            return {
-                ...state,
-                mode: action.payload,
-            }
-
-        case uiActionTypes.TOGGLE_EDIT_MODE:
-            return {
-                ...state,
-                mode: state.mode === "edit" ? "view" : "edit",
-            }
-
-
 
         default:
             return state;
@@ -784,7 +713,6 @@ function rootReducer(state={}, action) {
         allSearch: allSearch(state.allSearch, action),
         uiState: uiState(state.uiState, action),
         graphUiState: graphUiState(state.graphUiState, action),
-        abstractGraphUiState: abstractGraphUiState(state.abstractGraphUiState, action),
         user: user(state.user, action),
         errors: errors(state.errors, action),
     }
@@ -829,11 +757,12 @@ export const getCollectionsByNodeId = (state, id) => {
 }
 
 export const getL1NodeIds = (state, id) => {
-    return [
-        // id,
+    // TODO: uniq shouldn't be necessary here - 2018-01-11
+    return _.uniq([
+        id,
         ...(state.adjacencyMap[id] || []),
         ...(state.reverseAdjacencyMap[id] || []),
-    ]
+    ])
 }
 export const getL1Nodes = (state, id) => {
     /*
@@ -920,6 +849,15 @@ export const getL1Edges = (state, id) => {
 
     return getL1EdgeIds(getEdgeListMap(state), id)
         .map(x => getEdge(state, x))
+    // return getEdgeIdsForNodes(state, getL1NodeIds(state, id))
+    //     .map(id => getEdge(state, id))
+}
+
+export const getL2Edges = (state, id) => {
+    // TODO: more efficient - 2017-08-26
+    // TODO: combine the calls of getL2Nodes and getL2Edges - 2017-08-26
+    return getEdgeIdsForNodes(state, getL2NodeIds(state, id))
+        .map(id => getEdge(state, id))
 }
 
 export const getEdgeIdsForNodes = (state, ids) => {
@@ -944,12 +882,6 @@ export const getEdgeIdsForNodes = (state, ids) => {
         .value()
 }
 
-export const getL2Edges = (state, id) => {
-    // TODO: more efficient - 2017-08-26
-    // TODO: combine the calls of getL2Nodes and getL2Edges - 2017-08-26
-    return getEdgeIdsForNodes(state, getL2NodeIds(state, id))
-        .map(id => getEdge(state, id))
-}
 
 export const getAbstractionChain = createSelector(
     getNodes,
