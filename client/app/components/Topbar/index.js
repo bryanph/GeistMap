@@ -6,7 +6,6 @@ import { connect } from 'react-redux'
 import classNames from 'classnames'
 import { Link, withRouter } from 'react-router-dom'
 
-import Sidebar from '../../containers/Sidebar'
 import AllSearch from '../../containers/AllSearch'
 
 import './styles.scss'
