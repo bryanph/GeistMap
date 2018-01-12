@@ -50,7 +50,7 @@ $abstractionList-heading-height: 50px;
 
 .abstractionList {
     list-style: none;
-    margin: 0;
+    margin: 10px;
     padding: 0;
     font-family: lucida grande ,tahoma,verdana,arial,sans-serif;
     font-size: 1.4rem;
@@ -67,6 +67,7 @@ $abstractionList-heading-height: 50px;
 .abstractionList-header {
     display: inline-block;
     verticalAlign: top;
+    width: 100%;
 
     .connector {
         width: 2px;
@@ -104,7 +105,6 @@ $abstractionList-heading-height: 50px;
     position: relative;
     white-space: nowrap;
     margin: 3px 0;
-    padding: 0px 5px;
 
     .subtree {
         list-style: none;
