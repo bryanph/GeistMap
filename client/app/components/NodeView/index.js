@@ -72,15 +72,11 @@ export class NodeView extends React.PureComponent {
                         /> 
                         */
                     }
-                    {
-                        graphType === "abstract" || graphType === "hierarchy" ?
-                            <AbstractionList
-                                isLoading={isLoading}
-                                key="2"
-                                focusNode={this.props.focusNode}
-                                nodeTree={this.props.nodeTree}
-                            /> : null
-                    }
+                    <AbstractionList
+                        isLoading={isLoading}
+                        focusNode={this.props.focusNode}
+                        nodeTree={this.props.nodeTree}
+                    />
                     {
                         graphType === "hierarchy" ?
                             <HierarchyGraph {...this.props} />

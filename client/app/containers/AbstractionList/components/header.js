@@ -27,7 +27,6 @@ export const Toggle = ({ expanded, terminal, onClick}) => {
 };
 
 export const FocusButton = (props) => {
-    console.log(props)
     return (
         <span className="abstractionList-focusButton">
             <Icon name="circle" style={{ color: props.buttonColor }} onClick={props.onClick} />
@@ -35,10 +34,10 @@ export const FocusButton = (props) => {
     );
 };
 
-export const Header = ({node, onInput}) => {
+export const Header = ({node, onInput, onKeyDown}) => {
     return (
         <div className="abstractionList-header">
-            <div className="title" contentEditable="true" onInput={onInput}>
+            <div className="title" contentEditable="true" onInput={onInput} onKeyDown={onKeyDown}>
                 {node.name}
             </div>
         </div>
@@ -53,6 +52,7 @@ class NodeHeader extends React.Component {
         super(props)
 
         this.onInput = this.onInput.bind(this);
+        this.onKeyDown = this.onKeyDown.bind(this);
         this.updateNode = _.debounce(props.updateNode, 1000)
     }
 
@@ -75,12 +75,27 @@ class NodeHeader extends React.Component {
 
         const text = event.target.textContent
 
+        if (!text) {
+            return this.updateNode.cancel()
+        }
+
         this.updateNode(
             this.props.node.id,
             {
                 name: text
             }
         )
+    }
+
+    onKeyDown(event) {
+        // pressed return
+        if (event.keyCode === 13) {
+            event.preventDefault()
+            console.log("pressed enter", event)
+            // case 1: at the start of the text
+            // case 2: at the end of the text
+            // case 3: in the middle => split
+        }
     }
 
     render() {
@@ -97,7 +112,7 @@ class NodeHeader extends React.Component {
             >
                  <Toggle terminal={terminal} expanded={!node.collapsed} onClick={onToggleExpand}/>
                  <FocusButton onClick={onFocusClick} buttonColor={colorNode(node)}/>
-                 <Header node={node} onInput={this.onInput} />
+                 <Header node={node} onInput={this.onInput} onKeyDown={this.onKeyDown} />
             </div>
         );
     }

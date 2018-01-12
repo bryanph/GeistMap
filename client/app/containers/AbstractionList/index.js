@@ -7,7 +7,7 @@
 import React from 'react';
 import Portal from 'react-portal'
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router'
+import { withRouter, Link } from 'react-router-dom'
 import classNames from 'classnames'
 
 import {
@@ -15,6 +15,7 @@ import {
     showAbstractionSidebar,
     hideAbstractionSidebar,
     moveChild,
+    moveParent,
 } from '../../actions/ui'
 
 import {
@@ -29,6 +30,7 @@ import {
 import './styles.scss'
 
 
+import { Button, Icon } from 'semantic-ui-react'
 import AbstractionTree from './components/root'
 
 class AbstractionList extends React.Component {
@@ -82,7 +84,7 @@ class AbstractionList extends React.Component {
     }
 
     render() {
-        const { opened } = this.props
+        const { opened, abstractionChain } = this.props
 
         const containerClass = classNames("abstractionList-container", {
             "abstractionList-show": opened
@@ -102,9 +104,11 @@ class AbstractionList extends React.Component {
                     <AbstractionHeading
                         title={this.props.focusNode.name}
                         onToggle={this.props.toggleAbstractionSidebar}
+                        abstractionChain={abstractionChain.splice(0, abstractionChain.length-1)}
+                        moveParent={this.props.moveParent}
                     />
                     <AbstractionTree 
-                        data={this.props.nodeTree}
+                        data={this.props.nodeTree.children}
                         onToggle={this.toggleCollapse}
                         onToggleExpand={this.toggleCollapse}
                         onFocusClick={this.onFocusClick}
@@ -115,8 +119,6 @@ class AbstractionList extends React.Component {
         );
     }
 }
-
-import { Button, Icon } from 'semantic-ui-react'
 
 export const ExpandButton = ({ expanded, onClick }) => {
 
@@ -136,9 +138,34 @@ export const ExpandButton = ({ expanded, onClick }) => {
     )
 }
 
-export const AbstractionHeading = (props) => {
+
+const AbstractionItem = ({ url, name, hasNext, onClick }) => (
+    <div className="abstractionHeader-item">
+        <Link to={url} onClick={onClick}>{ name }</Link>
+        {
+            hasNext ? <Icon name="angle right" /> : null
+        }
+    </div>
+)
+
+const AbstractionHeading = (props) => {
+
+    const abstractionItems = props.abstractionChain.map((c, i) => (
+        <AbstractionItem
+            key={i}
+            url={`/app/nodes/${c.id}/graph`}
+            name={c.name}
+            hasNext={ i < (props.abstractionChain.length - 1) }
+            onClick={() => props.moveParent(c.id)}
+        />
+    ))
+
     return (
         <div className="abstractionList-heading">
+            <div className="abstractionList-navigate">
+                { abstractionItems }
+            </div>
+
             <div className="title">
                 { props.title }
             </div>
@@ -146,10 +173,13 @@ export const AbstractionHeading = (props) => {
     )
 }
 
+import { getAbstractionChain } from '../../reducers'
+
 // export default AbstractionList
 function mapStateToProps(state) {
     return {
-        opened: state.uiState.abstractionSidebar.opened
+        opened: state.uiState.abstractionSidebar.opened,
+        abstractionChain: getAbstractionChain(state),
     }
 }
 
@@ -161,5 +191,6 @@ export default connect(mapStateToProps, {
     showAbstractionSidebar,
     hideAbstractionSidebar,
     moveChild,
+    moveParent,
     updateNode,
 })(withRouter(AbstractionList))

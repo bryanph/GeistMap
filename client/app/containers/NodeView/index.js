@@ -34,27 +34,33 @@ import {
 import NodeView from '../../components/NodeView'
 
 function loadData(props) {
-    switch(props.graphType) {
-        case "abstract":
-        case "hierarchy":
-            return Promise.all([
-                props.loadCollectionL1(props.focusNodeId),
-                props.loadNodeL1(props.focusNodeId)
-            ])
-                .then((action) => {
-                    if (props.nodeId) {
-                        props.loadNode(props.nodeId)
-                        return action
-                    }
-                    return action
-                })
-            break;
-        case "explore":
-            return props.loadNodeL2(props.focusNodeId)
-            break;
-        default:
-            console.error("got unexpected graphType", props.graphType)
-    }
+    // TODO: less data fetching based on which views are visible - 2018-01-12
+    return Promise.all([
+        props.loadCollectionL1(props.focusNodeId),
+        props.loadNodeL1(props.focusNodeId)
+    ])
+
+    // switch(props.graphType) {
+    //     case "abstract":
+    //     case "hierarchy":
+    //         return Promise.all([
+    //             props.loadCollectionL1(props.focusNodeId),
+    //             props.loadNodeL1(props.focusNodeId)
+    //         ])
+    //             .then((action) => {
+    //                 if (props.nodeId) {
+    //                     props.loadNode(props.nodeId)
+    //                     return action
+    //                 }
+    //                 return action
+    //             })
+    //         break;
+    //     case "explore":
+    //         return props.loadNodeL2(props.focusNodeId)
+    //         break;
+    //     default:
+    //         console.error("got unexpected graphType", props.graphType)
+    // }
 }
 
 
@@ -115,15 +121,16 @@ function mapStateToProps(state, props) {
     const params = new URLSearchParams(props.location.search);
     const graphType = params.get('graphType') || "abstract"
 
+    isLoading = state.loadingStates.GET_COLLECTIONL1 || state.loadingStates.GET_NODE_L1 || state.loadingStates.GET_NODE_L2;
+
     if (graphType === "abstract" || graphType === "hierarchy") {
-        isLoading = state.loadingStates.GET_COLLECTIONL1 || state.loadingStates.GET_NODE_L1;
 
         ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
 
     } else {
-        isLoading = state.loadingStates.GET_NODE_L1 || state.loadingStates.GET_NODE_L2
         nodes = getL1Nodes(state, props.focusNodeId);
         edges = getL1Edges(state, props.focusNodeId);
+        ({ nodeTree } = getNodesAndEdgesByCollectionId(state, props));
     }
 
     return {
