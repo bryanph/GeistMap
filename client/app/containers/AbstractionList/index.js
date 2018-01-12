@@ -123,15 +123,17 @@ class AbstractionList extends React.Component {
 export const ExpandButton = ({ expanded, onClick }) => {
 
     const icon = expanded ? "chevron right" : "chevron left"
-    const className = classNames({
+    const className = classNames(
+        "abstractionList-expandButton",
+        {
         "abstractionList-expandButton-expanded": expanded,
         "abstractionList-expandButton-collapsed": !expanded,
-
-    })
+        }
+    )
 
     return (
         <div className={className}>
-            <Button size="mini" icon onClick={onClick}>
+            <Button icon onClick={onClick}>
                 <Icon name={ icon } />
             </Button>
         </div>

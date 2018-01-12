@@ -37,7 +37,8 @@ function loadData(props) {
     // TODO: less data fetching based on which views are visible - 2018-01-12
     return Promise.all([
         props.loadCollectionL1(props.focusNodeId),
-        props.loadNodeL1(props.focusNodeId)
+        props.loadNodeL2(props.focusNodeId),
+        props.nodeId ? props.loadNodeL1(props.nodeId) : Promise.resolve(),
     ])
 
     // switch(props.graphType) {
