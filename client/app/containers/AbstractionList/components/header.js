@@ -34,16 +34,14 @@ export const FocusButton = (props) => {
     );
 };
 
-export const Header = ({node, onInput, onKeyDown}) => {
+export const Text = ({node, onInput, onKeyDown}) => {
     return (
-        <div className="abstractionList-header">
-            <div className="title" contentEditable="true" onInput={onInput} onKeyDown={onKeyDown}>
-                {node.name}
-            </div>
-        </div>
+        <span className="abstractionList-text" contentEditable="true" onInput={onInput} onKeyDown={onKeyDown}>
+            {node.name}
+        </span>
     );
 };
-Header.propTypes = {
+Text.propTypes = {
     node: PropTypes.object.isRequired
 };
 
@@ -102,7 +100,7 @@ class NodeHeader extends React.Component {
         const {animations, node, onToggleExpand, onFocusClick} = this.props;
         const {active, children} = node;
         const terminal = !node.count;
-        const containerClass = classNames({
+        const containerClass = classNames("abstractionList-header", {
             active: active
         })
 
@@ -112,7 +110,7 @@ class NodeHeader extends React.Component {
             >
                  <Toggle terminal={terminal} expanded={!node.collapsed} onClick={onToggleExpand}/>
                  <FocusButton onClick={onFocusClick} buttonColor={colorNode(node)}/>
-                 <Header node={node} onInput={this.onInput} onKeyDown={this.onKeyDown} />
+                 <Text node={node} onInput={this.onInput} onKeyDown={this.onKeyDown} />
             </div>
         );
     }

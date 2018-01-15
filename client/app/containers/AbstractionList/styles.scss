@@ -50,8 +50,7 @@ $abstractionList-heading-height: 50px;
 
 .abstractionList {
     list-style: none;
-    margin: 10px;
-    padding: 0;
+    padding: 10px;
     font-family: lucida grande ,tahoma,verdana,arial,sans-serif;
     font-size: 1.4rem;
     width: 100%;
@@ -62,26 +61,6 @@ $abstractionList-heading-height: 50px;
 
 .abstractionList-loading {
 
-}
-
-.abstractionList-header {
-    display: inline-block;
-    verticalAlign: top;
-    width: 100%;
-
-    .connector {
-        width: 2px;
-        height: 12px;
-        border-bottom: $container-border;
-        position: absolute;
-        top: 0px;
-        left: -21px;
-    }
-
-    .title {
-        line-height: 24px;
-        vertical-align: middle;
-    }
 }
 
 .abstractionList-focusButton {
@@ -103,7 +82,6 @@ $abstractionList-heading-height: 50px;
 
 .abstractionList-node {
     position: relative;
-    white-space: nowrap;
     margin: 3px 0;
 
     .subtree {
@@ -111,6 +89,15 @@ $abstractionList-heading-height: 50px;
         margin-left: 39px;
 
         border-left: 1px solid #eee;
+    }
+
+    .abstractionList-header {
+        word-wrap: break-word;
+        word-break: break-all;
+
+        .abstractionList-text {
+            // word-wrap: break-word;
+        }
     }
 }
 
