@@ -49,6 +49,18 @@ $abstractionList-heading-height: 50px;
     .abstractionList-pusher {
         margin-right: $abstractionList-width;
     }
+
+    .abstractionList-container {
+        transform: translate3d(0px, 0px, 0px) !important;
+    }
+
+    .abstractionList-expandButton {
+        display: none;
+    }
+
+    .appContainer {
+        margin-right: $abstractionList-width;
+    }
 }
 
 .abstractionList {
