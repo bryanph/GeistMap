@@ -39,6 +39,7 @@ export class NodeView extends React.PureComponent {
 
         return (
             <HotKeys className={appContainerClass}>
+
                 <div className="nodeView-toolbar">
                     <NodeEditorToolbar
                         id={this.props.activeNodeId || this.props.focusNodeId}
