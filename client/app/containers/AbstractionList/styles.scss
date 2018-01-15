@@ -32,6 +32,7 @@ $abstractionList-heading-height: 50px;
     right: 0;
     width: $abstractionList-width;
 
+    background: white;
     z-index: 10000;
     transition: transform 0.2s ease;
     transform: translate3d(100%, 0px, 0px);
@@ -44,8 +45,10 @@ $abstractionList-heading-height: 50px;
 }
 
 // used in the main view
-.abstractionList-pusher {
-    margin-right: $abstractionList-width;
+@media only screen and (min-width: 1500px) {
+    .abstractionList-pusher {
+        margin-right: $abstractionList-width;
+    }
 }
 
 .abstractionList {
