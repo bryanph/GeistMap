@@ -44,8 +44,16 @@ class NodeContentEditor extends React.Component {
         this.props.updateNode(id, newProperties)
     }
 
+    shouldComponentUpdate(nextProps) {
+        if (nextProps.isLoading) {
+            return false;
+        }
+
+        return true;
+    }
+
     render() {
-        if (this.props.isLoading || !this.props.node) {
+        if (!this.props.node) {
             return null
         }
 

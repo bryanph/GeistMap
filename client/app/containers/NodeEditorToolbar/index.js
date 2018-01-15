@@ -69,22 +69,26 @@ export class NodeEditorToolbar extends React.Component {
         this.props.history.push(`/app/nodes/${this.props.id}/graph`)
     }
 
+    shouldComponentUpdate(nextProps) {
+        if (nextProps.isLoading) {
+            return false;
+        }
+
+        return true;
+    }
+
     render() {
         const { node, isLoading } = this.props
-
-        if (isLoading) {
-            return (
-                <div className="nodeToolbar">
-                    <Spinner />
-                </div>
-            )
-        }
 
         // keymapping handlers, see App.js
         const handlers = {
             'explore': this.exploreNode,
             'addRelation': this.addRelation,
             'trash': this.removeNode,
+        }
+
+        if (!node) {
+            return null;
         }
 
         return (

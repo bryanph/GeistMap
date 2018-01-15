@@ -84,13 +84,13 @@ class AbstractionList extends React.Component {
     }
 
     render() {
-        const { opened, abstractionChain } = this.props
+        const { opened, abstractionChain, isLoading } = this.props
 
         const containerClass = classNames("abstractionList-container", {
             "abstractionList-show": opened
         })
 
-        if (this.props.isLoading) {
+        if (!this.props.focusNode) {
             return null;
         }
 
