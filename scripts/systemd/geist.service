@@ -1,5 +1,5 @@
 [Unit]
-Description=Geist
+Description=GeistMap
 
 [Service]
 WorkingDirectory=/home/bryan/graphtodo

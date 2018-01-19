@@ -1,14 +1,14 @@
-# Geist
-Geist is a personal knowledge network for taking notes and mapping concepts. The underlying data model allows you to create hierarchies of documents and link to other documents. These two properties together make for a note-taking experience that scales.
+# GeistMap
+GeistMap is a personal knowledge network for taking notes and mapping concepts. The underlying data model allows you to create hierarchies of documents and link to other documents. These two properties together make for a note-taking experience that scales.
 
 See [this blog post](https://medium.com/@bphaakman/building-a-open-source-personal-knowledge-base-45c25f5a4324) for why I am making this.
 
 ## Live version
-You can find the latest version of Geist [here](https://geistmap.com).
+You can find the latest version of GeistMap [here](https://geistmap.com).
 
 ## Links
 * [Introduction](https://medium.com/@bphaakman/building-a-open-source-personal-knowledge-base-45c25f5a4324)
-* [Feature requests](https://github.com/bryanph/Geist/issues/57)
+* [Feature requests](https://github.com/bryanph/GeistMap/issues/57)
 
 ## Local development
 1. Run `vagrant up && vagrant ssh`

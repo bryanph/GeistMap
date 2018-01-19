@@ -12,7 +12,7 @@ import './styles.scss'
 
 export const Logo = (props) => (
     <Link to="/app" className="topbar-logo">
-        <span className="topbar-logo">Geist</span>
+        <span className="topbar-logo">GeistMap</span>
     </Link>
 )
 

@@ -4,7 +4,7 @@ import ReactDom from 'react-dom'
 import "../scss/landing.scss"
 
 // TODO: set from within settings - 2017-07-04
-const title = "Geist"
+const title = "GeistMap"
 
 const mainSection = {
     header: "A knowledge base with a focus on connections",
@@ -19,7 +19,7 @@ const rows = {
     },
     explore: {
         header: "Define hierarchies whenever you need them.",
-        content: "Instead of being limited by a folder structure, Geist allows you to create hierarchies from every node.",
+        content: "Instead of being limited by a folder structure, GeistMap allows you to create hierarchies from every node.",
         imageSrc: "https://cdn-images-1.medium.com/max/800/1*XuRGyMSHCy98bTx2aQwwLQ.png",
     },
     editor: {

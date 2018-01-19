@@ -35,7 +35,7 @@ const auth = {
     "appUrl": '/app',
     "mainRoute": "auth",
     "companyName": "Bryan Haakman",
-    "projectName": "Geist",
+    "projectName": "GeistMap",
     "version": "0.1",
     "systemEmail": "noreply@geistmap.com",
     "supportEmail": "support@geistmap.com",
@@ -45,7 +45,7 @@ const auth = {
     "privacyPolicyUrl": null,
     "smtp": {
         from: {
-            name: process.env.SMTP_FROM_NAME || 'Geist team',
+            name: process.env.SMTP_FROM_NAME || 'GeistMap team',
             address: process.env.SMTP_FROM_ADDRESS || 'noreply@geistmap.com'
         },
         credentials: {
