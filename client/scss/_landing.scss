@@ -46,7 +46,8 @@ h1, h2, h3, h4, h5, h6 {
 .wrapper {
     width: 100%;
     margin: 0 auto;
-    max-width: 1000px;
+    max-width: 1032px;
+    padding: 0 16px;
 }
 .navigation {
     width: 100%;
@@ -154,11 +155,21 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: space-between;
 }
 .navigation-title {
-    font-size: 1.7rem;
+    font-size: 2rem;
     font-weight: 400;
 }
 .navigation-actions {
 
+    display: flex;
+    align-items: center;
+
+    .navigation-actions-icons {
+        display: inline;
+        margin-right: 15px;
+        a {
+            margin-right: 5px;
+        }
+    }
 }
 
 .footer {
@@ -169,7 +180,7 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0 10px;
 }
 
-@media (max-width: 800px) {
+@media only screen and (max-width: 800px) {
     .wrapper {
         padding: 0 32px;
         margin: 0 auto;
@@ -185,8 +196,25 @@ h1, h2, h3, h4, h5, h6 {
     .mainSection-signup {
         width: 350px;
     }
-    mainSection-text {
+    .mainSection-text {
         padding-right: 0;
+    }
+
+    .featureRow-image {
+        margin-top: 30px;
+    }
+
+    .featureRow:nth-child(odd) .featureRow-text {
+        order: 1;
+    }
+    .featureRow:nth-child(odd) .featureRow-image {
+        order: 2;
+    }
+    .featureRow:nth-child(odd) .featureRow-text {
+        order: 1;
+    }
+    .featureRow:nth-child(odd) .featureRow-image {
+        order: 2;
     }
 }
 

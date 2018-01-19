@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDom from 'react-dom'
 
+import 'semantic-ui-css/semantic.min.css';
 import "../scss/landing.scss"
 
 // TODO: set from within settings - 2017-07-04
