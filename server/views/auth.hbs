@@ -1,15 +1,12 @@
 {{#extend "layout"}}
     {{#content "header"}}
         <title>GeistMap Authentication</title>
-        <!-- <link key="layout" rel="stylesheet" href="/static/auth/layouts/default.min.css" />, -->
-        <!-- <link key="page" rel="stylesheet" href="/static/auth/pages/admin.min.css" /> -->
         <link rel="stylesheet", href="/static/foundation-icons/foundation-icons.css" />
     {{/content}}
 
 
     {{#content "main"}}
         <div id="root"></div>
-        <!-- <script src="/static/auth/admin.bundle.js"></script>; -->
         <script>var INITIAL_STATE = {{{ INITIAL_STATE }}}</script>
         <script crossorigin src="{{protocol}}://{{host}}{{port}}/static/{{fileName}}"></script>
     {{/content}}
