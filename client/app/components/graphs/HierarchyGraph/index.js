@@ -53,6 +53,28 @@ class Node extends React.Component {
     }
 }
 
+class HierarchyLink extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        const { link } = this.props
+
+        return (
+            <path 
+                className="hierarchy-link"
+                d={ 
+                    "M" + link.y + "," + link.x
+                        + "C" + (link.y + link.parent.y) / 2 + "," + link.x
+                        + " " + (link.y + link.parent.y) / 2 + "," + link.parent.x
+                        + " " + link.parent.y + "," + link.parent.x
+                }
+            />
+        )
+    }
+}
+
 class Link extends React.Component {
     constructor(props) {
         super(props)
@@ -64,12 +86,7 @@ class Link extends React.Component {
         return (
             <path 
                 className="link"
-                d={ 
-                    "M" + link.y + "," + link.x
-                        + "C" + (link.y + link.parent.y) / 2 + "," + link.x
-                        + " " + (link.y + link.parent.y) / 2 + "," + link.parent.x
-                        + " " + link.parent.y + "," + link.parent.x
-                }
+                d={ "M" + (link.source.y) + "," + (link.source.x) + "L" + (link.target.y) + "," + (link.target.x) }
             />
         )
     }
@@ -115,36 +132,34 @@ class NodeGraph extends React.Component {
 
     componentDidUpdate() {
         this.zoom.zoomFit()
-        console.log("called componentDidUpdate")
     }
 
     render() {
-        const { nodeTree, isLoading } = this.props
+        const { nodeTree, links, isLoading } = this.props
 
-        const maxLabelLength = 50;
+        const treeData = this.tree(d3Hierarchy(nodeTree))
+        const nodes = treeData.descendants()
+        const hierarchyLinks = treeData.descendants().slice(1)
 
-        var levelWidth = [1];
-        var childCount = function(level, n) {
-            if (!n.collapsed && n.children && n.children.length > 0) {
-                if (levelWidth.length <= level + 1) levelWidth.push(0);
+        let nodesById = {}
+        nodes.forEach(node => {
+            nodesById[node.data.id] = node
+        })
 
-                levelWidth[level + 1] += n.children.length;
-                n.children.forEach(function(d) {
-                    childCount(level + 1, d);
-                });
-            }
-        };
-        childCount(0, nodeTree);
-        const newHeight = _.max(levelWidth) * 50; // 25 pixels per line  
+        links.forEach(link => {
+            link.source = nodesById[link.start]
+            link.target = nodesById[link.end]
+
+            // link.opacity = strokeScale(link.count || 0)
+        })
+
         // this.tree = this.tree.size([newHeight, WIDTH]);
         this.tree = this.tree.nodeSize([25, 100]);
 
         // Compute the new tree layout.
-        const treeData = this.tree(d3Hierarchy(nodeTree))
-        const nodes = treeData.descendants()
-        const links = treeData.descendants().slice(1)
 
-        // Set widths between levels based on maxLabelLength.
+        // const maxLabelLength = 50;
+        // // Set widths between levels based on maxLabelLength.
         // nodes.forEach(function(d) {
         //     d.y = (d.depth * (maxLabelLength * 10)); //maxLabelLength * 10px
         // });
@@ -155,6 +170,13 @@ class NodeGraph extends React.Component {
                 node={node}
                 onClick={this.onNodeClick}
                 onDrag={this.onDrag}
+            />
+        ))
+
+        const hierarchyLinkElements = hierarchyLinks.map(link => (
+            <HierarchyLink
+                key={link.id}
+                link={link}
             />
         ))
 
@@ -180,6 +202,7 @@ class NodeGraph extends React.Component {
                     key="2"
                 >
                     <g ref="container" transform={this.state.containerTransform}>
+                        { hierarchyLinkElements }
                         { linkElements }
                         { nodeElements }
                         { isLoading ? null : null }
