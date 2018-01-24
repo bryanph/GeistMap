@@ -70,7 +70,7 @@ export default (root, container, fullWidth, fullHeight, zoomCallback) => {
         zoomClick(-1)
     }
 
-    function zoomFit(allowZoomIn=true) {
+    function zoomFit(animate=true) {
         /*
          * Zoom to fit to the root node
         */
@@ -79,7 +79,7 @@ export default (root, container, fullWidth, fullHeight, zoomCallback) => {
         }
 
         const paddingPercent = 0.9
-        const transitionDuration = 1000
+        const transitionDuration = animate ? 1000 : 0
 
         const bbox = container.node().getBBox();
 
@@ -97,7 +97,8 @@ export default (root, container, fullWidth, fullHeight, zoomCallback) => {
 
         if (width < fullWidth && height < fullHeight) {
             // don't zoom in beyond the full width
-            return;
+            console.log("its less than the full width!", width, height)
+            // return;
         }
 
         const translate = [ -(midX*scale - fullWidth/2), -(midY*scale - fullHeight/2)];

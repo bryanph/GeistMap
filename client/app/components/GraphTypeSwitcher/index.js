@@ -51,16 +51,12 @@ class GraphTypeSwitcher extends React.Component {
                         onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=abstract`) }
                         className={ abstractionClass }
                     />
-                    {
-                        /*
                     <Button 
                         icon='triangle down'
                         content='Hierarchy'
                         onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=hierarchy`) }
                         className={ hierarchyClass }
                     />
-                        */
-                    }
                     <Button 
                         icon='crosshairs'
                         content='Link map'

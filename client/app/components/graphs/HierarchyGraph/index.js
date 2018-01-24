@@ -46,7 +46,6 @@ class Node extends React.Component {
                 <text
                     className="nodeText"
                     x={node.children ? -10 : 10}
-                    dy=".35m"
                     textAnchor={ node.children ? "end" : "start" }
                 >{node.data.name}</text>
             </g>
@@ -87,7 +86,7 @@ class NodeGraph extends React.Component {
         this.tree = d3Tree()
 
         this.state = {
-            zoomTransform: null
+            containerTransform: `translate(${WIDTH/2}, ${HEIGHT/2})`
         }
     }
 
@@ -110,10 +109,13 @@ class NodeGraph extends React.Component {
         this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT, this.zoomed)
+
+        // this.zoom.zoomFit()
     }
 
     componentDidUpdate() {
         this.zoom.zoomFit()
+        console.log("called componentDidUpdate")
     }
 
     render() {
@@ -134,7 +136,8 @@ class NodeGraph extends React.Component {
         };
         childCount(0, nodeTree);
         const newHeight = _.max(levelWidth) * 50; // 25 pixels per line  
-        this.tree = this.tree.size([newHeight, WIDTH]);
+        // this.tree = this.tree.size([newHeight, WIDTH]);
+        this.tree = this.tree.nodeSize([25, 100]);
 
         // Compute the new tree layout.
         const treeData = this.tree(d3Hierarchy(nodeTree))
@@ -177,8 +180,8 @@ class NodeGraph extends React.Component {
                     key="2"
                 >
                     <g ref="container" transform={this.state.containerTransform}>
-                        { nodeElements }
                         { linkElements }
+                        { nodeElements }
                         { isLoading ? null : null }
                     </g>
                 </svg>

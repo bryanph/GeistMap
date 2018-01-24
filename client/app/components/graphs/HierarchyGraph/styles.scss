@@ -16,12 +16,14 @@
     .node text {
         font-size:10px; 
         font-family:sans-serif;
+        dominant-baseline: central;
     }
 
     .link {
         fill: none;
         stroke: #ccc;
         stroke-width: 1.5px;
+        stroke-opacity: 0.5;
     }
 
     .templink {
