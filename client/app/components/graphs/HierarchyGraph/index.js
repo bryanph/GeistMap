@@ -65,10 +65,18 @@ class HierarchyLink extends React.Component {
             <path 
                 className="hierarchy-link"
                 d={ 
-                    "M" + link.y + "," + link.x
-                        + "C" + (link.y + link.parent.y) / 2 + "," + link.x
-                        + " " + (link.y + link.parent.y) / 2 + "," + link.parent.x
-                        + " " + link.parent.y + "," + link.parent.x
+                    [
+                        "M",
+                        link.y,
+                        link.x,
+                        "C",
+                        (link.y + link.parent.y) / 2,
+                        link.x,
+                        (link.y + link.parent.y) / 2,
+                        link.parent.x,
+                        link.parent.y,
+                        link.parent.x
+                    ].join(' ')
                 }
             />
         )
@@ -83,10 +91,43 @@ class Link extends React.Component {
     render() {
         const { link } = this.props
 
+        const startingPoint = `M ${link.source.y}, ${link.source.x}`
+
+        console.log(link.source.depth === link.target.depth)
+        const path = link.source.depth === link.target.depth ? 
+            [ startingPoint,
+                'A',
+                (link.source.x - link.target.x) / 2,
+                // 50,
+                (link.source.x - link.target.x) / 2,
+                0,
+                0,
+                link.source.x < link.target.x ? 1 : 0,
+                link.target.y,
+                link.target.x
+            ].join(' ')
+            :
+            // [
+            //     startingPoint,
+            //     'L',
+            //     link.target.y,
+            //     link.target.x
+            // ].join(' ')
+            [
+                startingPoint,
+                "C",
+                (link.source.y + link.target.y) / 2,
+                link.source.x,
+                (link.source.y + link.target.y) / 2,
+                link.target.x,
+                link.target.y,
+                link.target.x
+            ].join(' ')
+
         return (
             <path 
                 className="link"
-                d={ "M" + (link.source.y) + "," + (link.source.x) + "L" + (link.target.y) + "," + (link.target.x) }
+                d={ path }
             />
         )
     }
@@ -203,8 +244,8 @@ class NodeGraph extends React.Component {
                 >
                     <g ref="container" transform={this.state.containerTransform}>
                         { hierarchyLinkElements }
-                        { linkElements }
                         { nodeElements }
+                        { linkElements }
                         { isLoading ? null : null }
                     </g>
                 </svg>

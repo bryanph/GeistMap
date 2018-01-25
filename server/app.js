@@ -115,7 +115,6 @@ const UserAPI = createUserAPI(app, db, redisClient, es)
 
 const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, Object.assign(authConfig, {
         onSignup: function(user) {
-            console.log("new signup", user);
             return CollectionAPI.createRootCollection(user)
                 .then(result => {
                     // save the id of the root collection on the user object
@@ -170,8 +169,6 @@ io.on('connection', function(socket) {
     if (!user) {
         return;
     }
-
-    console.log(user.email, user._id, "just connected,", moment().format('MMMM Do YYYY, h:mm:ss a'))
 
     socket.on('User.generateMobileUploadToken', UserAPI.generateMobileUploadToken.bind(null, socket, user));
 

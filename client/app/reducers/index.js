@@ -977,7 +977,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
         let visibleEdgeMap = {}
         let visibleNodeTree = {}
 
-        function handleShowNodes(parentNode, nodeIds) {
+        function handleShowNodes(parentNode, nodeIds, level=0) {
             if (parentNode.collapsed) {
                 // collapsed, shouldn't show the children, but show the node
                 visibleNodeMap[parentNode.id] = parentNode
@@ -985,6 +985,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
 
                 return {
                     ...parentNode,
+                    level,
                     children: null,
                 }
             } else {
@@ -992,7 +993,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 return {
                     ...parentNode,
                     children: _(nodeIds)
-                        .map(id => handleShowNodes(nodeMap[id], nodesByCollectionId[id] || []))
+                        .map(id => handleShowNodes(nodeMap[id], nodesByCollectionId[id] || [], level+1))
                         .orderBy(n => n.name.toLowerCase())
                         .orderBy(n => !n.count)
                         .value()
