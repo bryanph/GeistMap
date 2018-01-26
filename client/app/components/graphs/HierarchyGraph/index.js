@@ -244,8 +244,8 @@ class NodeGraph extends React.Component {
                 >
                     <g ref="container" transform={this.state.containerTransform}>
                         { hierarchyLinkElements }
-                        { nodeElements }
                         { linkElements }
+                        { nodeElements }
                         { isLoading ? null : null }
                     </g>
                 </svg>
