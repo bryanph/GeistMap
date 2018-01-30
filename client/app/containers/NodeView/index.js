@@ -112,12 +112,17 @@ import {
     getL1Edges,
     getNode,
     getNodesAndEdgesByCollectionId,
+    getAbstractionTree,
+    getNodesOutsideAbstraction,
+    getEdgesOutsideAbstraction,
+    getNodesBelowAbstraction,
+    getEdgesBelowAbstraction,
     getAbstractionChain,
 } from '../../reducers'
 
 function mapStateToProps(state, props) {
 
-    let nodes, edges, nodeTree, isLoading
+    let nodes, edges, nodeTree, isLoading, nodesBelowAbstraction, edgesBelowAbstraction, nodesOutsideAbstraction, edgesOutsideAbstraction
 
     const params = new URLSearchParams(props.location.search);
     const graphType = params.get('graphType') || "abstract"
@@ -129,12 +134,19 @@ function mapStateToProps(state, props) {
         ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
 
     } else {
-        nodes = getL1Nodes(state, props.focusNodeId);
-        edges = getL1Edges(state, props.focusNodeId);
-        ({ nodeTree } = getNodesAndEdgesByCollectionId(state, props));
+        nodesBelowAbstraction = getNodesBelowAbstraction(state, props)
+        edgesBelowAbstraction = getEdgesBelowAbstraction(state, props)
+        nodesOutsideAbstraction = getNodesOutsideAbstraction(state, props)
+        edgesOutsideAbstraction = getEdgesOutsideAbstraction(state, props)
+        nodeTree = getAbstractionTree(state, props)
     }
 
     return {
+        nodesBelowAbstraction,
+        edgesBelowAbstraction,
+        nodesOutsideAbstraction,
+        edgesOutsideAbstraction,
+        nodeTree,
         activeNodeId: props.nodeId,
         activeNode: getNode(state, props.nodeId),
         focusNodeId: props.focusNodeId,
@@ -143,7 +155,6 @@ function mapStateToProps(state, props) {
         focus: state.graphUiState.focus,
         nodes,
         links: edges,
-        nodeTree,
         isLoading,
         graphType: graphType,
         adjacencyMap: state.adjacencyMap, // TODO: should this be passed down? - 2017-09-19

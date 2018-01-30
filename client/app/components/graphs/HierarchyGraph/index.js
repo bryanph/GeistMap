@@ -93,7 +93,6 @@ class Link extends React.Component {
 
         const startingPoint = `M ${link.source.y}, ${link.source.x}`
 
-        console.log(link.source.depth === link.target.depth)
         const path = link.source.depth === link.target.depth ? 
             [ startingPoint,
                 'A',
@@ -139,13 +138,7 @@ class NodeGraph extends React.Component {
         super(props)
 
         this.onNodeClick = this.onNodeClick.bind(this)
-        this.zoomed = this.zoomed.bind(this)
-
         this.tree = d3Tree()
-
-        this.state = {
-            containerTransform: `translate(${WIDTH/2}, ${HEIGHT/2})`
-        }
     }
 
     onNodeClick(d) {
@@ -153,26 +146,6 @@ class NodeGraph extends React.Component {
 
         // TODO: call expand action or edit action, whatever - 2017-12-31
         console.log("called click")
-    }
-
-    zoomed(transform) {
-        this.setState({
-            containerTransform: transform
-        })
-    }
-
-    componentDidMount() {
-        const domNode = ReactDOM.findDOMNode(this.refs.graph)
-        this.graph = d3Select(domNode);
-        this.container = d3Select(ReactDOM.findDOMNode(this.refs.container));
-
-        this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT, this.zoomed)
-
-        // this.zoom.zoomFit()
-    }
-
-    componentDidUpdate() {
-        this.zoom.zoomFit()
     }
 
     render() {
@@ -221,35 +194,29 @@ class NodeGraph extends React.Component {
             />
         ))
 
-        const linkElements = links.map(link => (
+        const linkElements = links
+            .filter(link => (
+                !(
+                    link.source.data.id === link.target.parent.data.id
+                    ||
+                    link.target.data.id === link.source.parent.data.id
+                )
+            ))
+            .map(link => (
             <Link
                 key={link.id}
                 link={link}
             />
         ))
 
-        return [
-                <ZoomButtons
-                    zoomIn={() => this.zoom.zoomIn()}
-                    zoomOut={() => this.zoom.zoomOut()}
-                    zoomFit={() => this.zoom.zoomFit()}
-                    key="1"
-                />,
-                <svg
-                    viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-                    preserveAspectRatio="xMidYMid meet"
-                    className="svg-content hierarchy-graph"
-                    ref="graph"
-                    key="2"
-                >
-                    <g ref="container" transform={this.state.containerTransform}>
-                        { hierarchyLinkElements }
-                        { linkElements }
-                        { nodeElements }
-                        { isLoading ? null : null }
-                    </g>
-                </svg>
-        ]
+        return (
+            <g className="hierarchy-graph">
+                { hierarchyLinkElements }
+                { linkElements }
+                { nodeElements }
+                { isLoading ? null : null }
+            </g>
+        )
     }
 }
 

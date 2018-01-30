@@ -727,11 +727,21 @@ export default rootReducer
 
 import { createSelector } from 'reselect'
 
-export const getNodes = (state, id) => state.entities.nodes
+export const getNodeMap = (state) => state.entities.nodes
+export const getEdgeMap = (state, id) => state.entities.edges
+
+// PROPS
+const getFocusNodeId = (_, props) => props.focusNodeId
+const getFocusNode = createSelector(
+    getNodeMap,
+    getFocusNodeId,
+    (nodeMap, focusNodeId) => nodeMap[focusNodeId]
+)
+
+
 export const getNode = (state, id) => state.entities.nodes[id]
 export const getNodesForIds = (ids) => ids.map(id => getNode(state, id))
 
-export const getEdges = (state, id) => state.entities.edges
 export const getEdge = (state, id) => state.entities.edges[id]
 
 export const getCollections = (state, id) => _.filter(state.entities.nodes, x => ["root", "collection"].includes(x.type))
@@ -884,7 +894,7 @@ export const getEdgeIdsForNodes = (state, ids) => {
 
 
 export const getAbstractionChain = createSelector(
-    getNodes,
+    getNodeMap,
     (state) => state.abstractionChain,
     (nodeMap, abstractionChain) => {
         return _(abstractionChain)
@@ -893,17 +903,17 @@ export const getAbstractionChain = createSelector(
     }
 )
 
-export const getNodesBelowAbstraction = createSelector(
+export const getNodesBelowAbstractionIds = createSelector(
     /*
      * returns a map of all the nodes below in the abstraction
      */
-    getNodes,
-    (_, props) => props.focusNodeId,
+    getFocusNodeId,
     (state) => state.nodesByCollectionId,
-    (nodeMap, collectionId, nodesByCollectionId) => {
+    (focusNodeId, nodesByCollectionId) => {
         let encounteredNodes = {}
         let nodeList = []
 
+        // this filters out duplicates
         function handleChildren(nodeList) {
             return _.flatMap(nodeList, id => {
                 if (encounteredNodes[id]) {
@@ -916,21 +926,28 @@ export const getNodesBelowAbstraction = createSelector(
             })
         }
 
-        return _(handleChildren(nodesByCollectionId[collectionId]))
-            .map(id => nodeMap[id])
-            .keyBy('id')
-            .value()
+        return handleChildren(nodesByCollectionId[focusNodeId])
     }
 )
 
-export const getEdgesBelowAbstraction = createSelector(
-    getNodesBelowAbstraction,
-    getEdges,
-    getEdgeListMap,
-    (nodeMap, edgeMap, edgeListMap) => {
-        // get edges between these nodes
+export const getNodesBelowAbstraction = createSelector(
+    getNodeMap,
+    getNodesBelowAbstractionIds,
+    (nodeMap, nodeIds) => nodeIds.map(id => nodeMap[id])
+)
 
-        const nodeIds = _.map(nodeMap, node => node.id)
+export const getNodesBelowAbstractionMap = createSelector(
+    getNodesBelowAbstraction,
+    (nodes) => _.keyBy(nodes, ('id'))
+)
+
+export const getEdgesBelowAbstraction = createSelector(
+    getNodesBelowAbstractionIds,
+    getNodesBelowAbstractionMap,
+    getEdgeMap,
+    getEdgeListMap,
+    (nodeIds, nodeMap, edgeMap, edgeListMap) => {
+        // get edges between these nodes
 
         // filter edges that have start/end not inside this collection of elements
         return _(nodeIds)
@@ -941,9 +958,83 @@ export const getEdgesBelowAbstraction = createSelector(
             .filter(edge => {
                 return _.every([edge.start, edge.end], (id) => nodeMap[id])
             })
-            .keyBy(x => x.id)
-            // .map(x => x.id)
             .value()
+    }
+)
+
+export const getEdgesBelowAbstractionIds = createSelector(
+    getEdgesBelowAbstraction,
+    (edges) => _.map(edges, edge => edge.id)
+)
+
+export const getEdgesBelowAbstractionMap = createSelector(
+    getEdgesBelowAbstraction,
+    (edges) => _.keyBy(edges, ('id'))
+)
+
+export const getNodesOutsideAbstraction = createSelector(
+    getNodeMap,
+    getNodesBelowAbstractionIds,
+    (state, { focusNodeId }) => getL1NodeIds(state, focusNodeId),
+    (nodeMap, nodeBelowIds, nodesLinked) => {
+        // get all l1 nodes that are not below the focused node
+        return _.difference(nodesLinked, nodeBelowIds)
+            .map(id => nodeMap[id])
+    }
+)
+
+export const getEdgesOutsideAbstraction = createSelector(
+    getEdgeMap,
+    getEdgesBelowAbstractionIds,
+    // TODO: more clean way to do this. Perhaps separate between functions to get and selector functions by name - 2018-01-30
+    (state, { focusNodeId }) => getL1EdgeIds(getEdgeListMap(state), focusNodeId),
+    (edgeMap, edgeBelowIds, l1EdgeIds) => {
+        // get all l1 edges that are not below the focused edge
+        return _.difference(l1EdgeIds, edgeBelowIds)
+            .map(id => edgeMap[id])
+    }
+)
+
+
+export const getAbstractionTree = createSelector(
+    getFocusNode,
+    getNodeMap,
+    getEdgeMap,
+    (state) => state.nodesByCollectionId, // direct children
+    (focusNode, nodeMap, edgeMap, nodesByCollectionId) => {
+
+        // TODO: shouldn't be necessary - 2018-01-30
+        if (!focusNode) {
+            return {};
+        }
+
+        function handleShowNodes(parentNode, nodeIds, level=0) {
+            // if (parentNode.collapsed) {
+            //     // collapsed, shouldn't show the children, but show the node
+            //     return {
+            //         ...parentNode,
+            //         level,
+            //         children: null,
+            //     }
+            // } else {
+                // expanded, show all children as well
+                return {
+                    ...parentNode,
+                    children: _(nodeIds)
+                    .map(id => handleShowNodes(nodeMap[id], nodesByCollectionId[id] || [], level+1))
+                    // TODO: this should be a user-defined order so this sort is not necessary - 2018-01-30
+                    .orderBy(n => n.name.toLowerCase())
+                    .orderBy(n => !n.count)
+                    .value()
+                }
+            // }
+        }
+
+        const rootIds = nodesByCollectionId[focusNode.id] || []
+        return handleShowNodes(
+            focusNode,
+            rootIds
+        )
     }
 )
 
@@ -952,16 +1043,16 @@ export const getNodesAndEdgesByCollectionId = createSelector(
      * This gets all nodes and edges directly below the node with the given id
      * When a given node is "expanded" it is hidden and its children are shown instead
     */
-    (state, { focusNodeId }) => getCollection(state, focusNodeId),
-    getNodesBelowAbstraction,
-    getEdgesBelowAbstraction,
+    getFocusNode,
+    getNodesBelowAbstractionMap,
+    getEdgesBelowAbstractionMap,
     (state) => state.nodesByCollectionId, // direct children
-    (parentCollection, nodeMap, edgeMap, nodesByCollectionId) => {
+    (focusNode, nodeBelowMap, edgeBelowMap, nodesByCollectionId) => {
         /*
          * This gets the direct nodes including their children
          */
 
-        if (!parentCollection) {
+        if (!focusNode) {
             // TODO: not necessary, just have a loading state
             return {
                 nodes: [],
@@ -993,7 +1084,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 return {
                     ...parentNode,
                     children: _(nodeIds)
-                        .map(id => handleShowNodes(nodeMap[id], nodesByCollectionId[id] || [], level+1))
+                        .map(id => handleShowNodes(nodeBelowMap[id], nodesByCollectionId[id] || [], level+1))
                         .orderBy(n => n.name.toLowerCase())
                         .orderBy(n => !n.count)
                         .value()
@@ -1001,11 +1092,11 @@ export const getNodesAndEdgesByCollectionId = createSelector(
             }
         }
 
-        const rootIds = nodesByCollectionId[parentCollection.id] || []
-        const notCollapsedParentCollection = { ...parentCollection, collapsed: false } // TODO: shouldn't be necessary - 2017-10-18
-        visibleNodeTree = handleShowNodes(notCollapsedParentCollection, rootIds) 
+        const rootIds = nodesByCollectionId[focusNode.id] || []
+        const notCollapsedFocusNode = { ...focusNode, collapsed: false } // TODO: shouldn't be necessary - 2017-10-18
+        visibleNodeTree = handleShowNodes(notCollapsedFocusNode, rootIds) 
 
-        const transformedEdges = _(edgeMap)
+        const transformedEdges = _(edgeBelowMap)
             .map(edge => {
                 const start = visibleNodeMap[edge.start]
                 const end = visibleNodeMap[edge.end]
@@ -1017,14 +1108,14 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 function transformEdges(edge, node, position) {
                     return node.collections.reduce((result, id) => {
                         // this also takes care of the case where id is the active collection
-                        if (!nodeMap[id]) {
+                        if (!nodeBelowMap[id]) {
                             return result;
                         }
 
                         if (visibleNodeMap[id]) {
                             return [ ...result, { ...edge, [position]: id } ] }
                         else {
-                            return [ ...result, ...transformEdges(edge, nodeMap[id], position) ]
+                            return [ ...result, ...transformEdges(edge, nodeBelowMap[id], position) ]
                         }
                     }, [])
                 }
@@ -1033,7 +1124,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                     // start is hidden by a parent, find the parent
                     // change to parent until it is in visibleNodeMap
                     // (can branche, and collection might not be child of activeCollection)
-                    const startNode = nodeMap[edge.start]
+                    const startNode = nodeBelowMap[edge.start]
 
                     // can return multiple edges
                     const newEdges = transformEdges(edge, startNode, "start")
@@ -1042,7 +1133,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                     if (!end) {
                         return _(newEdges)
                             .map(edge => {
-                                const endNode = nodeMap[edge.end]
+                                const endNode = nodeBelowMap[edge.end]
 
                                 return transformEdges(edge, endNode, "end")
                             })
@@ -1055,7 +1146,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                 }
 
                 if (!end) {
-                    const endNode = nodeMap[edge.end]
+                    const endNode = nodeBelowMap[edge.end]
 
                     // can return multiple edges
                     return transformEdges(edge, endNode, "end")

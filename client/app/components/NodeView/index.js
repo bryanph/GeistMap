@@ -9,7 +9,8 @@ import React from 'react';
 import classNames from 'classnames'
 
 import NodeGraph from '../../components/graphs/NodeGraph'
-import HierarchyGraph from '../../components/graphs/HierarchyGraph'
+import FocusGraph from '../../components/graphs/FocusGraph'
+import ExploreGraph from '../../components/graphs/ExploreGraph'
 import AddNodeWindow from '../../components/AddNodeWindow'
 import GraphTypeSwitcher from '../../components/GraphTypeSwitcher'
 import AbstractionList from '../../containers/AbstractionList'
@@ -84,11 +85,9 @@ export class NodeView extends React.PureComponent {
                         />
                         {
                             graphType === "hierarchy" ?
-                                <HierarchyGraph {...this.props} />
+                                <FocusGraph {...this.props} />
                                 :
-                                <NodeGraph
-                                    {...this.props}
-                                />
+                                <ExploreGraph {...this.props} />
                         }
                         <AddNodeWindow
                             graphType={graphType}
