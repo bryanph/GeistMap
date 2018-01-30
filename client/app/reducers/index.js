@@ -769,7 +769,7 @@ export const getCollectionsByNodeId = (state, id) => {
 export const getL1NodeIds = (state, id) => {
     // TODO: uniq shouldn't be necessary here - 2018-01-11
     return _.uniq([
-        id,
+        // id,
         ...(state.adjacencyMap[id] || []),
         ...(state.reverseAdjacencyMap[id] || []),
     ])
@@ -916,7 +916,7 @@ export const getNodesBelowAbstractionIds = createSelector(
         // this filters out duplicates
         function handleChildren(nodeList) {
             return _.flatMap(nodeList, id => {
-                if (encounteredNodes[id]) {
+                if (id === focusNodeId || encounteredNodes[id]) {
                     return []
                 }
 
@@ -941,25 +941,56 @@ export const getNodesBelowAbstractionMap = createSelector(
     (nodes) => _.keyBy(nodes, ('id'))
 )
 
-export const getEdgesBelowAbstraction = createSelector(
+// get all nodes with an edge w. at least 1 endpoint in the abstraction
+// get all links with an endpoint in the abstraction
+export const getEdgesWithAbstractionIds = createSelector(
     getNodesBelowAbstractionIds,
-    getNodesBelowAbstractionMap,
-    getEdgeMap,
     getEdgeListMap,
-    (nodeIds, nodeMap, edgeMap, edgeListMap) => {
-        // get edges between these nodes
-
-        // filter edges that have start/end not inside this collection of elements
+    (nodeIds, edgeListMap) => {
         return _(nodeIds)
             .map(id => getL1EdgeIds(edgeListMap, id))
             .flatMap()
             .uniq()
-            .map(id => edgeMap[id])
+            .value()
+    }
+)
+
+export const getEdgesWithAbstraction = createSelector(
+    getEdgesWithAbstractionIds,
+    getEdgeMap,
+    (ids, edgeMap) => ids.map(id => edgeMap[id])
+)
+
+export const getEdgesBelowAbstraction = createSelector(
+    getEdgesWithAbstraction,
+    getNodesBelowAbstractionMap,
+    (edges, nodeMap) => {
+        // get edges between these nodes
+
+        // filter edges that have start/end not inside this collection of elements
+        return edges
             .filter(edge => {
                 return _.every([edge.start, edge.end], (id) => nodeMap[id])
             })
+    }
+)
+
+export const getNodesWithAbstractionIds = createSelector(
+    getEdgesWithAbstraction,
+    getNodeMap,
+    (edges, nodeMap) => {
+        return _(edges)
+            .map(edge => [ edge.start, edge.end ])
+            .flatMap()
+            .uniq()
             .value()
     }
+)
+
+export const getNodesWithAbstraction = createSelector(
+    getNodesWithAbstractionIds,
+    getNodeMap,
+    (ids, nodeMap) => ids.map(id => nodeMap[id])
 )
 
 export const getEdgesBelowAbstractionIds = createSelector(
@@ -972,13 +1003,14 @@ export const getEdgesBelowAbstractionMap = createSelector(
     (edges) => _.keyBy(edges, ('id'))
 )
 
+
 export const getNodesOutsideAbstraction = createSelector(
     getNodeMap,
     getNodesBelowAbstractionIds,
-    (state, { focusNodeId }) => getL1NodeIds(state, focusNodeId),
-    (nodeMap, nodeBelowIds, nodesLinked) => {
+    getNodesWithAbstractionIds,
+    (nodeMap, nodeBelowIds, l1NodeIds) => {
         // get all l1 nodes that are not below the focused node
-        return _.difference(nodesLinked, nodeBelowIds)
+        return _.difference(l1NodeIds, nodeBelowIds)
             .map(id => nodeMap[id])
     }
 )
@@ -986,8 +1018,7 @@ export const getNodesOutsideAbstraction = createSelector(
 export const getEdgesOutsideAbstraction = createSelector(
     getEdgeMap,
     getEdgesBelowAbstractionIds,
-    // TODO: more clean way to do this. Perhaps separate between functions to get and selector functions by name - 2018-01-30
-    (state, { focusNodeId }) => getL1EdgeIds(getEdgeListMap(state), focusNodeId),
+    getEdgesWithAbstractionIds,
     (edgeMap, edgeBelowIds, l1EdgeIds) => {
         // get all l1 edges that are not below the focused edge
         return _.difference(l1EdgeIds, edgeBelowIds)

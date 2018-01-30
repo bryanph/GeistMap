@@ -66,8 +66,7 @@ class ExploreGraph extends React.Component {
             nodeTree,
         } = this.props
 
-        console.log(nodeTree, edgesBelowAbstraction)
-
+        // console.log(nodeTree, edgesBelowAbstraction)
         console.log("outside", nodesOutsideAbstraction, edgesOutsideAbstraction)
 
         return [
