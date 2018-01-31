@@ -1,0 +1,40 @@
+@import '~styles/settings';
+
+.explore-graph {
+    .node {
+        cursor: pointer;
+    }
+
+    .node circle {
+        fill: #fff;
+        stroke: steelblue;
+        stroke-width: 1.5px;
+    }
+
+    .node text {
+        font-size:10px; 
+        font-family:sans-serif;
+        dominant-baseline: central;
+    }
+
+    .link {
+        fill: none;
+        stroke: $accent-color;
+        stroke-width: 1.5px;
+    }
+
+    // .templink {
+    //     fill: none;
+    //     stroke: red;
+    //     stroke-width: 3px;
+    // }
+
+    // .ghostCircle.show{
+    //     display:block;
+    // }
+
+    // .ghostCircle, .activeDrag .ghostCircle{
+    //     display: none;
+    // }
+}
+

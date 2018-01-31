@@ -149,11 +149,13 @@ class NodeGraph extends React.Component {
     }
 
     render() {
-        const { nodeTree, links, isLoading } = this.props
-
-        const treeData = this.tree(d3Hierarchy(nodeTree))
-        const nodes = treeData.descendants()
-        const hierarchyLinks = treeData.descendants().slice(1)
+        const {
+            treeData,
+            nodes,
+            links,
+            hierarchyLinks,
+            isLoading,
+        } = this.props
 
         let nodesById = {}
         nodes.forEach(node => {

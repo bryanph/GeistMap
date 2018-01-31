@@ -10,6 +10,15 @@ import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
 import { scaleLinear } from 'd3-scale'
 import { tree as d3Tree, hierarchy as d3Hierarchy } from 'd3-hierarchy'
 
+import {
+    forceSimulation,
+    forceX,
+    forceY,
+    forceManyBody,
+    forceLink,
+    forceCenter
+} from 'd3-force'
+
 import createZoom from '../zoom'
 import {
     MIN_NODE_RADIUS,
@@ -22,6 +31,83 @@ import {
 import ZoomButtons from '../ZoomButtons'
 
 import HierarchyGraph from '../HierarchyGraph'
+
+import './styles.scss'
+
+class NodeOutside extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        const { node, onClick, onDrag } = this.props
+        const transform = `translate(${node.y}, ${node.x})`;
+
+        return (
+            <g className="node" transform={transform} onClick={onClick} onDrag={onDrag}>
+                <circle
+                    className="nodeCircle"
+                    r={4.5}
+                    fill={ node.children ? "lightsteelblue" : "#fff" }
+                />
+                <text
+                    className="nodeText"
+                    x={node.children ? -10 : 10}
+                    textAnchor={ node.children ? "end" : "start" }
+                >{node.name}</text>
+            </g>
+        )
+    }
+}
+
+class LinkOutside extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        const { link } = this.props
+
+        const startingPoint = `M ${link.source.y}, ${link.source.x}`
+
+        const path = link.source.depth === link.target.depth ? 
+            [ startingPoint,
+                'A',
+                (link.source.x - link.target.x) / 2,
+                // 50,
+                (link.source.x - link.target.x) / 2,
+                0,
+                0,
+                link.source.x < link.target.x ? 1 : 0,
+                link.target.y,
+                link.target.x
+            ].join(' ')
+            :
+            // [
+            //     startingPoint,
+            //     'L',
+            //     link.target.y,
+            //     link.target.x
+            // ].join(' ')
+            [
+                startingPoint,
+                "C",
+                (link.source.y + link.target.y) / 2,
+                link.source.x,
+                (link.source.y + link.target.y) / 2,
+                link.target.x,
+                link.target.y,
+                link.target.x
+            ].join(' ')
+
+        return (
+            <path 
+                className="link"
+                d={ path }
+            />
+        )
+    }
+}
 
 class ExploreGraph extends React.Component {
 
@@ -59,15 +145,92 @@ class ExploreGraph extends React.Component {
         // TODO: set the nodes and links here instead of in the graph - 2018-01-29
 
         const {
-            nodesBelowAbstraction,
+            // nodesBelowAbstraction,
             edgesBelowAbstraction,
+            nodesWithAbstraction, // nodes both in and outside the abstraction
             nodesOutsideAbstraction,
             edgesOutsideAbstraction,
             nodeTree,
         } = this.props
 
-        // console.log(nodeTree, edgesBelowAbstraction)
-        console.log("outside", nodesOutsideAbstraction, edgesOutsideAbstraction)
+        const tree = d3Tree()
+        tree.nodeSize([25, 100])
+        const treeData = tree(d3Hierarchy(nodeTree))
+        const nodesBelowAbstraction = treeData.descendants()
+        const nodesBelowAbstractionMap = _.keyBy(nodesBelowAbstraction, 'data.id')
+        const hierarchyLinks = treeData.descendants().slice(1)
+
+        let nodesById = {}
+        nodesBelowAbstraction.forEach(node => {
+            nodesById[node.data.id] = node
+            node.fx = node.x
+            node.fy = node.y
+        })
+        nodesOutsideAbstraction.forEach(node => {
+            nodesById[node.id] = node
+        })
+
+        edgesOutsideAbstraction.forEach(link => {
+            link.source = nodesById[link.start]
+            link.target = nodesById[link.end]
+
+            // link.opacity = strokeScale(link.count || 0)
+        })
+
+        const iterations = 500;
+        const edgeStrength = 0.1;
+        const distanceMax = Infinity;
+
+        const simulation = forceSimulation()
+            .velocityDecay(0.2)
+            .force(
+                "charge", 
+                forceManyBody()
+                    .distanceMax(distanceMax)
+                    .strength(-400)
+                    // .strength(-25 * nodeSizeAccessor(d))
+            )
+
+            // .force("x", forceX().strength(0.05))
+            // .force("y", forceY().strength(0.05))
+            // .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
+            .force("link",
+                forceLink()
+                .id(d => d.id)
+                // .distance(d => 50 + d.source.radius + d.target.radius)
+                .distance(d => 50)
+                .strength(
+                    d => (d.weight ? d.weight * edgeStrength : edgeStrength)
+                )
+        )
+
+        simulation.nodes([...nodesBelowAbstraction, ...nodesOutsideAbstraction])
+        simulation.force("link").links(edgesOutsideAbstraction)
+
+        // if (simulation.alpha() < 0.1) {
+        //     simulation.alpha(1)
+        // }
+
+        simulation.stop();
+
+        // do the work before rendering
+        for (let i = 0; i < iterations; ++i) simulation.tick()
+
+        console.log(nodesOutsideAbstraction, edgesOutsideAbstraction)
+
+        const nodeOutsideElements = nodesOutsideAbstraction.map(node => (
+            <NodeOutside
+                key={node.id}
+                node={node}
+            />
+        ))
+
+        const edgeOutsideElements = edgesOutsideAbstraction.map(link => (
+            <LinkOutside
+                key={link.id}
+                link={link}
+            />
+        ))
 
         return [
                 <ZoomButtons
@@ -79,14 +242,17 @@ class ExploreGraph extends React.Component {
                 <svg
                     viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
                     preserveAspectRatio="xMidYMid meet"
-                    className="svg-content focus-graph"
+                    className="svg-content explore-graph"
                     ref="graph"
                     key="2"
                 >
                     <g ref="container" transform={this.state.containerTransform}>
+                        { nodeOutsideElements }
+                        { edgeOutsideElements }
                         <HierarchyGraph
-                            nodeTree={nodeTree}
+                            nodes={nodesBelowAbstraction}
                             links={edgesBelowAbstraction}
+                            hierarchyLinks={hierarchyLinks}
                             isLoading={this.props.isLoading}
                         />
                     </g>

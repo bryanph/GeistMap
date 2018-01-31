@@ -115,6 +115,7 @@ import {
     getAbstractionTree,
     getNodesOutsideAbstraction,
     getEdgesOutsideAbstraction,
+    getNodesWithAbstraction,
     getNodesBelowAbstraction,
     getEdgesBelowAbstraction,
     getAbstractionChain,
@@ -122,7 +123,7 @@ import {
 
 function mapStateToProps(state, props) {
 
-    let nodes, edges, nodeTree, isLoading, nodesBelowAbstraction, edgesBelowAbstraction, nodesOutsideAbstraction, edgesOutsideAbstraction
+    let nodes, edges, nodeTree, isLoading, nodesBelowAbstraction, edgesBelowAbstraction, nodesOutsideAbstraction, edgesOutsideAbstraction, nodesWithAbstraction
 
     const params = new URLSearchParams(props.location.search);
     const graphType = params.get('graphType') || "abstract"
@@ -135,6 +136,7 @@ function mapStateToProps(state, props) {
 
     } else {
         nodesBelowAbstraction = getNodesBelowAbstraction(state, props)
+        nodesWithAbstraction = getNodesWithAbstraction(state, props)
         edgesBelowAbstraction = getEdgesBelowAbstraction(state, props)
         nodesOutsideAbstraction = getNodesOutsideAbstraction(state, props)
         edgesOutsideAbstraction = getEdgesOutsideAbstraction(state, props)
@@ -144,6 +146,7 @@ function mapStateToProps(state, props) {
     return {
         nodesBelowAbstraction,
         edgesBelowAbstraction,
+        nodesWithAbstraction,
         nodesOutsideAbstraction,
         edgesOutsideAbstraction,
         nodeTree,

@@ -926,7 +926,7 @@ export const getNodesBelowAbstractionIds = createSelector(
             })
         }
 
-        return handleChildren(nodesByCollectionId[focusNodeId])
+        return handleChildren(nodesByCollectionId[focusNodeId] || [])
     }
 )
 
