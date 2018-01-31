@@ -5,6 +5,7 @@
 import React from 'react';
 
 import { Link, withRouter } from 'react-router-dom'
+import QueryLink from 'QueryLink'
 
 import { Icon } from 'semantic-ui-react'
 
@@ -40,7 +41,7 @@ class AbstractionNavigator extends React.Component {
 
 const AbstractionItem = ({ url, name, hasNext, onClick }) => (
     <div className="AbstractionNavigator-item">
-        <Link to={url} onClick={onClick}>{ name }</Link>
+        <QueryLink to={url} onClick={onClick}>{ name }</QueryLink>
         {
             hasNext ? <Icon name="angle right" /> : null
         }

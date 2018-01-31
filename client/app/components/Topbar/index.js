@@ -5,15 +5,16 @@ import React from 'react'
 import { connect } from 'react-redux'
 import classNames from 'classnames'
 import { Link, withRouter } from 'react-router-dom'
+import QueryLink from 'QueryLink'
 
 import AllSearch from '../../containers/AllSearch'
 
 import './styles.scss'
 
 export const Logo = (props) => (
-    <Link to="/app" className="topbar-logo">
+    <QueryLink to="/app" className="topbar-logo">
         <span className="topbar-logo">GeistMap</span>
-    </Link>
+    </QueryLink>
 )
 
 
@@ -56,13 +57,19 @@ class Topbar extends React.Component {
     navigate(result) {
         const id  = result._id
 
-        this.props.history.push(`/app/nodes/${id}/graph`)
+        this.props.history.push({
+            pathname: `/app/nodes/${id}/graph`,
+            search: this.props.location.search
+        })
     }
 
     createNode() {
         return this.props.createNode({ name: 'Untitled', content: '' })
             .then(action => action.response.result)
-            .then(id => this.props.history.push(`/app/nodes/${id}/graph`))
+            .then(id => this.props.history.push({
+                pathname: `/app/nodes/${id}/graph`,
+                search: this.props.location.search
+            }))
     }
 
 

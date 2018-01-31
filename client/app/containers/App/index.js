@@ -75,11 +75,19 @@ class App extends React.Component {
                                 { /* focusNode is the focused node in the graph, node is the node that is edited */ }
                                 <Route exact path={'/app/nodes/:focusNodeId/graph/:nodeId'} component={NodeView}/>
 
-                                <Route exact path={'/app/nodes'} render={(props) => {
-                                        return <Redirect to={`/app/nodes/${rootCollectionId}/graph`}/>
-                                }}/>
+                                <Route exact path={'/app/nodes'} render={(props) => (
+                                    <Redirect to={{
+                                        pathname: `/app/nodes/${rootCollectionId}/graph`,
+                                        search: props.location.search
+                                    }} />
+                                )}/>
 
-                                <Redirect from={'/app/'} to={'/app/nodes'}/>
+                                <Route path="/app" render={(props) => (
+                                    <Redirect to={{
+                                        pathname: '/app/nodes',
+                                        search: props.location.search
+                                    }} />
+                                )} />
                             </Switch>
                             {
                                 /*

@@ -8,6 +8,9 @@ import { getSelectionEntity } from '../../utils/inline'
 
 import path from 'path'
 
+import QueryLink from 'QueryLink'
+
+
 class ContentLink extends React.Component {
 
     constructor(props) {
@@ -34,7 +37,7 @@ class ContentLink extends React.Component {
         const readOnly = getReadOnly()
 
         return (
-            <Link to={ `/app/nodes/${nodeId}/graph` } onClick={this.onNavigate} className="contentLink">
+            <QueryLink to={ `/app/nodes/${nodeId}/graph` } onClick={this.onNavigate} className="contentLink">
                 {this.props.children}
                 {
                     readOnly ? null :
@@ -43,7 +46,12 @@ class ContentLink extends React.Component {
                             { node && node.name }
                             <div className="contentLinkDiv-buttons">
                                 <EditButton
-                                    onClick={() => history.push(`/app/nodes/${nodeId}/graph`)}
+                                    onClick={() => {
+                                            history.push({
+                                                pathname: `/app/nodes/${nodeId}/graph`,
+                                                search: this.props.location.search
+                                            })}
+                                    }
                                 />
                                 <TrashButton
                                     label={"Remove"}
@@ -89,7 +97,7 @@ class ContentLink extends React.Component {
                         </div>
                     </div>
                 }
-            </Link>
+            </QueryLink>
         );
     }
 }

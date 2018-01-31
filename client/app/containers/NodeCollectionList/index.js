@@ -142,7 +142,10 @@ export const NodeCollectionItem = withRouter((props) => {
     return (
         <Chip
             onRequestDelete={() => props.onDelete(props.id)}
-            onClick={() => props.history.push(`/app/nodes/${props.id}/graph`)}
+            onClick={() => props.history.push({
+                pathname: `/app/nodes/${props.id}/graph`,
+                search: props.location.search
+            }) }
             style={styles.chip}
         >
             { props.name }

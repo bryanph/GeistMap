@@ -83,6 +83,8 @@ module.exports = {
     resolve: {
         alias: {
             styles: path.join(__dirname, './client/scss'),
+            util: path.join(__dirname, './client/util'),
+            QueryLink: path.join(__dirname, './client/util/QueryLink.js'),
             // 'draft-js': path.resolve(__dirname, './repos/draft-js')
         },
     },

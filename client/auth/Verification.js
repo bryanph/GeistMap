@@ -29,7 +29,10 @@ const AccountVerification  = createClass({
         // // TODO: account verification - 2016-05-10
         // window.location = '/'
 
-        this.props.history.push('/auth/account/verification/success')
+        this.props.history.push({
+            pathname: '/auth/account/verification/success',
+            search: this.props.location.search
+        })
 
         // this.props.history.push('/auth/login/forgot/success')
         // this.props.history.push('/auth/login/forgot/success')

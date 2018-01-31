@@ -224,7 +224,10 @@ const createExploreEvents = function(simulation, actions) {
      * Afterwards, can be called with node an link DOM nodes
      */
     const onClick = (d) => {
-        actions.history.push(`/app/nodes/${d.id}/graph?graphType=explore`)
+        actions.history.push({
+            pathname: `/app/nodes/${d.id}/graph?graphType=explore`,
+            search: this.props.location.search
+        })
     }
 
     const onEditClick = (d) => {
@@ -345,7 +348,10 @@ const createCollectionDetailEvents = function(simulation, actions) {
 
     const onClick = (d) => {
         this.props.moveChild(d.id)
-        this.props.history.push(`/app/nodes/${d.id}/graph?graphType=abstract`)
+        this.props.history.push({
+            pathname: `/app/nodes/${d.id}/graph?graphType=abstract`,
+            search: this.props.location.search
+        })
     }
 
     const onConnect = (from, to) => {
@@ -378,7 +384,10 @@ const createCollectionDetailEvents = function(simulation, actions) {
             {
                 title: "Edit",
                 action: (elm, d, i) => {
-                    actions.history.push(`/app/nodes/${this.props.focusNode.id}/graph/${d.id}?graphView=explore`)
+                    actions.history.push({
+                        pathname: `/app/nodes/${this.props.focusNode.id}/graph/${d.id}?graphView=explore`,
+                        search: this.props.location.search
+                    })
                 }
             },
             {

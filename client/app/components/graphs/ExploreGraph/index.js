@@ -216,7 +216,7 @@ class ExploreGraph extends React.Component {
         // do the work before rendering
         for (let i = 0; i < iterations; ++i) simulation.tick()
 
-        console.log(nodesOutsideAbstraction, edgesOutsideAbstraction)
+        // console.log(nodesOutsideAbstraction, edgesOutsideAbstraction)
 
         const nodeOutsideElements = nodesOutsideAbstraction.map(node => (
             <NodeOutside
@@ -247,8 +247,8 @@ class ExploreGraph extends React.Component {
                     key="2"
                 >
                     <g ref="container" transform={this.state.containerTransform}>
-                        { nodeOutsideElements }
                         { edgeOutsideElements }
+                        { nodeOutsideElements }
                         <HierarchyGraph
                             nodes={nodesBelowAbstraction}
                             links={edgesBelowAbstraction}

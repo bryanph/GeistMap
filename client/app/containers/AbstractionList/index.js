@@ -8,6 +8,7 @@ import React from 'react';
 import Portal from 'react-portal'
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom'
+import QueryLink from 'QueryLink'
 import classNames from 'classnames'
 
 import {
@@ -75,7 +76,10 @@ class AbstractionList extends React.Component {
     }
 
     onFocusClick(collection) {
-        this.props.history.push(`/app/nodes/${collection.id}/graph`)
+        this.props.history.push({
+            pathname: `/app/nodes/${collection.id}/graph`,
+            search: this.props.location.search
+        })
         this.props.moveChild(collection.id)
     }
 
@@ -143,7 +147,7 @@ export const ExpandButton = ({ expanded, onClick }) => {
 
 const AbstractionItem = ({ url, name, hasNext, onClick }) => (
     <div className="abstractionHeader-item">
-        <Link to={url} onClick={onClick}>{ name }</Link>
+        <QueryLink to={url} onClick={onClick}>{ name }</QueryLink>
         {
             hasNext ? <Icon name="angle right" /> : null
         }

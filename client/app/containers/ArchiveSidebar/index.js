@@ -39,7 +39,10 @@ class ArchiveSidebar extends React.Component { // eslint-disable-line react/pref
 
     editNode(id) {
         const { history } = this.props
-        history.push(`/app/nodes/${id}/edit`)
+        history.push({
+            pathname: `/app/nodes/${id}/edit`,
+            search: this.props.location.search
+        })
         this.props.hideArchiveSidebar()
     }
 

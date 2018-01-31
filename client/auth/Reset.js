@@ -19,7 +19,10 @@ const Reset = createClass({
             return this.setState({errors: json.errors})
         }
 
-        this.props.history.push('/auth/login/reset/success')
+        this.props.history.push({
+            pathname: '/auth/login/reset/success',
+            search: this.props.location.search
+        })
     },
 
     handleError: function(error) {

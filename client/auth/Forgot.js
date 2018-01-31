@@ -22,7 +22,10 @@ const Forgot = createClass({
             return this.setState({errors: json.errors})
         }
 
-        this.props.history.push('/auth/login/forgot/success')
+        this.props.history.push({
+            pathname: '/auth/login/forgot/success',
+            search: this.props.location.search
+        })
     },
 
     handleError: function(error) {

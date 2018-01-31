@@ -48,19 +48,28 @@ class GraphTypeSwitcher extends React.Component {
                     <Button 
                         icon='triangle down'
                         content='Child map'
-                        onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=abstract`) }
+                        onClick={ () => this.props.history.push({
+                            pathname: `/app/nodes/${id}/graph?graphType=abstract`,
+                            // search: this.props.location.search
+                        }) }
                         className={ abstractionClass }
                     />
                     <Button 
                         icon='triangle down'
                         content='Hierarchy'
-                        onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=hierarchy`) }
+                        onClick={ () => this.props.history.push({
+                            pathname: `/app/nodes/${id}/graph?graphType=hierarchy`,
+                            // search: this.props.location.search
+                        }) }
                         className={ hierarchyClass }
                     />
                     <Button 
                         icon='crosshairs'
                         content='Link map'
-                        onClick={ () => this.props.history.push(`/app/nodes/${id}/graph?graphType=explore`) }
+                        onClick={ () => this.props.history.push({
+                            pathname: `/app/nodes/${id}/graph?graphType=explore`,
+                            // search: this.props.location.search
+                        }) }
                         disabled={!node || node.type === "root"}
                         className={ exploreClass }
                     />
