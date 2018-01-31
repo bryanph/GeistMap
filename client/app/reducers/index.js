@@ -926,7 +926,7 @@ export const getNodesBelowAbstractionIds = createSelector(
             })
         }
 
-        return handleChildren(nodesByCollectionId[focusNodeId] || [])
+        return [ focusNodeId, ...handleChildren(nodesByCollectionId[focusNodeId] || [])]
     }
 )
 
@@ -941,12 +941,12 @@ export const getNodesBelowAbstractionMap = createSelector(
     (nodes) => _.keyBy(nodes, ('id'))
 )
 
-// get all nodes with an edge w. at least 1 endpoint in the abstraction
 // get all links with an endpoint in the abstraction
 export const getEdgesWithAbstractionIds = createSelector(
     getNodesBelowAbstractionIds,
     getEdgeListMap,
     (nodeIds, edgeListMap) => {
+        console.log("IN WITH", nodeIds)
         return _(nodeIds)
             .map(id => getL1EdgeIds(edgeListMap, id))
             .flatMap()
@@ -975,6 +975,7 @@ export const getEdgesBelowAbstraction = createSelector(
     }
 )
 
+// get all nodes with an edge w. at least 1 endpoint in the abstraction (including the root itself)
 export const getNodesWithAbstractionIds = createSelector(
     getEdgesWithAbstraction,
     getNodeMap,
@@ -1008,9 +1009,9 @@ export const getNodesOutsideAbstraction = createSelector(
     getNodeMap,
     getNodesBelowAbstractionIds,
     getNodesWithAbstractionIds,
-    (nodeMap, nodeBelowIds, l1NodeIds) => {
+    (nodeMap, nodeBelowIds, nodeWithIds) => {
         // get all l1 nodes that are not below the focused node
-        return _.difference(l1NodeIds, nodeBelowIds)
+        return _.difference(nodeWithIds, nodeBelowIds)
             .map(id => nodeMap[id])
     }
 )
@@ -1019,9 +1020,9 @@ export const getEdgesOutsideAbstraction = createSelector(
     getEdgeMap,
     getEdgesBelowAbstractionIds,
     getEdgesWithAbstractionIds,
-    (edgeMap, edgeBelowIds, l1EdgeIds) => {
+    (edgeMap, edgeBelowIds, edgeWithIds) => {
         // get all l1 edges that are not below the focused edge
-        return _.difference(l1EdgeIds, edgeBelowIds)
+        return _.difference(edgeWithIds, edgeBelowIds)
             .map(id => edgeMap[id])
     }
 )

@@ -109,8 +109,7 @@ class LinkOutside extends React.Component {
     }
 }
 
-class ExploreGraph extends React.Component {
-
+class ManipulationLayer extends React.Component {
     constructor(props) {
         super(props)
 
@@ -119,12 +118,6 @@ class ExploreGraph extends React.Component {
         this.state = {
             containerTransform: `translate(${WIDTH/2}, ${HEIGHT/2})`
         }
-    }
-
-    zoomed(transform) {
-        this.setState({
-            containerTransform: transform
-        })
     }
 
     componentDidMount() {
@@ -139,6 +132,35 @@ class ExploreGraph extends React.Component {
 
     componentDidUpdate() {
         this.zoom.zoomFit()
+    }
+
+
+    zoomed(transform) {
+        this.setState({
+            containerTransform: transform
+        })
+    }
+
+    render() {
+        return (
+            <svg
+                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                preserveAspectRatio="xMidYMid meet"
+                className="svg-content explore-graph"
+                ref="graph"
+            >
+                <g ref="container" transform={this.state.containerTransform}>
+                    { this.props.children }
+                </g>
+            </svg>
+        )
+    }
+}
+
+class ExploreGraph extends React.PureComponent {
+
+    constructor(props) {
+        super(props)
     }
 
     render() {
@@ -178,7 +200,7 @@ class ExploreGraph extends React.Component {
         })
 
         const iterations = 500;
-        const edgeStrength = 0.1;
+        const edgeStrength = 0.2;
         const distanceMax = Infinity;
 
         const simulation = forceSimulation()
@@ -186,14 +208,14 @@ class ExploreGraph extends React.Component {
             .force(
                 "charge", 
                 forceManyBody()
-                    .distanceMax(distanceMax)
-                    .strength(-400)
-                    // .strength(-25 * nodeSizeAccessor(d))
+                .distanceMax(distanceMax)
+                .strength(-400)
+                // .strength(-25 * nodeSizeAccessor(d))
             )
 
-            // .force("x", forceX().strength(0.05))
-            // .force("y", forceY().strength(0.05))
-            // .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
+        // .force("x", forceX().strength(0.05))
+        // .force("y", forceY().strength(0.05))
+        // .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
             .force("link",
                 forceLink()
                 .id(d => d.id)
@@ -202,7 +224,7 @@ class ExploreGraph extends React.Component {
                 .strength(
                     d => (d.weight ? d.weight * edgeStrength : edgeStrength)
                 )
-        )
+            )
 
         simulation.nodes([...nodesBelowAbstraction, ...nodesOutsideAbstraction])
         simulation.force("link").links(edgesOutsideAbstraction)
@@ -233,30 +255,22 @@ class ExploreGraph extends React.Component {
         ))
 
         return [
-                <ZoomButtons
-                    zoomIn={() => this.zoom.zoomIn()}
-                    zoomOut={() => this.zoom.zoomOut()}
-                    zoomFit={() => this.zoom.zoomFit()}
-                    key="1"
-                />,
-                <svg
-                    viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-                    preserveAspectRatio="xMidYMid meet"
-                    className="svg-content explore-graph"
-                    ref="graph"
-                    key="2"
-                >
-                    <g ref="container" transform={this.state.containerTransform}>
-                        { edgeOutsideElements }
-                        { nodeOutsideElements }
-                        <HierarchyGraph
-                            nodes={nodesBelowAbstraction}
-                            links={edgesBelowAbstraction}
-                            hierarchyLinks={hierarchyLinks}
-                            isLoading={this.props.isLoading}
-                        />
-                    </g>
-                </svg>
+            <ZoomButtons
+                zoomIn={() => this.zoom.zoomIn()}
+                zoomOut={() => this.zoom.zoomOut()}
+                zoomFit={() => this.zoom.zoomFit()}
+                key="1"
+            />,
+            <ManipulationLayer key="2" { ...this.props }>
+                { edgeOutsideElements }
+                { nodeOutsideElements }
+                <HierarchyGraph
+                    nodes={nodesBelowAbstraction}
+                    links={edgesBelowAbstraction}
+                    hierarchyLinks={hierarchyLinks}
+                    isLoading={this.props.isLoading}
+                />
+            </ManipulationLayer>
         ]
     }
 }

@@ -7,9 +7,7 @@ import { EditButton, TrashButton } from '../../../../components/Buttons'
 import { getSelectionEntity } from '../../utils/inline'
 
 import path from 'path'
-
 import QueryLink from 'QueryLink'
-
 
 class ContentLink extends React.Component {
 
@@ -58,8 +56,6 @@ class ContentLink extends React.Component {
                                     onClick={() => {
                                         // TODO: get selection here - 2016-10-20
                                         const entityKey = this.props.entityKey
-
-                                        console.log("called trash!")
 
                                         const blockKey = this.props.offsetKey.split('-')[0]
                                         const editorState = getEditorState()
