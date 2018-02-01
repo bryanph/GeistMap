@@ -162,6 +162,7 @@ function mapStateToProps(state, props) {
         graphType: graphType,
         adjacencyMap: state.adjacencyMap, // TODO: should this be passed down? - 2017-09-19
         abstractionSidebarOpened: state.uiState.abstractionSidebar.opened,
+        showLinks: state.uiState.showLinks,
         abstractionChain: getAbstractionChain(state),
     };
 }

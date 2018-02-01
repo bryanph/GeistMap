@@ -553,6 +553,7 @@ function graphUiState(state=initialGraphUIState, action) {
 
 const initialUiState = {
     windowProps: {},
+    showLinks: false,
     connectWindowOpened: false,
     addRelationWindowOpened: false,
     addRelationCollectionWindowOpened: false,
@@ -572,6 +573,11 @@ const initialUiState = {
 function uiState(state=initialUiState, action) {
     // TODO: cleanup - 2017-08-26
     switch(action.type) {
+        case uiActionTypes.TOGGLE_SHOW_LINKS:
+            return {
+                ...state,
+                showLinks: !state.showLinks,
+            }
         case uiActionTypes.SHOW_CONNECT_WINDOW:
             return {
                 ...state,
@@ -946,7 +952,6 @@ export const getEdgesWithAbstractionIds = createSelector(
     getNodesBelowAbstractionIds,
     getEdgeListMap,
     (nodeIds, edgeListMap) => {
-        console.log("IN WITH", nodeIds)
         return _(nodeIds)
             .map(id => getL1EdgeIds(edgeListMap, id))
             .flatMap()

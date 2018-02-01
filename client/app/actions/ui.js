@@ -4,6 +4,12 @@ import { createAction } from 'redux-actions'
 export const RESET_ERROR_MESSAGE = 'RESET_ERROR_MESSAGE'
 export const resetErrorMessage = createAction('RESET_ERROR_MESSAGE')
 
+/*
+ * Toggle showing the links in the UI
+*/
+export const TOGGLE_SHOW_LINKS = 'TOGGLE_SHOW_LINKS'
+export const toggleShowLinks = createAction(TOGGLE_SHOW_LINKS)
+
 export const SHOW_CONNECT_WINDOW = 'SHOW_CONNECT_WINDOW'
 export function showConnectWindow(editorState) {
     return {

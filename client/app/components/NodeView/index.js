@@ -22,6 +22,30 @@ import { Dimmer, Loader } from 'semantic-ui-react'
 
 import './styles.scss'
 
+import { toggleShowLinks } from '../../actions/ui'
+import { connect } from 'react-redux'
+import { Button } from 'semantic-ui-react'
+
+class ToggleShowLinks extends React.Component {
+    render() {
+        const styles = {
+            position: "absolute",
+            zIndex: 100,
+            right: '10px',
+            bottom: '10px',
+        }
+        return (
+            <Button style={styles} toggle active={this.props.active} onClick={this.props.toggleShowLinks}>
+                Show Links
+            </Button>
+        )
+    }
+}
+
+ToggleShowLinks = connect(
+    (state) => ({ active: state.uiState.showLinks }),
+    { toggleShowLinks }
+)(ToggleShowLinks)
 
 export class NodeView extends React.PureComponent {
     render() {
@@ -67,6 +91,7 @@ export class NodeView extends React.PureComponent {
                     </div>
 
                     <div className="nodeView-graph">
+                        <ToggleShowLinks />
                         {
                             /*
                             <AbstractionNavigator
@@ -89,6 +114,8 @@ export class NodeView extends React.PureComponent {
                                 :
                                 <ExploreGraph {...this.props} />
                         }
+                        {
+                            /*
                         <AddNodeWindow
                             graphType={graphType}
                             opened={mode === 'edit'}
@@ -96,12 +123,18 @@ export class NodeView extends React.PureComponent {
                             focusNodeId={this.props.focusNodeId}
                             disabled={isLoading}
                         />
+                            */
+                        }
+                        {
+                            /*
                         <GraphTypeSwitcher
                             graphType={graphType}
                             disabled={isLoading}
                             id={this.props.activeNodeId || this.props.focusNodeId}
                             node={this.props.activeNode || this.props.focusNode}
                         />
+                            */
+                        }
                     </div>
 
                 </HotKeys>

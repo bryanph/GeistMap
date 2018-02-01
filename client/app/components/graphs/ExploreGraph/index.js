@@ -157,10 +157,18 @@ class ManipulationLayer extends React.Component {
     }
 }
 
-class ExploreGraph extends React.PureComponent {
+class ExploreGraph extends React.Component {
 
     constructor(props) {
         super(props)
+    }
+
+    shouldComponentUpdate(nextProps) {
+        if (nextProps.isLoading) {
+            return false;
+        }
+
+        return true;
     }
 
     render() {
@@ -173,6 +181,7 @@ class ExploreGraph extends React.PureComponent {
             nodesOutsideAbstraction,
             edgesOutsideAbstraction,
             nodeTree,
+            showLinks,
         } = this.props
 
         const tree = d3Tree()
@@ -204,7 +213,7 @@ class ExploreGraph extends React.PureComponent {
         const distanceMax = Infinity;
 
         const simulation = forceSimulation()
-            .velocityDecay(0.2)
+            .velocityDecay(0.6)
             .force(
                 "charge", 
                 forceManyBody()
@@ -214,7 +223,7 @@ class ExploreGraph extends React.PureComponent {
             )
 
         // .force("x", forceX().strength(0.05))
-        // .force("y", forceY().strength(0.05))
+        .force("y", forceY().strength(0.2))
         // .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
             .force("link",
                 forceLink()
@@ -262,13 +271,14 @@ class ExploreGraph extends React.PureComponent {
                 key="1"
             />,
             <ManipulationLayer key="2" { ...this.props }>
-                { edgeOutsideElements }
-                { nodeOutsideElements }
+                { showLinks ? edgeOutsideElements : null }
+                { showLinks ? nodeOutsideElements : null }
                 <HierarchyGraph
                     nodes={nodesBelowAbstraction}
                     links={edgesBelowAbstraction}
                     hierarchyLinks={hierarchyLinks}
                     isLoading={this.props.isLoading}
+                    showLinks={showLinks}
                 />
             </ManipulationLayer>
         ]

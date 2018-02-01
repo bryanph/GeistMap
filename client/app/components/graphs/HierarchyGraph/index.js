@@ -155,6 +155,7 @@ class NodeGraph extends React.Component {
             links,
             hierarchyLinks,
             isLoading,
+            showLinks,
         } = this.props
 
         let nodesById = {}
@@ -199,9 +200,9 @@ class NodeGraph extends React.Component {
         const linkElements = links
             .filter(link => (
                 !(
-                    link.source.data.id === link.target.parent.data.id
+                    link.source.data.id === ((link.target.parent) && link.target.parent.data.id)
                     ||
-                    link.target.data.id === link.source.parent.data.id
+                    link.target.data.id === ((link.source.parent) && link.source.parent.data.id)
                 )
             ))
             .map(link => (
@@ -214,7 +215,7 @@ class NodeGraph extends React.Component {
         return (
             <g className="hierarchy-graph">
                 { hierarchyLinkElements }
-                { linkElements }
+                { showLinks ? linkElements : null }
                 { nodeElements }
                 { isLoading ? null : null }
             </g>
