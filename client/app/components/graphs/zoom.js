@@ -78,7 +78,7 @@ export default (root, container, fullWidth, fullHeight, zoomCallback) => {
             return;
         }
 
-        const paddingPercent = 0.9
+        const paddingPercent = 0.95
         const transitionDuration = animate ? 1000 : 0
 
         const bbox = container.node().getBBox();

@@ -33,14 +33,14 @@ class Node extends React.Component {
     }
 
     render() {
-        const { node, onClick, onDrag } = this.props
+        const { node, onClick } = this.props
         const transform = `translate(${node.y}, ${node.x})`;
 
         return (
-            <g className="node" transform={transform} onClick={onClick} onDrag={onDrag}>
+            <g id={`node-${node.data.id}`} className="node node-inside" transform={transform} onClick={onClick}>
                 <circle
                     className="nodeCircle"
-                    r={4.5}
+                    r={NODE_RADIUS}
                     fill={ node.children ? "lightsteelblue" : "#fff" }
                 />
                 <text
@@ -186,9 +186,28 @@ class NodeGraph extends React.Component {
                 key={node.id}
                 node={node}
                 onClick={this.onNodeClick}
-                onDrag={this.onDrag}
             />
         ))
+
+        // const hierarchyLinkGroupElements = _(hierarchyLinks)
+        //     .groupBy((link) => link.parent.data.id)
+        //     .map((linkArray) => {
+        //         console.log(linkArray)
+        //         return (
+        //             <g>
+        //                 {
+        //                 linkArray.map(link => (
+        //                     <HierarchyLink
+        //                         key={link.id}
+        //                         link={link}
+        //                     />
+        //                 ))
+        //                 }
+        //             </g>
+        //         )
+        //     })
+        //     .value()
+
 
         const hierarchyLinkElements = hierarchyLinks.map(link => (
             <HierarchyLink
