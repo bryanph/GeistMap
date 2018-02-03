@@ -40,7 +40,7 @@ class Node extends React.Component {
             <g id={`node-${node.data.id}`} className="node node-inside" transform={transform} onClick={onClick}>
                 <circle
                     className="nodeCircle"
-                    r={NODE_RADIUS}
+                    r={node.radius}
                     fill={ node.children ? "lightsteelblue" : "#fff" }
                 />
                 <text
@@ -137,15 +137,7 @@ class NodeGraph extends React.Component {
     constructor(props) {
         super(props)
 
-        this.onNodeClick = this.onNodeClick.bind(this)
         this.tree = d3Tree()
-    }
-
-    onNodeClick(d) {
-        if (currentEvent.defaultPrevented) return; // click suppressed
-
-        // TODO: call expand action or edit action, whatever - 2017-12-31
-        console.log("called click")
     }
 
     render() {
@@ -185,7 +177,7 @@ class NodeGraph extends React.Component {
             <Node 
                 key={node.id}
                 node={node}
-                onClick={this.onNodeClick}
+                onClick={this.props.onNodeClick}
             />
         ))
 

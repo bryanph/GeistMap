@@ -52,10 +52,15 @@ class NodeOutside extends React.Component {
         const transform = `translate(${node.y}, ${node.x})`;
 
         return (
-            <g id={`node-${node.id}`} className="node node-outside" transform={transform}>
+            <g
+                id={`node-${node.id}`}
+                className="node node-outside"
+                transform={transform}
+                onClick={this.props.onClick}
+            >
                 <circle
                     className="nodeCircle"
-                    r={NODE_RADIUS}
+                    r={node.radius}
                     fill={ node.children ? "lightsteelblue" : "#fff" }
                 />
                 <text
@@ -165,13 +170,15 @@ class ManipulationLayer extends React.PureComponent {
 }
 
 const iterations = 500;
-const edgeStrength = 0.6;
+const edgeStrength = 0.4;
 const distanceMax = Infinity;
 
 class ExploreGraph extends React.Component {
 
     constructor(props) {
         super(props)
+
+        this.onNodeClick = this.onNodeClick.bind(this);
 
         this.simulation = forceSimulation()
             .velocityDecay(0.6)
@@ -182,8 +189,8 @@ class ExploreGraph extends React.Component {
                     .strength(-500)
                     // .strength(-25 * nodeSizeAccessor(d))
             )
-        // .force("x", forceX().strength(0.05))
-            // .force("y", forceY().strength(0.2))
+            .force("x", forceX().strength(-0.02))
+            .force("y", forceY().strength(-0.02))
         // .force("center", forceCenter(WIDTH / 2, HEIGHT / 2))
             .force("link",
                 forceLink()
@@ -240,9 +247,22 @@ class ExploreGraph extends React.Component {
 
     componentWillReceiveProps(nextProps) {
         if (nextProps !== this.props) {
+            // TODO: solve this differently, this sucks - 2018-02-03
             this.setState({ rerender: true })
         }
     }
+
+    onNodeClick(e) {
+        if (e.defaultPrevented) return; // click suppressed
+
+        const id = e.currentTarget.id.replace("node-", "")
+
+        return this.props.history.push({
+            pathname: `/app/nodes/${id}/graph`,
+            search: this.props.location.search
+        })
+    }
+
 
     render() {
         // TODO: set the nodes and links here instead of in the graph - 2018-01-29
@@ -272,8 +292,9 @@ class ExploreGraph extends React.Component {
 
         let nodesById = {}
         nodesBelowAbstraction.forEach(node => {
-            node.fx = node.x
-            node.fy = node.y
+            node.fx = node.x;
+            node.fy = node.y;
+            node.radius = 6;
 
             if (node.id === draggedElement.id) {
                 node.fx = draggedElement.x
@@ -283,6 +304,7 @@ class ExploreGraph extends React.Component {
             nodesById[node.data.id] = node
         })
         nodesOutsideAbstraction.forEach(node => {
+            node.radius = 6;
 
             if (node.id === draggedElement.id) {
                 node.x = draggedElement.x
@@ -320,6 +342,7 @@ class ExploreGraph extends React.Component {
                 key={node.id}
                 node={node}
                 drag={this.drag}
+                onClick={this.onNodeClick}
             />
         ))
 
@@ -346,6 +369,7 @@ class ExploreGraph extends React.Component {
                     hierarchyLinks={hierarchyLinks}
                     isLoading={this.props.isLoading}
                     showLinks={showLinks}
+                    onNodeClick={this.onNodeClick}
                 />
             </ManipulationLayer>
         ]
