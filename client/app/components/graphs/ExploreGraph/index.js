@@ -296,9 +296,9 @@ class ExploreGraph extends React.Component {
             node.fy = node.y;
             node.radius = 6;
 
-            if (node.id === draggedElement.id) {
-                node.fx = draggedElement.x
-                node.fy = draggedElement.y
+            if (node.data.id === draggedElement.id) {
+                node.x = draggedElement.x
+                node.y = draggedElement.y
             }
 
             nodesById[node.data.id] = node
@@ -370,6 +370,7 @@ class ExploreGraph extends React.Component {
                     isLoading={this.props.isLoading}
                     showLinks={showLinks}
                     onNodeClick={this.onNodeClick}
+                    drag={this.drag}
                 />
             </ManipulationLayer>
         ]

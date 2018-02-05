@@ -82,7 +82,7 @@ export const createInnerDrag = (self) => (actions) => {
              */
             const id = d3Select(this).attr('id')
 
-            if (id === self.props.focusNodeId) {
+            if (id.replace("node-", "") === self.props.focusNodeId) {
                 return;
             }
 
@@ -138,6 +138,12 @@ export const createInnerDrag = (self) => (actions) => {
              * Create an edge to all nodes which are being hovered over
              */
 
+            if (!dragStarted) {
+                return;
+            }
+
+            dragStarted = false
+
             const nodeElement = d3Select(this)
             const id = nodeElement.attr('id').replace("node-", "")
             const node = self.nodesById[id]
@@ -167,14 +173,19 @@ export const createInnerDrag = (self) => (actions) => {
                 // TODO: x and y are switched here for currentNode - 2018-02-02
                 const distanceToNode = Math.sqrt((currentNode.y - currentEvent.x)**2 + (currentNode.x - currentEvent.y)**2)
 
+
                 if (distanceToNode < NODE_RADIUS) {
-                    console.log(distanceToNode)
-                    console.log("MOVING TO ABSTRACTION!!!")
+
+                    if (node.parent && node.parent.data.id === currentNode.data.id) {
+                        // dragged over the already existing parent
+                        return;
+                    }
+
                     // move this node to the abstraction that is hovered over
                     // TODO: need a method for getting the currently visible abstraction chain
                     return actions.moveToAbstraction(
-                        self.props.focusNode.id,
-                        node.id,
+                        node.parent && node.parent.data.id,
+                        node.id || node.data.id,
                         currentNode.data.id, //TODO: here it is data and before not, do something about this...
                     )
                 }

@@ -32,12 +32,24 @@ class Node extends React.Component {
         super(props)
     }
 
+    componentDidMount() {
+        const selection = d3Select(`#node-${this.props.node.data.id}`)
+        this.props.drag(selection)
+    }
+
     render() {
         const { node, onClick } = this.props
         const transform = `translate(${node.y}, ${node.x})`;
 
+        // TODO: make sure node.data is on node directly instead - 2018-02-05
+
         return (
-            <g id={`node-${node.data.id}`} className="node node-inside" transform={transform} onClick={onClick}>
+            <g
+                id={`node-${node.data.id}`}
+                className="node node-inside"
+                transform={transform}
+                onClick={onClick}
+            >
                 <circle
                     className="nodeCircle"
                     r={node.radius}
@@ -178,6 +190,7 @@ class NodeGraph extends React.Component {
                 key={node.id}
                 node={node}
                 onClick={this.props.onNodeClick}
+                drag={this.props.drag}
             />
         ))
 
