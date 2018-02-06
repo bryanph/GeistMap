@@ -529,6 +529,11 @@ const initialGraphUIState = {
     focus: {
         id: null,
     },
+    draggedElement: {
+        id: null,
+        x: null,
+        y: null,
+    },
 }
 function graphUiState(state=initialGraphUIState, action) {
     /*
@@ -544,6 +549,11 @@ function graphUiState(state=initialGraphUIState, action) {
                     id: action.id,
                 }
             }
+
+        case uiActionTypes.DRAG_ELEMENT:
+            return update(state, {
+                draggedElement: { $apply: () => action.draggedElement }
+            })
 
         default:
             return state;

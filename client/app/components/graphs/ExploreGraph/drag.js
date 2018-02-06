@@ -97,19 +97,31 @@ export const createInnerDrag = (self) => (actions) => {
                 return;
             }
 
-            const node = d3Select(this)
-            const id = node.attr('id')
+            console.log(currentEvent)
 
-            // node.attr('transform', `translate(${currentEvent.x}, ${currentEvent.y})`)
+            const nodeElement = d3Select(this)
+            const id = nodeElement.attr('id').replace("node-", "")
+            const node = self.nodesById[id]
 
-            self.setState({ 
-                draggedElement: {
-                    id: id.replace("node-", ""),
-                    x: currentEvent.y, // TODO: why is this switched? - 2018-02-02
-                    y: currentEvent.x
-                },
-                rerender: false
-            })
+            // nodeElement.attr('transform', `translate(${currentEvent.x}, ${currentEvent.y})`)
+
+//             self.setState({ 
+//                 draggedElement: {
+//                     id: id,
+//                     x: currentEvent.y, // TODO: why is this switched? - 2018-02-02
+//                     y: currentEvent.x
+//                 },
+//                 rerender: false
+//             })
+
+
+            self.props.dragElement(
+                id,
+                currentEvent.y,
+                currentEvent.x,
+                currentEvent.y - startY, // dy from dragStart
+                currentEvent.x - startX, // dx from dragStart
+            )
 
             // // TODO: panning (move with screen when dragging to edges - 2018-02-02
             
@@ -148,16 +160,9 @@ export const createInnerDrag = (self) => (actions) => {
             const id = nodeElement.attr('id').replace("node-", "")
             const node = self.nodesById[id]
 
-            self.setState({ 
-                draggedElement: {
-                    id: id,
-                    x: startY, // TODO: why is this switched? - 2018-02-02
-                    y: startX
-                },
-                rerender: false
-            })
-
             const nodeSelection = d3SelectAll('.node-inside')
+
+            self.props.dragElement()
 
             nodeSelection.each(function() {
                 // undo fixed state as set in dragstart
@@ -185,7 +190,7 @@ export const createInnerDrag = (self) => (actions) => {
                     // TODO: need a method for getting the currently visible abstraction chain
                     return actions.moveToAbstraction(
                         node.parent && node.parent.data.id,
-                        node.id || node.data.id,
+                        node.data.id,
                         currentNode.data.id, //TODO: here it is data and before not, do something about this...
                     )
                 }

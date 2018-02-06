@@ -1,6 +1,7 @@
 
 import _ from 'lodash'
 import React from 'react'
+import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import ReactDOM from 'react-dom'
 import classNames from 'classnames'
@@ -35,6 +36,8 @@ import {
     createInnerDrag
 } from './drag'
 
+import { dragElement } from '../../../actions/ui'
+
 import './styles.scss'
 
 class NodeOutside extends React.Component {
@@ -43,20 +46,24 @@ class NodeOutside extends React.Component {
     }
 
     componentDidMount() {
-        const selection = d3Select(`#node-${this.props.node.id}`)
+        const selection = d3Select(`#node-${this.props.node.data.id}`)
         this.props.drag(selection)
     }
 
     render() {
-        const { node } = this.props
-        const transform = `translate(${node.y}, ${node.x})`;
+        const { node, draggedElement } = this.props
+
+        const x = draggedElement.id === node.data.id ? draggedElement.x : node.x;
+        const y = draggedElement.id === node.data.id ? draggedElement.y : node.y;
+
+        const transform = `translate(${y}, ${x})`;
 
         return (
             <g
-                id={`node-${node.id}`}
+                id={`node-${node.data.id}`}
                 className="node node-outside"
                 transform={transform}
-                onClick={this.props.onClick}
+                onClick={() => this.props.onClick(node.data.id)}
             >
                 <circle
                     className="nodeCircle"
@@ -67,11 +74,16 @@ class NodeOutside extends React.Component {
                     className="nodeText"
                     x={node.children ? -10 : 10}
                     textAnchor={ node.children ? "end" : "start" }
-                >{node.name}</text>
+                >{node.data.name}</text>
             </g>
         )
     }
 }
+
+NodeOutside = connect(
+    (state) => ({ draggedElement: state.graphUiState.draggedElement }),
+    { dragElement }
+)(NodeOutside)
 
 class LinkOutside extends React.Component {
     constructor(props) {
@@ -79,38 +91,44 @@ class LinkOutside extends React.Component {
     }
 
     render() {
-        const { link } = this.props
+        const { link, draggedElement } = this.props
 
-        const startingPoint = `M ${link.source.y}, ${link.source.x}`
+        // for moving with dragged element
+        const sourceX = draggedElement.id === link.source.data.id ? draggedElement.x : link.source.x;
+        const sourceY = draggedElement.id === link.source.data.id ? draggedElement.y : link.source.y;
+        const targetX = draggedElement.id === link.target.data.id ? draggedElement.x : link.target.x;
+        const targetY = draggedElement.id === link.target.data.id ? draggedElement.y : link.target.y;
+
+        const startingPoint = `M ${sourceY}, ${sourceX}`
 
         const path = link.source.depth === link.target.depth ? 
             [ startingPoint,
                 'A',
-                (link.source.x - link.target.x) / 2,
+                (sourceX - targetX) / 2,
                 // 50,
-                (link.source.x - link.target.x) / 2,
+                (sourceX - targetX) / 2,
                 0,
                 0,
-                link.source.x < link.target.x ? 1 : 0,
-                link.target.y,
-                link.target.x
+                sourceX < targetX ? 1 : 0,
+                targetY,
+                targetX
             ].join(' ')
             :
             // [
             //     startingPoint,
             //     'L',
-            //     link.target.y,
-            //     link.target.x
+            //     targetY,
+            //     targetX
             // ].join(' ')
             [
                 startingPoint,
                 "C",
-                (link.source.y + link.target.y) / 2,
-                link.source.x,
-                (link.source.y + link.target.y) / 2,
-                link.target.x,
-                link.target.y,
-                link.target.x
+                (sourceY + targetY) / 2,
+                sourceX,
+                (sourceY + targetY) / 2,
+                targetX,
+                targetY,
+                targetX
             ].join(' ')
 
         return (
@@ -121,6 +139,11 @@ class LinkOutside extends React.Component {
         )
     }
 }
+LinkOutside = connect(
+    (state) => ({ draggedElement: state.graphUiState.draggedElement }),
+    { dragElement }
+)(LinkOutside)
+
 
 class ManipulationLayer extends React.PureComponent {
     constructor(props) {
@@ -227,14 +250,7 @@ class ExploreGraph extends React.Component {
             currentY = evt.clientY;
         }
 
-        this.state = {
-            // necessary for dragging to work with react
-            draggedElement: {
-                id: null,
-                x: null,
-                y: null,
-            },
-        }
+        this.state = { }
     }
 
     shouldComponentUpdate(nextProps) {
@@ -252,11 +268,7 @@ class ExploreGraph extends React.Component {
         }
     }
 
-    onNodeClick(e) {
-        if (e.defaultPrevented) return; // click suppressed
-
-        const id = e.currentTarget.id.replace("node-", "")
-
+    onNodeClick(id) {
         return this.props.history.push({
             pathname: `/app/nodes/${id}/graph`,
             search: this.props.location.search
@@ -271,22 +283,29 @@ class ExploreGraph extends React.Component {
             // nodesBelowAbstraction,
             edgesBelowAbstraction,
             nodesWithAbstraction, // nodes both in and outside the abstraction
-            nodesOutsideAbstraction,
             edgesOutsideAbstraction,
             nodeTree,
             showLinks,
             focusNode,
         } = this.props
 
+        let { nodesOutsideAbstraction } = this.props
+
         const {
-            draggedElement,
             rerender
         } = this.state
 
         const tree = d3Tree()
         tree.nodeSize([25, 100])
         const treeData = tree(d3Hierarchy(nodeTree))
+
         const nodesBelowAbstraction = treeData.descendants()
+        // make sure the data is under a data key
+        nodesOutsideAbstraction = nodesOutsideAbstraction
+            .map(node => ({
+                data: { ...node }
+            }))
+
         const nodesBelowAbstractionMap = _.keyBy(nodesBelowAbstraction, 'data.id')
         const hierarchyLinks = nodesBelowAbstraction.slice(1)
 
@@ -296,23 +315,16 @@ class ExploreGraph extends React.Component {
             node.fy = node.y;
             node.radius = 6;
 
-            if (node.data.id === draggedElement.id) {
-                node.x = draggedElement.x
-                node.y = draggedElement.y
-            }
-
             nodesById[node.data.id] = node
         })
-        nodesOutsideAbstraction.forEach(node => {
-            node.radius = 6;
 
-            if (node.id === draggedElement.id) {
-                node.x = draggedElement.x
-                node.y = draggedElement.y
-            }
 
-            nodesById[node.id] = node
-        })
+        nodesOutsideAbstraction
+            .forEach(node => {
+                node.radius = 6;
+
+                nodesById[node.data.id] = node
+            })
 
         edgesOutsideAbstraction.forEach(link => {
             link.source = nodesById[link.start]
@@ -339,7 +351,7 @@ class ExploreGraph extends React.Component {
 
         const nodeOutsideElements = nodesOutsideAbstraction.map(node => (
             <NodeOutside
-                key={node.id}
+                key={node.data.id}
                 node={node}
                 drag={this.drag}
                 onClick={this.onNodeClick}
@@ -364,6 +376,7 @@ class ExploreGraph extends React.Component {
                 { showLinks ? edgeOutsideElements : null }
                 { showLinks ? nodeOutsideElements : null }
                 <HierarchyGraph
+                    treeData={treeData}
                     nodes={nodesBelowAbstraction}
                     links={edgesBelowAbstraction}
                     hierarchyLinks={hierarchyLinks}
@@ -377,6 +390,9 @@ class ExploreGraph extends React.Component {
     }
 }
 
-export default withRouter(ExploreGraph)
+export default connect(
+    null,
+    { dragElement },
+)(withRouter(ExploreGraph))
 
 

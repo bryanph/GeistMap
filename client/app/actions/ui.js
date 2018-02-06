@@ -93,16 +93,18 @@ export const HIDE_ABSTRACTION_SIDEBAR = 'HIDE_ABSTRACTION_SIDEBAR'
 export const hideAbstractionSidebar = createAction(HIDE_ABSTRACTION_SIDEBAR)
 
 
-/*
- * Collection graph ui manipulation
-*/
-
-// set this collection in edit mode
-export const SET_ACTIVE_COLLECTION = 'SET_ACTIVE_COLLECTION'
-export function setActiveCollection(id) {
+// set this node in edit mode
+export const DRAG_ELEMENT = 'DRAG_ELEMENT'
+export function dragElement(id, x, y, dx, dy) {
     return {
-        type: SET_ACTIVE_COLLECTION,
-        id,
+        type: DRAG_ELEMENT,
+        draggedElement: {
+            id,
+            x,
+            y,
+            dx,
+            dy,
+        }
     }
 }
 
