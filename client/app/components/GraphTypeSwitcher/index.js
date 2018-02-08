@@ -25,9 +25,6 @@ class GraphTypeSwitcher extends React.Component {
         const abstractionClass = classNames("graphTypeSwitcher-button", {
             "active": graphType === "abstract"
         })
-        const hierarchyClass = classNames("graphTypeSwitcher-button", {
-            "active": graphType === "hierarchy"
-        })
         const exploreClass = classNames("graphTypeSwitcher-button", {
             "active": graphType === "explore"
         })
@@ -35,43 +32,23 @@ class GraphTypeSwitcher extends React.Component {
         return (
             <div className="graphTypeSwitcher">
                 <Button.Group className="graphTypeSwitcher-buttons">
-                    {
-                        /*
-                    <Button 
-                        icon='edit'
-                        content='Notes'
-                        onClick={ () => this.props.history.push(`/app/nodes/${id}/edit` + this.props.history.location.search) }
-                        className={ editorClass }
-                    />
-                    */
-                    }
                     <Button 
                         icon='triangle down'
-                        content='Child map'
+                        content='Hierarchy map'
                         onClick={ () => this.props.history.push({
-                            pathname: `/app/nodes/${id}/graph?graphType=abstract`,
-                            // search: this.props.location.search
+                            pathname: `/app/nodes/${id}/graph`,
+                            search: 'graphType=explore'
                         }) }
-                        className={ abstractionClass }
-                    />
-                    <Button 
-                        icon='triangle down'
-                        content='Hierarchy'
-                        onClick={ () => this.props.history.push({
-                            pathname: `/app/nodes/${id}/graph?graphType=hierarchy`,
-                            // search: this.props.location.search
-                        }) }
-                        className={ hierarchyClass }
+                        className={ exploreClass }
                     />
                     <Button 
                         icon='crosshairs'
                         content='Link map'
                         onClick={ () => this.props.history.push({
-                            pathname: `/app/nodes/${id}/graph?graphType=explore`,
-                            // search: this.props.location.search
+                            pathname: `/app/nodes/${id}/graph`,
+                            search: 'graphType=abstract'
                         }) }
-                        disabled={!node || node.type === "root"}
-                        className={ exploreClass }
+                        className={ abstractionClass }
                     />
                 </Button.Group>
             </div>

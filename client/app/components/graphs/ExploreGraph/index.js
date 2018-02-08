@@ -40,6 +40,9 @@ import { dragElement } from '../../../actions/ui'
 
 import './styles.scss'
 
+import ToggleShowLinks from '../../ToggleShowLinks'
+
+
 class NodeOutside extends React.Component {
     constructor(props) {
         super(props)
@@ -365,28 +368,30 @@ class ExploreGraph extends React.Component {
             />
         ))
 
-        return [
-            <ZoomButtons
-                zoomIn={() => this.zoom.zoomIn()}
-                zoomOut={() => this.zoom.zoomOut()}
-                zoomFit={() => this.zoom.zoomFit()}
-                key="1"
-            />,
-            <ManipulationLayer key="2" { ...this.props }>
-                { showLinks ? edgeOutsideElements : null }
-                { showLinks ? nodeOutsideElements : null }
-                <HierarchyGraph
-                    treeData={treeData}
-                    nodes={nodesBelowAbstraction}
-                    links={edgesBelowAbstraction}
-                    hierarchyLinks={hierarchyLinks}
-                    isLoading={this.props.isLoading}
-                    showLinks={showLinks}
-                    onNodeClick={this.onNodeClick}
-                    drag={this.drag}
+        return (
+            <div>
+                <ZoomButtons
+                    zoomIn={() => this.zoom.zoomIn()}
+                    zoomOut={() => this.zoom.zoomOut()}
+                    zoomFit={() => this.zoom.zoomFit()}
                 />
-            </ManipulationLayer>
-        ]
+                <ToggleShowLinks />
+                <ManipulationLayer { ...this.props }>
+                    { showLinks ? edgeOutsideElements : null }
+                    { showLinks ? nodeOutsideElements : null }
+                    <HierarchyGraph
+                        treeData={treeData}
+                        nodes={nodesBelowAbstraction}
+                        links={edgesBelowAbstraction}
+                        hierarchyLinks={hierarchyLinks}
+                        isLoading={this.props.isLoading}
+                        showLinks={showLinks}
+                        onNodeClick={this.onNodeClick}
+                        drag={this.drag}
+                    />
+                </ManipulationLayer>
+            </div>
+        )
     }
 }
 

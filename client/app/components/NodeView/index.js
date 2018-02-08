@@ -22,31 +22,6 @@ import { Dimmer, Loader } from 'semantic-ui-react'
 
 import './styles.scss'
 
-import { toggleShowLinks } from '../../actions/ui'
-import { connect } from 'react-redux'
-import { Button } from 'semantic-ui-react'
-
-class ToggleShowLinks extends React.Component {
-    render() {
-        const styles = {
-            position: "absolute",
-            zIndex: 100,
-            right: '10px',
-            bottom: '10px',
-        }
-        return (
-            <Button style={styles} toggle active={this.props.active} onClick={this.props.toggleShowLinks}>
-                Show Links
-            </Button>
-        )
-    }
-}
-
-ToggleShowLinks = connect(
-    (state) => ({ active: state.uiState.showLinks }),
-    { toggleShowLinks }
-)(ToggleShowLinks)
-
 export class NodeView extends React.PureComponent {
     render() {
         const {
@@ -91,7 +66,6 @@ export class NodeView extends React.PureComponent {
                     </div>
 
                     <div className="nodeView-graph">
-                        <ToggleShowLinks />
                         {
                             /*
                             <AbstractionNavigator
@@ -109,31 +83,29 @@ export class NodeView extends React.PureComponent {
                             nodeTree={this.props.nodeTree}
                         />
                         {
-                            graphType === "hierarchy" ?
-                                <FocusGraph {...this.props} />
+                            graphType === "abstract" ?
+                                <NodeGraph {...this.props} />
                                 :
                                 <ExploreGraph {...this.props} />
                         }
                         {
-                            /*
-                        <AddNodeWindow
-                            graphType={graphType}
-                            opened={mode === 'edit'}
-                            activeNodeId={this.props.activeNodeId}
-                            focusNodeId={this.props.focusNodeId}
-                            disabled={isLoading}
-                        />
-                            */
+                            graphType === "abstract" ? 
+                                <AddNodeWindow
+                                    graphType={graphType}
+                                    opened={mode === 'edit'}
+                                    activeNodeId={this.props.activeNodeId}
+                                    focusNodeId={this.props.focusNodeId}
+                                    disabled={isLoading}
+                                />
+                                : null
                         }
                         {
-                            /*
                         <GraphTypeSwitcher
                             graphType={graphType}
                             disabled={isLoading}
                             id={this.props.activeNodeId || this.props.focusNodeId}
                             node={this.props.activeNode || this.props.focusNode}
                         />
-                            */
                         }
                     </div>
 
