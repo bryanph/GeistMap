@@ -578,6 +578,10 @@ const initialUiState = {
     abstractionSidebar: {
         opened: false,
     },
+    addNodeWindow: {
+        opened: false,
+        id: null,
+    }
 }
 
 function uiState(state=initialUiState, action) {
@@ -598,6 +602,17 @@ function uiState(state=initialUiState, action) {
                 ...state,
                 connectWindowOpened: false,
             }
+
+        case uiActionTypes.SHOW_ADD_NODE_WINDOW:
+            return update(state, { addNodeWindow: { $set: {
+                opened: true,
+                id: action.payload,
+            }}})
+        case uiActionTypes.HIDE_ADD_NODE_WINDOW:
+            return update(state, { addNodeWindow: { $merge: {
+                opened: false
+            }}})
+
         case uiActionTypes.SHOW_ADD_RELATION_WINDOW:
             return {
                 ...state,

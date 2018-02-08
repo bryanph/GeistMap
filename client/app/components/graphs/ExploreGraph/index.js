@@ -36,7 +36,7 @@ import {
     createInnerDrag
 } from './drag'
 
-import { dragElement } from '../../../actions/ui'
+import { dragElement, showAddNodeWindow } from '../../../actions/ui'
 
 import './styles.scss'
 
@@ -388,6 +388,7 @@ class ExploreGraph extends React.Component {
                         showLinks={showLinks}
                         onNodeClick={this.onNodeClick}
                         drag={this.drag}
+                        showAddNodeWindow={this.props.showAddNodeWindow}
                     />
                 </ManipulationLayer>
             </div>
@@ -397,7 +398,7 @@ class ExploreGraph extends React.Component {
 
 export default connect(
     null,
-    { dragElement },
+    { dragElement, showAddNodeWindow },
 )(withRouter(ExploreGraph))
 
 

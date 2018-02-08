@@ -88,17 +88,11 @@ export class NodeView extends React.PureComponent {
                                 :
                                 <ExploreGraph {...this.props} />
                         }
-                        {
-                            graphType === "abstract" ? 
-                                <AddNodeWindow
-                                    graphType={graphType}
-                                    opened={mode === 'edit'}
-                                    activeNodeId={this.props.activeNodeId}
-                                    focusNodeId={this.props.focusNodeId}
-                                    disabled={isLoading}
-                                />
-                                : null
-                        }
+                        <AddNodeWindow
+                            opened={mode === 'edit' || this.props.addNodeWindow.opened }
+                            parentNodeId={mode === "edit" ? this.props.focusNodeId : this.props.addNodeWindow.id}
+                            disabled={isLoading}
+                        />
                         {
                         <GraphTypeSwitcher
                             graphType={graphType}

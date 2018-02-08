@@ -28,6 +28,8 @@ import {
     colorActiveNode,
 } from '../colorNode'
 
+import ContentAdd from 'material-ui/svg-icons/content/add-circle-outline'
+
 import { dragElement } from '../../../actions/ui'
 
 class Node extends React.Component {
@@ -50,20 +52,27 @@ class Node extends React.Component {
 
         // TODO: make sure node.data is on node directly instead - 2018-02-05
 
+
+
         return (
             <g
                 className="node"
                 transform={transform}
-                onClick={() => onClick(node.data.id)}
             >
                 <circle
                     className="nodeCircle"
                     r={node.radius}
                     fill={ node.children ? "lightsteelblue" : "#fff" }
+                    onClick={() => onClick(node.data.id)}
                 />
+                <text 
+                    className="nodeAdd"
+                    x={ node.radius + 2 }
+                    onClick={ () => this.props.showAddNodeWindow(node.data.id) }
+                >+</text>
                 <text
                     className="nodeText"
-                    x={node.children ? -10 : 10}
+                    x={node.children ? -10 : node.radius + 12}
                     textAnchor={ node.children ? "end" : "start" }
                 >{node.data.name}</text>
             </g>
@@ -150,6 +159,7 @@ class NodeHierarchy extends React.Component {
                     key={node.id}
                     node={node}
                     onClick={this.props.onNodeClick}
+                    showAddNodeWindow={this.props.showAddNodeWindow}
                     drag={this.props.drag}
                 />
                 { (node.children || []).map((node) => (
@@ -215,33 +225,34 @@ class NodeGraph extends React.Component {
             />
         ))
 
-        const nestedGroupings = (node) => {
-            return (
-                <g id={`nodeHierarchy-${node.data.id}`}>
-                    {
-                        (node.children || []).map(link => (
-                            <HierarchyLink
-                                key={link.id}
-                                link={link}
-                            />
-                        ))
-                    }
-                    <Node 
-                        key={node.id}
-                        node={node}
-                        onClick={this.props.onNodeClick}
-                        drag={this.props.drag}
-                    />
-                    { (node.children || []).map(nestedGroupings) }
-                </g>
-            )
-        }
+        // const nestedGroupings = (node) => {
+        //     return (
+        //         <g id={`nodeHierarchy-${node.data.id}`}>
+        //             {
+        //                 (node.children || []).map(link => (
+        //                     <HierarchyLink
+        //                         key={link.id}
+        //                         link={link}
+        //                     />
+        //                 ))
+        //             }
+        //             <Node 
+        //                 key={node.id}
+        //                 node={node}
+        //                 onClick={this.props.onNodeClick}
+        //                 drag={this.props.drag}
+        //             />
+        //             { (node.children || []).map(nestedGroupings) }
+        //         </g>
+        //     )
+        // }
 
         // const hierarchyElements = nestedGroupings(this.props.treeData)
         const hierarchyElements = (
             <NodeHierarchy
                 node={this.props.treeData} 
                 onNodeClick={this.props.onNodeClick}
+                showAddNodeWindow={this.props.showAddNodeWindow}
                 drag={this.props.drag}
             />
         )

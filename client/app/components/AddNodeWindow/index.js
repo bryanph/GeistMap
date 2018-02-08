@@ -30,23 +30,12 @@ class AddNodeWindow extends React.Component {
     addExistingNode(esResult) {
         // add existing node to the graph
         const id = esResult._id
-        const { graphType, focusNodeId } = this.props
+        const { parentNodeId } = this.props
 
-        if (graphType === "abstract") {
             return this.props.addNodeToCollection(
-                focusNodeId,
+                parentNodeId,
                 id,
             )
-        } else {
-            return this.props.loadNodeL2(id)
-                .then(() =>
-                    this.props.addEdge(
-                        focusNodeId,
-                        id
-                    )
-                )
-        }
-
     }
 
     addNewNode(label) {
@@ -55,31 +44,18 @@ class AddNodeWindow extends React.Component {
             return;
         }
 
-        const { graphType, focusNodeId } = this.props
+        const { parentNodeId } = this.props
 
-        const createPromise = this.props.createNode({ name: label })
+        this.props.createNode({ name: label })
             .then(action => action.response.result)
-
-        if (graphType === "abstract") {
-            createPromise.then(id => this.props.addNodeToCollection(
-                focusNodeId,
-                 id,
-             ))
-        } else {
-            createPromise.then(id => this.props.addEdge(
-                focusNodeId,
-                 id,
-             ))
-        }
+            .then(id => this.props.addNodeToCollection(parentNodeId, id))
     }
 
     render() {
         const { opened } = this.props
 
-        // const containerClass = classNames('addNodeWindow', { visible: opened })
-        const containerClass = classNames('addNodeWindow', { visible: true })
+        const containerClass = classNames('addNodeWindow', { visible: opened })
 
-        // TODO: disable when disabled prop is true - 2017-06-28
         return (
                 <div className={ containerClass }>
                     <div className="addNodeWindow-container">

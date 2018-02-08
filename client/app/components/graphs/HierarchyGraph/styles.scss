@@ -9,16 +9,23 @@
         background-color:#EEE;
     }
 
-    .node circle {
-        fill: #fff;
-        stroke: steelblue;
-        stroke-width: 1.5px;
-    }
+    .node {
+        .nodeAdd {
+            fill: $accent-color;
+            stroke: $accent-color;
+        }
 
-    .node text {
-        font-size:10px; 
-        font-family:sans-serif;
-        dominant-baseline: central;
+        circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+        }
+
+        text {
+            font-size:10px; 
+            font-family:sans-serif;
+            dominant-baseline: central;
+        }
     }
 
     .link {

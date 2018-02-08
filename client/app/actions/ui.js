@@ -10,6 +10,15 @@ export const resetErrorMessage = createAction('RESET_ERROR_MESSAGE')
 export const TOGGLE_SHOW_LINKS = 'TOGGLE_SHOW_LINKS'
 export const toggleShowLinks = createAction(TOGGLE_SHOW_LINKS)
 
+/*
+ * For adding a node below a hierarchy, 
+*/
+export const SHOW_ADD_NODE_WINDOW = 'SHOW_ADD_NODE_WINDOW'
+export const showAddNodeWindow = createAction(SHOW_ADD_NODE_WINDOW)
+
+export const HIDE_ADD_NODE_WINDOW = 'HIDE_ADD_NODE_WINDOW'
+export const hideAddNodeWindow = createAction(HIDE_ADD_NODE_WINDOW)
+
 export const SHOW_CONNECT_WINDOW = 'SHOW_CONNECT_WINDOW'
 export function showConnectWindow(editorState) {
     return {
