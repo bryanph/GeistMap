@@ -166,7 +166,7 @@ class ManipulationLayer extends React.PureComponent {
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT, this.zoomed)
 
-        this.zoom.zoomFit()
+        this.zoom.zoomFit(false)
     }
 
     componentDidUpdate() {

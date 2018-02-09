@@ -8,10 +8,12 @@
     background-color: transparent;
 
     transition: all 300ms;
-    transform: translate(0, 200%);
+    // transform: translate(0, 200%);
+    visibility: hidden;
 
     &.visible {
-        transform: translate(0, 0);
+        // transform: translate(0, 0);
+        visibility: visible;
     }
 
     z-index: 99;

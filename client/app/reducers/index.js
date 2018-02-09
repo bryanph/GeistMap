@@ -1086,7 +1086,7 @@ export const getAbstractionTree = createSelector(
                     .map(id => handleShowNodes(nodeMap[id], nodesByCollectionId[id] || [], level+1))
                     // TODO: this should be a user-defined order so this sort is not necessary - 2018-01-30
                     .orderBy(n => n.name.toLowerCase())
-                    .orderBy(n => !n.count)
+                    // .orderBy(n => !n.count)
                     .value()
                 }
             // }
@@ -1148,7 +1148,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
                     children: _(nodeIds)
                         .map(id => handleShowNodes(nodeBelowMap[id], nodesByCollectionId[id] || [], level+1))
                         .orderBy(n => n.name.toLowerCase())
-                        .orderBy(n => !n.count)
+                        // .orderBy(n => !n.count)
                         .value()
                 }
             }

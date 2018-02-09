@@ -188,7 +188,6 @@ class NodeGraph extends React.Component {
             nodes,
             links,
             hierarchyLinks,
-            isLoading,
             showLinks,
         } = this.props
 
@@ -284,7 +283,6 @@ class NodeGraph extends React.Component {
                 { /* hierarchyLinkElements */ }
                 { /* showLinks ? linkElements : null */ }
                 { hierarchyElements }
-                { isLoading ? null : null }
             </g>
         )
     }

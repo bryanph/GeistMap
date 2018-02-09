@@ -32,6 +32,7 @@ import {
 } from '../../actions/ui'
 
 import NodeView from '../../components/NodeView'
+import { Dimmer, Loader } from 'semantic-ui-react'
 
 function loadData(props) {
     // TODO: less data fetching based on which views are visible - 2018-01-12
@@ -85,7 +86,6 @@ export class NodeViewContainer extends React.PureComponent {
     componentWillReceiveProps(nextProps) {
         if (nextProps.focusNodeId !== this.props.focusNodeId || nextProps.nodeId !== this.props.nodeId) {
             loadData(nextProps)
-            return this.setState({ hasLoaded: false })
         }
 
         // TODO: solve this more general, with a hoc or something - 2017-09-16
@@ -95,10 +95,18 @@ export class NodeViewContainer extends React.PureComponent {
     }
 
     render() {
+        if (!this.state.hasLoaded) {
+            return (
+                <Dimmer active={true} inverted>
+                    <Loader />
+                </Dimmer>
+            )
+        }
+
         return (
             <NodeView
                 { ...this.props }
-                isLoading={!this.state.hasLoaded || this.props.isLoading}
+                isLoading={this.props.isLoading}
             />
         );
     }
