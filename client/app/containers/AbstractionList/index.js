@@ -33,6 +33,63 @@ import './styles.scss'
 
 import { Button, Icon } from 'semantic-ui-react'
 import AbstractionTree from './components/root'
+import { getAbstractionChain } from '../../reducers'
+
+
+export const ExpandButton = ({ expanded, onClick }) => {
+
+    const icon = expanded ? "chevron right" : "chevron left"
+    const className = classNames(
+        "abstractionList-expandButton",
+        {
+            "abstractionList-expandButton-expanded": expanded,
+            "abstractionList-expandButton-collapsed": !expanded,
+        }
+    )
+
+    return (
+        <div className={className}>
+            <Button icon onClick={onClick}>
+                <Icon name={ icon } />
+            </Button>
+        </div>
+    )
+}
+
+
+const AbstractionItem = ({ url, name, hasNext, onClick }) => (
+    <div className="abstractionHeader-item">
+        <QueryLink to={url} onClick={onClick}>{ name }</QueryLink>
+        {
+            hasNext ? <Icon name="angle right" /> : null
+        }
+    </div>
+)
+
+const AbstractionHeading = (props) => {
+
+    const abstractionItems = props.abstractionChain.map((c, i) => (
+        <AbstractionItem
+            key={i}
+            url={`/app/nodes/${c.id}/graph`}
+            name={c.name}
+            hasNext={ i < (props.abstractionChain.length - 1) }
+            onClick={() => props.moveParent(c.id)}
+        />
+    ))
+
+    return (
+        <div className="abstractionList-heading">
+            <div className="abstractionList-navigate">
+                { abstractionItems }
+            </div>
+
+            <div className="title">
+                { props.title }
+            </div>
+        </div>
+    )
+}
 
 class AbstractionList extends React.Component {
 
@@ -56,7 +113,7 @@ class AbstractionList extends React.Component {
          *
          * 1. change node type to 'node'
          * 2. all edges from this collection to its nodes should become normal
-        */
+         */
 
         this.props.removeAbstraction(id)
     }
@@ -65,11 +122,12 @@ class AbstractionList extends React.Component {
         /*
          * 1. fetch the collection to collapse if it hasn't been fetched yet
          * 2. toggle the collapse
-        */
+         */
 
         if (collection.collapsed) {
-            this.props.loadCollectionL1(collection.id)
-                .then(() => this.props.toggleCollapse(collection.id))
+            // this.props.loadCollectionL1(collection.id)
+            //     .then(() => this.props.toggleCollapse(collection.id))
+            this.props.toggleCollapse(collection.id)
         } else {
             this.props.toggleCollapse(collection.id)
         }
@@ -123,63 +181,6 @@ class AbstractionList extends React.Component {
         );
     }
 }
-
-export const ExpandButton = ({ expanded, onClick }) => {
-
-    const icon = expanded ? "chevron right" : "chevron left"
-    const className = classNames(
-        "abstractionList-expandButton",
-        {
-        "abstractionList-expandButton-expanded": expanded,
-        "abstractionList-expandButton-collapsed": !expanded,
-        }
-    )
-
-    return (
-        <div className={className}>
-            <Button icon onClick={onClick}>
-                <Icon name={ icon } />
-            </Button>
-        </div>
-    )
-}
-
-
-const AbstractionItem = ({ url, name, hasNext, onClick }) => (
-    <div className="abstractionHeader-item">
-        <QueryLink to={url} onClick={onClick}>{ name }</QueryLink>
-        {
-            hasNext ? <Icon name="angle right" /> : null
-        }
-    </div>
-)
-
-const AbstractionHeading = (props) => {
-
-    const abstractionItems = props.abstractionChain.map((c, i) => (
-        <AbstractionItem
-            key={i}
-            url={`/app/nodes/${c.id}/graph`}
-            name={c.name}
-            hasNext={ i < (props.abstractionChain.length - 1) }
-            onClick={() => props.moveParent(c.id)}
-        />
-    ))
-
-    return (
-        <div className="abstractionList-heading">
-            <div className="abstractionList-navigate">
-                { abstractionItems }
-            </div>
-
-            <div className="title">
-                { props.title }
-            </div>
-        </div>
-    )
-}
-
-import { getAbstractionChain } from '../../reducers'
 
 // export default AbstractionList
 function mapStateToProps(state) {

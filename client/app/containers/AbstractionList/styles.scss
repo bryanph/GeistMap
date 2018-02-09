@@ -19,8 +19,8 @@ $abstractionList-heading-height: 50px;
     z-index: 100000;
 }
 .abstractionList-expandButton-collapsed {
-    position: absolute;
-    top: 10px;
+    position: fixed;
+    top: calc(#{$topbar-height} + 10px);
     right: 10px;
     z-index: 100000;
 }
@@ -50,20 +50,20 @@ $abstractionList-heading-height: 50px;
         margin-right: $abstractionList-width;
     }
 
-    .abstractionList-container {
-        transform: translate3d(0px, 0px, 0px) !important;
-    }
+    // .abstractionList-container {
+    //     transform: translate3d(0px, 0px, 0px) !important;
+    // }
 
-    .abstractionList-expandButton {
-        display: none;
-    }
+    // .abstractionList-expandButton {
+    //     display: none;
+    // }
 
-    .appContainer {
-        margin-right: $abstractionList-width;
-    }
+    // .appContainer {
+    //     margin-right: $abstractionList-width;
+    // }
 }
 
-.abstractionList {
+.abstractionList-root {
     list-style: none;
     padding: 10px;
     font-family: lucida grande ,tahoma,verdana,arial,sans-serif;

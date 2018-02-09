@@ -19,7 +19,7 @@ class TreeBeard extends React.Component {
         }
 
         return (
-            <ul className="abstractionList">
+            <ul className="abstractionList-root">
                 {data.map((node, index) =>
                     <TreeNode animations={animations}
                               key={node.id || index}
