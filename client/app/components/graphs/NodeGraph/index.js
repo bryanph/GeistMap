@@ -349,8 +349,8 @@ const createCollectionDetailEvents = function(simulation, actions) {
     const onClick = (d) => {
         this.props.moveChild(d.id)
         this.props.history.push({
-            pathname: `/app/nodes/${d.id}/graph?graphType=abstract`,
-            search: this.props.location.search
+            pathname: `/app/nodes/${d.id}/graph`,
+            search: "graphType=abstract"
         })
     }
 
