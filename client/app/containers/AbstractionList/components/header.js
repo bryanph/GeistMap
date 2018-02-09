@@ -36,7 +36,7 @@ export const FocusButton = (props) => {
 
 export const Text = ({node, onInput, onKeyDown}) => {
     return (
-        <span className="abstractionList-text" contentEditable="true" onInput={onInput} onKeyDown={onKeyDown}>
+        <span suppressContentEditableWarning className="abstractionList-text" contentEditable="true" onInput={onInput} onKeyDown={onKeyDown}>
             {node.name}
         </span>
     );

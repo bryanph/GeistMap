@@ -166,11 +166,11 @@ class ManipulationLayer extends React.PureComponent {
 
         this.zoom = createZoom(this.graph, this.container, WIDTH, HEIGHT, this.zoomed)
 
-        // this.zoom.zoomFit()
+        this.zoom.zoomFit()
     }
 
     componentDidUpdate() {
-        // this.zoom.zoomFit()
+        this.zoom.zoomFit()
     }
 
     zoomed(transform) {
@@ -367,6 +367,8 @@ class ExploreGraph extends React.Component {
                 link={link}
             />
         ))
+
+        console.log("should render only once")
 
         return (
             <div>

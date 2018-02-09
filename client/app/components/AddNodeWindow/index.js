@@ -19,6 +19,10 @@ import {
     addNodeToCollection
 } from '../../actions/collection'
 
+import { hideAddNodeWindow } from '../../actions/ui'
+
+import enhanceWithClickOutside from 'react-onclickoutside'
+
 class AddNodeWindow extends React.Component {
     constructor(props) {
         super(props)
@@ -51,6 +55,19 @@ class AddNodeWindow extends React.Component {
             .then(id => this.props.addNodeToCollection(parentNodeId, id))
     }
 
+    componentDidUpdate(nextProps) {
+
+    }
+
+    handleClickOutside() {
+        /*
+         * when clicking outside of the window
+        */
+        if (this.props.opened) {
+            this.props.hideAddNodeWindow()
+        }
+    }
+
     render() {
         const { opened } = this.props
 
@@ -78,4 +95,6 @@ export default connect(null, {
     addNodeToCollection,
     addEdge,
     loadNodeL2,
-})(AddNodeWindow);
+    hideAddNodeWindow,
+})(enhanceWithClickOutside(AddNodeWindow));
+

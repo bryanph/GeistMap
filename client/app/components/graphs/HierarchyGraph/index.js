@@ -150,20 +150,19 @@ class NodeHierarchy extends React.Component {
                 {
                     (node.children || []).map(link => (
                         <HierarchyLink
-                            key={link.id}
+                            key={link.data.id}
                             link={link}
                         />
                     ))
                 }
                 <Node 
-                    key={node.id}
                     node={node}
                     onClick={this.props.onNodeClick}
                     showAddNodeWindow={this.props.showAddNodeWindow}
                     drag={this.props.drag}
                 />
                 { (node.children || []).map((node) => (
-                    <NodeHierarchy {...this.props} node={ node } />
+                    <NodeHierarchy {...this.props} key={node.data.id} node={ node } />
                 )) }
             </g>
             
