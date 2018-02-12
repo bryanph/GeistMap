@@ -41,32 +41,10 @@ function loadData(props) {
         props.loadNodeL2(props.focusNodeId),
         props.nodeId ? props.loadNodeL1(props.nodeId) : Promise.resolve(),
     ])
-
-    // switch(props.graphType) {
-    //     case "abstract":
-    //     case "hierarchy":
-    //         return Promise.all([
-    //             props.loadCollectionL1(props.focusNodeId),
-    //             props.loadNodeL1(props.focusNodeId)
-    //         ])
-    //             .then((action) => {
-    //                 if (props.nodeId) {
-    //                     props.loadNode(props.nodeId)
-    //                     return action
-    //                 }
-    //                 return action
-    //             })
-    //         break;
-    //     case "explore":
-    //         return props.loadNodeL2(props.focusNodeId)
-    //         break;
-    //     default:
-    //         console.error("got unexpected graphType", props.graphType)
-    // }
 }
 
 
-export class NodeViewContainer extends React.PureComponent {
+export class NodeViewContainer extends React.Component {
     constructor(props) {
         super(props)
 
@@ -83,11 +61,17 @@ export class NodeViewContainer extends React.PureComponent {
             })
     }
 
-    componentWillReceiveProps(nextProps) {
+    shouldComponentUpdate(nextProps) {
+        // TODO: solve this more general, with a hoc or something - 2017-09-16
         if (nextProps.focusNodeId !== this.props.focusNodeId || nextProps.nodeId !== this.props.nodeId) {
             loadData(nextProps)
+            return false;
         }
 
+        return true;
+    }
+
+    componentWillReceiveProps(nextProps) {
         // TODO: solve this more general, with a hoc or something - 2017-09-16
         if (!nextProps.isLoading) {
             this.setState({ hasLoaded: true })

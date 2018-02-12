@@ -795,6 +795,10 @@ export const getParentIds = createSelector(
 export const getParents = (state, id) => {
     const node = getNode(state, id)
 
+    if (!node) {
+        return null
+    }
+
     return (node.collections || []).map(id => getCollection(state, id))
     // return (node.properties.collections || []).map(id => getCollection(state, id))
 }
