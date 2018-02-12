@@ -205,6 +205,7 @@ class ExploreGraph extends React.Component {
         super(props)
 
         this.onNodeClick = this.onNodeClick.bind(this);
+        this.onNodeFocus = this.onNodeFocus.bind(this);
 
         this.simulation = forceSimulation()
             .velocityDecay(0.6)
@@ -271,6 +272,12 @@ class ExploreGraph extends React.Component {
         })
     }
 
+    onNodeFocus(id) {
+        return this.props.history.push({
+            pathname: `/app/nodes/${this.props.focusNodeId}/graph/${id}`,
+            search: this.props.location.search
+        })
+    }
 
     render() {
         // TODO: set the nodes and links here instead of in the graph - 2018-01-29
@@ -306,6 +313,11 @@ class ExploreGraph extends React.Component {
             node.fx = node.x;
             node.fy = node.y;
             node.radius = MIN_NODE_RADIUS;
+
+            if (this.props.activeNode && node.data.id === this.props.activeNode.id) {
+                console.log("setting node active")
+                node.active = true
+            }
 
             nodesById[node.data.id] = node
         })
@@ -374,6 +386,7 @@ class ExploreGraph extends React.Component {
                         isLoading={this.props.isLoading}
                         showLinks={showLinks}
                         onNodeClick={this.onNodeClick}
+                        onNodeFocus={this.onNodeFocus}
                         drag={this.drag}
                         showAddNodeWindow={this.props.showAddNodeWindow}
                     />

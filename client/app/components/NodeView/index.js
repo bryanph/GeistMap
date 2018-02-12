@@ -89,8 +89,8 @@ export class NodeView extends React.PureComponent {
                                 <ExploreGraph {...this.props} />
                         }
                         <AddNodeWindow
-                            opened={graphType === 'abstract' || this.props.addNodeWindow.opened }
-                            parentNodeId={graphType === "abstract" ? this.props.focusNodeId : this.props.addNodeWindow.id}
+                            opened={graphType === 'abstract' || this.props.activeNode }
+                            parentNodeId={graphType === "abstract" ? this.props.focusNodeId : this.props.activeNodeId}
                             disabled={isLoading}
                         />
                         {

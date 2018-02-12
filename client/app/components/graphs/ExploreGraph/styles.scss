@@ -16,7 +16,7 @@
         circle {
             fill: #fff;
             stroke: steelblue;
-            stroke-width: 1.5px;
+            stroke-width: 3px;
 
             &:hover {
                 opacity: .5;
@@ -31,6 +31,16 @@
 
             dominant-baseline: central;
             font-weight: bold;
+        }
+    }
+
+    .nodeActive {
+        circle {
+            stroke: $accent-color;
+        }
+
+        .nodeFocus {
+            visibility: hidden;
         }
     }
 
