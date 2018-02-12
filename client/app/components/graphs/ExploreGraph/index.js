@@ -75,7 +75,7 @@ class NodeOutside extends React.Component {
                 />
                 <text
                     className="nodeText"
-                    x={node.children ? -10 : 10}
+                    x={node.children ? -node.radius-8 : node.radius + 8}
                     textAnchor={ node.children ? "end" : "start" }
                 >{node.data.name}</text>
             </g>
@@ -222,7 +222,7 @@ class ExploreGraph extends React.Component {
                 forceLink()
                 .id(d => d.id)
                 // .distance(d => 50 + d.source.radius + d.target.radius)
-                .distance(d => 50)
+                .distance(d => 200)
                 .strength(
                     d => (d.weight ? d.weight * edgeStrength : edgeStrength)
                 )
@@ -299,7 +299,7 @@ class ExploreGraph extends React.Component {
         } = this.state
 
         const tree = d3Tree()
-        tree.nodeSize([25, 100])
+        tree.nodeSize([40, 200])
         const treeData = tree(d3Hierarchy(nodeTree))
 
         const nodesBelowAbstraction = treeData.descendants()
@@ -316,7 +316,7 @@ class ExploreGraph extends React.Component {
         nodesBelowAbstraction.forEach(node => {
             node.fx = node.x;
             node.fy = node.y;
-            node.radius = 6;
+            node.radius = MIN_NODE_RADIUS;
 
             nodesById[node.data.id] = node
         })
@@ -324,7 +324,7 @@ class ExploreGraph extends React.Component {
 
         nodesOutsideAbstraction
             .forEach(node => {
-                node.radius = 6;
+                node.radius = MIN_NODE_RADIUS;
 
                 nodesById[node.data.id] = node
             })

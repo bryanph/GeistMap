@@ -13,25 +13,8 @@
         .nodeAdd {
             fill: $accent-color;
             stroke: $accent-color;
+            font-size: 1.5em;
         }
-
-        circle {
-            fill: #fff;
-            stroke: steelblue;
-            stroke-width: 1.5px;
-        }
-
-        text {
-            font-size:10px; 
-            font-family:sans-serif;
-            dominant-baseline: central;
-        }
-    }
-
-    .link {
-        fill: none;
-        stroke: $accent-color;
-        stroke-width: 1.5px;
     }
 
     .hierarchy-link {

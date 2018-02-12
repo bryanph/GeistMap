@@ -67,12 +67,12 @@ class Node extends React.Component {
                 />
                 <text 
                     className="nodeAdd"
-                    x={ node.radius + 2 }
+                    x={ node.radius + 4 }
                     onClick={ () => this.props.showAddNodeWindow(node.data.id) }
                 >+</text>
                 <text
                     className="nodeText"
-                    x={node.children ? -10 : node.radius + 12}
+                    x={node.children ? -node.radius-8 : node.radius + 19}
                     textAnchor={ node.children ? "end" : "start" }
                 >{node.data.name}</text>
             </g>
@@ -178,8 +178,6 @@ class NodeGraph extends React.Component {
 
     constructor(props) {
         super(props)
-
-        this.tree = d3Tree()
     }
 
     render() {
@@ -202,9 +200,6 @@ class NodeGraph extends React.Component {
 
             // link.opacity = strokeScale(link.count || 0)
         })
-
-        // this.tree = this.tree.size([newHeight, WIDTH]);
-        this.tree = this.tree.nodeSize([25, 100]);
 
         // Compute the new tree layout.
 

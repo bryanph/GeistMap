@@ -93,13 +93,14 @@ export default (root, container, fullWidth, fullHeight, zoomCallback) => {
 
         if (width == 0 || height == 0) return; // nothing to fit
 
-        let scale = paddingPercent * Math.min(fullWidth / width, fullHeight / height)
-
         if (width < fullWidth && height < fullHeight) {
             // don't zoom in beyond the full width
-            console.log("its less than the full width!", width, height)
-            // return;
+            console.log("its less than the full width!", width, height, fullWidth, fullHeight)
+            return;
         }
+
+        let scale = paddingPercent * Math.min(fullWidth / width, fullHeight / height)
+
 
         const translate = [ -(midX*scale - fullWidth/2), -(midY*scale - fullHeight/2)];
 
