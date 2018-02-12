@@ -786,16 +786,35 @@ export const getEdgeListMap = (state) => state.edgeListMap
 export const getArchiveNodes = (state) => state.archive.map(id => getNode(state, id))
 
 
-export const getCollectionsByNodeId = (state, id) => {
-    const node = getNode(state, id)
+export const getParentIds = createSelector(
+    getNodeMap,
+    (state, { id }) => id,
+    (nodeMap, id) => (nodeMap[id] || {}).collections || []
+)
 
-    if (!node) {
-        return []
-    }
+export const getParents = (state, id) => {
+    const node = getNode(state, id)
 
     return (node.collections || []).map(id => getCollection(state, id))
     // return (node.properties.collections || []).map(id => getCollection(state, id))
 }
+
+export const getParentIdsRecursive = createSelector(
+    (_) => _,
+    getNodeMap,
+    (_, { id }) => id,
+    (state, nodeMap, id) => {
+        function add (id) {
+            const parents = getParentIds(state, { id })
+            return [
+                ...parents,
+                ..._.flatMap(parents.map(add))
+            ]
+        }
+
+        return _.uniq(add(id))
+    }
+)
 
 export const getL1NodeIds = (state, id) => {
     // TODO: uniq shouldn't be necessary here - 2018-01-11

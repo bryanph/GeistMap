@@ -174,34 +174,34 @@ module.exports = function(db, es) {
                     }
                 )
             ])
-            .then((results) => {
-                if (results[0].records.length === 0) {
-                    console.log("collection not found..");
-                    return res(new Error(`Collection with id ${id} was not found`))
-                }
+                .then((results) => {
+                    if (results[0].records.length === 0) {
+                        console.log("collection not found..");
+                        return res(new Error(`Collection with id ${id} was not found`))
+                    }
 
-                const collection = results[0].records[0].get(0)
-                const edges = results[1].records[0].get(0)
-                const nodes = results[2].records[0].get(0) === null ?
-                    [] :
-                    results[2].records.map(row => (
-                        Object.assign({},
-                            row.get(0),
-                            {
-                                collections: row.get(1), // ids for collections
-                            }
-                        )
-                    ))
+                    const collection = results[0].records[0].get(0)
+                    const edges = results[1].records[0].get(0)
+                    const nodes = results[2].records[0].get(0) === null ?
+                        [] :
+                        results[2].records.map(row => (
+                            Object.assign({},
+                                row.get(0),
+                                {
+                                    collections: row.get(1), // ids for collections
+                                }
+                            )
+                        ))
 
-                return res(null, {
-                    collection: Object.assign({},
-                        collection,
-                        { nodes }
-                    ),
-                    edges
+                    return res(null, {
+                        collection: Object.assign({},
+                            collection,
+                            { nodes }
+                        ),
+                        edges
+                    })
                 })
-            })
-            .catch(handleError)
+                .catch(handleError)
         },
 
         getPath: function(user, chain, res) {
@@ -235,7 +235,7 @@ module.exports = function(db, es) {
                 /*
                  * Get every direct child
                  * Including their top-level abstractions in a list (ids)
-                */
+                 */
                 db.run(`
                     MATCH (u:User)--(c:Node)
                     WHERE u.id = {userId} AND c.id = {id}
@@ -340,7 +340,7 @@ module.exports = function(db, es) {
             /*
              * This converts the abstraction to a node and the edges to normal edges
              * instead it adds all the nodes to the parent collection
-            */
+             */
 
             if (!id) {
                 res("Must specify source id")
@@ -354,7 +354,7 @@ module.exports = function(db, es) {
                  * 1. Remove all nodes from the given abstraction
                  * 2. Attach them to the parent abstraction instead
                  * 3. Modify abstraction to be a node
-                */
+                 */
                 `
                 MATCH (u:User)--(n:Collection)-[:AbstractEdge]->(pn:Collection)
                 WHERE u.id = {userId} AND n.id = {id} AND NOT n:RootCollection
@@ -370,14 +370,14 @@ module.exports = function(db, es) {
                     id,
                 }
             )
-            .then(results => {
-                if (res) {
-                    return res(null, true) // success
-                }
+                .then(results => {
+                    if (res) {
+                        return res(null, true) // success
+                    }
 
-                return true
-            })
-            .catch(handleError)
+                    return true
+                })
+                .catch(handleError)
         },
 
         addNode: function(user, collectionId, nodeId, id, res) {
@@ -394,7 +394,6 @@ module.exports = function(db, es) {
                 return res("id must be explicitly passed")
             }
 
-            // TODO: what if we add it to PKB directly?
             return db.run(`
                 MATCH (u:User)--(c:Node), (u:User)--(n:Node)
                 WHERE u.id = {userId}
@@ -469,50 +468,76 @@ module.exports = function(db, es) {
              *
              * must make sure there can be no duplicates in path to root (no loops)
              * in practice, only moved to parent or to child so not an issue
-            */
+             */
 
-            return Promise.all([
-                // remove the AbstractEdge to the source abstraction
-                db.run(
-                    `
+            // first check if the action is legal
+            return db.run(
+                `
+                    MATCH (u:User)--(n:Node)
+                    WHERE u.id = {userId} AND n.id = {targetId}
+                    MATCH (n)-[e:AbstractEdge*0..]->(c)
+                    RETURN collect(distinct c.id)
+                `,
+                {
+                    targetId,
+                    userId: user._id.toString(),
+                }
+            ).then(results => {
+                const parentIds = results.records[0].get(0)
+
+                if (parentIds.includes(sourceId)) {
+                    if (res) {
+                        res("recursive pattern detected")
+                    }
+
+                    return "recursive pattern detected"
+                }
+
+                return Promise.all([
+                    // remove the AbstractEdge to the source abstraction
+                    db.run(
+                        `
                     MATCH (u:User)--(n:Node), (u:User)--(c:Node)
                     WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {sourceCollectionId}
                     MATCH (n)-[e:AbstractEdge]->(c)
                     DELETE e
                     `,
-                    {
-                        userId: user._id.toString(),
-                        sourceId,
-                        sourceCollectionId,
-                    }
-                ),
-                db.run(
-                    // move the node to the abstraction with targetId
-                    `
+                        {
+                            userId: user._id.toString(),
+                            sourceId,
+                            sourceCollectionId,
+                        }
+                    ),
+                    db.run(
+                        // move the node to the abstraction with targetId
+                        `
                     MATCH (u:User)--(n:Node), (u:User)--(c:Node)
                     WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {targetId}
                     CREATE (n)-[e:AbstractEdge { id: {edgeId}, start: {sourceId}, end: {targetId} }]->(c)
                     RETURN properties(e)
                     `,
-                    {
-                        userId: user._id.toString(),
-                        sourceId,
-                        targetId,
-                        edgeId,
-                    }
-                )
+                        {
+                            userId: user._id.toString(),
+                            sourceId,
+                            targetId,
+                            edgeId,
+                        }
+                    )
 
-            ])
-            .then(results => {
-                const result = results[1].records[0]._fields[0]
+                ])
+                    .then(results => {
+                        const result = results[1].records[0]._fields[0]
 
-                if (res) {
-                    res(null, result)
-                }
+                        if (res) {
+                            res(null, result)
+                        }
 
-                return result
+                        return result
+                    })
+                    .catch(handleError)
+
             })
-            .catch(handleError)
+
         },
 
     }

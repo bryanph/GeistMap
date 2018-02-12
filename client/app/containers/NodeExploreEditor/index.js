@@ -21,7 +21,7 @@ import {
 
 import {
     getNode,
-    getCollectionsByNodeId,
+    getParents,
 } from '../../reducers'
 
 export class NodeExploreEditor extends React.Component { // eslint-disable-line react/prefer-stateless-function
@@ -88,7 +88,7 @@ function mapStateToProps(state, props) {
     return {
         isLoading,
         node: getNode(state, props.nodeId),
-        collections: getCollectionsByNodeId(state, props.nodeId)
+        collections: getParents(state, props.nodeId)
     }
 }
 

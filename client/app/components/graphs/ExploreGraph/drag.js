@@ -97,8 +97,6 @@ export const createInnerDrag = (self) => (actions) => {
                 return;
             }
 
-            console.log(currentEvent)
-
             const nodeElement = d3Select(this)
             const id = nodeElement.attr('id').replace("node-", "")
             const node = self.nodesById[id]

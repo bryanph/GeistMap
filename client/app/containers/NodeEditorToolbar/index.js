@@ -139,7 +139,7 @@ export class NodeEditorToolbar extends React.Component {
     }
 }
 
-import { getNode, getCollectionsByNodeId } from '../../reducers'
+import { getNode, getParents } from '../../reducers'
 import { updateNode, removeNode, removeEdge } from '../../actions/node'
 import { showAddRelationWindow } from '../../actions/ui'
 
@@ -147,7 +147,7 @@ function mapStateToProps(state, props) {
     const rootCollectionId = state.user.rootCollectionId
 
     return {
-        collections: getCollectionsByNodeId(state, props.id),
+        collections: getParents(state, props.id),
         rootCollectionId,
     }
 }

@@ -5,6 +5,7 @@ import { CALL_API } from '../middleware/api'
 import {
     getNode,
     getCollection,
+    getParentIdsRecursive,
  } from '../reducers'
 
 const uuidV4 = require('uuid/v4');
@@ -240,6 +241,14 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
     return (dispatch, getState) => {
         const source = getNode(getState(), sourceId)
         const target = getNode(getState(), targetId)
+
+        // TODO: check for recursive patterns - 2018-02-12
+        // make sure that source is not already in the collection chain of target
+        const parentIds = getParentIdsRecursive(getState(), { id: targetId })
+        if (parentIds.includes(sourceId)) {
+            console.error("recursive pattern detected")
+            return;
+        }
 
         return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, source))
     }

@@ -371,14 +371,14 @@ describe('collectionApi', () => {
                                 count: 2 
                             },
                             {
-                                    id: 'TEST__node',
-                                    type: 'node',
-                                    name: 'Node',
-                                    collections: [
-                                        'TEST__rootCollection'
-                                    ],
+                                id: 'TEST__node',
+                                type: 'node',
+                                name: 'Node',
+                                collections: [
+                                    'TEST__rootCollection'
+                                ],
                                 "modified": "1503389225848",
-                                    count: 0
+                                count: 0
                             },
                             {
                                 name: 'Node2',
@@ -1057,6 +1057,80 @@ describe('collectionApi', () => {
                         type: "AbstractEdge"
                     },
                 ]))
+            })
+    })
+
+    test("Collection.moveNode() should not allow recursiveness (parent and child being children of one another, or somewhere below in the tree)", () => {
+        return loadFixtures(db, userId.toString(), [
+            {
+                properties: {
+                    name: 'My Knowledge Base',
+                    id: 'TEST__rootCollection',
+                    type: 'root',
+                    isRootCollection: true,
+                },
+                labels: [ 'RootCollection', 'Node' ]
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node1",
+                    "id": "TEST__node1",
+                    "type": "collection"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node2",
+                    "id": "TEST__node2",
+                    "type": "node"
+                }
+            },
+            {
+                labels: [ "Node" ],
+                properties: {
+                    "name": "Node3",
+                    "id": "TEST__node3",
+                    "type": "node"
+                }
+            }
+        ], [
+            {
+                properties: {
+                    end: "TEST__rootCollection",
+                    start: "TEST__node1",
+                    id: "TEST__node1_rootCollection",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__node1",
+                    start: "TEST__node2",
+                    id: "TEST__node2_node1",
+                },
+                type: "AbstractEdge"
+            },
+            {
+                properties: {
+                    end: "TEST__node2",
+                    start: "TEST__node3",
+                    id: "TEST__node3_node2",
+                },
+                type: "AbstractEdge"
+            },
+        ])
+            .then(() => {
+                return collectionApi.moveNode(user,
+                    "TEST__node1",
+                    "TEST__node2",
+                    "TEST__node3",
+                    "_",
+                )
+            })
+            .then(result => {
+                expect(result).toBe("recursive pattern detected")
             })
     })
 
