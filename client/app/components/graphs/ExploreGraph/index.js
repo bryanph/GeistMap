@@ -264,13 +264,6 @@ class ExploreGraph extends React.Component {
         return true;
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps !== this.props) {
-            // TODO: solve this differently, this sucks - 2018-02-03
-            this.setState({ rerender: true })
-        }
-    }
-
     onNodeClick(id) {
         return this.props.history.push({
             pathname: `/app/nodes/${id}/graph`,
@@ -293,10 +286,6 @@ class ExploreGraph extends React.Component {
         } = this.props
 
         let { nodesOutsideAbstraction } = this.props
-
-        const {
-            rerender
-        } = this.state
 
         const tree = d3Tree()
         tree.nodeSize([40, 200])
@@ -341,14 +330,10 @@ class ExploreGraph extends React.Component {
         this.simulation.nodes([...nodesBelowAbstraction, ...nodesOutsideAbstraction])
         this.simulation.force("link").links(edgesOutsideAbstraction)
 
-        if (this.simulation.alpha() < 0.1) {
-            this.simulation.alpha(1)
-        }
+        this.simulation.alpha(1)
 
         // do the work before rendering
-        if (this.state.rerender) {
-            for (let i = 0; i < iterations; ++i) this.simulation.tick()
-        }
+        for (let i = 0; i < iterations; ++i) this.simulation.tick()
 
         // console.log(nodesOutsideAbstraction, edgesOutsideAbstraction)
 
