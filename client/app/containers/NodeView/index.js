@@ -118,14 +118,12 @@ function mapStateToProps(state, props) {
     let nodes, edges, nodeTree, isLoading, nodesBelowAbstraction, edgesBelowAbstraction, nodesOutsideAbstraction, edgesOutsideAbstraction, nodesWithAbstraction
 
     const params = new URLSearchParams(props.location.search);
-    const graphType = params.get('graphType') || "abstract"
+    const graphType = params.get('graphType') || "explore"
 
     isLoading = state.loadingStates.GET_COLLECTIONL1 || state.loadingStates.GET_NODE_L1 || state.loadingStates.GET_NODE_L2;
 
-    if (graphType === "abstract" || graphType === "hierarchy") {
-
+    if (graphType === "abstract") {
         ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
-
     } else {
         nodesBelowAbstraction = getNodesBelowAbstraction(state, props)
         nodesWithAbstraction = getNodesWithAbstraction(state, props)
