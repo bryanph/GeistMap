@@ -266,6 +266,10 @@ class ExploreGraph extends React.Component {
         e.preventDefault();
         e.persist();
 
+        if (id === this.props.focusNodeId) {
+            return;
+        }
+
         this.setState({ 
             contextMenu: {
                 opened: true,
