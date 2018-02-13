@@ -73,6 +73,7 @@ class Node extends React.Component {
                     className="nodeCircle"
                     r={node.radius}
                     onClick={() => onClick(node.data.id)}
+                    onContextMenu={(e) => this.props.onContextMenu(e, node.data.id)}
                 />
                 <text 
                     className="nodeFocus"
@@ -170,6 +171,7 @@ class NodeHierarchy extends React.Component {
                     onFocusClick={this.props.onNodeFocus}
                     showAddNodeWindow={this.props.showAddNodeWindow}
                     drag={this.props.drag}
+                    onContextMenu={this.props.onNodeContextMenu}
                 />
                 { (node.children || []).map((node) => (
                     <NodeHierarchy {...this.props} key={node.data.id} node={ node } />
@@ -237,6 +239,7 @@ class NodeGraph extends React.Component {
                 onNodeFocus={this.props.onNodeFocus}
                 showAddNodeWindow={this.props.showAddNodeWindow}
                 drag={this.props.drag}
+                onNodeContextMenu={this.props.onNodeContextMenu}
             />
         )
 

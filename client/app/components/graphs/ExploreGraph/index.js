@@ -72,6 +72,7 @@ class NodeOutside extends React.Component {
                     className="nodeCircle"
                     r={node.radius}
                     fill={ node.children ? "lightsteelblue" : "#fff" }
+                    onContextMenu={(e) => this.props.onContextMenu(e, node.data.id)}
                 />
                 <text
                     className="nodeText"
@@ -206,15 +207,17 @@ class ExploreGraph extends React.Component {
 
         this.onNodeClick = this.onNodeClick.bind(this);
         this.onNodeFocus = this.onNodeFocus.bind(this);
+        this.closeContextMenu = this.closeContextMenu.bind(this);
+        this.openContextMenu = this.openContextMenu.bind(this);
 
         this.simulation = forceSimulation()
             .velocityDecay(0.6)
             .force(
                 "charge", 
                 forceManyBody()
-                    .distanceMax(distanceMax)
-                    .strength(-500)
-                    // .strength(-25 * nodeSizeAccessor(d))
+                .distanceMax(distanceMax)
+                .strength(-500)
+                // .strength(-25 * nodeSizeAccessor(d))
             )
             .force("x", forceX().strength(-0.02))
             .force("y", forceY().strength(-0.02))
@@ -241,20 +244,55 @@ class ExploreGraph extends React.Component {
             .on('start', innerDragEvents.dragstart)
             .on('end', innerDragEvents.dragend)
 
+        this.state = {
+            // the id of the node that is active in the contextMenu
+            contextMenu: {
+                opened: false,
+                nodeId: null,
+                currentEvent: null,
+            }
+        }
+    }
 
-        function moveElement(evt){
-            dx = evt.clientX - currentX;
-            dy = evt.clientY - currentY;
-            currentMatrix[4] += dx;
-            currentMatrix[5] += dy;
-            newMatrix = "matrix(" + currentMatrix.join(' ') + ")";
+    closeContextMenu() {
+        this.setState({ 
+            contextMenu: {
+                opened: false,
+            }
+        })
+    }
 
-            selectedElement.setAttributeNS(null, "transform", newMatrix);
-            currentX = evt.clientX;
-            currentY = evt.clientY;
+    openContextMenu(e, id) {
+        e.preventDefault();
+        e.persist();
+
+        this.setState({ 
+            contextMenu: {
+                opened: true,
+                nodeId: id,
+                currentEvent: e,
+            }
+        })
+    }
+
+    removeNode(id) {
+        const node = this.nodesById[id];
+
+        const result = window.confirm(`Are you sure you want to delete "${node.data.name}"`)
+        if (result) {
+            this.props.removeNode(id)
         }
 
-        this.state = { }
+    }
+
+    removeNodeFromCollection(id) {
+        const node = this.nodesById[id];
+
+        const result = window.confirm(`Are you sure you want to remove "${node.data.name}" from "${this.props.focusNode.name}"'`)
+        if (result) {
+            this.props.removeNodeFromCollection(this.props.focusNode.id, id)
+        }
+
     }
 
     shouldComponentUpdate(nextProps) {
@@ -264,6 +302,7 @@ class ExploreGraph extends React.Component {
 
         return true;
     }
+
 
     onNodeClick(id) {
         return this.props.history.push({
@@ -315,7 +354,6 @@ class ExploreGraph extends React.Component {
             node.radius = MIN_NODE_RADIUS;
 
             if (this.props.activeNode && node.data.id === this.props.activeNode.id) {
-                console.log("setting node active")
                 node.active = true
             }
 
@@ -347,14 +385,13 @@ class ExploreGraph extends React.Component {
         // do the work before rendering
         for (let i = 0; i < iterations; ++i) this.simulation.tick()
 
-        // console.log(nodesOutsideAbstraction, edgesOutsideAbstraction)
-
         const nodeOutsideElements = nodesOutsideAbstraction.map(node => (
             <NodeOutside
                 key={node.data.id}
                 node={node}
                 drag={this.drag}
                 onClick={this.onNodeClick}
+                onContextMenu={this.openContextMenu}
             />
         ))
 
@@ -365,8 +402,6 @@ class ExploreGraph extends React.Component {
             />
         ))
 
-        console.log("should render only once")
-
         return (
             <div>
                 <ZoomButtons
@@ -375,6 +410,16 @@ class ExploreGraph extends React.Component {
                     zoomFit={() => this.zoom.zoomFit()}
                 />
                 <ToggleShowLinks />
+                <ContextMenu 
+                    closeContextMenu={this.closeContextMenu}
+                    opened={this.state.contextMenu.opened}
+                    nodeId={this.state.contextMenu.nodeId}
+                    currentEvent={this.state.contextMenu.currentEvent}
+                >
+                    <ContextMenuItem onClick={() => this.onNodeFocus(this.state.contextMenu.nodeId)}>Edit</ContextMenuItem>
+                    <ContextMenuItem onClick={() => this.removeNodeFromCollection(this.state.contextMenu.nodeId)}>Remove from collection</ContextMenuItem>
+                    <ContextMenuItem onClick={() => this.removeNode(this.state.contextMenu.nodeId)}>Delete</ContextMenuItem>
+                </ContextMenu>
                 <ManipulationLayer { ...this.props }>
                     { showLinks ? edgeOutsideElements : null }
                     { showLinks ? nodeOutsideElements : null }
@@ -387,10 +432,148 @@ class ExploreGraph extends React.Component {
                         showLinks={showLinks}
                         onNodeClick={this.onNodeClick}
                         onNodeFocus={this.onNodeFocus}
+                        onNodeContextMenu={this.openContextMenu}
                         drag={this.drag}
                         showAddNodeWindow={this.props.showAddNodeWindow}
                     />
                 </ManipulationLayer>
+
+            </div>
+        )
+    }
+}
+
+class ContextMenu extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            x: 0,
+            y: 0,
+        }
+
+        this.registerHandlers = this.registerHandlers.bind(this);
+        this.unregisterHandlers = this.unregisterHandlers.bind(this);
+        this.handleHide = this.handleHide.bind(this);
+        this.handleClickOutside = this.handleClickOutside.bind(this);
+        this.renderChildren = this.renderChildren.bind(this);
+    }
+
+    componentDidUpdate() {
+        /*
+         * Determine the actual position of the DOM element
+        */
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (!this.props.opened && nextProps.opened) {
+            // opening
+            this.registerHandlers();
+        }
+        else if (this.props.opened && !nextProps.opened) {
+            // closing
+            this.unregisterHandlers();
+        }
+    }
+
+    registerHandlers () {
+        document.addEventListener('mousedown', this.handleClickOutside);
+        document.addEventListener('ontouchstart', this.handleClickOutside);
+        document.addEventListener('scroll', this.handleHide);
+        document.addEventListener('contextmenu', this.handleHide);
+        // document.addEventListener('keydown', this.handleKeyNavigation);
+        window.addEventListener('resize', this.handleHide);
+    }
+
+    unregisterHandlers () {
+        document.removeEventListener('mousedown', this.handleClickOutside);
+        document.removeEventListener('ontouchstart', this.handleClickOutside);
+        document.removeEventListener('scroll', this.handleHide);
+        document.removeEventListener('contextmenu', this.handleHide);
+        // document.removeEventListener('keydown', this.handleKeyNavigation);
+        window.removeEventListener('resize', this.handleHide);
+    }
+
+    handleHide(e) {
+        if (this.props.opened) {
+            this.props.closeContextMenu()
+        }
+    }
+
+    handleClickOutside(e) {
+        if (this.props.opened && !this.menu.contains(e.target)) {
+            this.props.closeContextMenu()
+        }
+    }
+
+    renderChildren(children) {
+        /*
+         * add props to the children
+        */
+        return React.Children.map(children, child => (
+            React.cloneElement(child, {
+                closeContextMenu: this.props.closeContextMenu
+            })
+        ))
+
+    }
+
+    render() {
+        const { children, currentEvent, opened } = this.props
+
+
+        if (!opened) {
+            return null;
+        }
+
+        const className = classNames("contextMenu", {
+            "contextMenu-opened": opened
+        })
+
+        const x = currentEvent.clientX
+        const y = currentEvent.clientY
+
+        const styles = {
+            top: y,
+            left: x,
+        }
+
+        return (
+            <nav
+                ref={(ref) => this.menu = ref} role='menu' tabIndex='-1' style={styles} className={className}
+                onContextMenu={this.handleHide} onMouseLeave={this.handleHide}>
+                { this.renderChildren(children) }
+            </nav>
+        )
+    }
+}
+
+class ContextMenuItem extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.handleClick = this.handleClick.bind(this);
+    }
+
+    handleClick(e) {
+        e.preventDefault();
+
+        this.props.onClick()
+        this.props.closeContextMenu()
+    }
+
+    render() {
+        const { children } = this.props
+
+        const className = "contextMenu-item"
+
+        return (
+            <div
+                className={className}
+                role="menuitem" tabIndex="-1"
+                onClick={this.handleClick}
+                >
+                { children }
             </div>
         )
     }

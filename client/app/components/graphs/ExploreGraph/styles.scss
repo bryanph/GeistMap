@@ -1,5 +1,38 @@
 @import '~styles/settings';
 
+.contextMenu {
+    z-index: 1000;
+    position: fixed;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 16px;
+    color: #373a3c;
+    text-align: left;
+    background-color: #fff;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: .25rem;
+    outline: none;
+    transition: opacity 250ms ease !important;
+}
+
+.contextMenu-item {
+    padding: 3px 20px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #373a3c;
+    white-space: nowrap;
+    border: 0;
+    cursor: pointer;
+
+    &:hover {
+        color: #fff;
+        background-color: #20a0ff;
+        border-color: #20a0ff;
+        text-decoration: none;
+    }
+}
+
 .explore-graph {
     width: 100%;
     height: 100%;
