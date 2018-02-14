@@ -9,6 +9,7 @@ You can find the latest version of GeistMap [here](https://geistmap.com).
 ## Links
 * [Introduction](https://medium.com/@bphaakman/building-a-open-source-personal-knowledge-base-45c25f5a4324)
 * [Feature requests](https://github.com/bryanph/GeistMap/issues/57)
+* [Roadmap](https://trello.com/b/ndRIAOOA/geist-roadmap)
 
 ## Local development
 1. Run `vagrant up && vagrant ssh`
