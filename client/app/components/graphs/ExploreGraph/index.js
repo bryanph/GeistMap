@@ -149,7 +149,7 @@ LinkOutside = connect(
 )(LinkOutside)
 
 
-class ManipulationLayer extends React.PureComponent {
+class ManipulationLayer extends React.Component {
     constructor(props) {
         super(props)
 
@@ -348,7 +348,6 @@ class ExploreGraph extends React.Component {
                 data: { ...node }
             }))
 
-        const nodesBelowAbstractionMap = _.keyBy(nodesBelowAbstraction, 'data.id')
         const hierarchyLinks = nodesBelowAbstraction.slice(1)
 
         let nodesById = {}
@@ -400,8 +399,8 @@ class ExploreGraph extends React.Component {
         ))
 
         const edgeOutsideElements = edgesOutsideAbstraction.map(link => (
+            // TODO: when adding a key here, these components don't update on change, why? - 2018-02-14
             <LinkOutside
-                key={link.id}
                 link={link}
             />
         ))
