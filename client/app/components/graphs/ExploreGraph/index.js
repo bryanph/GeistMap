@@ -356,9 +356,12 @@ class ExploreGraph extends React.Component {
     removeNodeFromCollection(id) {
         const node = this.nodesById[id];
 
-        const result = window.confirm(`Are you sure you want to remove "${node.data.name}" from "${this.props.focusNode.name}"'`)
+        if (!node.parent) {
+            return;
+        }
+        const result = window.confirm(`Are you sure you want to remove "${node.data.name}" from "${node.parent.data.name}"'`)
         if (result) {
-            this.props.removeNodeFromCollection(this.props.focusNode.id, id)
+            this.props.removeNodeFromCollection(node.parent.data.id, id)
         }
 
     }
@@ -420,8 +423,6 @@ class ExploreGraph extends React.Component {
 
         let nodesById = {}
 
-
-        console.log(nodesAboveAbstraction)
         let totalParentHeight = TREE_WIDTH * (nodesAboveAbstraction.length-1)
         nodesAboveAbstraction.forEach((node, i) => {
             node.x = node.fx = TREE_WIDTH * i - totalParentHeight/2;

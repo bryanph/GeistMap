@@ -104,8 +104,6 @@ class HierarchyLink extends React.Component {
     render() {
         const { link, draggedElement } = this.props
 
-        console.log(link)
-
         // hide if dragging the node
         if (draggedElement.id === link.data.id) {
             return null;
