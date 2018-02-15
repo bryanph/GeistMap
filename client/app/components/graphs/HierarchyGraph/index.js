@@ -64,6 +64,8 @@ class Node extends React.Component {
             nodeActive: node.active
         }, 'node')
 
+        const hasAnchorLeft = !node.data.collections || node.data.collections.length === 0 || (node.children && node.children.length === 0)
+
         return (
             <g
                 className={ nodeClass }
@@ -82,8 +84,8 @@ class Node extends React.Component {
                 >{ '\u23FA' }</text>
                 <text
                     className="nodeText"
-                    x={node.children ? -node.radius-8 : (node.radius + 19)}
-                    textAnchor={ node.children ? "end" : "start" }
+                    x={hasAnchorLeft ? -node.radius-8 : (node.radius + 19)}
+                    textAnchor={ hasAnchorLeft ? "end" : "start" }
                 >{node.data.name}</text>
             </g>
         )
@@ -101,6 +103,8 @@ class HierarchyLink extends React.Component {
 
     render() {
         const { link, draggedElement } = this.props
+
+        console.log(link)
 
         // hide if dragging the node
         if (draggedElement.id === link.data.id) {
@@ -199,6 +203,7 @@ class NodeGraph extends React.Component {
             links,
             hierarchyLinks,
             showLinks,
+            nodesAboveAbstraction,
         } = this.props
 
         let nodesById = {}
@@ -235,13 +240,40 @@ class NodeGraph extends React.Component {
         const hierarchyElements = (
             <NodeHierarchy
                 node={this.props.treeData} 
+                drag={this.props.drag}
+                showAddNodeWindow={this.props.showAddNodeWindow}
                 onNodeClick={this.props.onNodeClick}
                 onNodeFocus={this.props.onNodeFocus}
-                showAddNodeWindow={this.props.showAddNodeWindow}
-                drag={this.props.drag}
                 onNodeContextMenu={this.props.onNodeContextMenu}
             />
         )
+
+
+        const nodeAboveElements = nodesAboveAbstraction.map(node => (
+            <Node
+                key={node.data.id}
+                node={node}
+                drag={this.props.drag}
+                showAddNodeWindow={this.props.showAddNodeWindow}
+                onClick={this.props.onNodeClick}
+                onFocusClick={this.props.onNodeFocus}
+                onContextMenu={this.props.onNodeContextMenu}
+            />
+        ))
+
+        const linkAboveElements = nodesAboveAbstraction.map(node => (
+            <HierarchyLink
+                key={node.data.id}
+                link={{
+                    x: 0,
+                    y: 0,
+                    data: {
+                        ...this.props.focusNode
+                    },
+                    parent: node
+                }}
+            />
+        ))
 
         // const hierarchyLinkElements = hierarchyLinks.map(link => (
         //     <HierarchyLink

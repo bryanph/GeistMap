@@ -109,13 +109,14 @@ import {
     getEdgesOutsideAbstraction,
     getNodesWithAbstraction,
     getNodesBelowAbstraction,
+    getNodesAboveAbstraction,
     getEdgesBelowAbstraction,
     getAbstractionChain,
 } from '../../reducers'
 
 function mapStateToProps(state, props) {
 
-    let nodes, edges, nodeTree, isLoading, nodesBelowAbstraction, edgesBelowAbstraction, nodesOutsideAbstraction, edgesOutsideAbstraction, nodesWithAbstraction
+    let nodes, edges, nodeTree, isLoading, nodesBelowAbstraction, nodesAboveAbstraction, edgesBelowAbstraction, nodesOutsideAbstraction, edgesOutsideAbstraction, nodesWithAbstraction
 
     const params = new URLSearchParams(props.location.search);
     const graphType = params.get('graphType') || "explore"
@@ -125,6 +126,7 @@ function mapStateToProps(state, props) {
     if (graphType === "abstract") {
         ({ nodes, edges, nodeTree } = getNodesAndEdgesByCollectionId(state, props));
     } else {
+        nodesAboveAbstraction = getNodesAboveAbstraction(state, props)
         nodesBelowAbstraction = getNodesBelowAbstraction(state, props)
         nodesWithAbstraction = getNodesWithAbstraction(state, props)
         edgesBelowAbstraction = getEdgesBelowAbstraction(state, props)
@@ -134,6 +136,7 @@ function mapStateToProps(state, props) {
     }
 
     return {
+        nodesAboveAbstraction,
         nodesBelowAbstraction,
         edgesBelowAbstraction,
         nodesWithAbstraction,

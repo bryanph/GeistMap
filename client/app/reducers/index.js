@@ -775,12 +775,6 @@ export const getNodesForIds = (ids) => ids.map(id => getNode(state, id))
 
 export const getEdge = (state, id) => state.entities.edges[id]
 
-export const getCollections = (state, id) => _.filter(state.entities.nodes, x => ["root", "collection"].includes(x.type))
-export const getCollection = (state, id) => state.entities.nodes[id]
-
-export const getCollectionEdge = (state, id) => state.entities.collectionEdges[id]
-export const getCollectionEdges = (state, id) => _.map(state.entities.collectionEdges, x => x)
-
 export const getEdgeListMap = (state) => state.edgeListMap
 
 export const getArchiveNodes = (state) => state.archive.map(id => getNode(state, id))
@@ -799,8 +793,7 @@ export const getParents = (state, id) => {
         return null
     }
 
-    return (node.collections || []).map(id => getCollection(state, id))
-    // return (node.properties.collections || []).map(id => getCollection(state, id))
+    return (node.collections || []).map(id => getNode(state, id))
 }
 
 export const getParentIdsRecursive = createSelector(
@@ -954,6 +947,18 @@ export const getAbstractionChain = createSelector(
         return _(abstractionChain)
             .map(id => nodeMap[id])
             .value()
+    }
+)
+
+export const getNodesAboveAbstraction = createSelector(
+    getFocusNode,
+    getNodeMap,
+    (focusNode, nodeMap) => {
+        if (!focusNode) {
+            return null;
+        }
+
+        return (focusNode.collections || []).map(id => nodeMap[id])
     }
 )
 

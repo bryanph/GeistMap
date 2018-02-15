@@ -59,6 +59,7 @@ class NodeOutside extends React.Component {
         const x = draggedElement.id === node.data.id ? draggedElement.x : node.x;
         const y = draggedElement.id === node.data.id ? draggedElement.y : node.y;
 
+        // this is swapped because it is a vertical tree
         const transform = `translate(${y}, ${x})`;
 
         return (
@@ -83,11 +84,74 @@ class NodeOutside extends React.Component {
         )
     }
 }
-
 NodeOutside = connect(
     (state) => ({ draggedElement: state.graphUiState.draggedElement }),
     { dragElement }
 )(NodeOutside)
+
+
+class NodeAbove extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        const { node } = this.props
+
+        // this is swapped because it is a vertical tree
+        const transform = `translate(${node.y}, ${node.x})`;
+
+        return (
+            <g
+                id={`node-${node.data.id}`}
+                className="node node-above"
+                transform={transform}
+                onClick={() => this.props.onClick(node.data.id)}
+            >
+                <circle
+                    className="nodeCircle"
+                    r={node.radius}
+                    onContextMenu={(e) => this.props.onContextMenu(e, node.data.id)}
+                />
+                <text
+                    className="nodeText"
+                    x={-node.radius-8}
+                    textAnchor={ "end" }
+                >{node.data.name}</text>
+            </g>
+        )
+    }
+}
+
+class LinkAbove extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        const { link } = this.props
+
+        return (
+            <path 
+                className="hierarchy-link"
+                d={ 
+                    [
+                        "M",
+                        link.y,
+                        link.x,
+                        "C",
+                        (link.y + link.parent.y) / 2,
+                        link.x,
+                        (link.y + link.parent.y) / 2,
+                        link.parent.x,
+                        link.parent.y,
+                        link.parent.x
+                    ].join(' ')
+                }
+            />
+        )
+    }
+}
 
 class LinkOutside extends React.Component {
     constructor(props) {
@@ -335,22 +399,42 @@ class ExploreGraph extends React.Component {
             focusNode,
         } = this.props
 
-        let { nodesOutsideAbstraction } = this.props
+        let {
+            nodesOutsideAbstraction,
+            nodesAboveAbstraction,
+        } = this.props
+
+        const TREE_HEIGHT = 200;
+        const TREE_WIDTH = 40;
 
         const tree = d3Tree()
-        tree.nodeSize([40, 200])
+        tree.nodeSize([TREE_WIDTH, TREE_HEIGHT])
         const treeData = tree(d3Hierarchy(nodeTree))
 
         const nodesBelowAbstraction = treeData.descendants()
         // make sure the data is under a data key
-        nodesOutsideAbstraction = nodesOutsideAbstraction
-            .map(node => ({
-                data: { ...node }
-            }))
+        nodesOutsideAbstraction = nodesOutsideAbstraction.map(node => ({ data: { ...node } }))
+        nodesAboveAbstraction = nodesAboveAbstraction.map(node => ({ data: { ...node } }))
 
         const hierarchyLinks = nodesBelowAbstraction.slice(1)
 
         let nodesById = {}
+
+
+        console.log(nodesAboveAbstraction)
+        let totalParentHeight = TREE_WIDTH * (nodesAboveAbstraction.length-1)
+        nodesAboveAbstraction.forEach((node, i) => {
+            node.x = node.fx = TREE_WIDTH * i - totalParentHeight/2;
+            node.y = node.fy = -TREE_HEIGHT;
+            node.radius = MIN_NODE_RADIUS;
+
+            if (this.props.activeNode && node.data.id === this.props.activeNode.id) {
+                node.active = true
+            }
+
+            nodesById[node.data.id] = node
+        })
+
         nodesBelowAbstraction.forEach(node => {
             node.fx = node.x;
             node.fy = node.y;
@@ -362,7 +446,6 @@ class ExploreGraph extends React.Component {
 
             nodesById[node.data.id] = node
         })
-
 
         nodesOutsideAbstraction
             .forEach(node => {
@@ -380,7 +463,7 @@ class ExploreGraph extends React.Component {
 
         this.nodesById = nodesById
 
-        this.simulation.nodes([...nodesBelowAbstraction, ...nodesOutsideAbstraction])
+        this.simulation.nodes([...nodesAboveAbstraction, ...nodesBelowAbstraction, ...nodesOutsideAbstraction])
         this.simulation.force("link").links(edgesOutsideAbstraction)
 
         this.simulation.alpha(1)
@@ -405,6 +488,31 @@ class ExploreGraph extends React.Component {
             />
         ))
 
+
+        const nodeAboveElements = nodesAboveAbstraction.map(node => (
+            <NodeAbove
+                key={node.data.id}
+                node={node}
+                drag={this.props.drag}
+                onClick={this.onNodeClick}
+                onContextMenu={this.openContextMenu}
+            />
+        ))
+
+        const linkAboveElements = nodesAboveAbstraction.map(node => (
+            <LinkAbove
+                key={node.data.id}
+                link={{
+                    x: 0,
+                    y: 0,
+                    data: {
+                        ...this.props.focusNode
+                    },
+                    parent: node
+                }}
+            />
+        ))
+
         return (
             <div>
                 <ZoomButtons
@@ -426,8 +534,12 @@ class ExploreGraph extends React.Component {
                 <ManipulationLayer { ...this.props }>
                     { showLinks ? edgeOutsideElements : null }
                     { showLinks ? nodeOutsideElements : null }
+                    { linkAboveElements }
+                    { nodeAboveElements }
                     <HierarchyGraph
                         treeData={treeData}
+                        nodesAboveAbstraction={nodesAboveAbstraction}
+                        focusNode={this.props.focusNode}
                         nodes={nodesBelowAbstraction}
                         links={edgesBelowAbstraction}
                         hierarchyLinks={hierarchyLinks}

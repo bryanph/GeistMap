@@ -43,6 +43,13 @@
     right: 0;
     cursor: auto;
 
+    .hierarchy-link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+        stroke-opacity: 0.5;
+    }
+
     .node {
         cursor: pointer;
 
