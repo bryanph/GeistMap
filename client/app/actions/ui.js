@@ -102,18 +102,23 @@ export const HIDE_ABSTRACTION_SIDEBAR = 'HIDE_ABSTRACTION_SIDEBAR'
 export const hideAbstractionSidebar = createAction(HIDE_ABSTRACTION_SIDEBAR)
 
 
+import { getNodesBelowAbstractionMap } from '../reducers'
+
 // set this node in edit mode
 export const DRAG_ELEMENT = 'DRAG_ELEMENT'
 export function dragElement(id, x, y, dx, dy) {
-    return {
-        type: DRAG_ELEMENT,
-        draggedElement: {
-            id,
-            x,
-            y,
-            dx,
-            dy,
-        }
+    return (dispatch, getState) => {
+        return dispatch({
+            type: DRAG_ELEMENT,
+            draggedElement: {
+                id,
+                childrenMap: getNodesBelowAbstractionMap(getState(), { focusNodeId: id }),
+                x,
+                y,
+                dx,
+                dy,
+            }
+        })
     }
 }
 

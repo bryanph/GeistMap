@@ -42,7 +42,6 @@ import './styles.scss'
 
 import ToggleShowLinks from '../../ToggleShowLinks'
 
-
 class NodeOutside extends React.Component {
     constructor(props) {
         super(props)

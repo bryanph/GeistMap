@@ -533,6 +533,7 @@ const initialGraphUIState = {
         id: null,
         x: null,
         y: null,
+        childrenMap: {},
     },
 }
 function graphUiState(state=initialGraphUIState, action) {

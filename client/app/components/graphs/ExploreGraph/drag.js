@@ -158,7 +158,7 @@ export const createInnerDrag = (self) => (actions) => {
             const id = nodeElement.attr('id').replace("node-", "")
             const node = self.nodesById[id]
 
-            const nodeSelection = d3SelectAll('.node-inside')
+            const nodeSelection = d3SelectAll('.node')
 
             self.props.dragElement()
 

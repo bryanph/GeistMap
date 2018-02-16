@@ -32,6 +32,8 @@ import ContentAdd from 'material-ui/svg-icons/content/add-circle-outline'
 
 import { dragElement } from '../../../actions/ui'
 
+import { Mark } from 'semiotic-mark'
+
 class Node extends React.Component {
     constructor(props) {
         super(props)
@@ -39,13 +41,21 @@ class Node extends React.Component {
         this.onFocusClick = this.onFocusClick.bind(this)
     }
 
-//     componentDidMount() {
-//         const selection = d3Select(`#node-${this.props.node.data.id}`)
-//         this.props.drag(selection)
-//     }
+    componentDidMount() {
+        const selection = d3Select(`#node-${this.props.node.data.id}`)
+        this.props.drag(selection)
+    }
 
     onFocusClick() {
         return this.props.onFocusClick(this.props.node.data.id)
+    }
+
+    componentWillMount() {
+        console.log("called mount", this.props.node)
+    }
+
+    componentWillUpdate() {
+        console.log("called update", this.props.node)
     }
 
     render() {
@@ -55,10 +65,17 @@ class Node extends React.Component {
             draggedElement,
         } = this.props
 
-        // const x = draggedElement.id === node.data.id ? draggedElement.x : node.x;
-        // const y = draggedElement.id === node.data.id ? draggedElement.y : node.y;
+        const x = draggedElement.childrenMap[node.data.id] ? (node.x + draggedElement.dx) : node.x;
+        const y = draggedElement.childrenMap[node.data.id] ? (node.y + draggedElement.dy) : node.y;
 
-        const transform = `translate(${node.y}, ${node.x})`;
+        const transform = `translate(${y}, ${x})`;
+
+
+
+        // const x = draggedElement.id === node.data.id ? draggedElement.dx : 0;
+        // const y = draggedElement.id === node.data.id ? draggedElement.dy : 0;
+
+        // const transform = `translate(${y}, ${x})`;
 
         const nodeClass = classNames({
             nodeActive: node.active
@@ -68,6 +85,7 @@ class Node extends React.Component {
 
         return (
             <g
+                id={`node-${node.data.id}`}
                 className={ nodeClass }
                 transform={transform}
             >
@@ -109,8 +127,15 @@ class HierarchyLink extends React.Component {
             return null;
         }
 
+        const x = draggedElement.childrenMap[link.data.id] ? draggedElement.dx : 0;
+        const y = draggedElement.childrenMap[link.data.id] ? draggedElement.dy : 0;
+
+        const transform = `translate(${y}, ${x})`;
+
+
         return (
             <path 
+                transform={transform}
                 className="hierarchy-link"
                 d={ 
                     [
@@ -168,6 +193,7 @@ class NodeHierarchy extends React.Component {
                     ))
                 }
                 <Node 
+                    key={node.data.id}
                     node={node}
                     onClick={this.props.onNodeClick}
                     onFocusClick={this.props.onNodeFocus}
@@ -212,11 +238,7 @@ class NodeGraph extends React.Component {
         links.forEach(link => {
             link.source = nodesById[link.start]
             link.target = nodesById[link.end]
-
-            // link.opacity = strokeScale(link.count || 0)
         })
-
-        // Compute the new tree layout.
 
         // const maxLabelLength = 50;
         // // Set widths between levels based on maxLabelLength.
@@ -224,15 +246,37 @@ class NodeGraph extends React.Component {
         //     d.y = (d.depth * (maxLabelLength * 10)); //maxLabelLength * 10px
         // });
 
-        // const nodeElements = nodes.map(node => (
-        //     <Node 
-        //         key={node.id}
-        //         node={node}
-        //         onClick={this.props.onNodeClick}
-        //         onFocusClick={this.props.onNodeFocus}
-        //         drag={this.props.drag}
-        //     />
-        // ))
+        const nodeElements = nodes.map(node => (
+            <Node 
+                key={node.id}
+                node={node}
+                onClick={this.props.onNodeClick}
+                onFocusClick={this.props.onNodeFocus}
+                drag={this.props.drag}
+            />
+        ))
+
+        const hierarchyLinkElements = hierarchyLinks.map(link => (
+            <HierarchyLink
+                key={link.id}
+                link={link}
+            />
+        ))
+
+//         const linkElements = links
+//             .filter(link => (
+//                 !(
+//                     link.source.data.id === ((link.target.parent) && link.target.parent.data.id)
+//                     ||
+//                     link.target.data.id === ((link.source.parent) && link.source.parent.data.id)
+//                 )
+//             ))
+//             .map(link => (
+//             <Link
+//                 key={link.id}
+//                 link={link}
+//             />
+//         ))
 
         // const hierarchyElements = nestedGroupings(this.props.treeData)
         const hierarchyElements = (
@@ -273,34 +317,12 @@ class NodeGraph extends React.Component {
             />
         ))
 
-        // const hierarchyLinkElements = hierarchyLinks.map(link => (
-        //     <HierarchyLink
-        //         key={link.id}
-        //         link={link}
-        //     />
-        // ))
-
-//         const linkElements = links
-//             .filter(link => (
-//                 !(
-//                     link.source.data.id === ((link.target.parent) && link.target.parent.data.id)
-//                     ||
-//                     link.target.data.id === ((link.source.parent) && link.source.parent.data.id)
-//                 )
-//             ))
-//             .map(link => (
-//             <Link
-//                 key={link.id}
-//                 link={link}
-//             />
-//         ))
-
         return (
             <g className="hierarchy-graph">
-                { /* nodeElements */ }
-                { /* hierarchyLinkElements */ }
+                { hierarchyLinkElements }
+                { nodeElements }
                 { /* showLinks ? linkElements : null */ }
-                { hierarchyElements }
+                { /* hierarchyElements */ }
             </g>
         )
     }
