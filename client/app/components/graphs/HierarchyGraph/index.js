@@ -54,9 +54,9 @@ class Node extends React.Component {
 //         console.log("called mount", this.props.node)
 //     }
 
-//     componentWillUpdate() {
-//         console.log("called update", this.props.node)
-//     }
+    componentWillUpdate() {
+        console.log("called update", this.props.node)
+    }
 
     shouldComponentUpdate(nextProps) {
         const {
@@ -67,7 +67,10 @@ class Node extends React.Component {
 
         return true;
         if (
+            // we are dragging
             draggedElement.childrenMap[node.data.id] || // dragging
+            // the actual data has changed (doesn't influence position)
+            // TODO: this won't work, instead will have to wrap the component - 2018-02-16
             node.data !== this.props.node.data
         ) {
             console.log(node.data, this.props.node.data)
@@ -98,12 +101,14 @@ class Node extends React.Component {
 
         const nodeClass = classNames({
             nodeActive: node.active
-        }, 'node')
+        }, 'node node-below')
 
         const hasAnchorLeft = !node.data.collections || node.data.collections.length === 0 || (node.children && node.children.length === 0)
 
         return (
             <g
+                markType="g"
+                renderMode="painty"
                 id={`node-${node.data.id}`}
                 className={ nodeClass }
                 transform={transform}

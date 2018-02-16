@@ -158,7 +158,7 @@ export const createInnerDrag = (self) => (actions) => {
             const id = nodeElement.attr('id').replace("node-", "")
             const node = self.nodesById[id]
 
-            const nodeSelection = d3SelectAll('.node')
+            const nodeSelection = d3SelectAll('.node-below')
 
             self.props.dragElement()
 
@@ -166,6 +166,8 @@ export const createInnerDrag = (self) => (actions) => {
                 // undo fixed state as set in dragstart
 
                 const currentNodeElement = d3Select(this)
+                console.log(this)
+                console.log(currentNodeElement)
                 const currentId = currentNodeElement.attr('id').replace("node-", "")
                 const currentNode = self.nodesById[currentId]
 
