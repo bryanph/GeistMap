@@ -27,6 +27,7 @@
     "passport": "0.4.0",
     "promptly": "2.2.0",
     "prop-types": "15.6.0",
+    "re-reselect": "1.0.1",
     "react-portal": "3.1.0",
     "semantic-ui-css": "2.2.12",
     "semantic-ui-react": "0.76.0",

@@ -552,9 +552,10 @@ function graphUiState(state=initialGraphUIState, action) {
             }
 
         case uiActionTypes.DRAG_ELEMENT:
-            return update(state, {
-                draggedElement: { $apply: () => action.draggedElement }
-            })
+            return {
+                ...state,
+                draggedElement: action.draggedElement
+            }
 
         default:
             return state;
@@ -758,6 +759,7 @@ export default rootReducer
  */
 
 import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 
 export const getNodeMap = (state) => state.entities.nodes
 export const getEdgeMap = (state, id) => state.entities.edges
@@ -963,7 +965,7 @@ export const getNodesAboveAbstraction = createSelector(
     }
 )
 
-export const getNodesBelowAbstractionIds = createSelector(
+export const getNodesBelowAbstractionIds = createCachedSelector(
     /*
      * returns a map of all the nodes below in the abstraction
      */
@@ -988,18 +990,18 @@ export const getNodesBelowAbstractionIds = createSelector(
 
         return [ focusNodeId, ...handleChildren(nodesByCollectionId[focusNodeId] || [])]
     }
-)
+)((state, { focusNodeId }) => focusNodeId)
 
-export const getNodesBelowAbstraction = createSelector(
+export const getNodesBelowAbstraction = createCachedSelector(
     getNodeMap,
     getNodesBelowAbstractionIds,
     (nodeMap, nodeIds) => nodeIds.map(id => nodeMap[id])
-)
+)((state, { focusNodeId }) => focusNodeId)
 
-export const getNodesBelowAbstractionMap = createSelector(
+export const getNodesBelowAbstractionMap = createCachedSelector(
     getNodesBelowAbstraction,
     (nodes) => _.keyBy(nodes, ('id'))
-)
+)((state, { focusNodeId }) => focusNodeId)
 
 // get all links with an endpoint in the abstraction
 export const getEdgesWithAbstractionIds = createSelector(

@@ -112,7 +112,7 @@ export function dragElement(id, x, y, dx, dy) {
             type: DRAG_ELEMENT,
             draggedElement: {
                 id,
-                childrenMap: getNodesBelowAbstractionMap(getState(), { focusNodeId: id }),
+                childrenMap: getNodesBelowAbstractionMap(getState(), { focusNodeId: id }) || {},
                 x,
                 y,
                 dx,

@@ -50,12 +50,31 @@ class Node extends React.Component {
         return this.props.onFocusClick(this.props.node.data.id)
     }
 
-    componentWillMount() {
-        console.log("called mount", this.props.node)
-    }
+//     componentWillMount() {
+//         console.log("called mount", this.props.node)
+//     }
 
-    componentWillUpdate() {
-        console.log("called update", this.props.node)
+//     componentWillUpdate() {
+//         console.log("called update", this.props.node)
+//     }
+
+    shouldComponentUpdate(nextProps) {
+        const {
+            node,
+            draggedElement,
+        } = nextProps
+
+
+        return true;
+        if (
+            draggedElement.childrenMap[node.data.id] || // dragging
+            node.data !== this.props.node.data
+        ) {
+            console.log(node.data, this.props.node.data)
+            return true;
+        }
+
+        return false;
     }
 
     render() {
@@ -131,7 +150,6 @@ class HierarchyLink extends React.Component {
         const y = draggedElement.childrenMap[link.data.id] ? draggedElement.dy : 0;
 
         const transform = `translate(${y}, ${x})`;
-
 
         return (
             <path 
@@ -248,17 +266,19 @@ class NodeGraph extends React.Component {
 
         const nodeElements = nodes.map(node => (
             <Node 
-                key={node.id}
+                key={node.data.id}
                 node={node}
                 onClick={this.props.onNodeClick}
                 onFocusClick={this.props.onNodeFocus}
+                showAddNodeWindow={this.props.showAddNodeWindow}
                 drag={this.props.drag}
+                onContextMenu={this.props.onNodeContextMenu}
             />
         ))
 
         const hierarchyLinkElements = hierarchyLinks.map(link => (
             <HierarchyLink
-                key={link.id}
+                key={link.data.id}
                 link={link}
             />
         ))
@@ -279,16 +299,16 @@ class NodeGraph extends React.Component {
 //         ))
 
         // const hierarchyElements = nestedGroupings(this.props.treeData)
-        const hierarchyElements = (
-            <NodeHierarchy
-                node={this.props.treeData} 
-                drag={this.props.drag}
-                showAddNodeWindow={this.props.showAddNodeWindow}
-                onNodeClick={this.props.onNodeClick}
-                onNodeFocus={this.props.onNodeFocus}
-                onNodeContextMenu={this.props.onNodeContextMenu}
-            />
-        )
+        // const hierarchyElements = (
+        //     <NodeHierarchy
+        //         node={this.props.treeData} 
+        //         drag={this.props.drag}
+        //         showAddNodeWindow={this.props.showAddNodeWindow}
+        //         onNodeClick={this.props.onNodeClick}
+        //         onNodeFocus={this.props.onNodeFocus}
+        //         onNodeContextMenu={this.props.onNodeContextMenu}
+        //     />
+        // )
 
 
         const nodeAboveElements = nodesAboveAbstraction.map(node => (
