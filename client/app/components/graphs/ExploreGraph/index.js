@@ -41,6 +41,8 @@ import { dragElement, showAddNodeWindow } from '../../../actions/ui'
 import './styles.scss'
 
 import ToggleShowLinks from '../../ToggleShowLinks'
+import WrapText from '../WrapText'
+import { getTextSize } from '../scales'
 
 class NodeOutside extends React.Component {
     constructor(props) {
@@ -74,11 +76,15 @@ class NodeOutside extends React.Component {
                     fill={ node.children ? "lightsteelblue" : "#fff" }
                     onContextMenu={(e) => this.props.onContextMenu(e, node.data.id)}
                 />
-                <text
+                <WrapText
+                    style={{ fontSize: `${getTextSize(node.data.name.length)}em` }}
                     className="nodeText"
                     x={node.children ? -node.radius-8 : node.radius + 8}
+                    y={0}
+                    width={142}
                     textAnchor={ node.children ? "end" : "start" }
-                >{node.data.name}</text>
+                    verticalAlign={"center"}
+                >{node.data.name}</WrapText>
             </g>
         )
     }
@@ -112,11 +118,15 @@ class NodeAbove extends React.Component {
                     r={node.radius}
                     onContextMenu={(e) => this.props.onContextMenu(e, node.data.id)}
                 />
-                <text
+                <WrapText
+                    style={{ fontSize: `${getTextSize(node.data.name.length)}em` }}
                     className="nodeText"
                     x={-node.radius-8}
+                    y={0}
+                    width={142}
                     textAnchor={ "end" }
-                >{node.data.name}</text>
+                    verticalAlign={"center"}
+                >{node.data.name}</WrapText>
             </g>
         )
     }
@@ -406,11 +416,11 @@ class ExploreGraph extends React.Component {
             nodesAboveAbstraction,
         } = this.props
 
-        const TREE_HEIGHT = 200;
-        const TREE_WIDTH = 40;
+        const TREE_NODE_HEIGHT = 200;
+        const TREE_NODE_WIDTH = 40;
 
         const tree = d3Tree()
-        tree.nodeSize([TREE_WIDTH, TREE_HEIGHT])
+        tree.nodeSize([TREE_NODE_WIDTH, TREE_NODE_HEIGHT])
         const treeData = tree(d3Hierarchy(nodeTree))
 
         const nodesBelowAbstraction = treeData.descendants()
@@ -422,10 +432,11 @@ class ExploreGraph extends React.Component {
 
         let nodesById = {}
 
-        let totalParentHeight = TREE_WIDTH * (nodesAboveAbstraction.length-1)
+        // the parent nodes
+        let totalParentHeight = TREE_NODE_WIDTH * (nodesAboveAbstraction.length-1)
         nodesAboveAbstraction.forEach((node, i) => {
-            node.x = node.fx = TREE_WIDTH * i - totalParentHeight/2;
-            node.y = node.fy = -TREE_HEIGHT;
+            node.x = node.fx = TREE_NODE_WIDTH * i - totalParentHeight/2;
+            node.y = node.fy = -TREE_NODE_HEIGHT;
             node.radius = MIN_NODE_RADIUS;
 
             if (this.props.activeNode && node.data.id === this.props.activeNode.id) {
@@ -435,6 +446,7 @@ class ExploreGraph extends React.Component {
             nodesById[node.data.id] = node
         })
 
+        // the child nodes
         nodesBelowAbstraction.forEach(node => {
             node.fx = node.x;
             node.fy = node.y;
@@ -447,6 +459,7 @@ class ExploreGraph extends React.Component {
             nodesById[node.data.id] = node
         })
 
+        // the linked nodes
         nodesOutsideAbstraction
             .forEach(node => {
                 node.radius = MIN_NODE_RADIUS;
@@ -505,9 +518,7 @@ class ExploreGraph extends React.Component {
                 link={{
                     x: 0,
                     y: 0,
-                    data: {
-                        ...this.props.focusNode
-                    },
+                    data: { ...this.props.focusNode },
                     parent: node
                 }}
             />
@@ -550,6 +561,7 @@ class ExploreGraph extends React.Component {
                         onNodeContextMenu={this.openContextMenu}
                         drag={this.drag}
                         showAddNodeWindow={this.props.showAddNodeWindow}
+                        nodeWidth={TREE_NODE_WIDTH}
                     />
                 </ManipulationLayer>
 

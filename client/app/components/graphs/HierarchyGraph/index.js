@@ -7,7 +7,6 @@ import classNames from 'classnames'
 import { drag as d3Drag } from 'd3-drag'
 import { select as d3Select } from 'd3-selection'
 import { event as currentEvent, mouse as currentMouse } from 'd3-selection';
-import { scaleLinear } from 'd3-scale'
 import { tree as d3Tree, hierarchy as d3Hierarchy } from 'd3-hierarchy'
 
 import createZoom from '../zoom'
@@ -31,6 +30,9 @@ import {
 import ContentAdd from 'material-ui/svg-icons/content/add-circle-outline'
 
 import { dragElement } from '../../../actions/ui'
+import WrapText from '../WrapText'
+import { getTextSize } from '../scales'
+
 
 class HierarchyNode extends React.Component {
     constructor(props) {
@@ -110,11 +112,15 @@ class HierarchyNode extends React.Component {
                     x={ node.radius + 4 }
                     onClick={ this.onFocusClick }
                 >{ '\u23FA' }</text>
-                <text
+                <WrapText
+                    style={{ fontSize: `${getTextSize(node.data.name.length)}em` }}
                     className="nodeText"
                     x={hasAnchorLeft ? -node.radius-8 : (node.radius + 19)}
+                    y={0}
+                    width={142}
                     textAnchor={ hasAnchorLeft ? "end" : "start" }
-                >{node.data.name}</text>
+                    verticalAlign={"center"}
+                >{node.data.name}</WrapText>
             </g>
         )
     }
@@ -264,6 +270,7 @@ class NodeGraph extends React.Component {
                 showAddNodeWindow={this.props.showAddNodeWindow}
                 drag={this.props.drag}
                 onContextMenu={this.props.onNodeContextMenu}
+                nodeWidth={this.props.nodeWidth}
             />
         ))
 
