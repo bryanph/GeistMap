@@ -7,6 +7,7 @@ $abstractionList-width: 400px;
 $abstractionList-heading-height: 50px;
 
 .abstractionList-expandButton {
+    z-index: 1000;
     button {
         // background: $light-accent-color !important;
     }
@@ -16,13 +17,11 @@ $abstractionList-heading-height: 50px;
     top: calc(#{$topbar-height} + 10px);
     // left: calc(#{$abstractionList-width} - 45px);
     right: 10px;
-    z-index: 100000;
 }
 .abstractionList-expandButton-collapsed {
     position: fixed;
     top: calc(#{$topbar-height} + 10px);
     right: 10px;
-    z-index: 100000;
 }
 
 .abstractionList-container {

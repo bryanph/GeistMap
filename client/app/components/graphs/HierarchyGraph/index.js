@@ -32,9 +32,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add-circle-outline'
 
 import { dragElement } from '../../../actions/ui'
 
-import { Mark } from 'semiotic-mark'
-
-class Node extends React.Component {
+class HierarchyNode extends React.Component {
     constructor(props) {
         super(props)
 
@@ -50,14 +48,6 @@ class Node extends React.Component {
         return this.props.onFocusClick(this.props.node.data.id)
     }
 
-//     componentWillMount() {
-//         console.log("called mount", this.props.node)
-//     }
-
-    componentWillUpdate() {
-        console.log("called update", this.props.node)
-    }
-
     shouldComponentUpdate(nextProps) {
         const {
             node,
@@ -66,14 +56,14 @@ class Node extends React.Component {
 
 
         return true;
+
         if (
             // we are dragging
-            draggedElement.childrenMap[node.data.id] || // dragging
+            draggedElement.childrenMap[node.data.id] ||
             // the actual data has changed (doesn't influence position)
             // TODO: this won't work, instead will have to wrap the component - 2018-02-16
             node.data !== this.props.node.data
         ) {
-            console.log(node.data, this.props.node.data)
             return true;
         }
 
@@ -92,8 +82,6 @@ class Node extends React.Component {
 
         const transform = `translate(${y}, ${x})`;
 
-
-
         // const x = draggedElement.id === node.data.id ? draggedElement.dx : 0;
         // const y = draggedElement.id === node.data.id ? draggedElement.dy : 0;
 
@@ -107,8 +95,6 @@ class Node extends React.Component {
 
         return (
             <g
-                markType="g"
-                renderMode="painty"
                 id={`node-${node.data.id}`}
                 className={ nodeClass }
                 transform={transform}
@@ -133,10 +119,10 @@ class Node extends React.Component {
         )
     }
 }
-Node = connect(
+HierarchyNode = connect(
     (state) => ({ draggedElement: state.graphUiState.draggedElement }),
     { dragElement }
-)(Node)
+)(HierarchyNode)
 
 class HierarchyLink extends React.Component {
     constructor(props) {
@@ -215,7 +201,7 @@ class NodeHierarchy extends React.Component {
                         />
                     ))
                 }
-                <Node 
+                <HierarchyNode 
                     key={node.data.id}
                     node={node}
                     onClick={this.props.onNodeClick}
@@ -270,7 +256,7 @@ class NodeGraph extends React.Component {
         // });
 
         const nodeElements = nodes.map(node => (
-            <Node 
+            <HierarchyNode 
                 key={node.data.id}
                 node={node}
                 onClick={this.props.onNodeClick}
@@ -315,32 +301,31 @@ class NodeGraph extends React.Component {
         //     />
         // )
 
+//         const nodeAboveElements = nodesAboveAbstraction.map(node => (
+//             <HierarchyNode
+//                 key={node.data.id}
+//                 node={node}
+//                 drag={this.props.drag}
+//                 showAddNodeWindow={this.props.showAddNodeWindow}
+//                 onClick={this.props.onNodeClick}
+//                 onFocusClick={this.props.onNodeFocus}
+//                 onContextMenu={this.props.onNodeContextMenu}
+//             />
+//         ))
 
-        const nodeAboveElements = nodesAboveAbstraction.map(node => (
-            <Node
-                key={node.data.id}
-                node={node}
-                drag={this.props.drag}
-                showAddNodeWindow={this.props.showAddNodeWindow}
-                onClick={this.props.onNodeClick}
-                onFocusClick={this.props.onNodeFocus}
-                onContextMenu={this.props.onNodeContextMenu}
-            />
-        ))
-
-        const linkAboveElements = nodesAboveAbstraction.map(node => (
-            <HierarchyLink
-                key={node.data.id}
-                link={{
-                    x: 0,
-                    y: 0,
-                    data: {
-                        ...this.props.focusNode
-                    },
-                    parent: node
-                }}
-            />
-        ))
+//         const linkAboveElements = nodesAboveAbstraction.map(node => (
+//             <HierarchyLink
+//                 key={node.data.id}
+//                 link={{
+//                     x: 0,
+//                     y: 0,
+//                     data: {
+//                         ...this.props.focusNode
+//                     },
+//                     parent: node
+//                 }}
+//             />
+//         ))
 
         return (
             <g className="hierarchy-graph">
