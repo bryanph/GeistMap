@@ -10,6 +10,7 @@
     "connect-redis": "3.3.2",
     "cookie-parser": "1.4.3",
     "d3-hierarchy": "1.1.5",
+    "d3-transition": "1.1.1",
     "draft-js": "0.10.4",
     "elasticsearch": "11.0.1",
     "express": "4.16.2",
