@@ -5,8 +5,8 @@ echo "cd /vagrant" >> /home/vagrant/.bashrc
 cd /vagrant
 npm install
 
-cp server/config/auth.sample.js auth.js
-cp server/config/config.sample.js server/config/config.js
+cp server/config/auth.sample.js server/config/auth.js
+cp server/config/sample.config.js server/config/config.js
 
 scripts/ES/createESIndexes.sh
 
