@@ -11,8 +11,16 @@ class ToggleShowLinks extends React.Component {
             right: '10px',
             bottom: '46px',
         }
+
+        const { toggleShowLinks, ...restProps } = this.props
+
         return (
-            <Button style={styles} toggle active={this.props.active} onClick={this.props.toggleShowLinks}>
+            <Button 
+                style={styles}
+                toggle
+                onClick={this.props.toggleShowLinks}
+                { ...restProps }
+            >
                 Show Links
             </Button>
         )

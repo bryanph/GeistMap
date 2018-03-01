@@ -531,7 +531,7 @@ class ExploreGraph extends React.Component {
                     zoomOut={() => this.zoom.zoomOut()}
                     zoomFit={() => this.zoom.zoomFit()}
                 />
-                <ToggleShowLinks />
+                <ToggleShowLinks disabled={ edgesOutsideAbstraction.length === 0 } />
                 <ContextMenu 
                     closeContextMenu={this.closeContextMenu}
                     opened={this.state.contextMenu.opened}
