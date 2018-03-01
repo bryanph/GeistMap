@@ -10,7 +10,8 @@ import { withRouter } from 'react-router-dom'
 import {HotKeys} from 'react-hotkeys';
 import moment from 'moment'
 
-import { EditButton, GraphButton, ExploreButton, CollectionGraphButton, TrashButton, DuplicateButton, AddRelationButton, FocusButton } from '../../components/Buttons'
+import { FlatButton } from '../../components/button'
+
 import SavedState from '../../containers/SavedState'
 import Spinner from '../../components/Spinner'
 
@@ -19,6 +20,9 @@ import './styles.scss'
 import EditableTitle from '../../components/EditableTitle'
 import NodeCollectionList from '../../containers/NodeCollectionList'
 
+const DeleteButton = (props) => (
+    <FlatButton iconName="trash" className="deleteButton" {...props} />
+)
 
 const NodeTitle = ({ title, updateNode }) => (
     <EditableTitle 
@@ -129,9 +133,10 @@ export class NodeEditorToolbar extends React.Component {
                         }
                     </div>
                     <div className="nodeToolbar-actions">
-                        <TrashButton
+                        <DeleteButton
                             onClick={this.removeNode}
                             disabled={node.type === "root"}
+                            label=""
                         />
                     </div>
             </HotKeys>

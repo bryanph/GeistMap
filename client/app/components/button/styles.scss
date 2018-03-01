@@ -1,7 +1,7 @@
 @import '~styles/settings';
 
 .responsiveButton {
-    color: white;
+    color: $accent-color;
     font-weight: 400;
     font-size: 1.2rem;
     padding: .78571429em;
@@ -24,7 +24,7 @@
 
 
 .flatButton {
-    color: white;
+    color: $accent-color;
     font-weight: 400;
     font-size: 1.2rem;
     padding: 10px 12px;

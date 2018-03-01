@@ -434,6 +434,8 @@ class ExploreGraph extends React.Component {
 
         // the parent nodes
         let totalParentHeight = TREE_NODE_WIDTH * (nodesAboveAbstraction.length-1)
+
+
         nodesAboveAbstraction.forEach((node, i) => {
             node.x = node.fx = TREE_NODE_WIDTH * i - totalParentHeight/2;
             node.y = node.fy = -TREE_NODE_HEIGHT;
@@ -467,6 +469,7 @@ class ExploreGraph extends React.Component {
                 nodesById[node.data.id] = node
             })
 
+
         edgesOutsideAbstraction.forEach(link => {
             link.source = nodesById[link.start]
             link.target = nodesById[link.end]
@@ -498,6 +501,7 @@ class ExploreGraph extends React.Component {
             // TODO: when adding a key here, these components don't update on change, why? - 2018-02-14
             <LinkOutside
                 link={link}
+                key={link.id}
             />
         ))
 
