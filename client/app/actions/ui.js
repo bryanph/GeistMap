@@ -106,12 +106,13 @@ import { getNodesBelowAbstractionMap } from '../reducers'
 
 // set this node in edit mode
 export const DRAG_ELEMENT = 'DRAG_ELEMENT'
-export function dragElement(id, x, y, dx, dy) {
+export function dragElement(id, index, x, y, dx, dy) {
     return (dispatch, getState) => {
         return dispatch({
             type: DRAG_ELEMENT,
             draggedElement: {
                 id,
+                index, // only defined for hierarchy elements
                 childrenMap: getNodesBelowAbstractionMap(getState(), { focusNodeId: id }) || {},
                 x,
                 y,

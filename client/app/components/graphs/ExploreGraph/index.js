@@ -50,7 +50,7 @@ class NodeOutside extends React.Component {
     }
 
     componentDidMount() {
-        const selection = d3Select(`#node-${this.props.node.data.id}`)
+        const selection = d3Select(`#node_${this.props.node.data.id}`)
         this.props.drag(selection)
     }
 
@@ -65,7 +65,7 @@ class NodeOutside extends React.Component {
 
         return (
             <g
-                id={`node-${node.data.id}`}
+                id={`node_${node.data.id}`}
                 className="node node-outside"
                 transform={transform}
                 onClick={() => this.props.onClick(node.data.id)}

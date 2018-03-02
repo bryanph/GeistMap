@@ -39,7 +39,7 @@ class WrapText extends React.Component {
         return (
             <text {...props} dy={`${baseDy + dy}em`}>
                 {this.state.lines.map((word, index) => (
-                    <tspan x={x} y={y} dy={`${baseDy + index * lineHeight}em`}>
+                    <tspan key={index} x={x} y={y} dy={`${baseDy + index * lineHeight}em`}>
                         {word}
                     </tspan>
                 ))}

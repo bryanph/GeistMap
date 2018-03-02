@@ -42,7 +42,7 @@ class HierarchyNode extends React.Component {
     }
 
     componentDidMount() {
-        const selection = d3Select(`#node-${this.props.node.data.id}`)
+        const selection = d3Select(`#node${this.props.node.index}_${this.props.node.data.id}`)
         this.props.drag(selection)
     }
 
@@ -79,8 +79,9 @@ class HierarchyNode extends React.Component {
             draggedElement,
         } = this.props
 
-        const x = draggedElement.childrenMap[node.data.id] ? (node.x + draggedElement.dx) : node.x;
-        const y = draggedElement.childrenMap[node.data.id] ? (node.y + draggedElement.dy) : node.y;
+        const isDragging = draggedElement.childrenMap[node.data.id]
+        const x = isDragging ? (node.x + draggedElement.dx) : node.x;
+        const y = isDragging ? (node.y + draggedElement.dy) : node.y;
 
         const transform = `translate(${y}, ${x})`;
 
@@ -97,7 +98,7 @@ class HierarchyNode extends React.Component {
 
         return (
             <g
-                id={`node-${node.data.id}`}
+                id={`node${node.index}_${node.data.id}`}
                 className={ nodeClass }
                 transform={transform}
             >
@@ -263,7 +264,7 @@ class NodeGraph extends React.Component {
 
         const nodeElements = nodes.map(node => (
             <HierarchyNode 
-                key={node.data.id}
+                key={node.index}
                 node={node}
                 onClick={this.props.onNodeClick}
                 onFocusClick={this.props.onNodeFocus}
@@ -276,7 +277,7 @@ class NodeGraph extends React.Component {
 
         const hierarchyLinkElements = hierarchyLinks.map(link => (
             <HierarchyLink
-                key={link.data.id}
+                key={link.index}
                 link={link}
             />
         ))

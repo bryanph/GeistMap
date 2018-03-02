@@ -7,6 +7,14 @@ import {
 
 import { NODE_RADIUS } from '../constants'
 
+const nodeRe = /node(\d*)_(.*)/
+const getNodeIdFromElementId = (elementId) => (
+    [
+        elementId.replace(nodeRe, "$1"),
+        elementId.replace(nodeRe, "$2")
+    ]
+)
+
 export const createOuterDrag = (simulation) => (actions) => {
     return {
         dragstart: function() {
@@ -80,9 +88,11 @@ export const createInnerDrag = (self) => (actions) => {
             /*
              * Freeze the graph
              */
-            const id = d3Select(this).attr('id')
+            const [ index, id ] = getNodeIdFromElementId(d3Select(this).attr('id'))
 
-            if (id.replace("node-", "") === self.props.focusNodeId) {
+            console.log(index, id)
+
+            if (id === self.props.focusNodeId) {
                 return;
             }
 
@@ -98,7 +108,7 @@ export const createInnerDrag = (self) => (actions) => {
             }
 
             const nodeElement = d3Select(this)
-            const id = nodeElement.attr('id').replace("node-", "")
+            const [ index, id ] = getNodeIdFromElementId(nodeElement.attr('id'))
             const node = self.nodesById[id]
 
             // nodeElement.attr('transform', `translate(${currentEvent.x}, ${currentEvent.y})`)
@@ -115,6 +125,7 @@ export const createInnerDrag = (self) => (actions) => {
 
             self.props.dragElement(
                 id,
+                index,
                 currentEvent.y,
                 currentEvent.x,
                 currentEvent.y - startY, // dy from dragStart
@@ -155,7 +166,7 @@ export const createInnerDrag = (self) => (actions) => {
             dragStarted = false
 
             const nodeElement = d3Select(this)
-            const id = nodeElement.attr('id').replace("node-", "")
+            const [ index, id ] = getNodeIdFromElementId(nodeElement.attr('id'))
             const node = self.nodesById[id]
 
             const nodeSelection = d3SelectAll('.node-below')
@@ -166,7 +177,7 @@ export const createInnerDrag = (self) => (actions) => {
                 // undo fixed state as set in dragstart
 
                 const currentNodeElement = d3Select(this)
-                const currentId = currentNodeElement.attr('id').replace("node-", "")
+                const [ currentIndex, currentId ] = getNodeIdFromElementId(currentNodeElement.attr('id'))
                 const currentNode = self.nodesById[currentId]
 
                 if (id === currentId) {
