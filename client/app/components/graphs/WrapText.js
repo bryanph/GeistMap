@@ -56,7 +56,7 @@ class WrapText extends React.Component {
 
         const lines = this.calculateLines(this.wordsWithComputedWidth, this.spaceWidth, this.props.width);
         const newLineAdded = this.state.lines.length !== lines.length;
-        const wordMoved = this.state.lines.some((line, index) => line.length != lines[index].length);
+        const wordMoved = this.state.lines.some((line, index) => line.length != (lines[index] && lines[index].length));
         // Only update if number of lines or length of any lines change
         if (newLineAdded || wordMoved) {
             this.setState({ lines }) 
