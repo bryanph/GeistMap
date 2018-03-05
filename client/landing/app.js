@@ -67,24 +67,22 @@ const App = (props) => (
             </header>
 
             <section className="whereWeAreSection">
-                <div className="wrapper">
-                    <h2 className="sectionTitle">Where we are now</h2>
-                    <FeatureRow 
-                        header={rows.connections.header}
-                        content={rows.connections.content}
-                        imageSrc={rows.connections.imageSrc}
-                    />
-                    <FeatureRow 
-                        header={rows.explore.header}
-                        content={rows.explore.content}
-                        imageSrc={rows.explore.imageSrc}
-                    />
-                    <FeatureRow 
-                        header={rows.editor.header}
-                        content={rows.editor.content}
-                        imageSrc={rows.editor.imageSrc}
-                    />
-                </div>
+                <h2 className="sectionTitle">Where we are now</h2>
+                <FeatureRow 
+                    header={rows.connections.header}
+                    content={rows.connections.content}
+                    imageSrc={rows.connections.imageSrc}
+                />
+                <FeatureRow 
+                    header={rows.explore.header}
+                    content={rows.explore.content}
+                    imageSrc={rows.explore.imageSrc}
+                />
+                <FeatureRow 
+                    header={rows.editor.header}
+                    content={rows.editor.content}
+                    imageSrc={rows.editor.imageSrc}
+                />
             </section>
 
             <section className="whereWeGoSection">

@@ -142,12 +142,11 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-
-
 .sectionTitle {
     text-align: center;
-    font-size: 1.8rem;
+    font-size: 2.1rem;
     font-weight: 400;
+    margin: 60px 0 !important;
 
     // color: $accent-color;
     color: $secondaryTextColor;
@@ -156,24 +155,40 @@ h1, h2, h3, h4, h5, h6 {
     letter-spacing: .04em;
 }
 
+.whereWeAreSection {
+    // margin-top: 60px;
+}
+
+.featureRow-container {
+    width: 100%;
+    padding: 60px 0;
+}
+
 .featureRow {
     width: 100%;
-    margin: 60px auto;
+    margin: 0 auto;
     overflow: hidden;
     display: flex;
     align-content: center;
 }
-.featureRow:nth-child(odd) .featureRow-text {
-    order: 1;
+.featureRow-container:nth-child(odd) {
+    .featureRow-text {
+        order: 1;
+    }
+    .featureRow-image {
+        order: 2;
+    }
 }
-.featureRow:nth-child(odd) .featureRow-image {
-    order: 2;
-}
-.featureRow:nth-child(odd) .featureRow-text {
-    order: 2;
-}
-.featureRow:nth-child(odd) .featureRow-image {
-    order: 1;
+
+.featureRow-container:nth-child(even) {
+    .featureRow-text {
+        order: 2;
+    }
+     .featureRow-image {
+        order: 1;
+    }
+
+    background-color: #f1f1f1;
 }
 
 .featureRow-text {

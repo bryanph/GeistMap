@@ -20,9 +20,13 @@ export default class FeatureRow extends React.Component {
 
     render() {
         return (
-            <div className="featureRow">
-                <FeatureRowText header={this.props.header} content={this.props.content} />
-                <FeatureRowImage imageSrc={this.props.imageSrc} />
+            <div className="featureRow-container">
+                <div className="wrapper">
+                    <div className="featureRow">
+                        <FeatureRowText header={this.props.header} content={this.props.content} />
+                        <FeatureRowImage imageSrc={this.props.imageSrc} />
+                    </div>
+                </div>
             </div>
         )
     }
