@@ -4,17 +4,17 @@ import FlatButton from 'material-ui/FlatButton';
 import { Icon } from 'semantic-ui-react'
 
 export const Title = (props) => (
-    <h1 className="navigation-title">{props.title}</h1>
+    <span className="navigation-title">{props.title}</span>
 )
 
 export const Actions = (props) => (
     <div className="navigation-actions">
         <div className="navigation-actions-icons">
             <a href="https://twitter.com/bphaakman" target="_blank">
-                <Icon link name="twitter" size="large" />
+                <Icon link name="twitter" size="large" inverted={true} />
             </a>
             <a href="https://github.com/bryanph/GeistMap" target="_blank">
-                <Icon link name="github" size="large" />
+                <Icon link name="github" size="large" inverted={true} />
             </a>
         </div>
         <FlatButton label="Contact" primary={true} href="mailto:bryanhaakman@gmail.com" 

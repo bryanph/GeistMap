@@ -8,13 +8,14 @@ import "../scss/landing.scss"
 const title = "GeistMap"
 
 const mainSection = {
-    header: "A knowledge base with a focus on connections",
-    content: "Organize your thoughts and information in a knowledge base that works the way you think: by association.",
+    header: "Organize your thoughts",
+    content: "GeistMap is a knowledge management tool that works the way your brain does. It uses a combination of structure and assocation to allow you to make sense of this increasingly complex world.",
 
 }
 const rows = {
     connections: {
-        header: "Relations first",
+        header: "A focus on association",
+        content: "",
         content: "Instead of trying to organize all your thoughts and notes in hierarchical folders, organize your notes by defining relations between them. This is ideal for studying or research.",
         imageSrc: "https://cdn-images-1.medium.com/max/800/1*d6Vw7Bc6-f6eoXli9qPVUQ.png",
     },
@@ -46,32 +47,59 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 const initialState = window.INITIAL_STATE || {}
 const App = (props) => (
     <MuiThemeProvider muiTheme={getMuiTheme()}>
-        <div className="wrapper">
-            <Navigation title={title} />
-            <MainSection
-                header={mainSection.header}
-                content={mainSection.content}
-                {...initialState}
-            />
-            <FeatureRow 
-                header={rows.connections.header}
-                content={rows.connections.content}
-                imageSrc={rows.connections.imageSrc}
-            />
-            <FeatureRow 
-                header={rows.explore.header}
-                content={rows.explore.content}
-                imageSrc={rows.explore.imageSrc}
-            />
-            <FeatureRow 
-                header={rows.editor.header}
-                content={rows.editor.content}
-                imageSrc={rows.editor.imageSrc}
-            />
+        <header className="globalNav">
+            <div className="wrapper">
+                <Navigation title={title} />
+            </div>
+        </header>
+
+        <main>
+            <header>
+                <section id="intro">
+                    <div className="wrapper">
+                        <MainSection
+                            header={mainSection.header}
+                            content={mainSection.content}
+                            {...initialState}
+                        />
+                    </div>
+                </section>
+            </header>
+
+            <section className="whereWeAreSection">
+                <div className="wrapper">
+                    <h2 className="sectionTitle">Where we are now</h2>
+                    <FeatureRow 
+                        header={rows.connections.header}
+                        content={rows.connections.content}
+                        imageSrc={rows.connections.imageSrc}
+                    />
+                    <FeatureRow 
+                        header={rows.explore.header}
+                        content={rows.explore.content}
+                        imageSrc={rows.explore.imageSrc}
+                    />
+                    <FeatureRow 
+                        header={rows.editor.header}
+                        content={rows.editor.content}
+                        imageSrc={rows.editor.imageSrc}
+                    />
+                </div>
+            </section>
+
+            <section className="whereWeGoSection">
+                <h2 className="sectionTitle">Where we are going</h2>
+            </section>
+
+            <section className="whereWeGoSection">
+                <h2 className="sectionTitle">Help us get there</h2>
+            </section>
+
             <EndSection {...initialState} header={endSection.header} />
-            <Footer { ...initialState } />
-            <FollowOnTwitter />
-        </div>
+        </main>
+
+        <Footer { ...initialState } />
+
     </MuiThemeProvider>
 )
 

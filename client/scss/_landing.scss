@@ -1,3 +1,4 @@
+@import 'settings';
 
 $textColor: #212121;
 $secondaryTextColor: #5c5c5c;
@@ -8,7 +9,7 @@ html {
 }
 body {
     height: 100%;
-    background-color: #FAFAFA;
+    background: #fff;
     font-weight: normal;
     line-height: 1.4;
 
@@ -49,8 +50,110 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 1032px;
     padding: 0 16px;
 }
+
+
+/*
+ * NAVIGATION
+*/
+
+.globalNav {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+}
+
 .navigation {
     width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.navigation-title {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 400;
+}
+.navigation-actions {
+    display: flex;
+    align-items: center;
+
+    .navigation-actions-icons {
+        display: inline;
+        margin-right: 15px;
+        a {
+            margin-right: 5px;
+        }
+    }
+}
+
+
+#intro {
+    height: 760px;
+    display: flex;
+    align-items: center;
+
+    // background-color: $primary-color;
+    // background: linear-gradient(to bottom right, $primary-color, #fff);
+    background-image: linear-gradient( 135deg, #52E5E7 10%, #130CB7 100%);
+    background-image: linear-gradient( 135deg, #3C8CE7 10%, #00EAFF 100%);
+
+}
+
+
+.mainSection {
+    width: 100%;
+    margin: 2rem auto;
+    overflow: hidden;
+    display: flex;
+    align-content: center;
+    align-items: center;
+}
+.mainSection-text {
+    flex: 0 0 60%;
+    padding-right: 100px;
+
+    .mainSection-header {
+        color: #fff;
+        font-size: 2.5rem;
+        font-weight: 400;
+        margin-bottom: 1rem;
+    }
+    .mainSection-body {
+        font-size: 1.3rem;
+        font-weight: 200;
+        line-height: 2rem;
+        // color: $secondaryTextColor;
+        color: #d9fcff;
+        margin: 0;
+    }
+}
+
+.mainSection-signup {
+    flex: 0 0 40%;
+    // max-width: 400px;
+}
+
+.signupForm-tos {
+    margin-top: 20px;
+    font-size: 12px;
+
+    a {
+        color: blue;
+    }
+}
+
+
+
+.sectionTitle {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 400;
+
+    // color: $accent-color;
+    color: $secondaryTextColor;
+
+    text-transform: uppercase;
+    letter-spacing: .04em;
 }
 
 .featureRow {
@@ -81,13 +184,15 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: center;
 }
 .featureRow-header {
-    font-size: 1.7rem;
-    font-weight: 200;
+    font-size: 2rem;
+    font-weight: 400;
     margin-bottom: 0.5rem;
+    color: $accent-color;
 }
 .featureRow-body {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: 200;
+    line-height: 2rem;
     color: $secondaryTextColor;
     margin: 0;
 }
@@ -100,76 +205,12 @@ h1, h2, h3, h4, h5, h6 {
     }
 }
 
-
-.mainSection {
-    width: 100%;
-    margin: 2rem auto;
-    overflow: hidden;
-    display: flex;
-    align-content: center;
-    align-items: center;
-}
-.mainSection-text {
-    flex: 0 0 60%;
-    padding-right: 100px;
-
-    .mainSection-header {
-        font-size: 1.7rem;
-        font-weight: 200;
-        margin-bottom: 0.5rem;
-    }
-    .mainSection-body {
-        font-size: 1.2rem;
-        font-weight: 200;
-        color: $secondaryTextColor;
-        margin: 0;
-    }
-}
-
-.mainSection-signup {
-    flex: 0 0 40%;
-    // max-width: 400px;
-}
-
-.signupForm-tos {
-    margin-top: 20px;
-    font-size: 12px;
-
-    a {
-        color: blue;
-    }
-}
-
 .endSection {
     margin: 0 auto;
     max-width: 400px;
 }
 .endSection-header {
     text-align: center;
-}
-
-.navigation {
-    width: 100%;
-    margin: 50px 0;
-    display: flex;
-    justify-content: space-between;
-}
-.navigation-title {
-    font-size: 2rem;
-    font-weight: 400;
-}
-.navigation-actions {
-
-    display: flex;
-    align-items: center;
-
-    .navigation-actions-icons {
-        display: inline;
-        margin-right: 15px;
-        a {
-            margin-right: 5px;
-        }
-    }
 }
 
 .footer {

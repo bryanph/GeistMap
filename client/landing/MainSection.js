@@ -3,7 +3,7 @@ import Signup from '../auth/Signup'
 
 export const MainText = (props) => (
     <div className="mainSection-text">
-        <h2 className="mainSection-header">{props.header}</h2>
+        <h1 className="mainSection-header">{props.header}</h1>
         <p className="mainSection-body">{props.content}</p>
     </div>
 )
@@ -12,7 +12,6 @@ export const MainSignup = (props) => (
     <div className="mainSection-signup">
         <Signup {...props} />
     </div>
-    
 )
 
 export default class MainSection extends React.Component {
