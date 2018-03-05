@@ -445,7 +445,7 @@ class ExploreGraph extends React.Component {
                 node.active = true
             }
 
-            nodesById[node.data.id] = node
+            // nodesById[node.data.id] = node
         })
 
         // the child nodes

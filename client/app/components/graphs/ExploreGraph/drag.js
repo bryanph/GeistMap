@@ -90,8 +90,6 @@ export const createInnerDrag = (self) => (actions) => {
              */
             const [ index, id ] = getNodeIdFromElementId(d3Select(this).attr('id'))
 
-            console.log(index, id)
-
             if (id === self.props.focusNodeId) {
                 return;
             }
@@ -112,15 +110,6 @@ export const createInnerDrag = (self) => (actions) => {
             const node = self.nodesById[id]
 
             // nodeElement.attr('transform', `translate(${currentEvent.x}, ${currentEvent.y})`)
-
-//             self.setState({ 
-//                 draggedElement: {
-//                     id: id,
-//                     x: currentEvent.y, // TODO: why is this switched? - 2018-02-02
-//                     y: currentEvent.x
-//                 },
-//                 rerender: false
-//             })
 
 
             self.props.dragElement(
@@ -172,6 +161,8 @@ export const createInnerDrag = (self) => (actions) => {
             const nodeSelection = d3SelectAll('.node-below')
 
             self.props.dragElement()
+
+            console.log(index, id)
 
             nodeSelection.each(function() {
                 // undo fixed state as set in dragstart
