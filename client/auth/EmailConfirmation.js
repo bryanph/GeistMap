@@ -9,7 +9,7 @@ import getHeaders from './headers'
 
 import { RenderErrors, ValidationErrors } from './Error'
 import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
+import { FlatButton } from '../app/components/button'
 
 import createClass from 'create-react-class'
 
@@ -102,10 +102,8 @@ export const EmailConfirmationForm = createClass({
                 />
                 <FlatButton
                     onClick={this.handleSubmit}   
-                    label="Confirm your email"
-                    primary={true}
-                    style={{marginTop: '20px'}}
-                />
+                    style={{marginTop: '10px'}}
+                >Confirm your email</FlatButton>
             </form>
 
         )

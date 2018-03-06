@@ -1,7 +1,6 @@
 import React from 'react'
 
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
+import { FlatButton } from '../app/components/button'
 import TextField from 'material-ui/TextField';
 
 import fetchJSON from './utils/fetch'
@@ -61,11 +60,8 @@ export const LoginForm = createClass({
                 />
                 <FlatButton
                     onClick={this.handleSubmit}   
-                    label="Log In"
-                    style={styles.submitButton}
-                    style={{marginTop: '20px'}}
-                    primary={true}
-                />
+                    style={{marginTop: '10px'}}
+                >Log In</FlatButton>
             </form>
         )
     }

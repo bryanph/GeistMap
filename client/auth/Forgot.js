@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 import { RenderErrors, ValidationErrors } from './Error'
 import getHeaders from './headers'
 
-import FlatButton from 'material-ui/FlatButton';
+import { FlatButton } from '../app/components/button'
 import TextField from 'material-ui/TextField';
 
 import createClass from 'create-react-class'
@@ -115,10 +115,8 @@ export const ForgotForm = createClass({
                 />
                 <FlatButton
                     onClick={this.handleSubmit}   
-                    label="Reset password"
-                    primary={true}
-                    style={{marginTop: '20px'}}
-                />
+                    style={{marginTop: '10px'}}
+                >Reset password</FlatButton>
             </form>
         )
     }

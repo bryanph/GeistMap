@@ -9,9 +9,8 @@ import getHeaders from './headers'
 import { RenderErrors, ValidationErrors } from './Error'
 import { ForgotPassword } from './Forgot'
 
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
+import { FlatButton } from '../app/components/button'
 
 import createClass from 'create-react-class'
 import Divider from './Divider'
@@ -141,10 +140,8 @@ export const SignupForm = createClass({
                     <span className="signupForm-tos">By signing up you agree with the <a href={ this.props.termsOfServiceUrl }>terms of service</a> and the <a href={ this.props.privacyPolicyUrl }>privacy policy</a></span>
                     <FlatButton
                         onClick={this.handleSubmit}   
-                        label="Sign up"
-                        primary={true}
-                        style={{marginTop: '20px'}}
-                    />
+                        style={{marginTop: '10px'}}
+                    >SIGN UP</FlatButton>
             </form>
 
             )

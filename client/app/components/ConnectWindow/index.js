@@ -8,7 +8,8 @@ import React from 'react';
 
 import styles from './styles.css';
 
-import { FlatButton, Dialog } from 'material-ui'
+import { Dialog } from 'material-ui'
+import { FlatButton } from '../button'
 import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'
 import { Entity, RichUtils } from 'draft-js';
@@ -85,10 +86,8 @@ class ConnectWindow extends React.Component {
 
         const actions = [
             <FlatButton
-                label="Cancel"
-                primary={true}
                 onClick={this.handleCancel}
-            />,
+            >Cancel</FlatButton>,
         ];
 
         return (

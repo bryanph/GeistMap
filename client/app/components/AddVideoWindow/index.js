@@ -10,7 +10,8 @@ import React from 'react';
 import './styles.css';
 
 import { withRouter } from 'react-router-dom'
-import { FlatButton, Dialog } from 'material-ui'
+import { Dialog } from 'material-ui'
+import { FlatButton } from '../../components/button'
 import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'
 import { Entity, RichUtils } from 'draft-js';
@@ -59,10 +60,8 @@ class AddVideoWindow extends React.Component {
     render() {
         const actions = [
             <FlatButton
-                label="Cancel"
-                primary={true}
                 onClick={this.handleCancel}
-            />,
+            >Cancel</FlatButton>,
         ];
 
         return (

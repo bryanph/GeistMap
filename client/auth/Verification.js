@@ -12,7 +12,7 @@ import { RenderErrors, ValidationErrors } from './Error'
 import { ForgotPassword } from './Forgot'
 
 import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
+import { FlatButton } from '../app/components/button'
 
 import createClass from 'create-react-class'
 
@@ -115,10 +115,8 @@ export const VerificationForm = createClass({
                 />
                 <FlatButton
                     onClick={this.handleSubmit}   
-                    label="Resend email"
-                    primary={true}
-                    style={{marginTop: '20px'}}
-                />
+                    style={{marginTop: '10px'}}
+                >Resend email</FlatButton>
             </form>
 
         )

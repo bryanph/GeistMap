@@ -9,11 +9,13 @@ import React from 'react';
 
 import './styles.css';
 
+import { Entity, RichUtils } from 'draft-js';
+import { Dialog } from 'material-ui'
 import { withRouter } from 'react-router-dom'
-import { FlatButton, Dialog } from 'material-ui'
+
+import { FlatButton } from '../button'
 import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'
-import { Entity, RichUtils } from 'draft-js';
 
 const ENTITY_TYPE = 'CONTENT_LINK'
 
@@ -59,10 +61,8 @@ class AddAudioWindow extends React.Component {
     render() {
         const actions = [
             <FlatButton
-                label="Cancel"
-                primary={true}
                 onClick={this.handleCancel}
-            />,
+            >Cancel</FlatButton>,
         ];
 
         return (

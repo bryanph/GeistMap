@@ -10,12 +10,12 @@ import React from 'react';
 import './styles.css';
 
 import { withRouter } from 'react-router-dom'
-import { FlatButton, Dialog } from 'material-ui'
-import { ControlledTextField } from '../Input'
-import NodeSearch from '../../containers/NodeSearch'
+import { Dialog } from 'material-ui'
 import { Entity, EditorState, RichUtils } from 'draft-js';
 
-import { AddNodeWithRelationButton } from '../../components/Buttons'
+import { FlatButton } from '../button'
+import { ControlledTextField } from '../Input'
+import NodeSearch from '../../containers/NodeSearch'
 
 import { getTextSelection } from '../ContentEditor/utils/selection.js'
 
@@ -149,10 +149,8 @@ class AddRelationWindow extends React.Component {
 
         const actions = [
             <FlatButton
-                label="Cancel"
-                primary={true}
                 onClick={this.handleCancel}
-            />,
+            >Cancel</FlatButton>,
         ];
 
 

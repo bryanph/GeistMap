@@ -7,7 +7,7 @@
 import React from 'react';
 
 import {Tabs, Tab} from 'material-ui/Tabs';
-import { CollapseButton } from '../../components/Buttons'
+import { FlatButton } from '../button'
 
 export const Shortcut = ({ shortcut, text }) => {
     const shortcutSpans = shortcut.map(s => <span style={styles.highlight}>{s}</span>)
@@ -74,8 +74,9 @@ const styles = {
 
 const CollapseShortcuts = (props) => (
     <div style={styles.collapseButton}>
-        <CollapseButton 
-            onClick={props.hideShortcutWindow} 
+        <FlatButton
+            onClick={props.hideShortcutWindow}
+            iconName="close"
         />
     </div>
 )
