@@ -84,6 +84,11 @@ h1, h2, h3, h4, h5, h6 {
             margin-right: 5px;
         }
     }
+
+    .navigation-link {
+        color: #fff;
+        font-size: 1.2rem;
+    }
 }
 
 
@@ -114,7 +119,7 @@ h1, h2, h3, h4, h5, h6 {
 
     .mainSection-header {
         color: #fff;
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 400;
         margin-bottom: 1rem;
     }
@@ -299,3 +304,17 @@ h1, h2, h3, h4, h5, h6 {
 .bottom-panel {
     margin: 1rem auto;
 }
+
+
+/*
+ * AUTH TODO: separate this
+*/
+div .socialButton {
+    width: 100%;
+    font-size: 1rem;
+}
+
+
+
+
+

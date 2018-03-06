@@ -10,9 +10,20 @@ export const ResponsiveButton = ({ iconName, name, className, ...rest }) => (
     </button>
 )
 
-export const FlatButton = ({ iconName, name, className, ...rest }) => (
-    <button className={classNames("flatButton", className)} {...rest}>
-        <Icon name={iconName} /> { name ? <span>{name}</span> : null }
-    </button>
-)
+export const FlatButton = ({ as="button", iconName, children, className, ...rest }) => {
 
+    const actualClassName = classNames(className, "flatButton")
+
+    return (
+        React.createElement(
+            as,
+            { className: actualClassName , ...rest }, 
+            [
+                iconName ? <Icon name={iconName} /> : null,
+                children ? <span>{children}</span> : null
+            ]
+        )
+    )
+}
+
+export const FlatLink = (props) => <FlatButton as="a" {...props} />

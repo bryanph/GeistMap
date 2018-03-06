@@ -30,9 +30,14 @@
     padding: 10px 12px;
     border-radius: .28571429rem;
     font-family: Roboto, sans-serif;
+    display: inline-block;
 
     i {
         margin: 0
+    }
+
+    i + span {
+        margin-left: 5px;
     }
 
     span {
