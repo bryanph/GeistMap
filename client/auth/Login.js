@@ -53,7 +53,7 @@ export const Login = createClass({
             return (
                 <div>
                     <div className="panel">
-                        <h2>Log in</h2>
+                        <span className="panel-title">Log in</span>
                         <span className="panel-authText">With</span>
                         <Social {...this.props} />
                         <Divider />

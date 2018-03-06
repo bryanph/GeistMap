@@ -10,6 +10,7 @@ import Signup, { SignupSocial, SignupSuccess, SignupVerificationSuccess } from '
 import EmailConfirmation, { EmailConfirmationSuccess } from './EmailConfirmation'
 import AccountVerification, { VerificationResendSuccess } from './Verification'
 
+import 'font-awesome/css/font-awesome.min.css'
 import "../scss/landing.scss"
 
 // TODO: get config in context somehow - 2016-08-11
@@ -18,10 +19,8 @@ import getMuiTheme from '../app/containers/App/muitheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 const App = (props) => (
     <MuiThemeProvider muiTheme={getMuiTheme()}>
-        <div className="row stretch">
-            <div className="main-container stretch columns small-centered small-12 medium-9 large-5 xlarge-4 xxlarge-3">
-                <Router {...props} />
-            </div>
+        <div className="authContainer">
+            <Router {...props} />
         </div>
     </MuiThemeProvider>
 )

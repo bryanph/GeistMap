@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDom from 'react-dom'
 
-import 'semantic-ui-css/semantic.min.css';
+import 'font-awesome/css/font-awesome.min.css'
 import "../scss/landing.scss"
 
 // TODO: set from within settings - 2017-07-04
@@ -15,7 +15,6 @@ const mainSection = {
 const rows = {
     connections: {
         header: "A focus on association",
-        content: "",
         content: "Instead of trying to organize all your thoughts and notes in hierarchical folders, organize your notes by defining relations between them. This is ideal for studying or research.",
         imageSrc: "https://cdn-images-1.medium.com/max/800/1*d6Vw7Bc6-f6eoXli9qPVUQ.png",
     },

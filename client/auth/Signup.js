@@ -56,7 +56,7 @@ const Signup = createClass({
             return (
                 <div>
                     <div className="panel">
-                        <h2>Sign up</h2>
+                        <span className="panel-title">Sign up</span>
                         <span className="panel-authText">With</span>
                         <Social {...this.props} />
                         <Divider />

@@ -14,6 +14,7 @@
     "express": "4.16.2",
     "express-handlebars": "3.0.0",
     "express-session": "1.15.6",
+    "font-awesome": "4.7.0",
     "foundation-sites": "6.2.0",
     "full-auth-middleware": "0.0.6",
     "handlebars-layouts": "3.1.4",

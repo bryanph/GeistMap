@@ -48,9 +48,9 @@ const Forgot = createClass({
         return (
             <div>
                 <div className="panel">
-                    <h3>Reset your password</h3>
-                    <p>Enter your email address to receive a reset link</p>
-                    <ForgotForm 
+                    <span className="panel-title">Reset your password</span>
+                    <span className="panel-authText">Enter your email address to receive a reset link</span>
+                    <ForgotForm
                         handleError={this.handleError}
                         handleResponse={this.handleResponse}
                     />
