@@ -1,5 +1,4 @@
 import React from 'react'
-import { Icon } from 'semantic-ui-react'
 import classNames from 'classnames'
 
 import './styles.scss'
@@ -19,8 +18,8 @@ export const FlatButton = ({ as="button", iconName, children, className, ...rest
             as,
             { className: actualClassName , ...rest }, 
             [
-                iconName ? <i className={`fa fa-${iconName}`} /> : null,
-                children ? <span>{children}</span> : null
+                iconName ? <i key={1} className={`fa fa-${iconName}`} /> : null,
+                children ? <span key={2}>{children}</span> : null
             ]
         )
     )

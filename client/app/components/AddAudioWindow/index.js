@@ -14,7 +14,6 @@ import { Dialog } from 'material-ui'
 import { withRouter } from 'react-router-dom'
 
 import { FlatButton } from '../button'
-import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'
 
 const ENTITY_TYPE = 'CONTENT_LINK'

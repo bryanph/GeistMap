@@ -8,13 +8,22 @@ import { RenderErrors, ValidationErrors } from './Error'
 import getHeaders from './headers'
 
 import { FlatButton } from '../app/components/button'
-import TextField from 'material-ui/TextField';
+import { InputEmail, ValidateInput } from '../app/components/input'
 
-import createClass from 'create-react-class'
+class Forgot extends React.Component {
+    constructor(props) {
+        super(props)
 
-const Forgot = createClass({
+        this.state = {
+            errors: [],
+            validationErrors: {},
+        }
 
-    handleResponse: function(json, response) {
+        this.handleResponse = this.handleResponse.bind(this)
+        this.handleError = this.handleError.bind(this)
+    }
+
+    handleResponse(json, response) {
         if (Object.keys(json.errfor).length) {
             return this.setState({validationErrors: json.errfor})
         }
@@ -26,20 +35,13 @@ const Forgot = createClass({
             pathname: '/auth/login/forgot/success',
             search: this.props.location.search
         })
-    },
+    }
 
-    handleError: function(error) {
+    handleError(error) {
         console.error(error)
-    },
+    }
 
-    getInitialState: function() {
-        return {
-            errors: [],
-            validationErrors: {},
-        }
-    },
-
-    render: function() {
+    render() {
         const {
             errors,
             validationErrors,
@@ -65,54 +67,66 @@ const Forgot = createClass({
 
         )
     }
-})
+}
 
 export default withRouter(Forgot)
 
-const styles = {
-    container: {
-        margin: '1rem auto',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
-    },
-    textField: {
-        width: '100%',
-    }
-}
+class ForgotForm extends React.Component {
+    constructor(props) {
+        super(props)
 
-export const ForgotForm = createClass({
-
-    getInitialState: function() {
-        return {
+        this.state = {
             email: '',
+            errors: {},
         }
-    },
 
-    handleSubmit: function(e) {
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.validate = this.validate.bind(this);
+    }
+
+    handleSubmit(e) {
         e.preventDefault()
+
+        const errors = this.validate(this.state.email)
+        if (Object.keys(errors).length > 0) {
+            return this.setState({ errors })
+        }
 
         fetchJSON('/auth/login/forgot', {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({
-                email: this._email.getValue(),
+                email: this.state.email,
             })
         })
             .then(this.props.handleResponse)
             .catch(this.props.handleError)
-    },
+    }
 
+    validate(email) {
+        const errors = {}
 
-    render: function() {
+        if (!email) {
+            errors.email = "Required"
+        }
+        else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
+            errors.email = "Invalid email address"
+        }
+
+        return errors
+    }
+
+    render() {
         return (
-            <form id="signup-form" ref={c => this._form = c}>
-                <TextField
-                    hintText="email"
-                    ref={c => this._email = c}
-                    style={styles.textField}
-
-                />
+            <form className="forgotForm">
+                <ValidateInput error={this.state.errors.email}>
+                    <InputEmail
+                        name="email"
+                        placeholder="email"
+                        onChange={e => this.setState({ email: e.target.value })}
+                        value={this.state.email}
+                    />
+                </ValidateInput>
                 <FlatButton
                     onClick={this.handleSubmit}   
                     style={{marginTop: '10px'}}
@@ -120,7 +134,7 @@ export const ForgotForm = createClass({
             </form>
         )
     }
-})
+}
 
 export const ForgotPassword = (props) => (
     <Link to='/auth/login/forgot'>Forgot your password?</Link>

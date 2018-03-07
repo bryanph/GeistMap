@@ -14,7 +14,6 @@ import { Dialog } from 'material-ui'
 import { Entity, EditorState, RichUtils } from 'draft-js';
 
 import { FlatButton } from '../button'
-import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'
 
 import { getTextSelection } from '../ContentEditor/utils/selection.js'

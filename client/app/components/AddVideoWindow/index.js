@@ -12,7 +12,6 @@ import './styles.css';
 import { withRouter } from 'react-router-dom'
 import { Dialog } from 'material-ui'
 import { FlatButton } from '../../components/button'
-import { ControlledTextField } from '../Input'
 import NodeSearch from '../../containers/NodeSearch'
 import { Entity, RichUtils } from 'draft-js';
 

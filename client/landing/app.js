@@ -40,12 +40,9 @@ import FeatureRow from './FeatureRow'
 import Navigation from './Navigation'
 import FollowOnTwitter from './FollowOnTwitter'
 
-import getMuiTheme from '../app/containers/App/muitheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-
 const initialState = window.INITIAL_STATE || {}
 const App = (props) => (
-    <MuiThemeProvider muiTheme={getMuiTheme()}>
+    <div>
         <header className="globalNav">
             <div className="wrapper">
                 <Navigation title={title} />
@@ -97,7 +94,7 @@ const App = (props) => (
 
         <Footer { ...initialState } />
 
-    </MuiThemeProvider>
+    </div>
 )
 
 function createElement(Component, props) {

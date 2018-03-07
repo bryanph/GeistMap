@@ -130,12 +130,6 @@ body {
     // max-width: 400px;
 }
 
-.signupForm-tos {
-    margin-top: 20px;
-    font-size: 12px;
-
-}
-
 .sectionTitle {
     text-align: center;
     font-size: 2.1rem;
@@ -303,6 +297,33 @@ body {
 
 .bottom-panel {
     margin: 1rem auto;
+}
+
+.signupForm {
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    input[type="password"] {
+        margin-top: 5px;
+    }
+
+    .signupForm-tos {
+        margin-top: 20px;
+        font-size: 12px;
+    }
+}
+
+.forgotForm, .emailConfirmationForm, .loginForm, .resetForm {
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    input[type="password"] {
+        margin-top: 5px;
+    }
 }
 
 div .socialButton {
