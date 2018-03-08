@@ -62,6 +62,41 @@ const App = (props) => (
                 </section>
             </header>
 
+            <section className="creationLoopSection">
+                <h2 className="sectionTitle">The Creation Loop</h2>
+                <div className="creationLoop">
+                    <div className="creationLoop-video">
+                        <iframe 
+                            src="https://www.youtube.com/embed/agOdP2Bmieg"
+                            crossorigin="anonymous" 
+                            framewborder="0"
+                            allow="autoplay; encrypted-media"
+                            allowfullscreen
+                        />
+                    </div>
+                    <div>
+                        <div className="creationLoop-item">
+                            <h3>1. Source Collection</h3>
+                        </div>
+                        <div className="creationLoop-item">
+                            <h3>2. Highlighting + Annotation</h3>
+                        </div>
+                        <div className="creationLoop-item">
+                            <h3>3. Relate</h3>
+                        </div>
+                        <div className="creationLoop-item">
+                            <h3>4. Structure</h3>
+                        </div>
+                        <div className="creationLoop-item">
+                            <h3>5. Reference + Refine</h3>
+                        </div>
+                        <div className="creationLoop-item">
+                            <h3>6. Sharing + Creating</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <section className="whereWeAreSection">
                 <h2 className="sectionTitle">Where we are now</h2>
                 <FeatureRow 
