@@ -1,5 +1,6 @@
 import React from 'react'
 import ReactDom from 'react-dom'
+import classNames from 'classnames'
 
 import 'font-awesome/css/font-awesome.min.css'
 import "../scss/landing.scss"
@@ -39,8 +40,10 @@ import Footer from './Footer'
 import FeatureRow from './FeatureRow'
 import Navigation from './Navigation'
 import FollowOnTwitter from './FollowOnTwitter'
+import CreationLoop from './CreationLoop'
 
 const initialState = window.INITIAL_STATE || {}
+
 const App = (props) => (
     <div>
         <header className="globalNav">
@@ -63,38 +66,8 @@ const App = (props) => (
             </header>
 
             <section className="creationLoopSection">
-                <h2 className="sectionTitle">The Creation Loop</h2>
-                <div className="creationLoop">
-                    <div className="creationLoop-video">
-                        <iframe 
-                            src="https://www.youtube.com/embed/agOdP2Bmieg"
-                            crossorigin="anonymous" 
-                            framewborder="0"
-                            allow="autoplay; encrypted-media"
-                            allowfullscreen
-                        />
-                    </div>
-                    <div>
-                        <div className="creationLoop-item">
-                            <h3>1. Source Collection</h3>
-                        </div>
-                        <div className="creationLoop-item">
-                            <h3>2. Highlighting + Annotation</h3>
-                        </div>
-                        <div className="creationLoop-item">
-                            <h3>3. Relate</h3>
-                        </div>
-                        <div className="creationLoop-item">
-                            <h3>4. Structure</h3>
-                        </div>
-                        <div className="creationLoop-item">
-                            <h3>5. Reference + Refine</h3>
-                        </div>
-                        <div className="creationLoop-item">
-                            <h3>6. Sharing + Creating</h3>
-                        </div>
-                    </div>
-                </div>
+                <h2 className="sectionTitle">A vision: The Creation Loop</h2>
+                <CreationLoop />
             </section>
 
             <section className="whereWeAreSection">
@@ -120,8 +93,12 @@ const App = (props) => (
                 <h2 className="sectionTitle">Where we are going</h2>
             </section>
 
-            <section className="whereWeGoSection">
+            <section className="futureSection">
                 <h2 className="sectionTitle">Help us get there</h2>
+                <div className="futureSection-contribute">
+                </div>
+                <div className="futureSection-donate">
+                </div>
             </section>
 
             <EndSection {...initialState} header={endSection.header} />
