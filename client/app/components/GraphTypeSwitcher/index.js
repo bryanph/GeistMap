@@ -34,7 +34,7 @@ class GraphTypeSwitcher extends React.Component {
                 <Button.Group className="graphTypeSwitcher-buttons">
                     <Button 
                         icon='triangle down'
-                        content='Hierarchy map'
+                        content='Hierarchy view'
                         onClick={ () => this.props.history.push({
                             pathname: `/app/nodes/${id}/graph`,
                             search: 'graphType=explore'
@@ -43,7 +43,7 @@ class GraphTypeSwitcher extends React.Component {
                     />
                     <Button 
                         icon='crosshairs'
-                        content='Link map'
+                        content='Link view'
                         onClick={ () => this.props.history.push({
                             pathname: `/app/nodes/${id}/graph`,
                             search: 'graphType=abstract'
