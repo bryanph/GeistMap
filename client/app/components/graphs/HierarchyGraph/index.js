@@ -264,7 +264,7 @@ class NodeGraph extends React.Component {
 
         const nodeElements = nodes.map(node => (
             <HierarchyNode 
-                key={node.index}
+                key={node.index + "_" + node.data.id}
                 node={node}
                 onClick={this.props.onNodeClick}
                 onFocusClick={this.props.onNodeFocus}
@@ -277,7 +277,7 @@ class NodeGraph extends React.Component {
 
         const hierarchyLinkElements = hierarchyLinks.map(link => (
             <HierarchyLink
-                key={link.index}
+                key={link.index + "_" + link.data.id}
                 link={link}
             />
         ))
