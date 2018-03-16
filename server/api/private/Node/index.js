@@ -457,6 +457,7 @@ module.exports = function(db, es) {
                console.error(error)
            })
         },
+
         searchAll: function(user, query, res) {
             /*
              * Full text search for all indexed entities

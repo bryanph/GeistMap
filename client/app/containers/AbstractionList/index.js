@@ -25,7 +25,6 @@ import {
 } from '../../actions/node'
 import {
     removeAbstraction,
-    loadCollectionL1,
 } from '../../actions/collection'
 
 import './styles.scss'
@@ -194,7 +193,6 @@ export default connect(mapStateToProps, {
     toggleCollapse,
     removeAbstraction,
     fetchNodeL1,
-    loadCollectionL1,
     showAbstractionSidebar,
     hideAbstractionSidebar,
     moveChild,

@@ -17,7 +17,6 @@ import { HotKeys } from 'react-hotkeys'
 
 // import CollectionOverview from "../CollectionOverview"
 import NodeView from '../NodeView'
-import CollectionDetailEditor from '../CollectionDetailEditor'
 import NodeExploreEditor from '../NodeExploreEditor'
 import ArchiveSidebar from '../ArchiveSidebar'
 
@@ -71,7 +70,6 @@ class App extends React.Component {
                                 <Route exact path={'/app/nodes/:focusNodeId/graph'} component={NodeView} />
                                 <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor}/>
 
-                                { /* <Route exact path={'/app/nodes/:focusNodeId/abstract/:nodeId/edit'} component={CollectionDetailEditor}/> */ }
                                 { /* focusNode is the focused node in the graph, node is the node that is edited */ }
                                 <Route exact path={'/app/nodes/:focusNodeId/graph/:nodeId'} component={NodeView}/>
 

@@ -13,50 +13,6 @@ const uuidV4 = require('uuid/v4');
 import { loadNodeL1 } from './node'
 
 /*
- * Get all collections
-*/
-export const GET_COLLECTIONS_REQUEST = 'GET_COLLECTIONS_REQUEST'
-export const GET_COLLECTIONS_SUCCESS = 'GET_COLLECTIONS_SUCCESS'
-export const GET_COLLECTIONS_FAILURE = 'GET_COLLECTIONS_FAILURE'
-export function fetchCollections() {
-    /*
-     * Fetches all abstractions and their Abstract edges
-    */
-    return {
-        [CALL_API]: {
-            types: [ GET_COLLECTIONS_REQUEST, GET_COLLECTIONS_SUCCESS, GET_COLLECTIONS_FAILURE ],
-            endpoint: 'Collection.getAll',
-            schema: {
-                collections: Schemas.NODE_ARRAY,
-                edges: arrayOf(Schemas.COLLECTION_EDGE)
-            }
-        }
-    }
-}
-
-
-/*
- * get the collection and its children
-*/
-export const GET_COLLECTION_REQUEST = 'GET_COLLECTION_REQUEST'
-export const GET_COLLECTION_SUCCESS = 'GET_COLLECTION_SUCCESS'
-export const GET_COLLECTION_FAILURE = 'GET_COLLECTION_FAILURE'
-export function fetchCollection(id) {
-    return {
-        [CALL_API]: {
-            types: [ GET_COLLECTION_REQUEST, GET_COLLECTION_SUCCESS, GET_COLLECTION_FAILURE ],
-            endpoint: 'Collection.get',
-            payload: [ id ],
-            schema: {
-                collection: Schemas.NODE,
-                // nodes: arrayOf(Schemas.NODE),
-                edges: arrayOf(Schemas.EDGE),
-            }
-        }
-    }
-}
-
-/*
  * Get collection, direct children and their neighbouring nodes (including edges)
 */
 export const GET_COLLECTIONL1_REQUEST = 'GET_COLLECTIONL1_REQUEST'
@@ -91,27 +47,6 @@ export function loadCollectionL1(id) {
         // else {
         //     return dispatch(fetchCollectionL1(id))
         // }
-    }
-}
-
-/*
- * Create a collection
-*/
-export const CREATE_COLLECTION_REQUEST = 'CREATE_COLLECTION_REQUEST'
-export const CREATE_COLLECTION_SUCCESS = 'CREATE_COLLECTION_SUCCESS'
-export const CREATE_COLLECTION_FAILURE = 'CREATE_COLLECTION_FAILURE'
-export function createCollection(id, parentId, data) {
-    // const id = uuidV4();
-
-    return {
-        id,
-        parentId,
-        [CALL_API]: {
-            types: [ CREATE_COLLECTION_REQUEST, CREATE_COLLECTION_SUCCESS, CREATE_COLLECTION_FAILURE ],
-            endpoint: 'Collection.create',
-            payload: [ id, parentId, data ],
-            schema: Schemas.COLLECTION
-        }
     }
 }
 
