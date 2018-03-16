@@ -619,7 +619,6 @@ class NodeGraph extends React.Component {
             updateNode: this.props.updateNode,
             removeNode: this.props.removeNode,
             removeNodeFromCollection: this.props.removeNodeFromCollection,
-            removeAbstraction: this.props.removeAbstraction,
             toggleCollapse: this.props.toggleCollapse,
             moveToAbstraction: this.props.moveToAbstraction,
         })

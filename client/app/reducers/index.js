@@ -50,16 +50,18 @@ export function nodes(state={}, action) {
             return update(state, {
                 [action.nodeId]: {
                     collections: { $push: [ action.collectionId ] }
-                }
+                },
+                [action.collectionId]: {
+                    children: { $apply: (children) => 
+                        children.splice(
+                            children.findIndex((x) => x === action.prevNodeId) < 0 ? 0 : children.findIndex((x) => x === action.prevNodeId),
+                            0,
+                            action.nodeId
+                        )
+                    },
+                    children: { $push: [ action.nodeId ] }
+                },
             })
-
-        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS: {
-            return _.mapValues(state, (x) => update(x, {
-                collections: { $apply: (collections) => 
-                    _.without(collections, action.collectionId)
-                }
-            }))
-        }
 
         case collectionActionTypes.REMOVE_NODE_FROM_COLLECTION_SUCCESS:
             return update(state, {
@@ -161,14 +163,6 @@ function collectionEdges(state={}, action) {
      * Handles the non-merging action types
      */
     switch(action.type) {
-        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
-            // TODO: need to know which edges have this collection as a to or a from - 2016-09-06
-            const { collectionId } = action
-            return _.filter(state, edge => {
-                return !(edge.start === collectionId || edge.end === collectionId)
-            })
-            return state
-
         case uiActionTypes.ADD_COLLECTION:
             // temporarily add a collection and defer synching with the server
             return {
@@ -405,9 +399,6 @@ function nodesByCollectionId(state={}, action) {
             return update(state, {
                 [action.collectionId]: { $apply: (nodes) => _.without(nodes, action.nodeId) }
             })
-
-        case collectionActionTypes.REMOVE_COLLECTION_SUCCESS:
-            return _.omit(state, action.collectionId)
 
         case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
             return update(state, {
@@ -737,7 +728,6 @@ function rootReducer(state={}, action) {
         adjacencyMap: adjacencyMap(state.adjacencyMap, action),
         reverseAdjacencyMap: reverseAdjacencyMap(state.reverseAdjacencyMap, action),
         edgeListMap: edgeListMap(state.edgeListMap, action),
-        nodesByCollectionId: nodesByCollectionId(state.nodesByCollectionId, action),
         abstractionChain: abstractionChain(state.abstractionChain, action),
         archive: archive(state.archive, action),
         // errorMessage: errorMessage(state.errorMessage, action),
@@ -969,26 +959,28 @@ export const getNodesBelowAbstractionIds = createCachedSelector(
     /*
      * returns a map of all the nodes below in the abstraction
      */
-    getFocusNodeId,
-    (state) => state.nodesByCollectionId,
-    (focusNodeId, nodesByCollectionId) => {
+    getFocusNode,
+    (focusNode) => {
+        if (!focusNode) {
+            return []
+        }
         let encounteredNodes = {}
         let nodeList = []
 
         // this filters out duplicates
         function handleChildren(nodeList) {
             return _.flatMap(nodeList, id => {
-                if (id === focusNodeId || encounteredNodes[id]) {
+                if (id === focusNode.id || encounteredNodes[id]) {
                     return []
                 }
 
                 encounteredNodes[id] = true;
 
-                return [ id, ...handleChildren(nodesByCollectionId[id]) ]
+                return [ id, ...handleChildren(focusNode.children) ]
             })
         }
 
-        return [ focusNodeId, ...handleChildren(nodesByCollectionId[focusNodeId] || [])]
+        return [ focusNode.id, ...handleChildren(focusNode.children || [])]
     }
 )((state, { focusNodeId }) => focusNodeId)
 
@@ -1093,15 +1085,14 @@ export const getAbstractionTree = createSelector(
     getFocusNode,
     getNodeMap,
     getEdgeMap,
-    (state) => state.nodesByCollectionId, // direct children
-    (focusNode, nodeMap, edgeMap, nodesByCollectionId) => {
+    (focusNode, nodeMap, edgeMap) => {
 
         // TODO: shouldn't be necessary - 2018-01-30
         if (!focusNode) {
             return {};
         }
 
-        function handleShowNodes(parentNode, nodeIds, level=0) {
+        function handleShowNodes(parentNode) {
             // if (parentNode.collapsed) {
             //     // collapsed, shouldn't show the children, but show the node
             //     return {
@@ -1113,21 +1104,12 @@ export const getAbstractionTree = createSelector(
                 // expanded, show all children as well
                 return {
                     ...parentNode,
-                    children: _(nodeIds)
-                    .map(id => handleShowNodes(nodeMap[id], nodesByCollectionId[id] || [], level+1))
-                    // TODO: this should be a user-defined order so this sort is not necessary - 2018-01-30
-                    .orderBy(n => n.name.toLowerCase())
-                    // .orderBy(n => !n.count)
-                    .value()
+                    children: (parentNode.children || []).map(id => handleShowNodes(nodeMap[id]))
                 }
             // }
         }
 
-        const rootIds = nodesByCollectionId[focusNode.id] || []
-        return handleShowNodes(
-            focusNode,
-            rootIds
-        )
+        return handleShowNodes(focusNode)
     }
 )
 
@@ -1139,8 +1121,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
     getFocusNode,
     getNodesBelowAbstractionMap,
     getEdgesBelowAbstractionMap,
-    (state) => state.nodesByCollectionId, // direct children
-    (focusNode, nodeBelowMap, edgeBelowMap, nodesByCollectionId) => {
+    (focusNode, nodeBelowMap, edgeBelowMap) => {
         /*
          * This gets the direct nodes including their children
          */
@@ -1161,31 +1142,26 @@ export const getNodesAndEdgesByCollectionId = createSelector(
         let visibleEdgeMap = {}
         let visibleNodeTree = {}
 
-        function handleShowNodes(parentNode, nodeIds, level=0) {
+        function handleShowNodes(parentNode) {
             if (parentNode.collapsed) {
                 // collapsed, shouldn't show the children, but show the node
                 visibleNodeMap[parentNode.id] = parentNode
 
-
                 return {
                     ...parentNode,
-                    level,
                     children: null,
                 }
             } else {
                 // expanded, show all children as well
                 return {
                     ...parentNode,
-                    children: _(nodeIds)
-                        .map(id => handleShowNodes(nodeBelowMap[id], nodesByCollectionId[id] || [], level+1))
-                        .orderBy(n => n.name.toLowerCase())
-                        // .orderBy(n => !n.count)
+                    children: _(parentNode.children)
+                        .map(id => handleShowNodes(nodeBelowMap[id]))
                         .value()
                 }
             }
         }
 
-        const rootIds = nodesByCollectionId[focusNode.id] || []
         const notCollapsedFocusNode = { ...focusNode, collapsed: false } // TODO: shouldn't be necessary - 2017-10-18
         visibleNodeTree = handleShowNodes(notCollapsedFocusNode, rootIds) 
 

@@ -25,11 +25,6 @@ import './styles.scss'
 export class NodeView extends React.PureComponent {
     render() {
         const {
-            nodeId,
-            nodes,
-            links,
-            focus,
-            mode,
             isLoading,
             graphType,
         } = this.props

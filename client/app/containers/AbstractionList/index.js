@@ -23,9 +23,6 @@ import {
     fetchNodeL1,
     updateNode,
 } from '../../actions/node'
-import {
-    removeAbstraction,
-} from '../../actions/collection'
 
 import './styles.scss'
 
@@ -95,7 +92,6 @@ class AbstractionList extends React.Component {
     constructor(props) {
         super(props)
 
-        this.removeAbstraction = this.removeAbstraction.bind(this)
         this.toggleCollapse = this.toggleCollapse.bind(this)
         this.expandClick = this.expandClick.bind(this)
         this.onFocusClick = this.onFocusClick.bind(this)
@@ -109,12 +105,8 @@ class AbstractionList extends React.Component {
     removeAbstraction(id) {
         /*
          * Permanently collapse this node
-         *
-         * 1. change node type to 'node'
-         * 2. all edges from this collection to its nodes should become normal
+         * // TODO: should move all children to the parent - 2018-03-16
          */
-
-        this.props.removeAbstraction(id)
     }
 
     toggleCollapse(collection, collapsed) {
@@ -191,7 +183,6 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
     toggleCollapse,
-    removeAbstraction,
     fetchNodeL1,
     showAbstractionSidebar,
     hideAbstractionSidebar,

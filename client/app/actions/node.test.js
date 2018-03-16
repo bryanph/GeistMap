@@ -10,8 +10,6 @@ import io from 'socket.io-client'
 
 let _socket, store, mockServer;
 
-// TODO: should also test nodesByCollectionId state is set properly - 2017-09-20
-
 describe('node actions', () => {
     beforeAll(() => {
         mockServer = new Server('foobar');
@@ -131,6 +129,7 @@ describe('node actions', () => {
                         name: 'Node',
                         id: "TEST__Root",
                         type: 'node',
+                        children: [ "TEST__Node", "TEST__Node2" ],
                     },
                     ["TEST__Node"]: {
                         name: 'Node',
@@ -178,9 +177,6 @@ describe('node actions', () => {
                     to: [ "TEST__Node_Node2" ],
                 }
             },
-            nodesByCollectionId: {
-                "TEST__Root": [ "TEST__Node", "TEST__Node2" ],
-            }
         }
         store = createMockStore(_socket, initialState)
 
@@ -212,9 +208,6 @@ describe('node actions', () => {
                             to: [],
                         }
                     },
-                    nodesByCollectionId: {
-                        "TEST__Root": [ "TEST__Node2" ],
-                    }
                 })
             })
     })

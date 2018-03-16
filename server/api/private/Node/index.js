@@ -192,6 +192,7 @@ module.exports = function(db, es) {
                     created: timestamp(),
                     modified: timestamp()
                 })<-[:AUTHOR]-(u)
+                CREATE (n)<-[:CHILD_LIST]-(:CHILD_LIST_NODE { id: {id} })
                 RETURN properties(n) as node
                 `,
                 {

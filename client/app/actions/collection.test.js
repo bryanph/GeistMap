@@ -344,10 +344,6 @@ describe('collection actions', () => {
         })
 
         const initialState = {
-            nodesByCollectionId: {
-                "TEST__RootCollection": [ "TEST__Collection", "TEST__Collection_child", "TEST__Node_child" ],
-                "TEST__Collection": [ "TEST__Collection_child" ],
-            },
             entities: {
                 nodes: {
                     ["TEST__RootCollection"]: {
@@ -357,7 +353,9 @@ describe('collection actions', () => {
                         "modified": 1503389225848,
                         "id": "TEST__RootCollection",
                         "collections": [
-                        ]
+                        ],
+                        "children": [ "TEST__Collection", "TEST__Collection_child", "TEST__Node_child" ],
+                        
                     },
                     "TEST__Collection": {
                         "created": 1503389225848,
@@ -367,6 +365,7 @@ describe('collection actions', () => {
                         "collections": [
                             "TEST__RootCollection",
                         ]
+                        "children": [ "TEST__Collection_child" ],
                     },
                     "TEST__Collection_child": {
                         "created": 1503389225848,
@@ -396,11 +395,6 @@ describe('collection actions', () => {
         return store.dispatch(collectionActions.moveToAbstraction("TEST__RootCollection", "TEST__Node_child", "TEST__Collection_child"))
             .then((action) => {
                 expect(store.getState()).toMatchObject({
-                    nodesByCollectionId: {
-                        "TEST__RootCollection": [ "TEST__Collection", "TEST__Collection_child" ],
-                        "TEST__Collection": [ "TEST__Collection_child" ],
-                        "TEST__Collection_child": [ "TEST__Node_child" ]
-                    },
                     entities: {
                         nodes: {
                             ["TEST__RootCollection"]: {
@@ -410,7 +404,8 @@ describe('collection actions', () => {
                                 "modified": 1503389225848,
                                 "id": "TEST__RootCollection",
                                 "collections": [
-                                ]
+                                ],
+                                "children": [ "TEST__Collection", "TEST__Collection_child" ],
                             },
                             "TEST__Collection": {
                                 "created": 1503389225848,
@@ -419,7 +414,8 @@ describe('collection actions', () => {
                                 "id": "TEST__Collection",
                                 "collections": [
                                     "TEST__RootCollection",
-                                ]
+                                ],
+                                "children": [ "TEST__Collection_child" ],
                             },
                             "TEST__Collection_child": {
                                 "created": 1503389225848,
@@ -429,7 +425,8 @@ describe('collection actions', () => {
                                 "collections": [
                                     "TEST__Collection",
                                     "TEST__RootCollection",
-                                ]
+                                ],
+                                "TEST__Collection_child": [ "TEST__Node_child" ]
                             },
                             "TEST__Node_child": {
                                 "created": 1503389225848,

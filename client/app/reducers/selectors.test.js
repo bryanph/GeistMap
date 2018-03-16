@@ -31,6 +31,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "id": "TEST__Root",
                         "type": "collection",
                         "collections": [ "TEST__RootParent" ],
+                        "children": [ "TEST__A", "TEST__B", "TEST__Root_x" ],
                         "collapsed": true,
                     },
                     "TEST__A": {
@@ -40,6 +41,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "id": "TEST__A",
                         "type": "collection",
                         "collections": [ "TEST__Root", "TEST__B" ],
+                        "children": [ "TEST__A_x", "TEST__A_y" ],
                         "collapsed": true,
                     },
                     "TEST__B": {
@@ -49,6 +51,7 @@ describe('getNodesAndEdgesByCollectionId', () => {
                         "id": "TEST__B",
                         "type": "collection",
                         "collections": [ "TEST__Root" ],
+                        "children": [ "TEST__B_x" ],
                         "collapsed": true,
                     },
                     "TEST__Root_x": {
@@ -120,11 +123,6 @@ describe('getNodesAndEdgesByCollectionId', () => {
                     from: [],
                 },
             },
-            nodesByCollectionId: {
-                "TEST__Root": [ "TEST__A", "TEST__B", "TEST__Root_x" ],
-                "TEST__A": [ "TEST__A_x", "TEST__A_y" ],
-                "TEST__B": [ "TEST__B_x" ],
-            }
         }
 
         const result = getNodesAndEdgesByCollectionId(initialState, {

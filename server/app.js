@@ -190,7 +190,6 @@ io.on('connection', function(socket) {
     */
     socket.on('Collection.getL1', CollectionAPI.getL1.bind(null, user));
 
-    socket.on('Collection.remove', CollectionAPI.remove.bind(null, user));
     socket.on('Collection.addNode', CollectionAPI.addNode.bind(null, user));
     socket.on('Collection.removeNode', CollectionAPI.removeNode.bind(null, user));
     socket.on('Collection.moveNode', CollectionAPI.moveNode.bind(null, user));

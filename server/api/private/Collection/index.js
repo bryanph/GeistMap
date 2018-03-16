@@ -71,7 +71,6 @@ module.exports = function(db, es) {
 
             return Promise.all([
                 // get all edges in the collection
-                // TODO: should also filter out edges between parent collections and the nodes
                 db.run(
                     `MATCH (u:User)--(c:Node)
                     WHERE u.id = {userId} AND c.id = {id}
@@ -85,11 +84,12 @@ module.exports = function(db, es) {
                         userId,
                     }
                 ),
-                // Get for every direct child, which abstractions they belong to
-                // TODO: make sure nodes here doesn't include any parent collection
                 /*
+                 * get direct children
                  * Get every direct child
                  * Including their top-level abstractions in a list (ids)
+                 * get all nodes below the abstraction and their direct neighbours, and also fetch all THEIR parents
+                 * // TODO: Don't fetch the parents of all nodes - 2018-03-16
                  */
                 db.run(`
                     MATCH (u:User)--(c:Node)
@@ -101,9 +101,17 @@ module.exports = function(db, es) {
                     WITH DISTINCT nodes
                     OPTIONAL MATCH (nodes)-[:AbstractEdge]->(parentNodes)
                     WITH nodes, collect(parentNodes.id) as collections
-                    OPTIONAL MATCH (nodes)<-[:AbstractEdge]-(children)
-                    RETURN { id: nodes.id, name: nodes.name, type: nodes.type, modified: nodes.modified } as node, collections, COUNT(children)
-                    ORDER BY node.id
+                    OPTIONAL MATCH (nodes)<-[:CHILD_LIST]-(:CHILD_LIST_NODE)<-[:CHILD_ORDER*1..]-(children:Node)
+                    RETURN { 
+                            id: nodes.id,
+                            name: nodes.name,
+                            type: nodes.type,
+                            modified: nodes.modified
+                        } as node,
+                        collections,
+                        collect(children.id) as children,
+                        COUNT(children)
+                        ORDER BY node.id
                     `,
                     {
                         id,
@@ -120,8 +128,9 @@ module.exports = function(db, es) {
                             Object.assign({},
                                 row.get(0),
                                 {
-                                    collections: row.get(1), // ids for collections
-                                    count: parseInt(row.get(2))
+                                    collections: row.get(1), // ids for parents
+                                    children: row.get(2), // ids for children
+                                    count: parseInt(row.get(3))
                                 }
                             )
                         ))
@@ -140,61 +149,18 @@ module.exports = function(db, es) {
                 .catch(handleError)
         },
 
-        remove: function(user, id, res) {
-            /*
-             * This converts the abstraction to a node and the edges to normal edges
-             * instead it adds all the nodes to the parent collection
-             */
-
-            if (!id) {
-                res("Must specify source id")
-            }
-
-            // TODO: should the abstract edges be returned to the user?
-            // TODO: uuid created in the cypther here, how to sync this with the back-end
-
-            return db.run(
-                /*
-                 * 1. Remove all nodes from the given abstraction
-                 * 2. Attach them to the parent abstraction instead
-                 * 3. Modify abstraction to be a node
-                 */
-                `
-                MATCH (u:User)--(n:Collection)-[:AbstractEdge]->(pn:Collection)
-                WHERE u.id = {userId} AND n.id = {id} AND NOT n:RootCollection
-                SET n.type = 'node'
-                REMOVE n:Collection
-                WITH n, pn
-                MATCH (n)<-[e:AbstractEdge]-(n2:Node)
-                DELETE e
-                MERGE (pn)<-[:AbstractEdge { id: apoc.create.uuid(), start: n2.id, end: pn.id }]-(n2)
-                `,
-                {
-                    userId: user._id.toString(),
-                    id,
-                }
-            )
-                .then(results => {
-                    if (res) {
-                        return res(null, true) // success
-                    }
-
-                    return true
-                })
-                .catch(handleError)
-        },
-
-        addNode: function(user, collectionId, nodeId, id, res) {
+        addNode: function(user, collectionId, nodeId, prevNodeId, newEdgeId, res) {
             /*
              * Create the edge (collection)<-[:AbstractEdge]-(node)
+             * add (prevNodeId)<-[:CHILD_ORDER]-(node)
+             * and (collection)<-[:CHILD_ORDER*..]
              */
 
-            if (!collectionId || !nodeId) {
+            if (!collectionId || !nodeId || !prevNodeId) {
                 return res("Set both node ids")
             }
 
-            // TODO: does this make sense?
-            if (!id) {
+            if (!newEdgeId) {
                 return res("id must be explicitly passed")
             }
 
@@ -202,35 +168,52 @@ module.exports = function(db, es) {
                 MATCH (u:User)--(c:Node), (u:User)--(n:Node)
                 WHERE u.id = {userId}
                 AND c.id = {collectionId} AND n.id = {nodeId}
-                AND NOT (c)-[:AbstractEdge*0..]->(n)
-                MERGE (n)-[e:AbstractEdge { id: {id}, start: n.id, end: c.id }]->(c)
-                RETURN properties(e) as edge, properties(n) as node, properties(c) as collection
+                AND NOT (c)-[:AbstractEdge*0..]->(n) // this checks for loops
+
+                WITH c, n
+
+
+                MATCH (c)<-[:CHILD_LIST]-(:CHILD_LIST_NODE)<-[:CHILD_ORDER*0..]-(prevNode)
+                WHERE prevNode.id = { prevNodeId }
+                OPTIONAL MATCH (prevNode)<-[prevEdge:CHILD_ORDER]-(nextNode:Node)
+
+                CREATE (c)<-[e:AbstractEdge { id: {newEdgeId}, start: n.id, end: c.id }]-(n)
+                CREATE (prevNode)<-[:CHILD_ORDER]-(n)
+
+                // remove the next edge
+                WITH n, prevNode, nextNode
+                MATCH (prevNode)<-[prevEdge:CHILD_ORDER]-(nextNode)
+                WHERE nextNode IS NOT NULL
+                DELETE prevEdge
+                CREATE (n)<-[:CHILD_ORDER]-(nextNode)
+
+
                 `,
                 {
-                    id,
                     userId: user._id.toString(),
                     collectionId,
                     nodeId,
+                    prevNodeId,
+                    newEdgeId,
                 }
             )
                 .then(results => {
-                    if (!results.records.length) {
-                        if (res) {
-                            res("Loop in path to root abstraction")
-                        }
 
-                        return "Loop in path to root abstraction"
-                    }
+                    // TODO: will have to split the query to be able to return custom errors - 2018-03-16
+                    // if (!results.records.length) {
+                    //     todo
+                    //     if (res) {
+                    //         res("Loop in path to root abstraction")
+                    //     }
 
-                    const edge = results.records[0]._fields[0]
-                    const node = results.records[0]._fields[1]
-                    const collection = results.records[0]._fields[2]
+                    //     return "Loop in path to root abstraction"
+                    // }
 
                     if (res) {
-                        res(null, edge)
+                        res(null, true)
                     }
 
-                    return edge
+                    return true
                 })
                 .catch(handleError)
         },
