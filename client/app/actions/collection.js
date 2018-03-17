@@ -114,17 +114,18 @@ export function removeNodeFromCollection(collectionId, nodeId) {
 export const MOVE_TO_ABSTRACTION_REQUEST = 'MOVE_TO_ABSTRACTION_REQUEST'
 export const MOVE_TO_ABSTRACTION_SUCCESS = 'MOVE_TO_ABSTRACTION_SUCCESS'
 export const MOVE_TO_ABSTRACTION_FAILURE = 'MOVE_TO_ABSTRACTION_FAILURE'
-export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, sourceNode) {
+export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, prevNodeId, sourceNode) {
     return {
         sourceCollectionId,
         sourceId,
         targetId,
+        prevNodeId,
         edgeId,
         sourceNode, // TODO: don't pass down?
         [CALL_API]: {
             types: [ MOVE_TO_ABSTRACTION_REQUEST, MOVE_TO_ABSTRACTION_SUCCESS, MOVE_TO_ABSTRACTION_FAILURE ],
             endpoint: 'Collection.moveNode',
-            payload: [ sourceCollectionId, sourceId, targetId, edgeId ],
+            payload: [ sourceCollectionId, sourceId, targetId, prevNodeId, edgeId ],
             // schema: {
             //     node: Schemas.NODE,
             // },
@@ -134,10 +135,11 @@ export function fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, e
 /*
  * change the abstract edge to point to the given target collection
 */
-export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
-    const edgeId = uuidV4()
+export function moveToAbstraction(sourceCollectionId, sourceId, targetId, prevNodeId) {
+    const newEdgeId = uuidV4()
 
     return (dispatch, getState) => {
+        const sourceCollection = getNode(getState(), sourceCollectionId)
         const source = getNode(getState(), sourceId)
         const target = getNode(getState(), targetId)
 
@@ -148,8 +150,12 @@ export function moveToAbstraction(sourceCollectionId, sourceId, targetId) {
             console.error("recursive pattern detected")
             return;
         }
+        if (!prevNodeId) {
+            // add to the end
+            prevNodeId = target.children.length ? target.children[target.children.length-1] : targetId
+        }
 
-        return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, edgeId, source))
+        return dispatch(fetchMoveToAbstraction(sourceCollectionId, sourceId, targetId, newEdgeId, prevNodeId, source))
     }
 }
 

@@ -162,8 +162,6 @@ export const createInnerDrag = (self) => (actions) => {
 
             self.props.dragElement()
 
-            console.log(index, id)
-
             nodeSelection.each(function() {
                 // undo fixed state as set in dragstart
 
@@ -186,12 +184,19 @@ export const createInnerDrag = (self) => (actions) => {
                         return;
                     }
 
+                    function getSibling(node) {
+                        const parentChildren = node.parent.children
+                        const indexOfNode = _.findIndex(parentChildren, (child) => child.data.id === node.data.id) - 1
+
+                        return indexOfNode < 0 ? node.parent.data.id : parentChildren[indexOfNode].data.id
+                    }
+
                     // move this node to the abstraction that is hovered over
-                    // TODO: need a method for getting the currently visible abstraction chain
                     return actions.moveToAbstraction(
                         node.parent && node.parent.data.id,
                         node.data.id,
-                        currentNode.data.id, //TODO: here it is data and before not, do something about this...
+                        currentNode.data.id,
+                        // getSibling(node)
                     )
                 }
             })

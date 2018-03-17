@@ -172,11 +172,10 @@ module.exports = function(db, es) {
 
                 WITH c, n
 
-
+                // create the abstract edge and the first child order link
                 MATCH (c)<-[:CHILD_LIST]-(:CHILD_LIST_NODE)<-[:CHILD_ORDER*0..]-(prevNode)
                 WHERE prevNode.id = { prevNodeId }
                 OPTIONAL MATCH (prevNode)<-[prevEdge:CHILD_ORDER]-(nextNode:Node)
-
                 CREATE (c)<-[e:AbstractEdge { id: {newEdgeId}, start: n.id, end: c.id }]-(n)
                 CREATE (prevNode)<-[:CHILD_ORDER]-(n)
 
@@ -232,6 +231,21 @@ module.exports = function(db, es) {
                 WHERE u.id = {userId}
                 AND c.id = {collectionId} AND n.id = {nodeId}
                 DELETE e
+
+                WITH c, n
+
+                // create the abstract edge and the first child order link
+                MATCH (c)<-[:CHILD_LIST]-(:CHILD_LIST_NODE)<-[:CHILD_ORDER*0..]-(prevNode)<-[prevEdge:CHILD_ORDER]-(n)
+                OPTIONAL MATCH (n)<-[:CHILD_ORDER]-(nextNode:Node)
+                DELETE prevEdge
+
+                WITH n, prevNode, nextNode
+
+                // remove the next edge and connect to the previous node
+                MATCH (n)<-[nextEdge:CHILD_ORDER]-(nextNode)
+                WHERE nextNode IS NOT NULL
+                DELETE nextEdge
+                CREATE (prevNode)<-[:CHILD_ORDER]-(nextNode)
                 `,
                 {
                     userId: user._id.toString(),
@@ -249,7 +263,7 @@ module.exports = function(db, es) {
                 .catch(handleError)
         },
 
-        moveNode: function(user, sourceCollectionId, sourceId, targetId, edgeId, res) {
+        moveNode: function(user, sourceCollectionId, sourceId, targetId, prevNodeId, newEdgeId, res) {
             /*
              * move the source to be in the target abstraction
              *
@@ -262,7 +276,7 @@ module.exports = function(db, es) {
                 `
                     MATCH (u:User)--(n:Node)
                     WHERE u.id = {userId} AND n.id = {targetId}
-                    MATCH (n)-[e:AbstractEdge*0..]->(c)
+                    MATCH (c)<-[e:AbstractEdge*0..]-(n)
                     RETURN collect(distinct c.id)
                 `,
                 {
@@ -281,45 +295,77 @@ module.exports = function(db, es) {
                 }
 
                 return Promise.all([
-                    // remove the AbstractEdge to the source abstraction
+                    // remove the AbstractEdge from the source abstraction
+                    // TODO: just call the removeNode API instead - 2018-03-17
                     db.run(
                         `
                     MATCH (u:User)--(n:Node), (u:User)--(c:Node)
                     WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {sourceCollectionId}
                     MATCH (n)-[e:AbstractEdge]->(c)
                     DELETE e
+
+                    WITH n, c
+
+                    // create the abstract edge and the first child order link
+                    MATCH (c)<-[:CHILD_LIST]-(:CHILD_LIST_NODE)<-[:CHILD_ORDER*0..]-(prevNode)<-[prevEdge:CHILD_ORDER]-(n)
+                    OPTIONAL MATCH (n)<-[:CHILD_ORDER]-(nextNode:Node)
+                    DELETE prevEdge
+
+                    WITH n, prevNode, nextNode
+
+                    // remove the next edge and connect to the previous node
+                    MATCH (n)<-[nextEdge:CHILD_ORDER]-(nextNode)
+                    WHERE nextNode IS NOT NULL
+                    DELETE nextEdge
+                    CREATE (prevNode)<-[:CHILD_ORDER]-(nextNode)
                     `,
                         {
                             userId: user._id.toString(),
                             sourceId,
                             sourceCollectionId,
+                            prevNodeId,
                         }
                     ),
-                    db.run(
-                        // move the node to the abstraction with targetId
-                        `
-                    MATCH (u:User)--(n:Node), (u:User)--(c:Node)
-                    WHERE u.id = {userId} AND n.id = {sourceId} AND c.id = {targetId}
-                    CREATE (n)-[e:AbstractEdge { id: {edgeId}, start: {sourceId}, end: {targetId} }]->(c)
-                    RETURN properties(e)
+                    // TODO: just call the addNode API instead - 2018-03-17
+                    // TODO: to do this, I have to separate the queries from the API - 2018-03-17
+                    db.run(`
+                        MATCH (u:User)--(c:Node), (u:User)--(n:Node)
+                        WHERE u.id = {userId}
+                        AND c.id = {targetId} AND n.id = {sourceId}
+                        AND NOT (c)-[:AbstractEdge*0..]->(n) // this checks for loops
+
+                        WITH c, n
+
+                        // create the abstract edge and the first child order link
+                        MATCH (c)<-[:CHILD_LIST]-(:CHILD_LIST_NODE)<-[:CHILD_ORDER*0..]-(prevNode)
+                        WHERE prevNode.id = { prevNodeId }
+                        OPTIONAL MATCH (prevNode)<-[prevEdge:CHILD_ORDER]-(nextNode:Node)
+                        CREATE (c)<-[e:AbstractEdge { id: {newEdgeId}, start: n.id, end: c.id }]-(n)
+                        CREATE (prevNode)<-[:CHILD_ORDER]-(n)
+
+                        // remove the next edge
+                        WITH n, prevNode, nextNode
+                        MATCH (prevNode)<-[prevEdge:CHILD_ORDER]-(nextNode)
+                        WHERE nextNode IS NOT NULL
+                        DELETE prevEdge
+                        CREATE (n)<-[:CHILD_ORDER]-(nextNode)
                     `,
                         {
                             userId: user._id.toString(),
-                            sourceId,
                             targetId,
-                            edgeId,
+                            sourceId,
+                            prevNodeId,
+                            newEdgeId,
                         }
                     )
 
                 ])
                     .then(results => {
-                        const result = results[1].records[0]._fields[0]
-
                         if (res) {
-                            res(null, result)
+                            res(null, true)
                         }
 
-                        return result
+                        return true
                     })
                     .catch(handleError)
 

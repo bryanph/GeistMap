@@ -59,6 +59,7 @@ export function nodes(state={}, action) {
                             action.nodeId
                         )
                     },
+                    // TODO: should put it in the right place - 2018-03-17
                     children: { $push: [ action.nodeId ] }
                 },
             })
@@ -67,18 +68,26 @@ export function nodes(state={}, action) {
             return update(state, {
                 [action.nodeId]: {
                     collections: { $apply: (c) =>  _.without(c, action.collectionId) }
+                },
+                [action.collectionId]: {
+                    children: { $apply: (n) =>  _.without(n, action.nodeId) }
                 }
             })
 
         case collectionActionTypes.MOVE_TO_ABSTRACTION_SUCCESS: {
             return update(state, {
+                [action.sourceCollectionId]: {
+                    children: { $apply: (children) => _.without(children, action.sourceId) }
+                },
                 [action.sourceId]: {
                     collections: { $apply: (collections) => (
                         [ ..._.without(collections, action.sourceCollectionId), action.targetId ] 
                     )},
                 },
                 [action.targetId]: {
-                    count: { $apply: (count) => (count || 0) + 1 }
+                    count: { $apply: (count) => (count || 0) + 1 },
+                    // TODO: should put it in the right place - 2018-03-17
+                    children: { $push: [ action.sourceId ] }
                 }
             })
         }
@@ -1163,7 +1172,7 @@ export const getNodesAndEdgesByCollectionId = createSelector(
         }
 
         const notCollapsedFocusNode = { ...focusNode, collapsed: false } // TODO: shouldn't be necessary - 2017-10-18
-        visibleNodeTree = handleShowNodes(notCollapsedFocusNode, rootIds) 
+        visibleNodeTree = handleShowNodes(notCollapsedFocusNode) 
 
         const transformedEdges = _(edgeBelowMap)
             .map(edge => {
