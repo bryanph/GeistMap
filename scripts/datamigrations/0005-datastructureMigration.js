@@ -492,22 +492,25 @@ async function start() {
                                 nodeId: node.data.id
                             }).then(() => {
                                 // TODO: this should instead put the child order on the CHILD_LIST_NODE - 2018-03-22
+                                if (!node.children || !node.children.length) {
+                                    return Promise.resolve()
+                                }
 
-                                session.run(`
-                                    MATCH (startNode), (endNode)
-                                    WHERE startNode.id = {startNode} AND endNode.id = {endNode}
-                                    CREATE (startNode)<-[:CHILD_ORDER]-(endNode)
-                                `, {
-                                    nodeId: node.data.id
-                                })
-                                
-                                const fullNodeList = [ node, ...node.children.slice(0, node.children.length) ]
-                                return node.children.map((currentNode, index) => {
-                                    const nextNode = node.children[index+1]
-                                    if (!nextNode) {
-                                        return Promise.resolve()
-                                    }
+                                return Promise.all([
                                     session.run(`
+                                        MATCH (startNode:CHILD_LIST_NODE), (endNode)
+                                        WHERE startNode.id = {startNode} AND endNode.id = {endNode}
+                                        CREATE (startNode)<-[:CHILD_ORDER]-(endNode)
+                                    `, {
+                                        startNode: node.data.id,
+                                        endNode: node.children[0],
+                                    }),
+                                    ...node.children.map((currentNode, index) => {
+                                        const nextNode = node.children[index+1]
+                                        if (!nextNode) {
+                                            return Promise.resolve()
+                                        }
+                                        return session.run(`
                                         MATCH (startNode), (endNode)
                                         WHERE startNode.id = {startNode} AND endNode.id = {endNode}
                                         CREATE (startNode)<-[:CHILD_ORDER]-(endNode)
@@ -515,7 +518,9 @@ async function start() {
                                         startNode: currentNode.data.id,
                                         endNode: nextNode.data.id
                                     })
-                                })
+                                    })
+                                ])
+
                             })
                         })
                 })
