@@ -16,7 +16,8 @@ import GraphTypeSwitcher from '../../components/GraphTypeSwitcher'
 import AbstractionList from '../../containers/AbstractionList'
 import AbstractionNavigator from '../../components/AbstractionNavigator'
 import NodeEditorToolbar from '../../containers/NodeEditorToolbar'
-import NodeEditor from '../../containers/NodeContentEditor'
+// import NodeEditor from '../../containers/NodeContentEditor'
+import NodeEditor from '../../components/ContentEditorNew'
 import { HotKeys } from 'react-hotkeys';
 import { Dimmer, Loader } from 'semantic-ui-react'
 
