@@ -61,7 +61,7 @@ module.exports = {
         // new BundleAnalyzerPlugin({ openAnalyzer: false }),
     ],
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.jsx?$/,
                 loaders: ['babel-loader'],
