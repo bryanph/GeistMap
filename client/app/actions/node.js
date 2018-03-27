@@ -13,6 +13,29 @@ import {
 
 const uuidV4 = require('uuid/v4');
 
+
+/*
+ * Push a new delta
+*/
+export const PUSH_DELTA = "PUSH_DELTA"
+export function pushDelta(nodeId, delta) {
+    return {
+        nodeId,
+        delta,
+    }
+}
+/*
+ * Revert a delta to the delta with id ${id}
+ * if the delta is already synced, push the reverse operations, otherwise pop and sync.
+*/
+export const REVERT_DELTA = "REVERT_DELTA"
+export function revertDelta(deltaId) {
+    return {
+        deltaId
+    }
+}
+
+
 /*
  * Get a node by id
 */

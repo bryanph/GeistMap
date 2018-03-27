@@ -35,9 +35,37 @@ function removeFirstOccurrence(array, elem) {
     return [ ...array.slice(0, toRemove), ...array.slice(toRemove + 1, -1) ]
 }
 
+
+const initialDeltaState = {}
+function deltas(state=initialDeltaState, action) {
+    /*
+     * Deltas that will be synced with the server
+     * synced=true
+    */
+    switch(action.type) {
+        case nodeActionTypes.PUSH_DELTA:
+            return update(state, {
+                [action.nodeId]: { $push: [ action.delta ] }
+            })
+        case nodeActionTypes.REVERT_DELTA:
+            // TODO: go back in delta history until the delta with id ${deltaId} is found - 2018-03-27
+            // if synced: push reverse operations
+            // if not synced: pop the deltas
+            return initialDeltaState
+    }
+}
+
+function blocks(state={}, action) {
+    /*
+     * all nested blocks (includes Nodes as well)
+    */
+    // TODO: How to account for all changes? - 2018-03-27
+
+}
+
 export function nodes(state={}, action) {
     /*
-     * Handles the non-merging action types
+     * Top-level node abstractions
      */
     switch(action.type) {
         case nodeActionTypes.REMOVE_NODE_SUCCESS:

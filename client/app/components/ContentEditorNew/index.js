@@ -16,15 +16,6 @@ import EditList from 'slate-edit-list'
 
 import "./styles.scss"
 
-// case 'paragraph':
-// case 'blockquote':
-// case 'hr':
-// case 'ul':
-// case 'li':
-// case 'header':
-// case 'code_block':
-// case 'code_line':
-
 // Create our initial value...
 const initialValue = Value.fromJSON({
     document: {
@@ -65,8 +56,7 @@ const schema = {
     document: {
         nodes: [
             { types: ['title'], min: 1, max: 1 },
-            { types: ['paragraph'], min: 1 },
-            { types: ['header', 'paragraph', 'blockquote', 'hr', 'ul', 'li', 'code_block', 'code_line', 'image'] }
+            { types: ['header', 'paragraph', 'blockquote', 'hr', 'ul', 'li', 'code_block', 'code_line', 'image'], min: 1 }
         ],
         normalize: (change, violation, { node, child, index }) => {
             switch (violation) {
@@ -200,7 +190,7 @@ class ContentEditor extends React.Component {
     onChange(change) {
         const { value } = change
         console.log(change)
-        console.log(change.value.toJSON().document.nodes)
+        console.log("operations", change.operations.toJS())
         this.setState({ value })
     }
 
