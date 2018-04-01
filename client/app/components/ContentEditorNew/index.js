@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 
 import { Editor } from 'slate-react'
-import { Block, Value } from 'slate'
+import { Block } from 'slate'
 import { CHILD_REQUIRED, CHILD_TYPE_INVALID } from 'slate-schema-violations'
 
 import SoftBreak from 'slate-soft-break'
@@ -13,44 +13,10 @@ import AutoReplace from 'slate-auto-replace'
 import EditBlockquote from 'slate-edit-blockquote'
 import EditCode from 'slate-edit-code'
 import EditList from 'slate-edit-list'
+import LinkPlugin from './plugins/link'
+import BoldPlugin from './plugins/bold'
 
 import "./styles.scss"
-
-// Create our initial value...
-const initialValue = Value.fromJSON({
-    document: {
-        nodes: [
-            {
-                object: 'block',
-                type: 'title',
-                nodes: [
-                    {
-                        object: 'text',
-                        leaves: [
-                            {
-                                text: 'A title',
-                            },
-                        ],
-                    },
-                ],
-            },
-            {
-                object: 'block',
-                type: 'paragraph',
-                nodes: [
-                    {
-                        object: 'text',
-                        leaves: [
-                            {
-                                text: 'A line of text in a paragraph.',
-                            },
-                        ],
-                    },
-                ],
-            },
-        ],
-    },
-})
 
 const schema = {
     document: {
@@ -89,6 +55,14 @@ const schema = {
 const codePlugin = EditCode();
 
 const plugins = [
+    LinkPlugin({
+        type: 'link',
+        key: 'k',
+    }),
+    BoldPlugin({
+        type: 'bold',
+        key: 'b',
+    }),
     SoftBreak({
         onlyIn: [ "code" ]
     }),
@@ -178,9 +152,9 @@ class ContentEditor extends React.Component {
     constructor(props) {
         super(props)
 
-        this.state = {
-            value: initialValue
-        }
+        // this.state = {
+        //     value: initialValue
+        // }
 
         this.onChange = this.onChange.bind(this);
         this.renderNode = this.renderNode.bind(this);
@@ -189,9 +163,37 @@ class ContentEditor extends React.Component {
 
     onChange(change) {
         const { value } = change
-        console.log(change)
-        console.log("operations", change.operations.toJS())
-        this.setState({ value })
+
+        this.props.pushDelta(this.props.nodeId, change)
+
+        // console.log(value.history.toJS())
+        // console.log("operations", change.operations.toJS())
+        // console.log(change.value.toJSON().document.nodes)
+
+        // delay this, get it from props instead
+        // this.setState({ value })
+    }
+
+    onSelect(event, change, editor) {
+        // TODO: modify from here: https://github.com/ianstormtaylor/slate/blob/a3256963396364986ec91e9d0b4fe5b6a5497c4c/packages/slate-react/src/plugins/after.js#L516 - 2018-03-28
+    }
+
+    onKeyDown(event, change, editor) {
+        // TODO: modify from here: https://github.com/ianstormtaylor/slate/blob/a3256963396364986ec91e9d0b4fe5b6a5497c4c/packages/slate-react/src/plugins/after.js#L365
+    }
+
+    render() {
+        return (
+            <Editor
+                className="ContentEditor"
+                plugins={plugins}
+                schema={schema}
+                value={this.props.value}
+                onChange={this.onChange}
+                renderNode={this.renderNode}
+                renderMark={this.renderMark}
+            />
+        )
     }
 
     renderNode(props) {
@@ -221,28 +223,41 @@ class ContentEditor extends React.Component {
                 );
             case 'code_line':
                 return <pre {...attributes}>{children}</pre>;
+            case 'link': {
+                const { data } = node
+                const href = data.get('href')
+                return (
+                    <a {...attributes} href={href}>
+                        {children}
+                    </a>
+                )
+            }
         }
     }
 
     renderMark(props) {
-        switch(props.mark.type) {
-
+        const { children, mark } = props
+        switch (mark.type) {
+            case 'bold':
+                return <strong>{children}</strong>
+            case 'code':
+                return <code>{children}</code>
+            case 'italic':
+                return <em>{children}</em>
+            case 'underlined':
+                return <u>{children}</u>
         }
-    }
-
-    render() {
-        return (
-            <Editor
-                className="ContentEditor"
-                plugins={plugins}
-                schema={schema}
-                value={this.state.value}
-                onChange={this.onChange}
-                renderNode={this.renderNode}
-                renderMark={this.renderMark}
-            />
-        )
     }
 }
 
-export default ContentEditor
+import { pushDelta } from '../../actions/node'
+
+function mapStateToProps(state) {
+    return {
+        value: state.slateState
+    }
+}
+
+export default connect(mapStateToProps, {
+    pushDelta
+})(ContentEditor)

@@ -19,6 +19,7 @@
     "handlebars-layouts": "3.1.4",
     "immutability-helper": "2.5.0",
     "immutable": "3.8.2",
+    "is-url": "1.2.4",
     "isomorphic-fetch": "2.2.1",
     "lodash": "4.17.4",
     "mongoose": "4.13.4",

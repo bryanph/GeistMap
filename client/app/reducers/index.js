@@ -36,31 +36,98 @@ function removeFirstOccurrence(array, elem) {
 }
 
 
-const initialDeltaState = {}
-function deltas(state=initialDeltaState, action) {
+function deltasByAbstractNodeId(state={}, action) {
+
+}
+
+function deltasByNodeId(state={}, action) {
     /*
      * Deltas that will be synced with the server
      * synced=true
     */
     switch(action.type) {
         case nodeActionTypes.PUSH_DELTA:
-            return update(state, {
+            // TODO: also clear the  - 2018-03-28
+
+            const newState = state[action.nodeId] ? state : { ...state, [action.nodeId]: [] }
+            return update(newState, {
                 [action.nodeId]: { $push: [ action.delta ] }
             })
         case nodeActionTypes.REVERT_DELTA:
             // TODO: go back in delta history until the delta with id ${deltaId} is found - 2018-03-27
             // if synced: push reverse operations
             // if not synced: pop the deltas
-            return initialDeltaState
+            // push onto the redo stack as well. (so later they can be
+
+            return state;
+
+
+        case nodeActionTypes.REDO_DELTA:
+            // TODO: need to keep a stack of "undo" in order to be able to redo. - 2018-03-28
+            // a global history
+
+        default:
+            return state;
     }
 }
 
-function blocks(state={}, action) {
+import { Value } from 'slate'
+// Create our initial value...
+const initialValue = Value.fromJSON({
+    document: {
+        nodes: [
+            {
+                object: 'block',
+                type: 'title',
+                nodes: [
+                    {
+                        object: 'text',
+                        leaves: [
+                            {
+                                text: 'A title',
+                            },
+                        ],
+                    },
+                ],
+            },
+            {
+                object: 'block',
+                type: 'paragraph',
+                nodes: [
+                    {
+                        object: 'text',
+                        leaves: [
+                            {
+                                text: 'A line of text in a paragraph.',
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+})
+function slateState(state=initialValue, action) {
+    /*
+     * the immutable state used in the slate editor environment
+    */
+
+    switch(action.type) {
+        case nodeActionTypes.PUSH_DELTA:
+            // TODO: also for non-slate PUSH_DELTA - 2018-03-29
+            return action.slateChange.value
+        default:
+            return state;
+    }
+
+}
+
+function blocksByNodeId(state={}, action) {
     /*
      * all nested blocks (includes Nodes as well)
     */
     // TODO: How to account for all changes? - 2018-03-27
-
+    return state;
 }
 
 export function nodes(state={}, action) {
@@ -775,6 +842,10 @@ function rootReducer(state={}, action) {
         graphUiState: graphUiState(state.graphUiState, action),
         user: user(state.user, action),
         errors: errors(state.errors, action),
+
+        slateState: slateState(state.slateState, action),
+        blocksByNodeId: blocksByNodeId(state.blocksByNodeId, action),
+        deltasByNodeId: deltasByNodeId(state.deltasByNodeId, action),
     }
 }
 
