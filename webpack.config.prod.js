@@ -56,7 +56,6 @@ module.exports = {
                 exclude: /(node_modules|bower_components)/,
                 // include: path.join(__dirname, 'client')
             },
-            { test: /\.json/, loaders: ['json-loader'] },
             { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
             {
                 test: /\.scss$/,

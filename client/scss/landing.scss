@@ -56,30 +56,37 @@ body {
     width: 100%;
     display: flex;
     justify-content: space-between;
-}
-.navigation-title {
-    color: #fff;
-    font-size: 2rem;
-    font-weight: 400;
-}
-.navigation-actions {
-    display: flex;
-    align-items: center;
 
-    .navigation-actions-icons {
-        display: inline;
-        margin-right: 15px;
-        a {
-            margin-right: 5px;
-        }
+    text-transform: uppercase;
+    font-weight: 100;
+
+    .navigation-title {
+        color: #fff;
+        font-size: 2rem;
+        font-weight: 400;
     }
 
     .navigation-link {
         color: #fff;
         font-size: 1.2rem;
     }
-}
 
+    .left-nav {
+        display: flex;
+        align-items: center;
+    }
+
+    .right-nav {
+        display: flex;
+        align-items: center;
+
+        .icons {
+            display: inline;
+            margin-right: 15px;
+        }
+
+    }
+}
 
 #intro {
     height: 760px;

@@ -1,6 +1,5 @@
-
 import React from 'react'
-import Signup from '../auth/Signup'
+import Signup from '../../../auth/Signup'
 
 export default class EndSection extends React.Component {
     constructor(props) {

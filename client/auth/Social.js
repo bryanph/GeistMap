@@ -1,11 +1,11 @@
 import React from 'react'
 import classNames from 'classnames'
 
-import { FlatLink } from '../app/components/button'
+import { FlatButton } from '../app/components/button'
 
 const SocialButton = (props) => (
     <div>
-        <FlatLink {...props} className="socialButton"/>
+        <FlatButton {...props} as="a" className="socialButton"/>
     </div>
 )
 

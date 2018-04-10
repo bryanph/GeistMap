@@ -1,46 +1,19 @@
 import React from 'react'
 import ReactDom from 'react-dom'
-import classNames from 'classnames'
 
 import 'font-awesome/css/font-awesome.min.css'
 import "../scss/landing.scss"
 
-// TODO: set from within settings - 2017-07-04
-const title = "GeistMap"
+import Navigation from './components/Navigation'
+import Footer from './components/Footer'
 
-const mainSection = {
-    header: "Organize your thoughts",
-    content: "GeistMap is a knowledge management tool that works the way your brain does. It uses a combination of structure and assocation to allow you to make sense of this increasingly complex world.",
+import Landing from './components/landing'
+import Vision from './components/vision'
+import Donate from './components/donate'
 
-}
-const rows = {
-    connections: {
-        header: "A focus on association",
-        content: "Instead of trying to organize all your thoughts and notes in hierarchical folders, organize your notes by defining relations between them. This is ideal for studying or research.",
-        imageSrc: "https://cdn-images-1.medium.com/max/800/1*d6Vw7Bc6-f6eoXli9qPVUQ.png",
-    },
-    explore: {
-        header: "Define hierarchies whenever you need them.",
-        content: "Instead of being limited by a folder structure, GeistMap allows you to create hierarchies from every node.",
-        imageSrc: "https://cdn-images-1.medium.com/max/800/1*XuRGyMSHCy98bTx2aQwwLQ.png",
-    },
-    editor: {
-        header: "A powerful editor",
-        content: "Every node has a document attached to it. Add pictures, video, audio and even TeX. Links made in the editor are reflected in the network.",
-        imageSrc: "https://cdn-images-1.medium.com/max/800/1*ZZ_4dgoPyfF2rvlHiABAKg.gif",
-    },
-}
-const endSection = {
-    header: "Give it a try!"
-}
+import { BrowserRouter, Switch, Route } from "react-router-dom"
 
-import MainSection from './MainSection'
-import EndSection from './EndSection'
-import Footer from './Footer'
-import FeatureRow from './FeatureRow'
-import Navigation from './Navigation'
-import FollowOnTwitter from './FollowOnTwitter'
-import CreationLoop from './CreationLoop'
+const content = require('./content.json')
 
 const initialState = window.INITIAL_STATE || {}
 
@@ -48,80 +21,27 @@ const App = (props) => (
     <div>
         <header className="globalNav">
             <div className="wrapper">
-                <Navigation title={title} />
+                <Navigation />
             </div>
         </header>
 
         <main>
-            <header>
-                <section id="intro">
-                    <div className="wrapper">
-                        <MainSection
-                            header={mainSection.header}
-                            content={mainSection.content}
-                            {...initialState}
-                        />
-                    </div>
-                </section>
-            </header>
-
-            <section className="creationLoopSection">
-                <h2 className="sectionTitle">A vision: The Creation Loop</h2>
-                <CreationLoop />
-            </section>
-
-            <section className="whereWeAreSection">
-                <h2 className="sectionTitle">Where we are now</h2>
-                <FeatureRow 
-                    header={rows.connections.header}
-                    content={rows.connections.content}
-                    imageSrc={rows.connections.imageSrc}
-                />
-                <FeatureRow 
-                    header={rows.explore.header}
-                    content={rows.explore.content}
-                    imageSrc={rows.explore.imageSrc}
-                />
-                <FeatureRow 
-                    header={rows.editor.header}
-                    content={rows.editor.content}
-                    imageSrc={rows.editor.imageSrc}
-                />
-            </section>
-
-            <section className="whereWeGoSection">
-                <h2 className="sectionTitle">Where we are going</h2>
-            </section>
-
-            <section className="futureSection">
-                <h2 className="sectionTitle">Help us get there</h2>
-                <div className="futureSection-contribute">
-                </div>
-                <div className="futureSection-donate">
-                </div>
-            </section>
-
-            <EndSection {...initialState} header={endSection.header} />
+            <Switch>
+                <Route exact path="/" render={() => <Landing content={content} />} />
+                <Route exact path="/vision" component={Vision} />
+                <Route exact path="/donate" component={Donate} />
+            </Switch>
         </main>
 
         <Footer { ...initialState } />
-
     </div>
 )
 
-function createElement(Component, props) {
-    /*
-     * Pass server rendered data as props to all components
-     */
-
-    let initialState = window.INITIAL_STATE || {}
-
-    return <Component {...props} {...initialState} />
-}
-
 document.addEventListener('DOMContentLoaded', function () {
     ReactDom.render(
-        <App />,
+        <BrowserRouter>
+            <App {...initialState} />
+        </BrowserRouter>,
         document.getElementById('root')
     );
 });

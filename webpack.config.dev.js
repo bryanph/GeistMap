@@ -6,6 +6,7 @@ var UnusedFilesWebpackPlugin = require("unused-files-webpack-plugin").UnusedFile
 
 module.exports = {
     // devtool: 'source-map',
+    mode: "development",
     devtool: 'cheap-module-source-map',
 
     entry: {
@@ -55,7 +56,6 @@ module.exports = {
                 exclude: /(node_modules|bower_components)/,
                 // include: path.join(__dirname, 'client')
             },
-            { test: /\.json/, loaders: ['json-loader'] },
             { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
             {
                 test: /\.scss$/,

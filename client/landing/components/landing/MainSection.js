@@ -1,5 +1,5 @@
 import React from 'react'
-import Signup from '../auth/Signup'
+import Signup from '../../../auth/Signup'
 
 export const MainText = (props) => (
     <div className="mainSection-text">
