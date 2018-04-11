@@ -37,8 +37,9 @@ export const RightNav = (props) => (
 
 export const LeftNav = (props) => (
         <div className="left-nav">
+            <NavigationLink to="/features">Features</NavigationLink>
             <NavigationLink to="/future">Future vision</NavigationLink>
-            <NavigationLink to="/donate">Donate</NavigationLink>
+            <NavigationHref href="/blog">Blog</NavigationHref>
             <NavigationHref href="mailto:support@geistmap.com">Contact</NavigationHref>
         </div>
 )

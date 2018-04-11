@@ -7,7 +7,7 @@ import "../scss/landing.scss"
 import Navigation from './components/Navigation'
 import Footer from './components/Footer'
 
-import Landing from './components/landing'
+import Home from './components/home'
 import Vision from './components/vision'
 import Donate from './components/donate'
 
@@ -27,7 +27,7 @@ const App = (props) => (
 
         <main>
             <Switch>
-                <Route exact path="/" render={() => <Landing content={content} />} />
+                <Route exact path="/" render={() => <Home content={content} />} />
                 <Route exact path="/vision" component={Vision} />
                 <Route exact path="/donate" component={Donate} />
             </Switch>
