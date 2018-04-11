@@ -3,7 +3,7 @@ Description=GeistMap
 
 [Service]
 WorkingDirectory=/home/bryan/graphtodo
-ExecStart=/usr/bin/nodejs index.js
+ExecStart=/usr/local/bin/node index.js
 Restart=always
 RestartSec=3
 Environment=NODE_ENV=production
