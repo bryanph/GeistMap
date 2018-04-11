@@ -9,7 +9,6 @@ scp stats.json graphtodo:graphtodo/tmp
 scp -r public/*.bundle.js public/*.map public/fonts public/images graphtodo:graphtodo/tmp/public
 ssh graphtodo "cd graphtodo && npm run clean"
 ssh graphtodo "cp -r graphtodo/tmp/* graphtodo/"
-ssh graphtodo "cd graphtodo && npm link full-auth-middleware"
 ssh graphtodo "sudo systemctl restart geist.service"
 ssh graphtodo "rm -rf graphtodo/tmp"
 echo Done!
