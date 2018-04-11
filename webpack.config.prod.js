@@ -3,6 +3,7 @@ var webpack = require('webpack')
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
+    mode: "production",
     devtool: 'source-map',
     entry: {
         app: [ 
@@ -45,14 +46,11 @@ module.exports = {
                 }
             }
         }),
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true
-        }),
         new webpack.optimize.AggressiveMergingPlugin(),
         // new BundleAnalyzerPlugin()
     ],
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.jsx?$/,
                 loaders: ['babel-loader'],
