@@ -541,7 +541,6 @@ function graphUiState(state=initialGraphUIState, action) {
      * UI state related to the graph
      */
     switch(action.type) {
-        case uiActionTypes.SET_ACTIVE_COLLECTION:
         case uiActionTypes.SET_ACTIVE_NODE:
         case uiActionTypes.ADD_COLLECTION:
             return {
