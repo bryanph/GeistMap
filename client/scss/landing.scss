@@ -43,7 +43,7 @@ body {
 
 /*
  * NAVIGATION
-*/
+ */
 
 .globalNav {
     position: absolute;
@@ -162,6 +162,40 @@ body {
     overflow: hidden;
     display: flex;
     align-content: center;
+
+    .featureRow-text {
+        flex: 0 0 50%;
+        flex-shrink: 0;
+        padding: 20px;
+
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        .featureRow-header {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            // color: $accent-color;
+        }
+        .featureRow-body {
+            font-size: 1.3rem;
+            font-weight: 200;
+            line-height: 2rem;
+            color: $secondaryTextColor;
+            margin: 0;
+        }
+    }
+
+    .featureRow-image {
+        flex: 0 0 50%;
+        flex-shrink: 0;
+        padding: 20px;
+
+        img {
+            width: 90%;
+        }
+    }
 }
 .featureRow-container:nth-child(odd) {
     .featureRow-text {
@@ -170,46 +204,27 @@ body {
     .featureRow-image {
         order: 2;
     }
+
+    // background-color: #847e89;
+
+    // .featureRow-header {
+    //     color: #fff;
+    // }
+    // .featureRow-body {
+    //     color: darken(#fff, 10%);
+
+    // }
 }
 
 .featureRow-container:nth-child(even) {
     .featureRow-text {
         order: 2;
     }
-     .featureRow-image {
+    .featureRow-image {
         order: 1;
     }
 
     background-color: #f1f1f1;
-}
-
-.featureRow-text {
-    flex: 0 0 50%;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.featureRow-header {
-    font-size: 2rem;
-    font-weight: 400;
-    margin-bottom: 0.5rem;
-    color: $accent-color;
-}
-.featureRow-body {
-    font-size: 1.3rem;
-    font-weight: 200;
-    line-height: 2rem;
-    color: $secondaryTextColor;
-    margin: 0;
-}
-
-.featureRow-image {
-    flex: 0 0 50%;
-
-    img {
-        width: 90%;
-    }
 }
 
 .endSection {
@@ -273,7 +288,7 @@ body {
 
 /*
  * AUTH TODO: separate this
-*/
+ */
 /* TODO: Should be separated */
 
 .authContainer {
