@@ -30,6 +30,7 @@ export const RightNav = (props) => (
                 target="_blank"
             />
         </div>
+        <NavigationHref href="mailto:support@geistmap.com">Contact</NavigationHref>
         <NavigationHref href="/auth/login">Log in</NavigationHref>
         <NavigationHref href="/auth/signup">Sign up</NavigationHref>
     </div>
@@ -37,10 +38,15 @@ export const RightNav = (props) => (
 
 export const LeftNav = (props) => (
         <div className="left-nav">
-            <NavigationLink to="/features">Features</NavigationLink>
-            <NavigationLink to="/future">Future vision</NavigationLink>
-            <NavigationHref href="/blog">Blog</NavigationHref>
-            <NavigationHref href="mailto:support@geistmap.com">Contact</NavigationHref>
+            {
+                /*
+                <NavigationLink to="/features">Features</NavigationLink>
+                <NavigationLink to="/vision">Future vision</NavigationLink>
+                <NavigationHref href="/blog">Blog</NavigationHref>
+                <NavigationHref href="mailto:support@geistmap.com">Contact</NavigationHref>
+                */
+
+            }
         </div>
 )
 

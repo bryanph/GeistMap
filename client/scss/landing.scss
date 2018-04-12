@@ -89,7 +89,7 @@ body {
 }
 
 #intro {
-    height: 760px;
+    height: 860px;
     display: flex;
     align-items: center;
 
@@ -214,10 +214,13 @@ body {
 
 .endSection {
     margin: 0 auto;
+    margin-top: 30px;
     max-width: 400px;
 }
 .endSection-header {
+    display: block;
     text-align: center;
+    font-size: 2rem;
 }
 
 .footer {

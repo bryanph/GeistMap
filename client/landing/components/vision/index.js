@@ -1,5 +1,7 @@
+
 import React from 'react'
 import ReactDom from 'react-dom'
+import CreationLoop from '../home/CreationLoop'
 
 class Landing extends React.Component {
     constructor(props) {
@@ -7,9 +9,15 @@ class Landing extends React.Component {
     }
 
     render() {
+        const { content } = this.props
+
         return (
-            <div>
-            </div>
+            <React.Fragment>
+                <section className="creationLoopSection">
+                    <h2 className="sectionTitle">A vision: The Creation Loop</h2>
+                    <CreationLoop />
+                </section>
+            </React.Fragment>
         )
     }
 }
