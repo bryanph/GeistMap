@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import Snackbar from 'material-ui/Snackbar';
-import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
 class Errors extends React.Component {

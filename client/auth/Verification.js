@@ -11,14 +11,23 @@ import getHeaders from './headers'
 import { RenderErrors, ValidationErrors } from './Error'
 import { ForgotPassword } from './Forgot'
 
-import TextField from 'material-ui/TextField';
-import FlatButton from 'material-ui/FlatButton';
+import { InputEmail, ValidateInput } from '../app/components/input'
+import { FlatButton } from '../app/components/button'
 
-import createClass from 'create-react-class'
+class AccountVerification extends React.Component {
+    constructor(props) {
+        super(props)
 
-const AccountVerification  = createClass({
+        this.state = {
+            errors: [],
+            validationErrors: {},
+        }
 
-    handleResponse: function(json, response) {
+        this.handleResponse = this.handleResponse.bind(this)
+        this.handleError = this.handleError.bind(this)
+    }
+
+    handleResponse(json, response) {
         if (Object.keys(json.errfor).length) {
             return this.setState({validationErrors: json.errfor})
         }
@@ -26,30 +35,17 @@ const AccountVerification  = createClass({
             return this.setState({errors: json.errors})
         }
 
-        // // TODO: account verification - 2016-05-10
-        // window.location = '/'
-
         this.props.history.push({
             pathname: '/auth/account/verification/success',
             search: this.props.location.search
         })
+    }
 
-        // this.props.history.push('/auth/login/forgot/success')
-        // this.props.history.push('/auth/login/forgot/success')
-    },
-
-    handleError: function(error) {
+    handleError(error) {
         console.error(error.stack);
-    },
+    }
 
-    getInitialState: function() {
-        return {
-            errors: [],
-            validationErrors: {},
-        }
-    },
-
-    render: function() {
+    render() {
         const {
             oauthTwitter,
             oauthGitHub,
@@ -78,52 +74,75 @@ const AccountVerification  = createClass({
 
         )
     }
-})
+}
 
 export default withRouter(AccountVerification)
 
-export const VerificationForm = createClass({
+class VerificationForm extends React.Component {
+    constructor(props) {
+        super(props)
 
-    getInitialState: function() {
-        return {
+        this.state = {
             email: '',
+            errors: {},
         }
-    },
 
-    handleSubmit: function(e) {
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.validate = this.validate.bind(this);
+    }
+
+    handleSubmit(e) {
         e.preventDefault()
+
+        const errors = this.validate(this.state.email)
+        if (Object.keys(errors).length > 0) {
+            return this.setState({ errors })
+        }
 
         fetchJSON('/auth/account/verification', {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({
-                email: this._email.getValue(),
+                email: this.state.email,
             })
         })
             .then(this.props.handleResponse)
             .catch(this.props.handleError)
-    },
+    }
 
-    render: function() {
+    validate(email) {
+        const errors = {}
 
+        if (!email) {
+            errors.email = "Required"
+        }
+        else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
+            errors.email = "Invalid email address"
+        }
+
+        return errors
+    }
+
+    render() {
         return (
             <form id="verification-form" ref={c => this._form = c}>
-                <TextField
-                    hintText="email"
-                    ref={c => this._email = c}
-                    type="email"
-                />
+                <ValidateInput error={this.state.errors.email}>
+                    <InputEmail
+                        name="email"
+                        placeholder="email"
+                        onChange={e => this.setState({ email: e.target.value })}
+                        value={this.state.email}
+                    />
+                </ValidateInput>
                 <FlatButton
                     onClick={this.handleSubmit}   
-                    label="Resend email"
-                    primary={true}
-                    style={{marginTop: '20px'}}
-                />
+                    style={{marginTop: '10px'}}
+                >Resend email</FlatButton>
             </form>
 
         )
     }
-})
+}
 
 export const VerificationResendSuccess = (props) => (
     <div className="interact panel with-logo">

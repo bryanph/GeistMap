@@ -1,0 +1,41 @@
+@import '~styles/settings';
+
+.defaultInput {
+    margin: 0;
+    max-width: 100%;
+    outline: 0;
+    text-align: left;
+    border: 1px solid rgba(34,36,38,.15);
+    padding: .67857143em 1em;
+    border-radius: .28571429rem;
+    transition: box-shadow .1s ease,border-color .1s ease;
+
+    &:focus {
+        border-color: $accent-color;
+        background: #fff;
+    }
+
+    &:required {
+        box-shadow: none;
+    }
+    &:invalid {
+        box-shadow: none;
+    }
+}
+
+.validateInput {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    span {
+        margin-left: 3px;
+        border: none;
+        font-weight: 700;
+        color: $error-color;
+    }
+    
+    i {
+        margin-right: 2px;
+    }
+}

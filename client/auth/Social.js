@@ -1,80 +1,51 @@
 import React from 'react'
 import classNames from 'classnames'
 
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
-import ActionAndroid from 'material-ui/svg-icons/action/android';
-import FontIcon from 'material-ui/FontIcon';
-
-const styles = {
-    button: {
-        width: '100%'
-    },
-    twitter: {
-        color: "#55ACEE"
-    },
-    facebook: {
-        color: "#3B5998"
-    },
-    google: {
-        color: "#DD4B39"
-    },
-    github: {
-        color: "#4183C4"
-    },
-}
+import { FlatButton } from '../app/components/button'
 
 const SocialButton = (props) => (
-    <FlatButton
-        label={props.label}
-        href={props.href}
-        style={styles.button}
-        labelStyle={props.style}
-        icon={props.icon}
-    />
+    <div>
+        <FlatButton {...props} as="a" className="socialButton"/>
+    </div>
 )
 
 export const SocialAuth = (props) => (
     <div>
         {
             props.oauthTwitter ?
-                <SocialButton
-                    label="Twitter"
-                    href="/auth/signup/twitter"
-                    style={styles.twitter}
-                    icon={<FontIcon className="fi-social-twitter" color={styles.twitter.color} />}
-                />
-                    : null 
+            <SocialButton 
+                style={{ color: "#55ACEE" }}
+                href="/auth/signup/twitter"
+                iconName="twitter"
+            >TWITTER</SocialButton>
+                : null 
         }
         {
             props.oauthGitHub ?
-                <SocialButton
-                    label="Github"
-                    href="/auth/signup/github/"
-                    style={styles.github}
-                    icon={<FontIcon className="fi-social-github" color={styles.github.color} />}
-                />
-                : null
+                <SocialButton 
+                    style={{ color: "#4183C4" }}
+                    href="/auth/signup/github"
+                    iconName="github"
+                >GITHUB</SocialButton>
+                : null 
         }
         {
             props.oauthGoogle ?
                 <SocialButton
-                    label="Google"
+                    style={{ color: "#DD4B39" }}
                     href="/auth/signup/google"
-                    style={styles.google}
-                    icon={<FontIcon className="fi-social-google-plus" color={styles.google.color} />}
-                />
-                    : null 
+                    iconName="google"
+                >GOOGLE</SocialButton>
+                : null 
         }
         {
             props.oauthFacebook ?
-                <SocialButton
-                    label="Facebook"
+                <SocialButton 
+                    style={{ color: "#3B5998" }}
                     href="/auth/signup/facebook"
-                    style={styles.facebook}
-                    icon={<FontIcon className="fi-social-facebook" color={styles.facebook.color} />}
-                />
-                    : null 
+                    iconName="facebook"
+                >FACEBOOK</SocialButton>
+                : null 
         }
     </div>
 )

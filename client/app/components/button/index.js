@@ -1,18 +1,28 @@
 import React from 'react'
-import { Button, Icon } from 'semantic-ui-react'
 import classNames from 'classnames'
 
 import './styles.scss'
 
 export const ResponsiveButton = ({ iconName, name, className, ...rest }) => (
     <button className={classNames("responsiveButton", className)} {...rest}>
-        <Icon name={iconName} size="large" /> <span>{name}</span>
+        <i className={`fa fa-${iconName}`} /> <span>{name}</span>
     </button>
 )
 
-export const FlatButton = ({ iconName, name, className, ...rest }) => (
-    <button className={classNames("flatButton", className)} {...rest}>
-        <Icon name={iconName} /> { name ? <span>{name}</span> : null }
-    </button>
-)
+export const FlatButton = ({ as="button", iconName, children, className, ...rest }) => {
 
+    const actualClassName = classNames(className, "flatButton")
+
+    return (
+        React.createElement(
+            as,
+            { className: actualClassName , ...rest }, 
+            [
+                iconName ? <i key={1} className={`fa fa-${iconName}`} /> : null,
+                children ? <span key={2}>{children}</span> : null
+            ]
+        )
+    )
+}
+
+export const FlatLink = (props) => <FlatButton as="a" {...props} />

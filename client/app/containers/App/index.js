@@ -19,7 +19,6 @@ import { HotKeys } from 'react-hotkeys'
 import NodeView from '../NodeView'
 import CollectionDetailEditor from '../CollectionDetailEditor'
 import NodeExploreEditor from '../NodeExploreEditor'
-import ArchiveSidebar from '../ArchiveSidebar'
 
 import ErrorBoundary from '../ErrorPage'
 
@@ -63,8 +62,6 @@ class App extends React.Component {
                         <div style={{display: 'flex', flexDirection: 'column' }}>
                             <Errors />
                             <Topbar />
-
-                            <ArchiveSidebar />
 
                             <Switch>
                                 { /* same component to allow for smooth transitions */ }

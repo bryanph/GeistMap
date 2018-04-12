@@ -6,8 +6,6 @@
 
 import React from 'react';
 import enhanceWithClickOutside from 'react-onclickoutside'
-import { DebouncedTextField } from '../../components/Input'
-
 import { controlled, debounced } from '../../components/Input'
 
 import './styles.css'

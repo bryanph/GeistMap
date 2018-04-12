@@ -23,6 +23,7 @@ $light-accent-color: lighten($accent-color, 10%);
 $accent2-color: #FF9800;
 $secondary-text-color: #C6C6C6;
 $success-color: green;
+$error-color: #700;
 
 $background-grey-light: rgba(235, 235, 235, 1);
 $background-content: white;
@@ -89,10 +90,6 @@ $container-border: 2px solid #ddd;
 // FONTS
 //
 
-// TODO: import locally
-// @import url(http://fonts.googleapis.com/css?family=Roboto+Slab|Open+Sans:400italic,700italic,400,700);
-// @import url(https://fonts.googleapis.com/css?family=Lora);
-
 $font-family-text: source-sans-pro, "Helvetica Neue", Helvetica, Arial, sans-serif;
 $font-family-display: source-serif-pro, Georgia, "Times New Roman", Times, serif;
 $font-family-code: source-code-pro, Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
@@ -150,7 +147,7 @@ strong {
 }
 a,
 button {
-    color: inherit;
+    // color: inherit;
     transition: .3s;
 }
 a {

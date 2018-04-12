@@ -1,15 +1,18 @@
 import React from 'react'
+import ReactDom from 'react-dom'
 
-export default class FollowOnTwitter extends React.Component {
+class Landing extends React.Component {
     constructor(props) {
         super(props)
     }
 
     render() {
         return (
-            <div className="followOnTwitter">
+            <div>
             </div>
-            
         )
     }
 }
+
+export default Landing
+

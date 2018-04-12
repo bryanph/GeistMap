@@ -1,12 +1,10 @@
 import React from 'react'
 
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
-import TextField from 'material-ui/TextField';
+import { FlatButton } from '../app/components/button'
+import { InputEmail, InputPassword, ValidateInput } from '../app/components/input'
 
 import fetchJSON from './utils/fetch'
 import getHeaders from './headers'
-import createClass from 'create-react-class'
 
 const styles = {
     container: {
@@ -20,55 +18,83 @@ const styles = {
     },
 }
 
-export const LoginForm = createClass({
+class LoginForm extends React.Component {
+    constructor(props) {
+        super(props)
 
-    getInitialState: function() {
-        return {
+        this.state = {
             username: '',
             password: '',
+            errors: {}
         }
-    },
 
-    handleSubmit: function(e) {
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.validate = this.validate.bind(this);
+    }
+
+    validate(username, password) {
+        const errors = {}
+
+        if (!username) {
+            errors.username = "Required"
+        }
+        else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(username)) {
+            errors.username = "Invalid email address"
+        }
+
+        if (!password) {
+            errors.password = "Required"
+        }
+
+        return errors
+    }
+
+    handleSubmit(e) {
         e.preventDefault()
+
+        const errors = this.validate(this.state.username, this.state.password)
+        if (Object.keys(errors).length > 0) {
+            return this.setState({ errors })
+        }
 
         fetchJSON('/auth/login', {
             method: 'POST',
             headers: getHeaders(),
             body: JSON.stringify({
-                username: this._username.getValue(),
-                password: this._password.getValue(),
+                username: this.state.username,
+                password: this.state.password,
             })
         })
             .then(this.props.handleResponse)
             .catch(this.props.handleError)
-    },
+    }
 
-    render: function() {
+    render() {
         return (
-            <form id="signup-form" ref={c => this._form = c} style={styles.container}>
-                <TextField
-                    hintText="email"
-                    ref={c => this._username = c}
-                    style={styles.textField}
-
-                />
-                <TextField
-                    hintText="password"
-                    ref={c => this._password = c}
-                    style={styles.textField}
-                    type="password"
-                />
+            <form className="loginForm">
+                <ValidateInput error={this.state.errors.username}>
+                    <InputEmail
+                        name="email"
+                        placeholder="email"
+                        onChange={e => this.setState({ username: e.target.value })}
+                        value={this.state.username}
+                    />
+                </ValidateInput>
+                <ValidateInput error={this.state.errors.password}>
+                    <InputPassword
+                        name="password"
+                        placeholder="password"
+                        onChange={e => this.setState({ password: e.target.value })}
+                        value={this.state.password}
+                    />
+                </ValidateInput>
                 <FlatButton
                     onClick={this.handleSubmit}   
-                    label="Log In"
-                    style={styles.submitButton}
-                    style={{marginTop: '20px'}}
-                    primary={true}
-                />
+                    style={{marginTop: '10px'}}
+                >Log In</FlatButton>
             </form>
         )
     }
-})
+}
 
 export default LoginForm

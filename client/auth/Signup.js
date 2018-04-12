@@ -9,147 +9,165 @@ import getHeaders from './headers'
 import { RenderErrors, ValidationErrors } from './Error'
 import { ForgotPassword } from './Forgot'
 
-import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
-import TextField from 'material-ui/TextField';
+import { InputEmail, InputPassword, ValidateInput } from '../app/components/input'
+import { FlatButton } from '../app/components/button'
 
-import createClass from 'create-react-class'
 import Divider from './Divider'
 
-const Signup = createClass({
+class Signup extends React.Component {
+    constructor(props) {
+        super(props)
 
-    handleResponse: function(json, response) {
-            if (Object.keys(json.errfor).length) {
-                return this.setState({validationErrors: json.errfor})
-            }
-            if (json.errors.length) {
-                return this.setState({errors: json.errors})
-            }
-
-            window.location = '/app'
-        },
-
-        handleError: function(error) {
-            console.error(error);
-        },
-
-        getInitialState: function() {
-            return {
-                errors: [],
-                validationErrors: {},
-            }
-        },
-
-        render: function() {
-            const {
-                oauthTwitter,
-                oauthGitHub,
-                oauthFacebook,
-                oauthGoogle,
-                withBackButton,
-            } = this.props
-
-            const {
-                errors,
-                validationErrors,
-            } = this.state
-
-            return (
-                <div>
-                    <div className="panel">
-                        <h2>Sign up</h2>
-                        <span className="panel-authText">With</span>
-                        <Social {...this.props} />
-                        <Divider />
-                        <SignupForm
-                            { ...this.props }
-                            handleError={this.handleError}
-                            handleResponse={this.handleResponse}
-                        />
-                    </div>
-                    {
-                        withBackButton ?
-                            <div className="panel">
-                                <Link to='/auth/login'>Back to login</Link>
-                            </div>
-                            : null
-                    }
-                    { validationErrors ? <ValidationErrors errors={this.state.validationErrors} /> : null }
-                    { errors ? <RenderErrors errors={this.state.errors} /> : null }
-                </div>
-            )
+        this.state = {
+            errors: [],
+            validationErrors: {},
         }
-})
+
+        this.handleResponse = this.handleResponse.bind(this)
+        this.handleError = this.handleError.bind(this)
+    }
+
+    handleResponse(json, response) {
+        if (Object.keys(json.errfor).length) {
+            return this.setState({validationErrors: json.errfor})
+        }
+        if (json.errors.length) {
+            return this.setState({errors: json.errors})
+        }
+
+        window.location = '/app'
+    }
+
+    handleError(error) {
+        console.error(error);
+    }
+
+    render() {
+        const {
+            oauthTwitter,
+            oauthGitHub,
+            oauthFacebook,
+            oauthGoogle,
+            withBackButton,
+        } = this.props
+
+        const {
+            errors,
+            validationErrors,
+        } = this.state
+
+        return (
+            <div>
+                <div className="panel">
+                    <span className="panel-title">Sign up</span>
+                    <span className="panel-authText">With</span>
+                    <Social {...this.props} />
+                    <Divider />
+                    <SignupForm
+                        { ...this.props }
+                        handleError={this.handleError}
+                        handleResponse={this.handleResponse}
+                    />
+                </div>
+                {
+                    withBackButton ?
+                        <div className="panel">
+                            <Link to='/auth/login'>Back to login</Link>
+                        </div>
+                        : null
+                }
+                { validationErrors ? <ValidationErrors errors={this.state.validationErrors} /> : null }
+                { errors ? <RenderErrors errors={this.state.errors} /> : null }
+            </div>
+        )
+    }
+
+}
 
 export default Signup
 
+class SignupForm extends React.Component {
+    constructor(props) {
+        super(props)
 
-const styles = {
-    container: {
-        margin: '1rem auto',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center'
-    },
-    textField: {
-        width: '100%',
+        this.state = {
+            email: '',
+            username: '',
+            password: '',
+            errors: {}
+        }
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.validate = this.validate.bind(this);
     }
-}
 
-export const SignupForm = createClass({
+    validate(email, password) {
+        const errors = {}
 
-    getInitialState: function() {
-            return {
-                email: '',
-                username: '',
-                password: '',
-            }
-        },
+        if (!email) {
+            errors.email = "Required"
+        }
+        else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email)) {
+            errors.email = "Invalid email address"
+        }
 
-        handleSubmit: function(e) {
-            e.preventDefault()
+        if (!password) {
+            errors.password = "Required"
+        }
 
-            fetchJSON('/auth/signup', {
-                method: 'POST',
-                headers: getHeaders(),
-                body: JSON.stringify({
-                    email: this._email.input.value,
-                    username: this._email.input.value,
-                    password: this._password.input.value,
-                })
+        return errors
+    }
+
+    handleSubmit(e) {
+        e.preventDefault()
+
+        const errors = this.validate(this.state.email, this.state.password)
+        if (Object.keys(errors).length > 0) {
+            return this.setState({ errors })
+        }
+
+        fetchJSON('/auth/signup', {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify({
+                email: this.state.email,
+                username: this.state.email,
+                password: this.state.password,
             })
+        })
             .then(this.props.handleResponse)
             .catch(this.props.handleError)
-        },
+    }
 
-        render: function() {
-
-            return (
-                <form id="signup-form" ref={c => this._form = c} style={styles.container}>
-                    <TextField
-                        hintText="email"
-                        ref={c => this._email = c}
-                        style={styles.textField}
-
+    render() {
+        return (
+            <form className="signupForm">
+                <ValidateInput error={this.state.errors.email}>
+                    <InputEmail
+                        name="email"
+                        placeholder="email"
+                        onChange={e => this.setState({ email: e.target.value })}
+                        value={this.state.email}
                     />
-                    <TextField
-                        hintText="password"
-                        ref={c => this._password = c}
-                        style={styles.textField}
-                        type="password"
+                </ValidateInput>
+                <ValidateInput error={this.state.errors.password}>
+                    <InputPassword
+                        name="password"
+                        placeholder="password"
+                        onChange={e => this.setState({ password: e.target.value })}
+                        value={this.state.password}
                     />
-                    <span className="signupForm-tos">By signing up you agree with the <a href={ this.props.termsOfServiceUrl }>terms of service</a> and the <a href={ this.props.privacyPolicyUrl }>privacy policy</a></span>
-                    <FlatButton
-                        onClick={this.handleSubmit}   
-                        label="Sign up"
-                        primary={true}
-                        style={{marginTop: '20px'}}
-                    />
+                </ValidateInput>
+                <span className="signupForm-tos">By signing up you agree with the <a target="_blank" href={ this.props.termsOfServiceUrl }>terms of service</a> and the <a target="_blank" href={ this.props.privacyPolicyUrl }>privacy policy</a></span>
+                <FlatButton
+                    onClick={this.handleSubmit}   
+                    style={{marginTop: '10px'}}
+                >SIGN UP</FlatButton>
             </form>
 
-            )
-        }
-})
+        )
+    }
+}
 
 export const SignupVerificationSuccess = (props) => (
     <div className="interact panel with-logo">

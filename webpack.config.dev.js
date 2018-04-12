@@ -6,6 +6,7 @@ var UnusedFilesWebpackPlugin = require("unused-files-webpack-plugin").UnusedFile
 
 module.exports = {
     // devtool: 'source-map',
+    mode: "development",
     devtool: 'cheap-module-source-map',
 
     entry: {
@@ -46,19 +47,6 @@ module.exports = {
                 ignore: [ "node_modules/**/*","client/**/*.test.js", '**/test/*' ]
             }
         }),
-        new webpack.LoaderOptionsPlugin({
-            // test: /\.xxx$/, // may apply this only for some modules
-            options: {
-                context: '/',
-                sassLoader: {
-                    includePaths: [
-                        path.resolve(__dirname, './client/scss'),
-                        path.resolve(__dirname, './public'),
-                    ]
-                }
-            }
-        })
-        // new BundleAnalyzerPlugin({ openAnalyzer: false }),
     ],
     module: {
         rules: [
@@ -68,15 +56,32 @@ module.exports = {
                 exclude: /(node_modules|bower_components)/,
                 // include: path.join(__dirname, 'client')
             },
-            { test: /\.json/, loaders: ['json-loader'] },
             { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
-            { test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'sass-loader'] },
-			{ test: /\.(png|jpg)$/, loader: 'file-loader?name=images/[name].[hash].[ext]' },
-			{ test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/font-woff'},
-			{ test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/font-woff'},
-			{ test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/octet-stream'},
-			{ test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]'},
-			{ test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=images/[name].[hash].[ext]&mimetype=image/svg+xml' }
+            {
+                test: /\.scss$/,
+                use: [{
+                    loader: "style-loader"
+                }, {
+                    loader: "css-loader", options: {
+                        sourceMap: true,
+                    }
+                }, {
+                    loader: "sass-loader",
+                    options: {
+                        sourceMap: true,
+                        includePaths: [
+                            path.resolve(__dirname, './client/scss'),
+                            path.resolve(__dirname, './public'),
+                        ]
+                    }
+                }]
+            },
+            { test: /\.(png|jpg)$/, loader: 'file-loader?name=images/[name].[hash].[ext]' },
+            { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/font-woff'},
+            { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/font-woff'},
+            { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/octet-stream'},
+            { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]'},
+            { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=images/[name].[hash].[ext]&mimetype=image/svg+xml' }
 
         ]
     },

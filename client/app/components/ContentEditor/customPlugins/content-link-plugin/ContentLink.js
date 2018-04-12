@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter, Link } from 'react-router-dom'
 import { Entity, SelectionState, RichUtils } from 'draft-js';
-import { EditButton, TrashButton } from '../../../../components/Buttons'
+import { FlatButton } from '../../../../components/button'
 
 import { getSelectionEntity } from '../../utils/inline'
 
@@ -41,19 +41,22 @@ class ContentLink extends React.Component {
                     readOnly ? null :
                     <div className="contentLinkDiv">
                         <div className="contentLinkDiv-container">
-                            { node && node.name }
+                            <span className="contentLinkDiv-title">{ node && node.name }</span>
                             <div className="contentLinkDiv-buttons">
-                                <EditButton
+                                <FlatButton
                                     onClick={() => {
                                             history.push({
                                                 pathname: `/app/nodes/${nodeId}/graph`,
                                                 search: this.props.location.search
                                             })}
                                     }
-                                />
-                                <TrashButton
-                                    label={"Remove"}
+                                    iconName="edit"
+                                >Edit</FlatButton>
+
+                                <FlatButton
+                                    iconName="trash"
                                     onClick={() => {
+                                        console.log("is this being called?")
                                         // TODO: get selection here - 2016-10-20
                                         const entityKey = this.props.entityKey
 
@@ -88,7 +91,7 @@ class ContentLink extends React.Component {
                                             RichUtils.toggleLink(editorState, selectionState, null)
                                         )
                                     }}
-                                />
+                                >Remove</FlatButton>
                             </div>
                         </div>
                     </div>

@@ -6,12 +6,23 @@ import { withRouter, Link } from "react-router-dom"
 
 import { RenderErrors, ValidationErrors } from './Error'
 import getHeaders from './headers'
+import { InputPassword, ValidateInput } from '../app/components/input'
+import { FlatButton } from '../app/components/button'
 
-import createClass from 'create-react-class'
+class Reset extends React.Component {
+    constructor(props) {
+        super(props)
 
-const Reset = createClass({
+        this.state = {
+            errors: [],
+            validationErrors: {},
+        }
 
-    handleResponse: function(json, response) {
+        this.handleResponse = this.handleResponse.bind(this)
+        this.handleError = this.handleError.bind(this)
+    }
+
+    handleResponse(json, response) {
         if (Object.keys(json.errfor).length) {
             return this.setState({validationErrors: json.errfor})
         }
@@ -23,20 +34,13 @@ const Reset = createClass({
             pathname: '/auth/login/reset/success',
             search: this.props.location.search
         })
-    },
+    }
 
-    handleError: function(error) {
+    handleError(error) {
         console.error(error)
-    },
+    }
 
-    getInitialState: function() {
-        return {
-            errors: [],
-            validationErrors: {},
-        }
-    },
-
-    render: function() {
+    render() {
         const email = this.props.match.params.email
         const token = this.props.match.params.token
 
@@ -60,14 +64,49 @@ const Reset = createClass({
 
         )
     }
-})
+}
 
 export default withRouter(Reset)
 
-export const ResetForm = createClass({
+class ResetForm extends React.Component {
+    constructor(props) {
+        super(props)
 
-    handleSubmit: function(e) {
+        this.state = {
+            password: '',
+            confirm: '',
+            errors: {}
+        }
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.validate = this.validate.bind(this);
+    }
+
+    validate(password, confirm) {
+        const errors = {}
+
+        if (!password) {
+            errors.password = "Required"
+        }
+
+        if (!confirm) {
+            errors.confirm = "Required"
+        }
+
+        if (password !== confirm) {
+            errors._error = "The passwords you entered are not the same"
+        }
+
+        return errors
+    }
+
+    handleSubmit(e) {
         e.preventDefault()
+
+        const errors = this.validate(this.state.password, this.state.confirm)
+        if (Object.keys(errors).length > 0) {
+            return this.setState({ errors })
+        }
 
         const { email, token } = this.props
 
@@ -77,42 +116,52 @@ export const ResetForm = createClass({
             method: 'PUT',
             headers: getHeaders(),
             body: JSON.stringify({
-                password: this._password.value,
-                confirm: this._confirm.value,
+                password: this.state.password,
+                confirm: this.state.confirm,
             })
         })
             .then(this.props.handleResponse)
             .catch(this.props.handleError)
-    },
+    }
 
-
-    render: function() {
+    render() {
         return (
             <div className="interact panel with-logo">
                 <div className="logo"></div>
                 <h3>Reset your password</h3>
                 <p>Enter a new password in the fields below.</p>
-                <form id="signup-form" ref={c => this._form = c}>
-                    <input 
-                        type="password" 
-                        ref={c => this._password = c}
-                        placeholder="Password"
-                    />
-                    <input 
-                        type="password" 
-                        ref={c => this._confirm = c}
-                        placeholder="Confirm password"
-                    />
-                    <button className="button input-height" onClick={this.handleSubmit}>Confirm Reset</button>
+                <form className="resetForm">
+                    <ValidateInput error={this.state.errors.password}>
+                        <InputPassword
+                            name="password"
+                            placeholder="password"
+                            onChange={e => this.setState({ password: e.target.value })}
+                            value={this.state.password}
+                        />
+                    </ValidateInput>
+                    <ValidateInput error={this.state.errors.confirm}>
+                        <InputPassword
+                            name="confirm"
+                            placeholder="confirm password"
+                            onChange={e => this.setState({ confirm: e.target.value })}
+                            value={this.state.confirm}
+                        />
+                    </ValidateInput>
+                    <FlatButton
+                        onClick={this.handleSubmit}   
+                        style={{marginTop: '10px'}}
+                    >Confirm Reset</FlatButton>
                 </form>
             </div>
         )
     }
-})
+}
 
 export const ResetSuccess = (props) => (
-    <div>
-        <h2>Your password has succesfully been reset.</h2>
+    <div className="interact panel with-logo">
+        <div className="logo"></div>
+        <h3>Your password has succesfully been reset.</h3>
         <Link to='/auth/login'>Back to login</Link>
     </div>
 )
+
