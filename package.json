@@ -26,6 +26,8 @@
     "multer": "1.3.0",
     "normalizr": "2.0.0",
     "passport": "0.4.0",
+    "pdfjs-dist": "2.0.159",
+    "react-rnd": "^7.1.5",
     "promptly": "2.2.0",
     "prop-types": "15.6.0",
     "re-reselect": "1.0.1",
