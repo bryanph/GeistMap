@@ -76,7 +76,7 @@ module.exports = {
                     }
                 }]
             },
-            { test: /\.(png|jpg)$/, loader: 'file-loader?name=images/[name].[hash].[ext]' },
+            { test: /\.(png|jpg|gif)$/, loader: 'file-loader?name=images/[name].[hash].[ext]' },
             { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/font-woff'},
             { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/,loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/font-woff'},
             { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: 'file-loader?name=fonts/[name].[hash].[ext]&mimetype=application/octet-stream'},
