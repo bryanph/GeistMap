@@ -56,7 +56,7 @@ class PdfAnnotation extends React.Component {
     showTip = (popUpContent) => {
         const { highlight } = this.props
 
-        this.props.showTip(highlight);
+        // this.props.showTip(highlight);
     }
 
     hideTip = () => {
@@ -68,8 +68,7 @@ class PdfAnnotation extends React.Component {
         const { highlight } = this.props
 
         const scaledPosition = this.props.scaledPositionToViewport(highlight.position)
-
-        console.log("rendering a highlight", highlight.position, scaledPosition)
+        const highlightWithScaledPos = { ...highlight, position: scaledPosition }
 
         // TODO: should not happen here - 2018-04-24
         // if (tip && tip.highlight.id === String(highlight.id)) {
@@ -93,7 +92,7 @@ class PdfAnnotation extends React.Component {
             />
         ) : (
             <AreaHighlight
-                highlight={highlight}
+                highlight={highlightWithScaledPos}
                 onChange={boundingRect => {
                     this.updateHighlight(
                         highlight.id,
@@ -103,8 +102,6 @@ class PdfAnnotation extends React.Component {
                 }}
             />
         );
-
-        return component
 
         // TODO: Don't render this for every popup. Instead, have one component and move it around. - 2018-04-24
         return (
