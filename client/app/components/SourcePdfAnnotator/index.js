@@ -69,7 +69,7 @@ class PdfAnnotation extends React.Component {
 
         const scaledPosition = this.props.scaledPositionToViewport(highlight.position)
 
-        console.log("rendering a highlight", highlight)
+        console.log("rendering a highlight", highlight.position, scaledPosition)
 
         // TODO: should not happen here - 2018-04-24
         // if (tip && tip.highlight.id === String(highlight.id)) {
@@ -85,12 +85,10 @@ class PdfAnnotation extends React.Component {
             highlight.content && highlight.content.image
         );
 
-        console.log(isTextHighlight)
-
         const component = isTextHighlight ? (
             <Highlight
                 isScrolledTo={false}
-                position={highlight.position}
+                position={scaledPosition}
                 comment={highlight.comment}
             />
         ) : (
@@ -105,6 +103,8 @@ class PdfAnnotation extends React.Component {
                 }}
             />
         );
+
+        return component
 
         // TODO: Don't render this for every popup. Instead, have one component and move it around. - 2018-04-24
         return (
