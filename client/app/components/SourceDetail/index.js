@@ -35,8 +35,8 @@ class SourcePDF extends React.Component {
 
         return (
             <div className="sourcePDF">
-                <PdfViewer url={source.url} />
-                <PdfAnnotations />
+                <PdfViewer url={source.url} annotations={source.annotations} />
+                <PdfAnnotations annotations={source.annotations} />
                 <DerivedDocument />
             </div>
         )

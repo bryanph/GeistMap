@@ -13,13 +13,14 @@ class PdfViewer extends React.Component {
     }
 
     render() {
-        const { url } = this.props
+        const { url, annotations } = this.props
 
         return (
             <PdfLoader url={url}>
                 { pdfDocument => (
                     <PdfAnnotator
                         pdfDocument={pdfDocument}
+                        highlights={annotations}
                     />
                 )}
             </PdfLoader>
