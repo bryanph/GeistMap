@@ -25,6 +25,9 @@ type Props = {
 };
 
 class MouseSelection extends Component {
+    /*
+     * Keeps track of a mouse selection
+     */
     state: State = {
         locked: false,
         start: null,
@@ -58,7 +61,7 @@ class MouseSelection extends Component {
 
         const isVisible = Boolean(start && end);
 
-        onChange(isVisible);
+        // onChange(isVisible);
     }
 
     componentDidMount() {
@@ -195,3 +198,4 @@ class MouseSelection extends Component {
     }
 }
 
+export default MouseSelection

@@ -6,6 +6,7 @@ import Popup from './Popup'
 import Highlight from './Highlight'
 import AreaHighlight from './AreaHighlight'
 import MouseSelection from './MouseSelection'
+import PdfAnnotationTooltip from './PdfAnnotationTooltip'
 
 import { scaledToViewport, viewportToScaled } from "./lib/coordinates";
 
@@ -17,6 +18,10 @@ require("pdfjs-dist/web/pdf_viewer");
 import "pdfjs-dist/web/pdf_viewer.css";
 import './styles.scss'
 
+import {
+    getPageFromElement
+} from './lib/pdfjs-dom'
+
 
 PDFJS.disableWorker = true;
 
@@ -26,24 +31,6 @@ const HighlightPopup = ({ comment }) =>
             {comment.emoji} {comment.text}
         </div>
     ) : null;
-
-class PdfAnnotationTooltip extends React.Component {
-    /*
-     * Reused per annotation. It hovers over the annotation to show a label.
-     */
-    constructor(props) {
-        super(props)
-    }
-
-    render() {
-        const { annotation } = this.props
-
-        return (
-            <div className="PdfAnnotator__tip-layer">
-            </div>
-        )
-    }
-}
 
 class PdfAnnotation extends React.Component {
     /*
@@ -96,7 +83,7 @@ class PdfAnnotation extends React.Component {
                 onChange={boundingRect => {
                     this.updateHighlight(
                         highlight.id,
-                        { boundingRect: this.props.viewportToScaled(boundingRect) },
+                        { boundingRect: this.props.viewportToScaled(boundingRect, this.props.pageNumber) },
                         { image: this.props.screenshot(boundingRect) }
                     );
                 }}
@@ -123,45 +110,6 @@ class PdfAnnotationLayerPage extends React.Component {
         super(props)
     }
 
-    viewportToScaled = (rect) => {
-        const { pageNumber } = this.props
-        const viewport = this.props.pdfViewer.getPageView(pageNumber - 1).viewport;
-
-        return viewportToScaled(rect, viewport);
-    }
-
-    scaledPositionToViewport = ({
-        pageNumber,
-        boundingRect,
-        rects,
-        usePdfCoordinates
-    }: T_ScaledPosition): T_Position => {
-        const viewport = this.props.pdfViewer.getPageView(pageNumber - 1).viewport;
-
-        return {
-            boundingRect: scaledToViewport(boundingRect, viewport, usePdfCoordinates),
-            rects: (rects || []).map(rect =>
-            scaledToViewport(rect, viewport, usePdfCoordinates)
-        ),
-            pageNumber
-        };
-    }
-
-    viewportPositionToScaled = ({
-        pageNumber,
-        boundingRect,
-        rects
-    }: T_Position): T_ScaledPosition => {
-        const viewport = this.props.pdfViewer.getPageView(pageNumber - 1).viewport;
-
-        return {
-            boundingRect: viewportToScaled(boundingRect, viewport),
-            rects: (rects || []).map(rect => viewportToScaled(rect, viewport)),
-            pageNumber
-        };
-    }
-
-
     screenshot = (rect) => {
         const { pageNumber } = this.props
 
@@ -169,7 +117,7 @@ class PdfAnnotationLayerPage extends React.Component {
     }
 
     render() {
-        const { highlights } = this.props
+        const { highlights, pageNumber } = this.props
 
         return (
             <div className="PdfAnnotator__highlight-layer">
@@ -179,8 +127,9 @@ class PdfAnnotationLayerPage extends React.Component {
                             <PdfAnnotation 
                                 key={index} 
                                 highlight={highlight}
-                                viewportToScaled={this.viewportToScaled}
-                                scaledPositionToViewport={this.scaledPositionToViewport}
+                                pageNumber={pageNumber}
+                                viewportToScaled={this.props.viewportToScaled}
+                                scaledPositionToViewport={this.props.scaledPositionToViewport}
                                 screenshot={this.screenshot}
                             />
                         )
@@ -243,10 +192,93 @@ class PdfAnnotationLayer extends React.Component {
                     key={index}
                     pdfViewer={pdfViewer}
                     highlights={highlightsByPage[String(pageNumber)] || []}
+                    viewportToScaled={this.props.viewportToScaled}
+                    scaledPositionToViewport={this.props.scaledPositionToViewport}
                 />
                 , textLayer.textLayerDiv
             )
         })
+    }
+}
+
+import getAreaAsPng from "./lib/getAreaAsPng";
+
+class PdfAreaSelection extends React.Component {
+    /*
+     * This allows annotation of a rectangle image
+     */
+    constructor(props) {
+        super(props)
+
+        this.toggleTextSelection = this.toggleTextSelection.bind(this);
+        this.onSelection = this.onSelection.bind(this);
+        this.screenshot = this.screenshot.bind(this);
+    }
+
+    toggleTextSelection(flag: boolean) {
+        /*
+         * disables text selection and instead allows you to select an area
+        */
+        console.log(flag)
+        this.props.pdfViewer.viewer.classList.toggle(
+            "PdfAnnotator--disable-selection",
+            flag
+        );
+    }
+
+    screenshot(position: T_LTWH, pageNumber: number) {
+        const canvas = this.props.pdfViewer.getPageView(pageNumber - 1).canvas;
+
+        return getAreaAsPng(canvas, position);
+    }
+
+    onSelection(startTarget, boundingRect, resetSelection) {
+        /*
+         * When an area is selected, store
+         */
+        const page = getPageFromElement(startTarget);
+
+        if (!page) {
+            return;
+        }
+
+        const pageBoundingRect = {
+            ...boundingRect,
+            top: boundingRect.top - page.node.offsetTop,
+            left: boundingRect.left - page.node.offsetLeft
+        };
+
+        const viewportPosition = {
+            boundingRect: pageBoundingRect,
+            rects: [],
+            pageNumber: page.number
+        };
+
+        const scaledPosition = this.props.viewportPositionToScaled(viewportPosition);
+
+        const image = this.screenshot(pageBoundingRect, page.number);
+
+        const ghostHighlight = {
+            position: scaledPosition,
+            content: { image },
+        }
+
+        this.props.renderSelection(scaledPosition, ghostHighlight)
+    }
+
+    render() {
+        return (
+            <MouseSelection
+                onDragStart={() => this.toggleTextSelection(true)}
+                onDragEnd={() => this.toggleTextSelection(false)}
+                shouldStart={event =>
+                        event.altKey &&
+                            event.target instanceof HTMLElement &&
+                            Boolean(event.target.closest(".page"))
+                }
+                onSelection={this.onSelection}
+            />
+        )
     }
 }
 
@@ -270,7 +302,44 @@ class PdfAnnotator extends React.Component {
         scrolledToHighlightId: null,
     };
 
-    enableAreaSelection = (event) => event.altKey
+
+    viewportToScaled = (rect, pageNumber) => {
+        const viewport = this.pdfViewer.getPageView(pageNumber - 1).viewport;
+
+        return viewportToScaled(rect, viewport);
+    }
+
+    scaledPositionToViewport = ({
+        pageNumber,
+        boundingRect,
+        rects,
+        usePdfCoordinates
+    }: T_ScaledPosition): T_Position => {
+        const viewport = this.pdfViewer.getPageView(pageNumber - 1).viewport;
+
+        return {
+            boundingRect: scaledToViewport(boundingRect, viewport, usePdfCoordinates),
+            rects: (rects || []).map(rect =>
+                scaledToViewport(rect, viewport, usePdfCoordinates)
+            ),
+            pageNumber
+        };
+    }
+
+    viewportPositionToScaled = ({
+        pageNumber,
+        boundingRect,
+        rects
+    }: T_Position): T_ScaledPosition => {
+        const viewport = this.pdfViewer.getPageView(pageNumber - 1).viewport;
+
+        return {
+            boundingRect: viewportToScaled(boundingRect, viewport),
+            rects: (rects || []).map(rect => viewportToScaled(rect, viewport)),
+            pageNumber
+        };
+    }
+
 
     onSelectionChange = () => {
         const selection: Selection = window.getSelection();
@@ -301,82 +370,6 @@ class PdfAnnotator extends React.Component {
         // this.pdfViewer.currentScaleValue = "auto";
 
         // scrollRef(this.scrollTo);
-    };
-
-    handleKeyDown = (event: KeyboardEvent) => {
-        if (event.code === "Escape") {
-            this.hideTipAndSelection();
-        }
-    }
-
-    onMouseDown = (event: MouseEvent) => {
-        /*
-         * When clicking somewhere outside the tooltip, close it
-         */
-        if (!(event.target instanceof HTMLElement)) {
-            return;
-        }
-
-        if (event.target.closest(".PdfAnnotator__tip-container")) {
-            return;
-        }
-
-        this.hideTipAndSelection();
-
-        // let single click go through
-        clickTimeoutId = setTimeout(
-            () => this.setState({ isMouseDown: true }),
-            CLICK_TIMEOUT
-        );
-    };
-
-    onMouseUp = () => {
-        clearTimeout(clickTimeoutId);
-        this.setState({ isMouseDown: false });
-
-        const { onSelectionFinished } = this.props;
-        const { isCollapsed, range } = this.state;
-        if (!range || isCollapsed) {
-            return;
-        }
-
-        const page = getPageFromRange(range);
-
-        if (!page) {
-            return;
-        }
-
-        const rects = getClientRects(range, page.node);
-
-        if (rects.length === 0) {
-            return;
-        }
-
-        const boundingRect = getBoundingRect(rects);
-
-        const viewportPosition = { boundingRect, rects, pageNumber: page.number };
-
-        const content = {
-            text: range.toString()
-        };
-
-        const scaledPosition = this.viewportPositionToScaled(viewportPosition);
-
-        this.renderTipAtPosition(
-            viewportPosition,
-            onSelectionFinished(
-                scaledPosition,
-                content,
-                () => this.hideTipAndSelection(),
-                () =>
-                this.setState(
-                    {
-                        ghostHighlight: { position: scaledPosition }
-                    },
-                    () => this.renderHighlights()
-                )
-            )
-        );
     };
 
     removeScrollFocus = () => {
@@ -430,48 +423,20 @@ class PdfAnnotator extends React.Component {
         }, 100);
     };
 
-    hideTipAndSelection = () => {
-        const tipNode = findOrCreateContainerLayer(
-            this.pdfViewer.viewer,
-            "PdfAnnotator__tip-layer"
-        );
-
-        ReactDom.unmountComponentAtNode(tipNode);
-
-        this.setState({ ghostHighlight: null, tip: null }, () =>
-            this.renderHighlights()
-        );
+    hideSelection = () => {
+        this.setState({
+            ghostHighlight: null
+        })
     };
 
-
-    renderTipAtPosition(position: T_Position, inner: ?React$Element<*>) {
-        const { boundingRect, pageNumber } = position;
-
-        const page = {
-            node: this.pdfViewer.getPageView(pageNumber - 1).div
-        };
-
-        const pageBoundingRect = page.node.getBoundingClientRect();
-
-        const tipNode = findOrCreateContainerLayer(
-            this.pdfViewer.viewer,
-            "PdfAnnotator__tip-layer"
-        );
-
-        ReactDom.render(
-            <TipContainer
-                scrollTop={this.pdfViewer.container.scrollTop}
-                pageBoundingRect={pageBoundingRect}
-                style={{
-                    left:
-                    page.node.offsetLeft + boundingRect.left + boundingRect.width / 2,
-                    top: boundingRect.top + page.node.offsetTop,
-                    bottom: boundingRect.top + page.node.offsetTop + boundingRect.height
-                }}
-                children={inner}
-            />,
-            tipNode
-        );
+    renderSelection = (position, ghostHighlight) => {
+        console.log("called renderSelection")
+        this.setState({
+            tip: {
+                position
+            },
+            ghostHighlight,
+        })
     }
 
     // shouldComponentUpdate(nextProps) {
@@ -537,76 +502,32 @@ class PdfAnnotator extends React.Component {
                             pdfDocument={this.props.pdfDocument}
                             pdfViewer={this.pdfViewer}
                             highlights={this.props.highlights}
+                            viewportToScaled={this.viewportToScaled}
+                            scaledPositionToViewport={this.scaledPositionToViewport}
                         />
                         : null
                 }
+
+                <PdfAnnotationTooltip
+
+                />
+
+                <PdfAreaSelection
+                    pdfViewer={this.pdfViewer}
+                    viewportToScaled={this.viewportToScaled}
+                    viewportPositionToScaled={this.viewportPositionToScaled}
+                    renderSelection={this.renderSelection}
+                />
+
                 {
                     /*
-                <MouseSelection
-                    onDragStart={() => this.toggleTextSelection(true)}
-                    onDragEnd={() => this.toggleTextSelection(false)}
-                    onChange={isVisible =>
-                            this.setState({ isAreaSelectionInProgress: isVisible })
-                    }
-                    shouldStart={event =>
-                            this.enableAreaSelection(event) &&
-                                event.target instanceof HTMLElement &&
-                                Boolean(event.target.closest(".page"))
-                    }
-                    onSelection={(startTarget, boundingRect, resetSelection) => {
-                        const page = getPageFromElement(startTarget);
-
-                        if (!page) {
-                            return;
-                        }
-
-                        const pageBoundingRect = {
-                            ...boundingRect,
-                            top: boundingRect.top - page.node.offsetTop,
-                            left: boundingRect.left - page.node.offsetLeft
-                        };
-
-                        const viewportPosition = {
-                            boundingRect: pageBoundingRect,
-                            rects: [],
-                            pageNumber: page.number
-                        };
-
-                        const scaledPosition = this.viewportPositionToScaled(
-                            viewportPosition
-                        );
-
-                        const image = this.screenshot(pageBoundingRect, page.number);
-
-                        this.renderTipAtPosition(
-                            viewportPosition,
-                            onSelectionFinished(
-                                scaledPosition,
-                                { image },
-                                () => this.hideTipAndSelection(),
-                                () =>
-                                this.setState(
-                                    {
-                                        ghostHighlight: {
-                                            position: scaledPosition,
-                                            content: { image }
-                                        }
-                                    },
-                                    () => {
-                                        resetSelection();
-                                        this.renderHighlights();
-                                    }
-                                )
-                            )
-                        );
-                    }}
-                />
+                <PdfTextSelection />
                 */
                 }
 
             </div>
         )
-    }
+}
 }
 
 export default PdfAnnotator
