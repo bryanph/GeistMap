@@ -24,6 +24,8 @@ type Props = {
     onChange: (isVisible: boolean) => void
 };
 
+import './styles.scss'
+
 class MouseSelection extends Component {
     /*
      * Keeps track of a mouse selection

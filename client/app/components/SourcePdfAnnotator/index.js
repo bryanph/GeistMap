@@ -5,8 +5,8 @@ import ReactDOM from 'react-dom'
 import Popup from './Popup'
 import Highlight from './Highlight'
 import AreaHighlight from './AreaHighlight'
-import MouseSelection from './MouseSelection'
 import PdfAnnotationTooltip from './PdfAnnotationTooltip'
+import PdfAreaSelection from './PdfAreaSelection'
 
 import { scaledToViewport, viewportToScaled } from "./lib/coordinates";
 
@@ -17,10 +17,6 @@ import { PDFJS } from "pdfjs-dist";
 require("pdfjs-dist/web/pdf_viewer");
 import "pdfjs-dist/web/pdf_viewer.css";
 import './styles.scss'
-
-import {
-    getPageFromElement
-} from './lib/pdfjs-dom'
 
 
 PDFJS.disableWorker = true;
@@ -198,87 +194,6 @@ class PdfAnnotationLayer extends React.Component {
                 , textLayer.textLayerDiv
             )
         })
-    }
-}
-
-import getAreaAsPng from "./lib/getAreaAsPng";
-
-class PdfAreaSelection extends React.Component {
-    /*
-     * This allows annotation of a rectangle image
-     */
-    constructor(props) {
-        super(props)
-
-        this.toggleTextSelection = this.toggleTextSelection.bind(this);
-        this.onSelection = this.onSelection.bind(this);
-        this.screenshot = this.screenshot.bind(this);
-    }
-
-    toggleTextSelection(flag: boolean) {
-        /*
-         * disables text selection and instead allows you to select an area
-        */
-        console.log(flag)
-        this.props.pdfViewer.viewer.classList.toggle(
-            "PdfAnnotator--disable-selection",
-            flag
-        );
-    }
-
-    screenshot(position: T_LTWH, pageNumber: number) {
-        const canvas = this.props.pdfViewer.getPageView(pageNumber - 1).canvas;
-
-        return getAreaAsPng(canvas, position);
-    }
-
-    onSelection(startTarget, boundingRect, resetSelection) {
-        /*
-         * When an area is selected, store
-         */
-        const page = getPageFromElement(startTarget);
-
-        if (!page) {
-            return;
-        }
-
-        const pageBoundingRect = {
-            ...boundingRect,
-            top: boundingRect.top - page.node.offsetTop,
-            left: boundingRect.left - page.node.offsetLeft
-        };
-
-        const viewportPosition = {
-            boundingRect: pageBoundingRect,
-            rects: [],
-            pageNumber: page.number
-        };
-
-        const scaledPosition = this.props.viewportPositionToScaled(viewportPosition);
-
-        const image = this.screenshot(pageBoundingRect, page.number);
-
-        const ghostHighlight = {
-            position: scaledPosition,
-            content: { image },
-        }
-
-        this.props.renderSelection(scaledPosition, ghostHighlight)
-    }
-
-    render() {
-        return (
-            <MouseSelection
-                onDragStart={() => this.toggleTextSelection(true)}
-                onDragEnd={() => this.toggleTextSelection(false)}
-                shouldStart={event =>
-                        event.altKey &&
-                            event.target instanceof HTMLElement &&
-                            Boolean(event.target.closest(".page"))
-                }
-                onSelection={this.onSelection}
-            />
-        )
     }
 }
 
@@ -498,27 +413,26 @@ class PdfAnnotator extends React.Component {
                 <div className="pdfViewer" />
                 {
                     textLayerRendered ?
-                        <PdfAnnotationLayer 
-                            pdfDocument={this.props.pdfDocument}
-                            pdfViewer={this.pdfViewer}
-                            highlights={this.props.highlights}
-                            viewportToScaled={this.viewportToScaled}
-                            scaledPositionToViewport={this.scaledPositionToViewport}
-                        />
+                        <React.Fragment>
+                            <PdfAnnotationLayer 
+                                pdfDocument={this.props.pdfDocument}
+                                pdfViewer={this.pdfViewer}
+                                highlights={this.props.highlights}
+                                viewportToScaled={this.viewportToScaled}
+                                scaledPositionToViewport={this.scaledPositionToViewport}
+                            />
+                            <PdfAnnotationTooltip
+
+                            />
+                            <PdfAreaSelection
+                                pdfViewer={this.pdfViewer}
+                                viewportToScaled={this.viewportToScaled}
+                                viewportPositionToScaled={this.viewportPositionToScaled}
+                                renderSelection={this.renderSelection}
+                            />
+                        </React.Fragment>
                         : null
                 }
-
-                <PdfAnnotationTooltip
-
-                />
-
-                <PdfAreaSelection
-                    pdfViewer={this.pdfViewer}
-                    viewportToScaled={this.viewportToScaled}
-                    viewportPositionToScaled={this.viewportPositionToScaled}
-                    renderSelection={this.renderSelection}
-                />
-
                 {
                     /*
                 <PdfTextSelection />
