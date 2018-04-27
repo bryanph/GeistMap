@@ -70,6 +70,8 @@ class MouseSelection extends Component {
         if (prevState.locked && !nextProps.shouldRemain) {
             return { start: null, end: null, locked: false }
         }
+
+        return null;
     }
 
     componentDidMount() {

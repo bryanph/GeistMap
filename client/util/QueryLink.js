@@ -1,7 +1,7 @@
 import React from 'react';
 import { withRouter, Link } from 'react-router-dom'
 
-const QueryLink = withRouter((props) => {
+const QueryLink = withRouter(({ staticContext, ...props }) => {
     /*
      * A link that preserves the query string
     */
