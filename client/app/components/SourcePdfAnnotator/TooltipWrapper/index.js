@@ -1,6 +1,7 @@
 // @flow
 
 import React, { Component } from "react";
+import onClickOutside from "react-onclickoutside";
 
 type State = {
     height: number,
@@ -36,6 +37,12 @@ class TooltipWrapper extends Component<Props, State> {
 
     componentDidMount() {
         setTimeout(this.updatePosition, 0);
+    }
+
+    handleClickOutside = event => {
+        if (this.props.handleClickOutside) {
+            this.props.handleClickOutside(event);
+        }
     }
 
     updatePosition = () => {
@@ -101,4 +108,4 @@ class TooltipWrapper extends Component<Props, State> {
     }
 }
 
-export default TooltipWrapper;
+export default onClickOutside(TooltipWrapper);

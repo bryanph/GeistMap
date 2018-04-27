@@ -66,6 +66,12 @@ class MouseSelection extends Component {
         // onChange(isVisible);
     }
 
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (prevState.locked && !nextProps.shouldRemain) {
+            return { start: null, end: null, locked: false }
+        }
+    }
+
     componentDidMount() {
         if (!this.root) {
             return;
@@ -108,6 +114,9 @@ class MouseSelection extends Component {
         });
 
         container.addEventListener("mousedown", (event: MouseEvent) => {
+            if (this.state.locked && this.props.shouldRemain) {
+                return;
+            }
             if (!shouldStart(event)) {
                 this.reset();
                 return;

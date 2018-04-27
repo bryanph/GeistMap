@@ -345,7 +345,6 @@ class PdfAnnotator extends React.Component {
     };
 
     renderSelection = (position, ghostHighlight) => {
-        console.log("called renderSelection")
         this.setState({
             tip: {
                 position

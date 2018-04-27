@@ -44,7 +44,9 @@ class SelectionTooltip extends Component<Props, State> {
                 {compact ? (
                     <div
                         className="Tip__compact"
-                        onClick={() => {
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
                             this.setState({ compact: false });
                         }}
                     >

@@ -56,8 +56,6 @@ class PdfAreaSelection extends React.Component {
             left: boundingRect.left - page.node.offsetLeft
         };
 
-        console.log(pageBoundingRect)
-
         const viewportPosition = {
             boundingRect: pageBoundingRect,
             rects: [],
@@ -89,19 +87,34 @@ class PdfAreaSelection extends React.Component {
         this.props.renderSelection(scaledPosition, ghostHighlight)
     }
 
+    hideSelection = (e) => {
+        this.setState({
+            tooltipStyle: null,
+            position: null,
+            ghostHighlight: null,
+        })
+    }
+
+    isAreaSelection = (event) => {
+        return event.altKey && event.target instanceof HTMLElement && Boolean(event.target.closest(".page"))
+    }
+
     render() {
         const { tooltipStyle, position } = this.state;
         const { pdfViewer } = this.props;
 
         const scrollTop = pdfViewer.container.scrollTop;
 
-        console.log(position)
-
         return (
             <React.Fragment>
                 {
                     position ?
-                        <TooltipWrapper style={tooltipStyle} scrollTop={scrollTop} pageBoundingRect={position.boundingRect}>
+                        <TooltipWrapper 
+                            style={tooltipStyle} 
+                            scrollTop={scrollTop} 
+                            pageBoundingRect={position.boundingRect}
+                            handleClickOutside={this.hideSelection}
+                        >
                             <SelectionTooltip onConfirm={this.addHighlight} />
                         </TooltipWrapper>
                         : null
@@ -110,11 +123,8 @@ class PdfAreaSelection extends React.Component {
             <MouseSelection
                 onDragStart={() => this.toggleTextSelection(true)}
                 onDragEnd={() => this.toggleTextSelection(false)}
-                shouldStart={event =>
-                        event.altKey &&
-                            event.target instanceof HTMLElement &&
-                            Boolean(event.target.closest(".page"))
-                }
+                shouldStart={this.isAreaSelection}
+                shouldRemain={position}
                 onSelection={this.onSelection}
             />
             </React.Fragment>
