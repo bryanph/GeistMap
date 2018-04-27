@@ -11,3 +11,13 @@ export const getPageFromElement = (target: HTMLElement) => {
 
     return { node, number };
 };
+
+export const getPageFromRange = (range: Range) => {
+    const parentElement = range.startContainer.parentElement;
+
+    if (!(parentElement instanceof HTMLElement)) {
+        return;
+    }
+
+    return getPageFromElement(parentElement);
+};

@@ -7,6 +7,7 @@ import Highlight from './Highlight'
 import AreaHighlight from './AreaHighlight'
 import PdfAnnotationTooltip from './PdfAnnotationTooltip'
 import PdfAreaSelection from './PdfAreaSelection'
+import PdfTextSelection from './PdfTextSelection'
 
 import { scaledToViewport, viewportToScaled } from "./lib/coordinates";
 
@@ -77,6 +78,7 @@ class PdfAnnotation extends React.Component {
             <AreaHighlight
                 highlight={highlightWithScaledPos}
                 onChange={boundingRect => {
+                    // when resizing, should update the highlight
                     this.updateHighlight(
                         highlight.id,
                         { boundingRect: this.props.viewportToScaled(boundingRect, this.props.pageNumber) },
@@ -257,6 +259,9 @@ class PdfAnnotator extends React.Component {
 
 
     onSelectionChange = () => {
+        /*
+         * sets a selection to the state
+        */
         const selection: Selection = window.getSelection();
 
         if (selection.isCollapsed) {
@@ -278,88 +283,9 @@ class PdfAnnotator extends React.Component {
 
     onDocumentReady = () => {
         /*
-         * If an annotation is focused in the URL, scroll to that annotation
+         * // TODO: desc - 2018-04-27 If an annotation is focused in the URL, scroll to that annotation
          */
-        // const { scrollRef } = this.props;
-
-        // this.pdfViewer.currentScaleValue = "auto";
-
-        // scrollRef(this.scrollTo);
     };
-
-    removeScrollFocus = () => {
-        const { onScrollChange } = this.props;
-
-        onScrollChange();
-
-        this.setState(
-            {
-                scrolledToHighlightId: EMPTY_ID
-            },
-            () => this.renderHighlights()
-        );
-
-        this.pdfViewer.container.removeEventListener("scroll", this.removeScrollFocus);
-    };
-
-    scrollTo = (highlight: T_Highlight) => {
-        const { pageNumber, boundingRect, usePdfCoordinates } = highlight.position;
-
-        this.pdfViewer.container.removeEventListener("scroll", this.removeScrollFocus);
-
-        const pageViewport = this.pdfViewer.getPageView(pageNumber - 1).viewport;
-
-        const scrollMargin = 10;
-
-        this.pdfViewer.scrollPageIntoView({
-            pageNumber,
-            destArray: [
-                null,
-                { name: "XYZ" },
-                ...pageViewport.convertToPdfPoint(
-                    0,
-                    scaledToViewport(boundingRect, pageViewport, usePdfCoordinates).top -
-                    scrollMargin
-                ),
-                0
-            ]
-        });
-
-        this.setState(
-            {
-                scrolledToHighlightId: highlight.id
-            },
-            () => this.renderHighlights()
-        );
-
-        // after scrolling, when the user scrolls; unfocus the annotation
-        setTimeout(() => {
-            this.pdfViewer.container.addEventListener("scroll", this.onScroll);
-        }, 100);
-    };
-
-    hideSelection = () => {
-        this.setState({
-            ghostHighlight: null
-        })
-    };
-
-    renderSelection = (position, ghostHighlight) => {
-        this.setState({
-            tip: {
-                position
-            },
-            ghostHighlight,
-        })
-    }
-
-    // shouldComponentUpdate(nextProps) {
-    //     if (this.props.highlights !== nextProps.highlights) {
-    //         return true
-    //     }
-
-    //     return false;
-    // }
 
     onTextLayerRendered = () => {
         this.setState({ textLayerRendered: true })
@@ -413,29 +339,27 @@ class PdfAnnotator extends React.Component {
                 {
                     textLayerRendered ?
                         <React.Fragment>
-                            <PdfAnnotationLayer 
+                            <PdfAnnotationLayer
                                 pdfDocument={this.props.pdfDocument}
                                 pdfViewer={this.pdfViewer}
                                 highlights={this.props.highlights}
                                 viewportToScaled={this.viewportToScaled}
                                 scaledPositionToViewport={this.scaledPositionToViewport}
                             />
-                            <PdfAnnotationTooltip
-
-                            />
+                            <PdfAnnotationTooltip />
                             <PdfAreaSelection
                                 pdfViewer={this.pdfViewer}
-                                viewportToScaled={this.viewportToScaled}
                                 viewportPositionToScaled={this.viewportPositionToScaled}
-                                renderSelection={this.renderSelection}
+                                addHighlight={this.addHighlight}
+                            />
+                            <PdfTextSelection 
+                                containerNode={this.containerNode} 
+                                pdfViewer={this.pdfViewer}
+                                viewportPositionToScaled={this.viewportPositionToScaled}
+                                addHighlight={this.addHighlight}
                             />
                         </React.Fragment>
                         : null
-                }
-                {
-                    /*
-                <PdfTextSelection />
-                */
                 }
 
             </div>

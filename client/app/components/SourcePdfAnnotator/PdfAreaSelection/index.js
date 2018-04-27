@@ -31,6 +31,11 @@ class PdfAreaSelection extends React.Component {
     }
 
     addHighlight = () => {
+        // TODO: add this highlight - 2018-04-27
+        console.log("called addHighlight", this.state.ghostHighlight)
+
+        this.props.addHighlight(this.state.ghostHighlight)
+        this.hideSelection()
 
     }
 
@@ -84,7 +89,7 @@ class PdfAreaSelection extends React.Component {
             ghostHighlight,
         })
 
-        this.props.renderSelection(scaledPosition, ghostHighlight)
+        // this.props.renderSelection(scaledPosition, ghostHighlight)
     }
 
     hideSelection = (e) => {

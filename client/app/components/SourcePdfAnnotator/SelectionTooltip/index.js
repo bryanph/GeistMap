@@ -48,6 +48,10 @@ class SelectionTooltip extends Component<Props, State> {
                             e.stopPropagation();
                             e.preventDefault();
                             this.setState({ compact: false });
+
+                            if (this.props.onOpen) {
+                                this.props.onOpen();
+                            }
                         }}
                     >
                         Add highlight
