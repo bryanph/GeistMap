@@ -4,3 +4,4 @@ repos/
 *.bundle.js
 *.map
 tags
+package-lock.json

@@ -17,9 +17,9 @@ import { HotKeys } from 'react-hotkeys'
 
 // import CollectionOverview from "../CollectionOverview"
 import NodeView from '../NodeView'
-import CollectionDetailEditor from '../CollectionDetailEditor'
 import NodeExploreEditor from '../NodeExploreEditor'
 
+import SourceList from '../../components/SourceList'
 import SourceDetail from '../../components/SourceDetail'
 
 import ErrorBoundary from '../ErrorPage'
@@ -65,29 +65,31 @@ class App extends React.Component {
                             <Errors />
                             <Topbar />
 
-                            <Switch>
-                                <Route exact path={'/app/sources'} component={SourceDetail} />
+                            <div className="appContainer">
+                                <Switch>
+                                    <Route exact path={'/app/sources'} component={SourceList} />
+                                    <Route exact path={'/app/sources:id'} component={SourceDetail} />
 
-                                <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor} />
-                                <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor} />
-                                <Route exact path={'/app/nodes/:focusNodeId/graph'} component={NodeView} />
-                                { /* focusNode is the focused node in the graph, node is the node that is edited */ }
-                                <Route exact path={'/app/nodes/:focusNodeId/graph/:nodeId'} component={NodeView}/>
+                                    <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor} />
+                                    <Route exact path={'/app/nodes/:focusNodeId/graph'} component={NodeView} />
+                                    { /* focusNode is the focused node in the graph, node is the node that is edited */ }
+                                    <Route exact path={'/app/nodes/:focusNodeId/graph/:nodeId'} component={NodeView}/>
 
-                                <Route exact path={'/app/nodes'} render={(props) => (
-                                    <Redirect to={{
-                                        pathname: `/app/nodes/${rootCollectionId}/graph`,
-                                        search: props.location.search
-                                    }} />
-                                )}/>
+                                    <Route exact path={'/app/nodes'} render={(props) => (
+                                        <Redirect to={{
+                                            pathname: `/app/nodes/${rootCollectionId}/graph`,
+                                            search: props.location.search
+                                        }} />
+                                    )}/>
 
-                                <Route path="/app" render={(props) => (
-                                    <Redirect to={{
-                                        pathname: '/app/nodes',
-                                        search: props.location.search
-                                    }} />
-                                )} />
-                            </Switch>
+                                    <Route path="/app" render={(props) => (
+                                        <Redirect to={{
+                                            pathname: '/app/nodes',
+                                            search: props.location.search
+                                        }} />
+                                    )} />
+                                </Switch>
+                            </div>
                         </div>
                     </HotKeys>
                 </MuiThemeProvider>

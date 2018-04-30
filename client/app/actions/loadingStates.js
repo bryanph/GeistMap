@@ -1,0 +1,6 @@
+
+
+export const FETCH_INITIAL = "FETCH_INITIAL"
+export const FETCH_FETCHING = "FETCH_FETCHING"
+export const FETCH_SUCCESS = "FETCH_SUCCESS"
+export const FETCH_FAILURE = "FETCH_FAILURE"

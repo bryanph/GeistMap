@@ -18,6 +18,8 @@ import * as uiActionTypes from '../actions/ui'
 import * as fileActionTypes from '../actions/file'
 import * as searchActionTypes from '../actions/search'
 
+import sourceReducer from './source'
+
 function entities(state={}, action, globalState) {
     return {
         nodes: nodes(state.nodes, action, globalState),
@@ -109,6 +111,7 @@ export function nodes(state={}, action) {
                 // otherwise, set the collapsed value
                 // return _.merge({}, state, action.response.entities.nodes)
 
+                // TODO: this should be done in the action, not here. - 2018-04-28
                 const newState = { ...state }
                 _.forEach(action.response.entities.nodes, node => {
                     if (!state[node.id]) {
@@ -147,10 +150,6 @@ function edges(state={}, action, globalState) {
         default:
             if (action.response && action.response.entities && action.response.entities.edges) {
                 return _.merge({}, state, action.response.entities.edges)
-                return {
-                    ...state,
-                    ...action.response.entities.edges
-                }
             }
 
             return state
@@ -732,6 +731,8 @@ function user(state={}, action) {
 
 function rootReducer(state={}, action) {
     return {
+        sources: sourceReducer(state.sources, action),
+
         entities: entities(state.entities, action, state),
         adjacencyMap: adjacencyMap(state.adjacencyMap, action),
         reverseAdjacencyMap: reverseAdjacencyMap(state.reverseAdjacencyMap, action),
@@ -747,6 +748,7 @@ function rootReducer(state={}, action) {
         graphUiState: graphUiState(state.graphUiState, action),
         user: user(state.user, action),
         errors: errors(state.errors, action),
+
     }
 }
 

@@ -20,9 +20,10 @@ require('isomorphic-fetch');
 const config = require("./config/config.js")
 const authConfig = require('./config/auth')
 
-const createCollectionAPI = require("./api/private/Collection")
-const createNodeAPI = require('./api/private/Node')
-const createUserAPI = require('./api/private/User')
+const createCollectionApi = require("./api/private/Collection")
+const createNodeApi = require('./api/private/Node')
+const createUserApi = require('./api/private/User')
+const createSourceApi = require('./api/private/Source')
 
 const moment = require('moment')
 
@@ -109,13 +110,14 @@ const es = elasticsearch.Client({
   }]
 })
 
-const NodeAPI = createNodeAPI(db, es)
-const CollectionAPI = createCollectionAPI(db, es)
-const UserAPI = createUserAPI(app, db, redisClient, es)
+const NodeApi = createNodeApi(db, es)
+const CollectionApi = createCollectionApi(db, es)
+const sourceApi = createSourceApi(db, es)
+const UserApi = createUserApi(app, db, redisClient, es)
 
 const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, Object.assign(authConfig, {
         onSignup: function(user) {
-            return CollectionAPI.createRootCollection(user)
+            return CollectionApi.createRootCollection(user)
                 .then(result => {
                     // save the id of the root collection on the user object
                     user.rootCollectionId = result.id
@@ -125,12 +127,12 @@ const { authRoutes, adminRoutes } = setupAuthMiddleware(app, mongoose, Object.as
     })
 )
 
+// initialize routes
 require('./routes')(app, authRoutes, adminRoutes);
 
 
 io.use(function(socket, next) {
     // wrap with session (this mutates socket.request)
-    socket.redisClient = redisClient
     sessionMiddleware(socket.request, {}, next)
 
 })
@@ -170,40 +172,43 @@ io.on('connection', function(socket) {
         return;
     }
 
-    socket.on('User.generateMobileUploadToken', UserAPI.generateMobileUploadToken.bind(null, socket, user));
+    // this binds the events
+    sourceApi(user, socket)
 
-    socket.on('Node.get', NodeAPI.get.bind(null, user));
+    socket.on('User.generateMobileUploadToken', UserApi.generateMobileUploadToken.bind(null, socket, user));
+
+    socket.on('Node.get', NodeApi.get.bind(null, user));
     // TODO: rename to getL1 - 2016-08-01
-    socket.on('Node.getL1', NodeAPI.getL1.bind(null, user));
-    socket.on('Node.getL2', NodeAPI.getL2.bind(null, user));
-    socket.on('Node.create', NodeAPI.create.bind(null, user));
-    socket.on('Node.update', NodeAPI.update.bind(null, user));
-    // socket.on('Node.duplicate', NodeAPI.duplicate.bind(null, user));
-    socket.on('Node.remove', NodeAPI.remove.bind(null, user));
-    socket.on('Node.connect', NodeAPI.connect.bind(null, user));
-    socket.on('Node.addEdge', NodeAPI.addEdge.bind(null, user));
-    socket.on('Node.removeEdge', NodeAPI.removeEdge.bind(null, user));
-    socket.on('Node.search', NodeAPI.search.bind(null, user));
-    socket.on('Node.searchAll', NodeAPI.searchAll.bind(null, user));
+    socket.on('Node.getL1', NodeApi.getL1.bind(null, user));
+    socket.on('Node.getL2', NodeApi.getL2.bind(null, user));
+    socket.on('Node.create', NodeApi.create.bind(null, user));
+    socket.on('Node.update', NodeApi.update.bind(null, user));
+    // socket.on('Node.duplicate', NodeApi.duplicate.bind(null, user));
+    socket.on('Node.remove', NodeApi.remove.bind(null, user));
+    socket.on('Node.connect', NodeApi.connect.bind(null, user));
+    socket.on('Node.addEdge', NodeApi.addEdge.bind(null, user));
+    socket.on('Node.removeEdge', NodeApi.removeEdge.bind(null, user));
+    socket.on('Node.search', NodeApi.search.bind(null, user));
+    socket.on('Node.searchAll', NodeApi.searchAll.bind(null, user));
 
     /*
      * gets collection with its nodes
     */
-    socket.on('Collection.get', CollectionAPI.get.bind(null, user));
+    socket.on('Collection.get', CollectionApi.get.bind(null, user));
 
     /*
      * gets collection with its nodes and their direct neighbours
     */
-    socket.on('Collection.getL1', CollectionAPI.getL1.bind(null, user));
+    socket.on('Collection.getL1', CollectionApi.getL1.bind(null, user));
 
-    socket.on('Collection.getAll', CollectionAPI.getAll.bind(null, user));
+    socket.on('Collection.getAll', CollectionApi.getAll.bind(null, user));
 
-    // socket.on('Collection.getByIds', CollectionAPI.getByIds.bind(null, user));
-    socket.on('Collection.create', CollectionAPI.create.bind(null, user));
-    socket.on('Collection.remove', CollectionAPI.remove.bind(null, user));
-    socket.on('Collection.addNode', CollectionAPI.addNode.bind(null, user));
-    socket.on('Collection.removeNode', CollectionAPI.removeNode.bind(null, user));
-    socket.on('Collection.moveNode', CollectionAPI.moveNode.bind(null, user));
+    // socket.on('Collection.getByIds', CollectionApi.getByIds.bind(null, user));
+    socket.on('Collection.create', CollectionApi.create.bind(null, user));
+    socket.on('Collection.remove', CollectionApi.remove.bind(null, user));
+    socket.on('Collection.addNode', CollectionApi.addNode.bind(null, user));
+    socket.on('Collection.removeNode', CollectionApi.removeNode.bind(null, user));
+    socket.on('Collection.moveNode', CollectionApi.moveNode.bind(null, user));
 
 })
 

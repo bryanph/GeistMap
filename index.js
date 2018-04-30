@@ -1,1 +1,2 @@
-require("./server/app.js");
+require = require("esm")(module)
+module.exports = require("./server/app.js")

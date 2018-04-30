@@ -11,6 +11,7 @@
     "cookie-parser": "1.4.3",
     "draft-js": "0.10.5",
     "elasticsearch": "11.0.1",
+    "esm": "3.0.28",
     "express": "4.16.3",
     "express-handlebars": "3.0.0",
     "express-session": "1.15.6",
@@ -27,11 +28,11 @@
     "normalizr": "2.0.0",
     "passport": "0.4.0",
     "pdfjs-dist": "2.0.159",
-    "react-rnd": "^7.1.5",
     "promptly": "2.2.0",
     "prop-types": "15.6.0",
     "re-reselect": "1.0.1",
     "react-portal": "3.1.0",
+    "react-rnd": "^7.1.5",
     "semantic-ui-css": "2.2.12",
     "semantic-ui-react": "0.76.0",
     "semiotic-mark": "0.1.2",
@@ -39,11 +40,13 @@
     "uuid": "3.1.0"
   },
   "devDependencies": {
+    "babel-cli": "6.26.0",
     "babel-core": "6.26.0",
     "babel-jest": "22.4.3",
     "babel-loader": "7.1.4",
     "babel-plugin-transform-flow-strip-types": "6.22.0",
     "babel-preset-es2015": "6.24.1",
+    "babel-preset-flow": "6.23.0",
     "babel-preset-react": "6.24.1",
     "babel-preset-stage-0": "6.24.1",
     "babel-preset-stage-1": "6.24.1",
@@ -114,6 +117,7 @@
     "watch:client": "webpack --progress --colors --watch",
     "watch:server": "NODE_ENV=development nodemon --watch server index.js",
     "webpack-dev-server": "NODE_ENV=development node webpack-dev-server",
-    "dev": "parallelshell 'npm run webpack-dev-server' 'npm run watch:server'"
+    "dev": "parallelshell 'npm run webpack-dev-server' 'npm run watch:server'",
+    "flow": "flow"
   }
 }

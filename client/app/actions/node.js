@@ -1,5 +1,4 @@
 
-import fetchJSON from '../utils/fetch'
 import { normalize, Schema, arrayOf } from 'normalizr'
 import Schemas from '../schemas'
 import { CALL_API } from '../middleware/api'

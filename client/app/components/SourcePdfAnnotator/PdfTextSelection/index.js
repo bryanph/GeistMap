@@ -27,9 +27,6 @@ class PdfTextSelection extends React.Component {
     }
 
     addHighlight = () => {
-        // TODO: add this highlight - 2018-04-27
-        console.log("called addHighlight", this.state.ghostHighlight)
-
         this.props.addHighlight(this.state.ghostHighlight)
         this.hideSelection()
     }

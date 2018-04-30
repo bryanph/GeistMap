@@ -211,11 +211,6 @@ class PdfAnnotator extends React.Component {
      * - Add react-virtualized for the annotation layer (https://www.youtube.com/watch?v=aV1271hd9ew)
      */
     state = {
-        // selection information
-        isCollapsed: true,
-        range: null,
-
-        ghostHighlight: null,
         scrolledToHighlightId: null,
     };
 
@@ -257,30 +252,6 @@ class PdfAnnotator extends React.Component {
         };
     }
 
-
-    onSelectionChange = () => {
-        /*
-         * sets a selection to the state
-        */
-        const selection: Selection = window.getSelection();
-
-        if (selection.isCollapsed) {
-            this.setState({ isCollapsed: true });
-            return;
-        }
-
-        const range = selection.getRangeAt(0);
-
-        if (!range) {
-            return;
-        }
-
-        this.setState({
-            isCollapsed: false,
-            range
-        });
-    };
-
     onDocumentReady = () => {
         /*
          * // TODO: desc - 2018-04-27 If an annotation is focused in the URL, scroll to that annotation
@@ -290,6 +261,14 @@ class PdfAnnotator extends React.Component {
     onTextLayerRendered = () => {
         this.setState({ textLayerRendered: true })
     };
+
+    addHighlight = (highlight) => {
+        console.log("add the highlight", highlight)
+    }
+
+    removeHighlight = (highlight) => {
+        console.log("remove the highlight", highlight)
+    }
 
     componentDidMount() {
         const { pdfDocument } = this.props;
@@ -306,23 +285,13 @@ class PdfAnnotator extends React.Component {
         this.pdfViewer.setDocument(pdfDocument);
         this.linkService.setDocument(pdfDocument);
 
-        // debug
-        window.PdfViewer = this;
-
-        document.addEventListener("selectionchange", this.onSelectionChange);
-        document.addEventListener("keydown", this.handleKeyDown);
-
         this.containerNode.addEventListener("pagesinit", this.onDocumentReady);
         this.containerNode.addEventListener("textlayerrendered", this.onTextLayerRendered);
-        this.containerNode.addEventListener("mousedown", this.onMouseDown);
     }
 
     componentWillUnmount() {
-        document.removeEventListener("selectionchange", this.onSelectionChange);
-        document.removeEventListener("keydown", this.handleKeyDown);
-
+        this.containerNode.removeEventListener("pagesinit", this.onDocumentReady);
         this.containerNode.removeEventListener("textlayerrendered", this.onTextLayerRendered);
-        this.containerNode.removeEventListener("mousedown", this.onMouseDown);
     }
 
     render() {
@@ -332,7 +301,6 @@ class PdfAnnotator extends React.Component {
         return (
             <div
                 ref={node => (this.containerNode = node)}
-                onMouseUp={() => setTimeout(this.onMouseUp, 0)}
                 className="PdfAnnotator"
             >
                 <div className="pdfViewer" />
