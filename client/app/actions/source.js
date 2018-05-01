@@ -34,9 +34,9 @@ export function fetchSources() {
 }
 
 export const ADD_SOURCE = 'ADD_SOURCE'
-export function addSource(source) {
+export function addSource(source, file=null) {
     /*
-     * Adds an source to a source
+     * Adds a source
     */
 
     const sourceId = uuidV4();
@@ -44,8 +44,12 @@ export function addSource(source) {
     return {
         type: ADD_SOURCE,
         sourceId,
+        file,
         source: {
             ...source,
+            id: sourceId,
+            file,
+            uploaded: !Boolean(file),
             synced: false,
         }
     }
@@ -129,3 +133,4 @@ export function updateHighlight(sourceId, highlightId, highlight) {
         }
     }
 }
+

@@ -19,7 +19,7 @@ import { HotKeys } from 'react-hotkeys'
 import NodeView from '../NodeView'
 import NodeExploreEditor from '../NodeExploreEditor'
 
-import SourceList from '../../components/SourceList'
+import SourceGrid from '../../components/SourceGrid'
 import SourceDetail from '../../components/SourceDetail'
 
 import ErrorBoundary from '../ErrorPage'
@@ -67,7 +67,7 @@ class App extends React.Component {
 
                             <div className="appContainer">
                                 <Switch>
-                                    <Route exact path={'/app/sources'} component={SourceList} />
+                                    <Route exact path={'/app/sources'} component={SourceGrid} />
                                     <Route exact path={'/app/sources:id'} component={SourceDetail} />
 
                                     <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor} />

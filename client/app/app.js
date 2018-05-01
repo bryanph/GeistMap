@@ -2,6 +2,7 @@
 
 require('../scss/app.scss')
 import 'semantic-ui-css/semantic.min.css';
+import 'font-awesome/css/font-awesome.min.css'
 
 import React from 'react'
 import ReactDom from 'react-dom'

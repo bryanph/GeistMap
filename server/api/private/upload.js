@@ -55,8 +55,8 @@ const upload = multer({
     storage : storage,
     limits: {
         fields: 10,
-        files: 1,
-        fileSize: 100000000, // in bytes (100 MB)
+        files: config.maxFiles,
+        fileSize: config.fileSizeLimit,
     },
     fileFilter: filterFiles,
 }).array('files', 1);

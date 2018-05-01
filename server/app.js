@@ -68,8 +68,8 @@ app.engine('.hbs', exphbs({
 app.set('view engine', '.hbs');
 app.set('views',__dirname + '/views')
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: config.fileSizeLimit }));
+app.use(bodyParser.urlencoded({ extended: true, limit: config.fileSizeLimit }));
 app.use(cookieParser('foo'));
 app.use(sessionMiddleware)
 
@@ -134,7 +134,6 @@ require('./routes')(app, authRoutes, adminRoutes);
 io.use(function(socket, next) {
     // wrap with session (this mutates socket.request)
     sessionMiddleware(socket.request, {}, next)
-
 })
 .use(function(socket, next) {
     // now deserialize user...

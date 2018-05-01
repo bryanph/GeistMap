@@ -30,7 +30,10 @@ const config = {
     },
 
     "uploadDir": path.join(process.cwd(), 'assets/uploads'),
-    "uploadLimit": 2 * Math.pow(2,30), // 2Gb, for now for free users?
+    "uploadLimit": 2 * Math.pow(2,30), // 2Gb
+
+    "fileSizeLimit": 100 * Math.pow(2, 20), // 100MB
+    "maxFiles": 5, // max files uploaded simultaneously
 
     "es": {
         // TODO: instead use aliases in ES? - 2017-05-10
