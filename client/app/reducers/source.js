@@ -117,6 +117,9 @@ function sources(state={}, action) {
         case fetchAllTypes.SUCCESS: {
             return merge({}, state, action.response.entities.sources)
         }
+        case fetchTypes.SUCCESS: {
+            return merge({}, state, action.response.entities.sources)
+        }
 
         case syncTypes.ADD_SOURCE: {
             return update(state, {
@@ -164,9 +167,9 @@ function highlights(state={}, sources, action) {
     // TODO: A highlight is linked to a single source no? - 2018-04-28
 
     switch(action.type) {
-        // case fetchAllTypes.SUCCESS: {
-        //     return merge({}, state, action.response.entities.highlights)
-        // }
+        case fetchTypes.SUCCESS: {
+            return merge({}, state, action.response.entities.highlights)
+        }
 
         case syncTypes.ADD_HIGHLIGHT: {
             return update(state, {
@@ -231,6 +234,8 @@ export function isErrorDetail(state) {
 }
 
 
+// TODO: these should be memoized - 2018-05-02
+
 export function getSources(state) {
     // TODO: include pagination - 2018-04-30
     return Object.values(state.sources.sources)
@@ -239,4 +244,18 @@ export function getSources(state) {
 export function getSource(state, id) {
     // also get annotations
     return state.sources.sources[id]
+}
+
+export function getHighlightsBySourceId(state, id) {
+    const source = state.sources.sources[id]
+
+    if (!source) {
+        return []
+    }
+
+    console.log(source)
+
+    return (source.highlights || [])
+        .map(highlightId => state.sources.highlights[highlightId])
+
 }

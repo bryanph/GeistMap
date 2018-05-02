@@ -16,7 +16,7 @@ class SourceGridItem extends React.Component {
         if (!source.uploaded) {
             if (source.localState && source.localState.file) {
                 // file was added, start uploading
-                this.uploadFile(source.file);
+                this.uploadFile(source.localState.file);
             }
             else {
                 // upload was interrupted (with a page reload), so recreate File object and ask user to retry
@@ -37,9 +37,12 @@ class SourceGridItem extends React.Component {
         xhr.onload = () => {
             const jsonResponse = JSON.parse(xhr.responseText)
 
+            console.log(xhr.responseText)
+            console.log(jsonResponse)
+
             // mark source as being uploaded
             this.props.updateSource(this.props.source.id, {
-                url: jsonResponse.url,
+                url: jsonResponse.files[0].url,
                 uploaded: true,
             })
         }
@@ -56,6 +59,7 @@ class SourceGridItem extends React.Component {
 
     onClick = () => {
         if (!this.props.source.uploaded) {
+            // TODO: interrupt? - 2018-05-02
             return;
         }
 

@@ -5,7 +5,7 @@ module.exports = function(db, es) {
     // attaches user object and the socket used
     return function(user, socket) {
 
-        return function fetchAll(id) {
+        return function fetch(id) {
             // TODO: include search and pagination (with offset) - 2018-04-30
             /*
              * Get all sources
@@ -13,7 +13,7 @@ module.exports = function(db, es) {
             return db.run(`
                 MATCH (u:User)--(s:Source)
                 WHERE u.id = {userId} AND s.id = {id}
-                OPTIONAL MATCH (n)--(a:Annotation)
+                OPTIONAL MATCH (s)--(a:Annotation)
                 RETURN properties(s) as source, collect(properties(a)) as annotations
                 `,
                 {
@@ -27,12 +27,12 @@ module.exports = function(db, es) {
                         return Promise.reject(`Source with id ${id} was not found`)
                     }
 
-                    let source = results[0].get('sources')
+                    let source = results.records[0].get('source')
                     const annotations = results.records[0].get('annotations')
 
                     return Object.assign({},
                         source,
-                        { annotations: annotations.map(x => x.id) }
+                        { annotations }
                     )
                 })
         }

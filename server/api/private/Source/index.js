@@ -39,8 +39,8 @@ module.exports = function(db, es) {
         const userBoundFetchAll = fetchAll(user, socket)
         const userBoundSync = sync(user, socket)
 
-        socket.on("Source.fetch", (action, res) => {
-            return userBoundFetch(action)
+        socket.on("Source.fetch", (id, res) => {
+            return userBoundFetch(id)
                 .then((result) => handleSuccess(result, res))
                 .catch((error) => handleError(error, res))
         })

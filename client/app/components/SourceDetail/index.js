@@ -32,12 +32,14 @@ class SourcePDF extends React.Component {
     }
 
     render() {
-        const { source } = this.props
+        const { source, highlights } = this.props
+
+        console.log("we are loaded up")
 
         return (
             <div className="sourcePDF">
-                <PdfViewer url={source.url} annotations={source.annotations} />
-                <PdfAnnotations annotations={source.annotations} />
+                <PdfViewer url={source.url} highlights={highlights} />
+                <PdfAnnotations highlights={highlights} />
                 <DerivedDocument />
             </div>
         )
@@ -50,19 +52,21 @@ class SourceDetail extends React.Component {
     }
 
     render() {
-        // const { source } = this.props
+        const { source, highlights } = this.props
 
-        const source = {
-            type: "pdf",
-            url: "https://arxiv.org/pdf/1708.08021.pdf",
-            annotations: testAnnotations,
-        }
+        console.log(source, highlights)
+
+        // const source = {
+        //     type: "pdf",
+        //     url: "https://arxiv.org/pdf/1708.08021.pdf",
+        //     highlights: testAnnotations,
+        // }
 
         let sourceComponent;
 
         switch(source.type) {
-            case "pdf":
-                sourceComponent = <SourcePDF source={source} />
+            case "application/pdf":
+                sourceComponent = <SourcePDF source={source} highlights={highlights} />
         }
 
         return (
@@ -79,13 +83,12 @@ class SourceDetailView extends React.Component {
     }
 
     render() {
-        const {  } = this.props
-
         return (
-            <SourceLoader>
-                { source => (
+            <SourceLoader id={this.props.match.params.id}>
+                { (source, highlights) => (
                     <SourceDetail
                         source={source}
+                        highlights={highlights}
                     />
                 )}
             </SourceLoader>

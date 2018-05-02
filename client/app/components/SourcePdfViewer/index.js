@@ -5,7 +5,7 @@ import PdfAnnotator from '../SourcePdfAnnotator'
 
 class PdfViewer extends React.Component {
     /*
-     * Renders a PDF along with its annotations
+     * Renders a PDF along with its highlights
      */
 
     constructor(props) {
@@ -13,14 +13,14 @@ class PdfViewer extends React.Component {
     }
 
     render() {
-        const { url, annotations } = this.props
+        const { url, highlights } = this.props
 
         return (
             <PdfLoader url={url}>
                 { pdfDocument => (
                     <PdfAnnotator
                         pdfDocument={pdfDocument}
-                        highlights={annotations}
+                        highlights={highlights}
                     />
                 )}
             </PdfLoader>

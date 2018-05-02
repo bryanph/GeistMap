@@ -6,6 +6,7 @@ import {
     isLoadingDetail,
     hasLoadedDetail,
     getSource,
+    getHighlightsBySourceId,
 } from "../../reducers/source"
 
 import { fetchSource } from '../../actions/source'
@@ -30,10 +31,12 @@ class SourceLoader extends React.Component {
     }
 
     render() {
-        const { children, hasLoaded, source } = this.props;
+        const { children, hasLoaded, source, highlights } = this.props;
+
+        console.log(hasLoaded, highlights)
 
         if (hasLoaded) {
-            return children(sources)
+            return children(source, highlights)
         }
 
         // TODO: handle source not existing - 2018-05-01
@@ -42,11 +45,12 @@ class SourceLoader extends React.Component {
     }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
     return {
         hasLoaded: hasLoadedDetail(state),
         isLoading: isLoadingDetail(state),
-        source: getSource(state),
+        source: getSource(state, props.id),
+        highlights: getHighlightsBySourceId(state, props.id),
     }
 }
 
@@ -54,5 +58,6 @@ export default connect(mapStateToProps, {
     isLoadingDetail,
     hasLoadedDetail,
     getSource,
+    getHighlightsBySourceId,
     fetchSource,
 })(SourceLoader)
