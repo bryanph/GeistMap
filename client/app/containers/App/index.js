@@ -68,7 +68,7 @@ class App extends React.Component {
                             <div className="appContainer">
                                 <Switch>
                                     <Route exact path={'/app/sources'} component={SourceGrid} />
-                                    <Route exact path={'/app/sources:id'} component={SourceDetail} />
+                                    <Route exact path={'/app/sources/:id'} component={SourceDetail} />
 
                                     <Route exact path={'/app/nodes/:nodeId/edit'} component={NodeExploreEditor} />
                                     <Route exact path={'/app/nodes/:focusNodeId/graph'} component={NodeView} />
@@ -82,12 +82,14 @@ class App extends React.Component {
                                         }} />
                                     )}/>
 
+                                { /*
                                     <Route path="/app" render={(props) => (
-                                        <Redirect to={{
-                                            pathname: '/app/nodes',
-                                            search: props.location.search
-                                        }} />
+                                            <Redirect to={{
+                                                pathname: '/app/nodes',
+                                                search: props.location.search
+                                            }} />
                                     )} />
+                                    */}
                                 </Switch>
                             </div>
                         </div>

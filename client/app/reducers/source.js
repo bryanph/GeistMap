@@ -5,7 +5,7 @@ import omit from 'lodash/omit'
 import merge from 'lodash/merge'
 import update from 'immutability-helper'
 
-import * as sourceActionTypes from '../actions/source'
+import * as sourceActionTypes from '../actions/source/types'
 
 import {
     FETCH_INITIAL,
@@ -68,7 +68,6 @@ function loadingStateReducer(state=initialLoadingState, action) {
                 }}
             })
         case sourceActionTypes.FETCH_SOURCES_SUCCESS:
-            console.log(action.response)
             return update(state, {
                 list: { $merge: {
                     status: FETCH_SUCCESS,
@@ -81,7 +80,7 @@ function loadingStateReducer(state=initialLoadingState, action) {
             return update(state, {
                 list: { $merge: {
                     status: FETCH_FAILURE,
-                    error: error,
+                    error: action.error,
                 }}
             })
 
@@ -105,7 +104,7 @@ function loadingStateReducer(state=initialLoadingState, action) {
             return update(state, {
                 list: { $merge: {
                     status: FETCH_FAILURE,
-                    error: error,
+                    error: action.error,
                 }}
             })
 
@@ -207,7 +206,6 @@ function rootReducer(state={}, action) {
 export default rootReducer
 
 export function hasLoadedList(state) {
-    console.log(state)
     return state.sources.loadingStates.list.status === FETCH_SUCCESS
 }
 
@@ -217,11 +215,28 @@ export function isLoadingList(state) {
 
 export function isErrorList(state) {
     return state.sources.loadingStates.list.status === FETCH_ERROR
+}
 
+
+export function hasLoadedDetail(state) {
+    return state.sources.loadingStates.detail.status === FETCH_SUCCESS
+}
+
+export function isLoadingDetail(state) {
+    return state.sources.loadingStates.detail.status === FETCH_FETCHING
+}
+
+export function isErrorDetail(state) {
+    return state.sources.loadingStates.detail.status === FETCH_ERROR
 }
 
 
 export function getSources(state) {
     // TODO: include pagination - 2018-04-30
     return Object.values(state.sources.sources)
+}
+
+export function getSource(state, id) {
+    // also get annotations
+    return state.sources.sources[id]
 }

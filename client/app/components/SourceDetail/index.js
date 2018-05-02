@@ -4,6 +4,7 @@ import './styles.scss'
 import testAnnotations from "./test-highlights";
 import PdfViewer from '../SourcePdfViewer'
 import PdfAnnotations from '../SourcePdfAnnotations'
+import SourceLoader from '../SourceLoader'
 
 class DerivedDocument extends React.Component {
     /*
@@ -72,5 +73,26 @@ class SourceDetail extends React.Component {
     }
 }
 
-export default SourceDetail
+class SourceDetailView extends React.Component {
+    constructor(props) {
+        super(props)
+    }
+
+    render() {
+        const {  } = this.props
+
+        return (
+            <SourceLoader>
+                { source => (
+                    <SourceDetail
+                        source={source}
+                    />
+                )}
+            </SourceLoader>
+            
+        )
+    }
+}
+
+export default SourceDetailView
 

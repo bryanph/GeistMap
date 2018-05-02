@@ -5,16 +5,16 @@ module.exports = function(db, es) {
     // attaches user object and the socket used
     return function(user, socket) {
 
-        return function fetchAll(action) {
+        return function fetchAll(id) {
             // TODO: include search and pagination (with offset) - 2018-04-30
             /*
              * Get all sources
              */
-            db.run(`
+            return db.run(`
                 MATCH (u:User)--(s:Source)
                 WHERE u.id = {userId} AND s.id = {id}
                 OPTIONAL MATCH (n)--(a:Annotation)
-                RETURN properties(s) as sources, collect(properties(a)) as annotations
+                RETURN properties(s) as source, collect(properties(a)) as annotations
                 `,
                 {
                     id,
@@ -23,24 +23,18 @@ module.exports = function(db, es) {
             )
                 .then((results) => {
                     if (results.records.length === 0) {
-                        return res(`Node with id ${id} was not found`)
+                        // TODO: return a proper error object with code etc so they can be handled - 2018-05-01
+                        return Promise.reject(`Source with id ${id} was not found`)
                     }
 
-                    console.log(results)
+                    let source = results[0].get('sources')
+                    const annotations = results.records[0].get('annotations')
 
-                    let sources = results[0].get('sources')
-
-                    const collections = results.records[0]._fields[1]
-
-                    res(null, {
-                        node: Object.assign({},
-                            results.records[0]._fields[0],
-                            { collections: collections.map(x => x.id) }
-                        ),
-                        collections,
-                    })
+                    return Object.assign({},
+                        source,
+                        { annotations: annotations.map(x => x.id) }
+                    )
                 })
-                .catch(handleError)
         }
     }
 }

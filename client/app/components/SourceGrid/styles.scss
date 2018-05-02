@@ -20,6 +20,21 @@
         background: $background-grey-light;
 
         position: relative;
+
+        .SourceGrid-item__content {
+            font-size: 1.2rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .SourceGrid-item__progress {
+            font-size: 2rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
     }
 
     .SourceGrid-placeholder {
