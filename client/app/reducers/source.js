@@ -5,7 +5,11 @@ import omit from 'lodash/omit'
 import merge from 'lodash/merge'
 import update from 'immutability-helper'
 
-import * as sourceActionTypes from '../actions/source/types'
+import {
+    fetchTypes,
+    fetchAllTypes,
+    syncTypes,
+} from '../actions/source/types'
 
 import {
     FETCH_INITIAL,
@@ -19,18 +23,11 @@ function sourceActions(state=[], action) {
     // TODO: This list should only have actions that involve manipulations? - 2018-04-28
     // TODO: this list should be synced with the server - 2018-04-28
 
-    switch(action.type) {
-        case sourceActionTypes.ADD_SOURCE:
-        case sourceActionTypes.REMOVE_SOURCE:
-        case sourceActionTypes.UPDATE_SOURCE:
-        case sourceActionTypes.ADD_HIGHLIGHT:
-        case sourceActionTypes.REMOVE_HIGHLIGHT:
-        case sourceActionTypes.UPDATE_HIGHLIGHT:
+    if (syncTypes[action.type]) {
             return [ ...state, action ]
-
-        default:
-            return state;
     }
+
+    return state;
 }
 
 const initialLoadingState = {
@@ -60,23 +57,23 @@ function listToTrueMap(list) {
 function loadingStateReducer(state=initialLoadingState, action) {
     // TODO: also handle "fetch more" - 2018-04-28
     switch(action.type) {
-        case sourceActionTypes.FETCH_SOURCES_REQUEST:
+        case fetchAllTypes.REQUEST:
             return update(state, {
                 list: { $merge: {
                     status: FETCH_FETCHING,
                     error: null,
                 }}
             })
-        case sourceActionTypes.FETCH_SOURCES_SUCCESS:
+        case fetchAllTypes.SUCCESS:
             return update(state, {
                 list: { $merge: {
                     status: FETCH_SUCCESS,
-                    visible: [ action.response.sources ],
-                    fetched: merge(state.list.fetched, listToTrueMap(action.response)),
+                    visible: [ action.response.result ],
+                    fetched: merge(state.list.fetched, listToTrueMap(action.response.result)),
                     error: null,
                 }}
             })
-        case sourceActionTypes.FETCH_SOURCES_FAILURE:
+        case fetchAllTypes.FAILURE:
             return update(state, {
                 list: { $merge: {
                     status: FETCH_FAILURE,
@@ -84,7 +81,7 @@ function loadingStateReducer(state=initialLoadingState, action) {
                 }}
             })
 
-        case sourceActionTypes.FETCH_SOURCE_REQUEST:
+        case fetchTypes.REQUEST:
             return update(state, {
                 detail: { $merge: {
                     status: FETCH_FETCHING,
@@ -92,7 +89,7 @@ function loadingStateReducer(state=initialLoadingState, action) {
                     error: null,
                 }}
             })
-        case sourceActionTypes.FETCH_SOURCE_SUCCESS:
+        case fetchTypes.SUCCESS:
             return update(state, {
                 detail: { $merge: {
                     status: FETCH_SUCCESS,
@@ -100,7 +97,7 @@ function loadingStateReducer(state=initialLoadingState, action) {
                     error: null,
                 }}
             })
-        case sourceActionTypes.FETCH_SOURCE_FAILURE:
+        case fetchTypes.FAILURE:
             return update(state, {
                 list: { $merge: {
                     status: FETCH_FAILURE,
@@ -114,29 +111,32 @@ function loadingStateReducer(state=initialLoadingState, action) {
     }
 } 
 
-function sources(state={}, action, globalState) {
+function sources(state={}, action) {
     switch(action.type) {
 
-        case sourceActionTypes.FETCH_SOURCES_SUCCESS: {
-            return merge({}, state, action.response)
+        case fetchAllTypes.SUCCESS: {
+            return merge({}, state, action.response.entities.sources)
         }
 
-        case sourceActionTypes.ADD_SOURCE: {
+        case syncTypes.ADD_SOURCE: {
             return update(state, {
-                [action.sourceId]: { $set: action.source }
+                [action.sourceId]: { $set: {
+                    ...action.source,
+                    localState: action.localState
+                }}
             })
         }
-        case sourceActionTypes.REMOVE_SOURCE: {
+        case syncTypes.REMOVE_SOURCE: {
             // TODO: should also remove all the annotations - 2018-04-28
             return omit(state, action.sourceId)
         }
-        case sourceActionTypes.UPDATE_SOURCE: {
+        case syncTypes.UPDATE_SOURCE: {
             return update(state, {
                 [action.sourceId]: {$merge: action.source }
             })
         }
 
-        case sourceActionTypes.ADD_HIGHLIGHT: {
+        case syncTypes.ADD_HIGHLIGHT: {
             return update(state, {
                 [action.sourceId]: {
                     ...action.source,
@@ -144,7 +144,7 @@ function sources(state={}, action, globalState) {
                 }
             })
         }
-        case sourceActionTypes.REMOVE_HIGHLIGHT: {
+        case syncTypes.REMOVE_HIGHLIGHT: {
             return update(state, {
                 [action.sourceId]: {
                     ...action.source,
@@ -164,25 +164,25 @@ function highlights(state={}, sources, action) {
     // TODO: A highlight is linked to a single source no? - 2018-04-28
 
     switch(action.type) {
-        // case sourceActionTypes.FETCH_SOURCES_SUCCESS: {
+        // case fetchAllTypes.SUCCESS: {
         //     return merge({}, state, action.response.entities.highlights)
         // }
 
-        case sourceActionTypes.ADD_HIGHLIGHT: {
+        case syncTypes.ADD_HIGHLIGHT: {
             return update(state, {
                 [action.highlightId]: { $set: action.highlight }
             })
         }
-        case sourceActionTypes.REMOVE_HIGHLIGHT: {
+        case syncTypes.REMOVE_HIGHLIGHT: {
             return omit(state, action.highlightId)
         }
-        case sourceActionTypes.UPDATE_HIGHLIGHT: {
+        case syncTypes.UPDATE_HIGHLIGHT: {
             return update(state, {
                 [action.highlightId]: {$merge: action.highlight }
             })
         }
 
-        case sourceActionTypes.REMOVE_SOURCE: {
+        case syncTypes.REMOVE_SOURCE: {
             // TODO: remove all highlights part of the source - 2018-04-28
             const source = sources[action.sourceId]
             return state;

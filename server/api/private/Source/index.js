@@ -19,6 +19,10 @@ const createSync = require("./neo4j/sync")
 
 const { handleSuccess, handleError } = require("../../util")
 
+// TODO: separate - 2018-05-02
+const SYNC_SUCCESS = "SYNC_SUCCESS"
+const SYNC_FAILED = "SYNC_FAILED"
+
 module.exports = function(db, es) {
     /*
      * initialized with

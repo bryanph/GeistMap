@@ -21,9 +21,10 @@ module.exports = function(db, es) {
                 }
             )
                 .then((results) => {
-                    console.log(results)
-
-                    return results.records
+                    console.log(results.records)
+                    return results.records.map(record => (
+                        record.get('sources')
+                    ))
                 })
         }
     }

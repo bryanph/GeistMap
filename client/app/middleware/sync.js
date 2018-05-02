@@ -1,6 +1,8 @@
 import { Schema, arrayOf, normalize } from 'normalizr'
 import { wrapPromise } from '../utils/promise.js'
 
+import { isDisconnected } from '../reducers/socketState'
+
 export const SYNC_START = "SYNC_START";
 export const SYNC_COMMIT = "SYNC_COMMIT";
 export const SYNC_ROLLBACK = "SYNC_ROLLBACK";
@@ -17,9 +19,6 @@ export default function createSyncMiddleware(_socket, shouldSync, options={}) {
      */
 
     const { namespace } = options;
-
-    _socket.emit = wrapPromise(_socket.emit.bind(_socket))
-    _socket.on = wrapPromise(_socket.on.bind(_socket))
 
     const syncEndpoint = namespace ? `${namespace}.sync` : "sync"
 
@@ -44,12 +43,12 @@ export default function createSyncMiddleware(_socket, shouldSync, options={}) {
             syncQueue = [ ...actionQueue ]
             actionQueue = []
 
-            next({ type: SYNC_START, actionQueue })
+            next({ type: SYNC_START, payload: actionQueue })
 
             _socket.emit(syncEndpoint, syncQueue)
                 .then(
                     response => {
-                        next({ type: SYNC_COMMIT, syncQueue })
+                        next({ type: SYNC_COMMIT, payload: syncQueue })
 
                         isSyncing = false;
                         syncQueue = [];
@@ -62,7 +61,7 @@ export default function createSyncMiddleware(_socket, shouldSync, options={}) {
                     error => {
                         // TODO: send details of which actions failed so they can be rolled back. - 2018-05-01
                         // TODO: first notify the user, then start retrying and queue upcoming actions - 2018-05-02
-                        next({ type: SYNC_ROLLBACK, error.failedActions })
+                        next({ type: SYNC_ROLLBACK, payload: error.failedActions })
                         isFailing = true;
                         isSyncing = false;
                     }
@@ -70,6 +69,8 @@ export default function createSyncMiddleware(_socket, shouldSync, options={}) {
         }
 
         return action => {
+            // default behaviour
+            next(action);
 
             if (action.type === SYNC_RETRY) {
                 isFailing = false;
@@ -79,12 +80,15 @@ export default function createSyncMiddleware(_socket, shouldSync, options={}) {
             // TODO: handle an undo and a redo action - 2018-05-02
 
             if (shouldSync(action)) {
+                console.log("queueing action and calling shouldSync()", action)
+
+                // TODO: blegh - 2018-05-02
+                delete action["localState"]
+
                 actionQueue.push(action)
                 syncActions()
             }
 
-            // default behaviour
-            return next(action);
         }
 
     } 

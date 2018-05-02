@@ -1,12 +1,8 @@
 import { Schema, arrayOf, normalize } from 'normalizr'
-import { wrapPromise } from '../utils/promise.js'
 
 export const CALL_API = Symbol('Call API')
 
 export default function createSocketMiddleware(_socket) {
-
-    _socket.emit = wrapPromise(_socket.emit.bind(_socket))
-    _socket.on = wrapPromise(_socket.on.bind(_socket))
 
     return store => next => action => {
         const callAPI = action[CALL_API]

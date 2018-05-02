@@ -1,7 +1,7 @@
 /* @flow */
 
 // TODO: this import should be done differently - 2018-04-30
-const sourceActionTypes = require("../../../../../client/app/actions/source")
+const { syncTypes: sourceActionTypes } = require("../../../../../client/app/actions/source/types")
 
 const validateSource = (source) => {
     // TODO: validate the source is well defined - 2018-05-01
@@ -67,7 +67,7 @@ module.exports = function(db, es) {
                 {
                     userId: user._id.toString(),
                     id: action.sourceId,
-                    data: updatedData,
+                    data: validatedSource,
                 }
             )
             .then((results) => {
@@ -82,6 +82,7 @@ module.exports = function(db, es) {
 
         // api call state
         return function sync(action) {
+            console.log(action)
             switch(action.type) {
                 case sourceActionTypes.ADD_SOURCE:
                     return addSource(action);

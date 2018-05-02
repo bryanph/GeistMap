@@ -7,12 +7,23 @@ class SourceGridItem extends React.Component {
 
         this.state = {
             progress: props.source.uploaded ? "100" : "0",
+            interrupted: false,
         }
     }
 
     componentDidMount() {
-        if (!this.props.source.uploaded) {
-            this.uploadFile(this.props.file);
+        const { source } = this.props
+        if (!source.uploaded) {
+            if (source.localState && source.localState.file) {
+                // file was added, start uploading
+                this.uploadFile(source.file);
+            }
+            else {
+                // upload was interrupted (with a page reload), so recreate File object and ask user to retry
+                // TODO: render a retry box - 2018-05-02
+                this.setState({ interrupted: true })
+            }
+
         }
     }
 
@@ -28,11 +39,8 @@ class SourceGridItem extends React.Component {
 
             // mark source as being uploaded
             this.props.updateSource(this.props.source.id, {
-                fileName: jsonResponse.filename,
-                originalName: jsonResponse.originalname,
                 url: jsonResponse.url,
                 uploaded: true,
-                file: null,
             })
         }
         xhr.onerror = this.onError
@@ -56,25 +64,37 @@ class SourceGridItem extends React.Component {
 
     render() {
         const { source } = this.props
-        const { progress } = this.state
+        const { progress, interrupted } = this.state
 
-        console.log(source)
+        let content;
+        if (!source.uploaded && interrupted) {
+            content = (
+                <div className="SourceGrid-item__interrupted">
+                    <span>The upload was interrupted, try again</span>
+                </div>
+            )
+        }
+        else if (!source.uploaded) {
+            content = (
+                <div className="SourceGrid-item__progress">
+                    <span>{ progress }</span>
+                </div>
+            )
+        }
+        else {
+            content = (
+                <div className="SourceGrid-item__content" onClick={this.onClick}>
+                    <span>{source.name}</span>
+                </div>
+            )
+        }
 
         return (
             <div
                 className="SourceGrid-item"
                 onClick={this.onClick}
             >
-                {
-                    !source.uploaded ?
-                        <div className="SourceGrid-item__progress">
-                            <span>{ progress }</span>
-                        </div>
-                    :
-                        <div className="SourceGrid-item__content" onClick={this.onClick}>
-                            <span>{source.name}</span>
-                        </div>
-                }
+                { content }
             </div>
         )
     }

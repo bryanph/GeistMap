@@ -2,18 +2,36 @@
 
 import { normalize, Schema, arrayOf } from 'normalizr'
 const uuidV4 = require('uuid/v4');
-import Schemas from '../schemas'
-import { CALL_API } from '../middleware/api'
+
+import { CALL_API } from '../../middleware/api'
+import { getSource } from '../../reducers/source'
 
 // import { Source, Annotation } from '../types'
-
-import { getSource } from '../reducers/source'
 
 import {
     fetchTypes,
     fetchAllTypes,
     syncTypes,
 } from './types'
+
+/*
+ * Response schemas ( for use with normalizer)
+*/
+
+const SourceSchema = new Schema('sources', {
+    idAttribute: 'id'
+})
+const HighlightSchema = new Schema('highlights', {
+    idAttribute: 'id'
+})
+
+SourceSchema.define({
+    highlights: arrayOf(HighlightSchema),
+})
+
+/*
+ * actions
+*/
 
 export function fetchSource(sourceId) {
     return (dispatch, getState) => {
@@ -28,12 +46,13 @@ export function fetchSource(sourceId) {
         dispatch({
             [CALL_API]: {
                 types: [ 
-                    fetchTypes.request,
-                    fetchTypes.success,
-                    fetchTypes.failure,
+                    fetchTypes.REQUEST,
+                    fetchTypes.SUCCESS,
+                    fetchTypes.FAILURE,
                 ],
                 endpoint: 'Source.fetch',
                 payload: [ sourceId ],
+                schema: SourceSchema,
             }
         })
     }
@@ -44,11 +63,12 @@ export function fetchSources() {
     return {
         [CALL_API]: {
             types: [ 
-                fetchAllTypes.request,
-                fetchAllTypes.success,
-                fetchAllTypes.failure,
+                fetchAllTypes.REQUEST,
+                fetchAllTypes.SUCCESS,
+                fetchAllTypes.FAILURE,
             ],
             endpoint: 'Source.fetchAll',
+            schema: arrayOf(SourceSchema),
         }
     }
 }
@@ -56,6 +76,7 @@ export function fetchSources() {
 export function addSource(source, file=null) {
     /*
      * Adds a source
+     * // TODO: make sure the file argument is not passed down - 2018-05-02
     */
 
     const sourceId = uuidV4();
@@ -63,12 +84,13 @@ export function addSource(source, file=null) {
     return {
         type: syncTypes.ADD_SOURCE,
         sourceId,
-        file,
         source: {
             ...source,
             id: sourceId,
-            file,
             uploaded: !Boolean(file),
+        },
+        localState: {
+            file,
             synced: false,
         }
     }

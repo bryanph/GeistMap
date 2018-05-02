@@ -37,9 +37,11 @@ class SourceGridPlaceholder extends React.Component {
 
     onDrop = (files) => {
         // TODO: Let user choose between hosting local or uploading it - 2018-04-30
+
         files.forEach(file => {
             this.props.addSource({
                 name: file.name,
+                fileName: file.name,
                 type: file.type,
             }, file)
 

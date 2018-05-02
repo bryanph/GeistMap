@@ -19,6 +19,7 @@ import * as fileActionTypes from '../actions/file'
 import * as searchActionTypes from '../actions/search'
 
 import sourceReducer from './source'
+import socketStateReducer from './socketState'
 
 function entities(state={}, action, globalState) {
     return {
@@ -732,7 +733,7 @@ function user(state={}, action) {
 function rootReducer(state={}, action) {
     return {
         sources: sourceReducer(state.sources, action),
-
+        socketState: socketStateReducer(state.socketState, action),
         entities: entities(state.entities, action, state),
         adjacencyMap: adjacencyMap(state.adjacencyMap, action),
         reverseAdjacencyMap: reverseAdjacencyMap(state.reverseAdjacencyMap, action),
