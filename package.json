@@ -16,7 +16,7 @@
     "express-session": "1.15.6",
     "font-awesome": "4.7.0",
     "foundation-sites": "6.2.0",
-    "full-auth-middleware": "0.0.6",
+    "full-auth-middleware": "0.0.7",
     "handlebars-layouts": "3.1.4",
     "immutability-helper": "2.6.6",
     "immutable": "3.8.2",
