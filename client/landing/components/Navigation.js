@@ -30,7 +30,7 @@ export const RightNav = (props) => (
                 target="_blank"
             />
         </div>
-        <NavigationHref href="mailto:support@geistmap.com">Contact</NavigationHref>
+        <NavigationHref href="mailto:bryanhaakman@gmail.com">Contact</NavigationHref>
         <NavigationHref href="/auth/login">Log in</NavigationHref>
         <NavigationHref href="/auth/signup">Sign up</NavigationHref>
     </div>
