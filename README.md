@@ -1,3 +1,5 @@
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
 # GeistMap
 GeistMap is a personal knowledge network for taking notes and mapping concepts. The underlying data model allows you to create hierarchies of documents and link to other documents. These two properties together make for a note-taking experience that scales.
 
